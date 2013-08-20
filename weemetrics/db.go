@@ -17,6 +17,7 @@ type Account struct {
 }
 
 func newAccount(context appengine.Context, account Account) (*datastore.Key, error) {
+	// Based on Account.Email, get or create the account and return its Key.
 	r := make([]Account, 0, 1)
 
 	var returnKey *datastore.Key
@@ -25,18 +26,19 @@ func newAccount(context appengine.Context, account Account) (*datastore.Key, err
 			Filter("Email =", account.Email).
 			Limit(1)
 
-		var key *datastore.Key
-		if keys, err := q.GetAll(context, &r); err != nil || len(keys) == 0 {
-			log.Println("newAccount: key not found.")
-			key = datastore.NewIncompleteKey(context, "Account", nil)
-		} else {
-			key = keys[0]
-			log.Println("newAccount: found key", key.IntID())
+		keys, err := q.GetAll(context, &r)
+		if err == nil && len(keys) == 1 {
+			returnKey = keys[0]
+			log.Println("newAccount: found key", returnKey.IntID())
+			return nil
 		}
 
-		var err error
+		log.Println("newAccount: key not found.")
+		key := datastore.NewIncompleteKey(context, "Account", nil)
+
 		returnKey, err = datastore.Put(context, key, &account)
 		log.Println("newAccount: saved to key", returnKey.IntID())
+
 		return err
 	}, nil)
 

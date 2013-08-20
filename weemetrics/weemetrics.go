@@ -83,40 +83,17 @@ func AccountConnectHandler(w http.ResponseWriter, r *http.Request) {
 
 	client := transport.Client()
 
-	getUserinfo := make(chan *oauth2.Userinfo)
-
-	go func() {
-		oauthApi, err := oauth2.New(client)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		tokenInfo, err := oauthApi.Userinfo.Get().Do()
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		getUserinfo <- tokenInfo
-		close(getUserinfo)
-	}()
-
-	analyticsApi, err := analytics.New(client)
+	oauthApi, err := oauth2.New(client)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	result, err := analyticsApi.Management.Accounts.List().Do()
+	tokenInfo, err := oauthApi.Userinfo.Get().Do()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	log.Println(w, "Received kind: ", result.Kind)
-
-	tokenInfo := <-getUserinfo
 
 	account := Account{
 		Email:       tokenInfo.Email,
@@ -151,6 +128,57 @@ func AccountLogoutHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
+func SettingsHandler(w http.ResponseWriter, r *http.Request) {
+	context := appengine.NewContext(r)
+
+	session, _ := sessionStore.Get(r, sessionName)
+	userId := getUser(session)
+
+	if userId == 0 {
+		http.Redirect(w, r, "/account/login", http.StatusForbidden)
+		return
+	}
+
+	account, err := getAccount(context, userId)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	transport := &oauth.Transport{
+		Config: &config,
+		Transport: &urlfetch.Transport{
+			Context: context,
+		},
+		Token: &account.Token,
+	}
+	client := transport.Client()
+
+	analyticsApi, err := analytics.New(client)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	result, err := analyticsApi.Management.Accounts.List().Do()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Fprintf(w, "Hello, %+v", result)
+}
+
+func ReportHandler(w http.ResponseWriter, r *http.Request) {
+	session, _ := sessionStore.Get(r, sessionName)
+	userId := getUser(session)
+
+	if userId == 0 {
+		http.Redirect(w, r, "/account/login", http.StatusForbidden)
+		return
+	}
+}
+
 func init() {
 	config.ClientId = "909659267876-k6qlc3i22rpsfj9t7r1998tvt9l7ghms.apps.googleusercontent.com" // XXX: Fetch from file
 	config.ClientSecret = "FB9ocrxz9witysKA8tcMnMh5"                                             // XXX: Fetch from file
@@ -160,6 +188,8 @@ func init() {
 	router.HandleFunc("/account/connect", AccountConnectHandler)
 	router.HandleFunc("/account/login", AccountLoginHandler)
 	router.HandleFunc("/account/logout", AccountLogoutHandler)
+	router.HandleFunc("/settings", SettingsHandler)
+	router.HandleFunc("/report", ReportHandler)
 
 	http.Handle("/", router)
 }
