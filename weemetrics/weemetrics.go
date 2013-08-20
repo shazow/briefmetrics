@@ -35,31 +35,31 @@ var config = oauth.Config{
 	AccessType:  "offline",
 }
 
-func logoutUser(
+// View handlers
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	session, _ := sessionStore.Get(r, sessionName)
-	userId := session.Values["userId"]
+	userId := getUser(session)
 
-	if userId == nil || userId == "" {
+	if userId == 0 {
 		fmt.Fprint(w, "<a href=\"/account/login\">Sign in</a>?")
 		return
 	}
 
 	context := appengine.NewContext(r)
-	account, err := getAccount(context, userId.(int64))
+	account, err := getAccount(context, userId)
 	if err != nil {
 		log.Println("Tried to fetch", userId, "got", err)
 
 		// Invalid key, delete
-		delete(session.Values, "userId")
+		logoutUser(session)
 		session.Save(r, w)
 
 		fmt.Fprint(w, "Session expired. <a href=\"/account/login\">Sign in</a>?")
 		return
 	}
 
-	fmt.Fprint(w, "Hello,", account.Email)
+	fmt.Fprint(w, "Hello, ", account.Email)
 }
 
 func AccountConnectHandler(w http.ResponseWriter, r *http.Request) {
@@ -130,10 +130,10 @@ func AccountConnectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println("Saving user into session: ", key.StringID())
+	log.Println("Saving user into session: ", key.IntID())
 
 	session, _ := sessionStore.Get(r, sessionName)
-	session.Values["userId"] = key.IntID()
+	loginUser(session, key.IntID())
 	session.Save(r, w)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -141,6 +141,14 @@ func AccountConnectHandler(w http.ResponseWriter, r *http.Request) {
 
 func AccountLoginHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, config.AuthCodeURL(""), http.StatusSeeOther)
+}
+
+func AccountLogoutHandler(w http.ResponseWriter, r *http.Request) {
+	session, _ := sessionStore.Get(r, sessionName)
+	logoutUser(session)
+	session.Save(r, w)
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func init() {
