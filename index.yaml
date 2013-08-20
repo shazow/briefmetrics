@@ -1,0 +1,7 @@
+indexes:
+
+- kind: Account
+  properties:
+  - name: Email
+  - name: TimeProcessed
+    direction: asc
