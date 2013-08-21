@@ -18,29 +18,23 @@ type Account struct {
 
 func newAccount(context appengine.Context, account Account) (*datastore.Key, error) {
 	// Based on Account.Email, get or create the account and return its Key.
-	r := make([]Account, 0, 1)
+	// TODO: Prevent dupes
+	q := datastore.NewQuery("Account").
+		Filter("Email =", account.Email).
+		Limit(1).
+		KeysOnly()
 
-	var returnKey *datastore.Key
-	err := datastore.RunInTransaction(context, func(context appengine.Context) error {
-		q := datastore.NewQuery("Account").
-			Filter("Email =", account.Email).
-			Limit(1)
+	keys, err := q.GetAll(context, nil)
+	if err == nil {
+		log.Println("newAccount: found key", keys[0].IntID())
+		return keys[0], nil
+	}
 
-		keys, err := q.GetAll(context, &r)
-		if err == nil && len(keys) == 1 {
-			returnKey = keys[0]
-			log.Println("newAccount: found key", returnKey.IntID())
-			return nil
-		}
+	log.Println("newAccount: key not found", err)
+	key := datastore.NewIncompleteKey(context, "Account", nil)
 
-		log.Println("newAccount: key not found.")
-		key := datastore.NewIncompleteKey(context, "Account", nil)
-
-		returnKey, err = datastore.Put(context, key, &account)
-		log.Println("newAccount: saved to key", returnKey.IntID())
-
-		return err
-	}, nil)
+	returnKey, err := datastore.Put(context, key, &account)
+	log.Println("newAccount: saved to key", returnKey.IntID())
 
 	return returnKey, err
 }
