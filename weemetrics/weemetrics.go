@@ -7,26 +7,17 @@ import (
 	"log"
 	"net/http"
 	"time"
-	"text/template"
 )
-
-// Templates
-
-var indexTmpl = template.Must(
-	template.ParseFiles("templates/base.html", "templates/index.html"))
-
 
 // View handlers
 
 func IndexHandler(c Controller) {
 	if c.UserId == 0 {
-		if err := indexTmpl.Execute(c.ResponseWriter, nil); err != nil {
-			http.Error(c.ResponseWriter, err.Error(), http.StatusInternalServerError)
-		}
+		c.Render("templates/base.html", "templates/index.html")
 		return
 	}
 
-	account, err := getAccount(c.Context, c.UserId)
+	account, err := getAccount(c.AppContext, c.UserId)
 	if err != nil {
 		// Invalid key, delete
 		logoutUser(c.Session)
@@ -68,7 +59,7 @@ func AccountConnectHandler(c Controller) {
 		TimeCreated: time.Now(),
 	}
 
-	key, err := newAccount(c.Context, account)
+	key, err := newAccount(c.AppContext, account)
 	if err != nil {
 		http.Error(c.ResponseWriter, err.Error(), http.StatusInternalServerError)
 		return
@@ -99,7 +90,7 @@ func SettingsHandler(c Controller) {
 		return
 	}
 
-	account, err := getAccount(c.Context, c.UserId)
+	account, err := getAccount(c.AppContext, c.UserId)
 	if err != nil {
 		http.Error(c.ResponseWriter, err.Error(), http.StatusInternalServerError)
 		return
@@ -129,7 +120,7 @@ func ReportHandler(c Controller) {
 		return
 	}
 
-	account, err := getAccount(c.Context, c.UserId)
+	account, err := getAccount(c.AppContext, c.UserId)
 	if err != nil {
 		http.Error(c.ResponseWriter, err.Error(), http.StatusInternalServerError)
 		return

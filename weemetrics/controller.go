@@ -7,6 +7,7 @@ import (
 	"code.google.com/p/google-api-go-client/analytics/v3"
 	"code.google.com/p/google-api-go-client/oauth2/v2"
 	"github.com/gorilla/sessions"
+	"html/template"
 	"net/http"
 	"strings"
 )
@@ -32,27 +33,32 @@ var OAuthConfig = oauth.Config{
 }
 
 type Controller struct {
-	Request        *http.Request
-	ResponseWriter http.ResponseWriter
-	Session        *sessions.Session
-	Context        appengine.Context
-	Transport      *urlfetch.Transport
-	OAuthTransport *oauth.Transport
-	UserId         int64
+	Request         *http.Request
+	ResponseWriter  http.ResponseWriter
+	Session         *sessions.Session
+	AppContext      appengine.Context
+	TemplateContext map[string]interface{}
+	Transport       *urlfetch.Transport
+	OAuthTransport  *oauth.Transport
+	UserId          int64
 }
 
 func (c *Controller) SessionSave() {
 	c.Session.Save(c.Request, c.ResponseWriter)
 }
 
+func (c *Controller) Render(filenames ...string) error{
+	return template.Must(template.ParseFiles(filenames...)).Execute(c.ResponseWriter, c.TemplateContext)
+}
+
 func AddController(pattern string, f func(Controller)) {
 	// Wrap controller function with instantiated Controller object for the first parameter.
 	http.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
 		session, _ := sessionStore.Get(r, sessionName)
-		context := appengine.NewContext(r)
+		appContext := appengine.NewContext(r)
 
 		transport := &urlfetch.Transport{
-			Context: context,
+			Context: appContext,
 		}
 		oauthTransport := &oauth.Transport{
 			Config:    &OAuthConfig,
@@ -63,7 +69,7 @@ func AddController(pattern string, f func(Controller)) {
 			Request:        r,
 			ResponseWriter: w,
 			Session:        session,
-			Context:        context,
+			AppContext:      appContext,
 			Transport:      transport,
 			OAuthTransport: oauthTransport,
 			UserId:         getUser(session),
