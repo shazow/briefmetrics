@@ -7,13 +7,22 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"text/template"
 )
+
+// Templates
+
+var indexTmpl = template.Must(
+	template.ParseFiles("templates/base.html", "templates/index.html"))
+
 
 // View handlers
 
 func IndexHandler(c Controller) {
 	if c.UserId == 0 {
-		fmt.Fprint(c.ResponseWriter, "<a href=\"/account/login\">Sign in</a>?")
+		if err := indexTmpl.Execute(c.ResponseWriter, nil); err != nil {
+			http.Error(c.ResponseWriter, err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
 
