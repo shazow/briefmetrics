@@ -47,8 +47,15 @@ func (c *Controller) SessionSave() {
 	c.Session.Save(c.Request, c.ResponseWriter)
 }
 
-func (c *Controller) Render(filenames ...string) error{
-	return template.Must(template.ParseFiles(filenames...)).Execute(c.ResponseWriter, c.TemplateContext)
+func (c *Controller) Render(filenames ...string) {
+	err := template.Must(template.ParseFiles(filenames...)).Execute(c.ResponseWriter, c.TemplateContext)
+	if err != nil {
+		c.Error(err)
+	}
+}
+
+func (c *Controller) Error(err error) {
+	http.Error(c.ResponseWriter, err.Error(), http.StatusInternalServerError)
 }
 
 func AddController(pattern string, f func(Controller)) {
@@ -65,14 +72,17 @@ func AddController(pattern string, f func(Controller)) {
 			Transport: transport,
 		}
 
+		templateContext := make(map[string]interface{})
+
 		controller := Controller{
-			Request:        r,
-			ResponseWriter: w,
-			Session:        session,
+			Request:         r,
+			ResponseWriter:  w,
+			Session:         session,
 			AppContext:      appContext,
-			Transport:      transport,
-			OAuthTransport: oauthTransport,
-			UserId:         getUser(session),
+			TemplateContext: templateContext,
+			Transport:       transport,
+			OAuthTransport:  oauthTransport,
+			UserId:          getUser(session),
 		}
 
 		f(controller)

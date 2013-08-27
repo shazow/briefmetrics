@@ -33,7 +33,7 @@ func IndexHandler(c Controller) {
 func AccountConnectHandler(c Controller) {
 	token, err := c.OAuthTransport.Exchange(c.Request.FormValue("code"))
 	if err != nil {
-		http.Error(c.ResponseWriter, err.Error(), http.StatusInternalServerError)
+		c.Error(err)
 		return
 	}
 
@@ -43,13 +43,13 @@ func AccountConnectHandler(c Controller) {
 
 	oauthApi, err := oauth2.New(client)
 	if err != nil {
-		http.Error(c.ResponseWriter, err.Error(), http.StatusInternalServerError)
+		c.Error(err)
 		return
 	}
 
 	tokenInfo, err := oauthApi.Userinfo.Get().Do()
 	if err != nil {
-		http.Error(c.ResponseWriter, err.Error(), http.StatusInternalServerError)
+		c.Error(err)
 		return
 	}
 
@@ -61,7 +61,7 @@ func AccountConnectHandler(c Controller) {
 
 	key, err := newAccount(c.AppContext, account)
 	if err != nil {
-		http.Error(c.ResponseWriter, err.Error(), http.StatusInternalServerError)
+		c.Error(err)
 		return
 	}
 
@@ -92,7 +92,7 @@ func SettingsHandler(c Controller) {
 
 	account, err := getAccount(c.AppContext, c.UserId)
 	if err != nil {
-		http.Error(c.ResponseWriter, err.Error(), http.StatusInternalServerError)
+		c.Error(err)
 		return
 	}
 
@@ -101,13 +101,13 @@ func SettingsHandler(c Controller) {
 
 	analyticsApi, err := analytics.New(client)
 	if err != nil {
-		http.Error(c.ResponseWriter, err.Error(), http.StatusInternalServerError)
+		c.Error(err)
 		return
 	}
 
 	result, err := analyticsApi.Management.Accounts.List().Do()
 	if err != nil {
-		http.Error(c.ResponseWriter, err.Error(), http.StatusInternalServerError)
+		c.Error(err)
 		return
 	}
 
@@ -122,7 +122,7 @@ func ReportHandler(c Controller) {
 
 	account, err := getAccount(c.AppContext, c.UserId)
 	if err != nil {
-		http.Error(c.ResponseWriter, err.Error(), http.StatusInternalServerError)
+		c.Error(err)
 		return
 	}
 

@@ -25,7 +25,7 @@ func newAccount(context appengine.Context, account Account) (*datastore.Key, err
 		KeysOnly()
 
 	keys, err := q.GetAll(context, nil)
-	if err == nil {
+	if err == nil && len(keys) > 0 {
 		log.Println("newAccount: found key", keys[0].IntID())
 		return keys[0], nil
 	}
