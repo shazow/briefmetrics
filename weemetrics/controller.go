@@ -48,6 +48,7 @@ func (c *Controller) SessionSave() {
 }
 
 func (c *Controller) Render(filenames ...string) {
+	// TODO: Cache templates?
 	err := template.Must(template.ParseFiles(filenames...)).Execute(c.ResponseWriter, c.TemplateContext)
 	if err != nil {
 		c.Error(err)
