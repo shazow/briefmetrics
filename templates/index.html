@@ -1,6 +1,12 @@
 {{define "content"}}
   <h1>WeeMetrics</h1>
+  {{if .Account}}
   <p>
-    <a href="/account/login">Sign in</a>?
+      Welcome, {{.Account.Email}}.
   </p>
+  {{else}}
+  <p>
+      <a href="/account/login">Sign in</a>?
+  </p>
+  {{end}}
 {{end}}

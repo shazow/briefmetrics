@@ -48,6 +48,9 @@ func (c *Controller) SessionSave() {
 }
 
 func (c *Controller) Render(filenames ...string) {
+	c.TemplateContext["Messages"] = c.Session.Flashes()
+	c.SessionSave()
+
 	// TODO: Cache templates?
 	err := template.Must(template.ParseFiles(filenames...)).Execute(c.ResponseWriter, c.TemplateContext)
 	if err != nil {

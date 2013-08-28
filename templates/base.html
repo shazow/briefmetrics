@@ -8,6 +8,14 @@
 
 <body>
 
+{{if .Messages}}
+<ul id="messages">
+    {{range .Messages}}
+        <li>{{.}}</li>
+    {{end}}
+</ul>
+{{end}}
+
 {{template "content" .}}
 
 </body>

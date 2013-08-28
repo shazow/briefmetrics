@@ -12,8 +12,9 @@ import (
 // View handlers
 
 func IndexHandler(c Controller) {
+	defer c.Render("templates/base.html", "templates/index.html")
+
 	if c.UserId == 0 {
-		c.Render("templates/base.html", "templates/index.html")
 		return
 	}
 
@@ -21,13 +22,14 @@ func IndexHandler(c Controller) {
 	if err != nil {
 		// Invalid key, delete
 		logoutUser(c.Session)
+		c.Session.AddFlash("Session expired.")
 		c.Session.Save(c.Request, c.ResponseWriter)
 
 		fmt.Fprint(c.ResponseWriter, "Session expired. <a href=\"/account/login\">Sign in</a>?")
 		return
 	}
 
-	fmt.Fprint(c.ResponseWriter, "Hello, ", account.Email)
+	c.TemplateContext["Account"] = account
 }
 
 func AccountConnectHandler(c Controller) {
@@ -79,6 +81,7 @@ func AccountLoginHandler(c Controller) {
 
 func AccountLogoutHandler(c Controller) {
 	logoutUser(c.Session)
+	c.Session.AddFlash("Goodbye.")
 	c.SessionSave()
 
 	http.Redirect(c.ResponseWriter, c.Request, "/", http.StatusSeeOther)
