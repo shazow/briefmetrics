@@ -10,6 +10,7 @@ import (
 	"html/template"
 	"net/http"
 	"strings"
+	api "weemetrics/api"
 )
 
 const (
@@ -86,7 +87,7 @@ func AddController(pattern string, f func(Controller)) {
 			TemplateContext: templateContext,
 			Transport:       transport,
 			OAuthTransport:  oauthTransport,
-			UserId:          getUser(session),
+			UserId:          api.Account.GetUser(session),
 		}
 
 		f(controller)

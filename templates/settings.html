@@ -1,0 +1,13 @@
+{{define "content"}}
+    <h2>Choose a website</h2>
+
+    <p>Which website do you want to receive analytics digests for? (It can only be one, for now.)</p>
+
+    <ul>
+        {{range .AnalyticsProfiles}}
+        <li>
+            <a href="/settings/choose?account_id={{.AccountId}}&property_id={{.WebPropertyId}}&profile_id={{.Id}}">{{.WebPropertyId}}</a> {{.WebsiteUrl}} ({{.Name}})
+        </li>
+        {{end}}
+    </ul>
+{{end}}

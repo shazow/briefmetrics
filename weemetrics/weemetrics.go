@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"time"
+	api "weemetrics/api"
+	model "weemetrics/model"
 )
 
 // View handlers
@@ -18,10 +20,10 @@ func IndexHandler(c Controller) {
 		return
 	}
 
-	account, err := getAccount(c.AppContext, c.UserId)
+	account, err := api.Account.Get(c.AppContext, c.UserId)
 	if err != nil {
 		// Invalid key, delete
-		logoutUser(c.Session)
+		api.Account.LogoutUser(c.Session)
 		c.Session.AddFlash("Session expired.")
 		c.Session.Save(c.Request, c.ResponseWriter)
 
@@ -55,13 +57,13 @@ func AccountConnectHandler(c Controller) {
 		return
 	}
 
-	account := Account{
+	account := model.Account{
 		Email:       tokenInfo.Email,
 		Token:       *token,
 		TimeCreated: time.Now(),
 	}
 
-	key, err := newAccount(c.AppContext, account)
+	key, err := api.Account.Create(c.AppContext, account)
 	if err != nil {
 		c.Error(err)
 		return
@@ -69,7 +71,7 @@ func AccountConnectHandler(c Controller) {
 
 	log.Println("Saving user into session: ", key.IntID())
 
-	loginUser(c.Session, key.IntID())
+	api.Account.LoginUser(c.Session, key.IntID())
 	c.SessionSave()
 
 	http.Redirect(c.ResponseWriter, c.Request, "/", http.StatusSeeOther)
@@ -80,7 +82,7 @@ func AccountLoginHandler(c Controller) {
 }
 
 func AccountLogoutHandler(c Controller) {
-	logoutUser(c.Session)
+	api.Account.LogoutUser(c.Session)
 	c.Session.AddFlash("Goodbye.")
 	c.SessionSave()
 
@@ -93,7 +95,7 @@ func SettingsHandler(c Controller) {
 		return
 	}
 
-	account, err := getAccount(c.AppContext, c.UserId)
+	account, err := api.Account.Get(c.AppContext, c.UserId)
 	if err != nil {
 		c.Error(err)
 		return
@@ -108,13 +110,14 @@ func SettingsHandler(c Controller) {
 		return
 	}
 
-	result, err := analyticsApi.Management.Accounts.List().Do()
+	result, err := analyticsApi.Management.Profiles.List("~all", "~all").Do()
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	fmt.Fprintf(c.ResponseWriter, "Hello, %+v", result)
+	c.TemplateContext["AnalyticsProfiles"] = result.Items
+	c.Render("templates/base.html", "templates/settings.html")
 }
 
 func ReportHandler(c Controller) {
@@ -123,7 +126,7 @@ func ReportHandler(c Controller) {
 		return
 	}
 
-	account, err := getAccount(c.AppContext, c.UserId)
+	account, err := api.Account.Get(c.AppContext, c.UserId)
 	if err != nil {
 		c.Error(err)
 		return
@@ -142,4 +145,6 @@ func init() {
 	AddController("/account/logout", AccountLogoutHandler)
 	AddController("/settings", SettingsHandler)
 	AddController("/report", ReportHandler)
+
+	// TODO: Implement "/api" handler
 }
