@@ -11,10 +11,15 @@ type Account struct {
 	TimeCreated time.Time
 }
 
-type Subscription struct {
+type AnalyticsProfile struct {
 	AccountId     string
 	WebPropertyId string
 	ProfileId     string
-	Emails        []string
-	NextUpdate    time.Time
+	WebsiteUrl    string
+}
+
+type Subscription struct {
+	Emails     []string
+	NextUpdate time.Time
+	Profile    AnalyticsProfile
 }

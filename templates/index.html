@@ -1,12 +1,15 @@
 {{define "content"}}
   <h1>WeeMetrics</h1>
-  {{if .Account}}
+
   <p>
       Welcome, {{.Account.Email}}.
   </p>
-  {{else}}
+
   <p>
-      <a href="/account/login">Sign in</a>?
-  </p>
-  {{end}}
+      {{if .NextUpdate}}
+          Your next update is coming {{.NextUpdate}}.
+      {{else}}
+          Your next update is queued up. Coming super-soon.
+      {{end}}
+  <p>
 {{end}}
