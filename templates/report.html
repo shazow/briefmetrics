@@ -1,0 +1,11 @@
+{{define "content"}}
+    <h1>{{.AnalyticsApi.DateStart}} &mdash; {{.AnalyticsApi.DateEnd}}</h1>
+
+    <h2>Top referrals</h2>
+
+    <ul>
+        {{range $row := .DataReferrals}}
+        <li>{{index $row 1}} &mdash; {{index $row 0}}</li>
+        {{end}}
+    </ul>
+{{end}}

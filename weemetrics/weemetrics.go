@@ -1,12 +1,12 @@
 package weemetrics
 
 import (
+	"appengine/datastore"
 	"code.google.com/p/google-api-go-client/analytics/v3"
 	"code.google.com/p/google-api-go-client/oauth2/v2"
 	"github.com/gorilla/schema"
+	"github.com/shazow/memoizer"
 	"github.com/xeonx/timeago"
-	"appengine/datastore"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -126,7 +126,7 @@ func SettingsHandler(c Controller) {
 	analyticsProfile := new(model.AnalyticsProfile)
 	err = FormDecoder.Decode(analyticsProfile, c.Request.Form)
 
-	if err == nil  && analyticsProfile.ProfileId != "" {
+	if err == nil && analyticsProfile.ProfileId != "" {
 		sub := model.Subscription{
 			Emails:  []string{account.Email},
 			Profile: *analyticsProfile,
@@ -185,33 +185,40 @@ func ReportHandler(c Controller) {
 
 	c.OAuthTransport.Token = &account.Token
 	client := c.OAuthTransport.Client()
-	analyticsApi, err := analytics.New(client)
+	analyticsClient, err := analytics.New(client)
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	// GET /analytics/v3/data/ga?ids=ga:640819
-	// &start-date=2012-01-01&end-date=2013-01-01&metrics=ga:visits
-	// &dimensions=ga:fullReferrer,ga:source,ga:medium
-	// &sort=-ga:visits&max-results=30 HTTP/1.1`
-	query := analyticsApi.Data.Ga.Get(
-		"ga:" + subscription.Profile.ProfileId,
-		time.Now().Add(-24*7*time.Hour).Format("2006-01-02"), time.Now().Format("2006-01-02"),
-		"ga:visits").
-		Dimensions("ga:fullReferrer,ga:source,ga:medium").
-		Sort("-ga:visits").
-		MaxResults(10)
-	
-	results, err := query.Do()
+	const dateFormat = "2006-01-02"
+	analyticsApi := api.AnalyticsApi{
+		AppContext: c.AppContext,
+		Client:     analyticsClient,
+		ProfileId:  subscription.Profile.ProfileId,
+		DateStart:  time.Now().Add(-24 * 7 * time.Hour).Format(dateFormat),
+		DateEnd:    time.Now().Format(dateFormat),
+	}
+
+	cacher := api.AppengineCache{
+		Context:           c.AppContext,
+		DefaultExpiration: time.Hour,
+		KeyPrefix:         analyticsApi.ProfileId + ":" + analyticsApi.DateStart,
+	}
+	memoize := memoizer.Memoize{
+		Cache: &cacher,
+	}
+	referralData, err := memoize.Call(analyticsApi.Referrals)
 
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
+	c.TemplateContext["AnalyticsApi"] = analyticsApi
+	c.TemplateContext["DataReferrals"] = referralData.(*analytics.GaData).Rows
 
-	fmt.Fprintf(c.ResponseWriter, "%+v", results)
+	c.Render("templates/base.html", "templates/report.html")
 }
 
 func init() {
