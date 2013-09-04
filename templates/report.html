@@ -1,10 +1,22 @@
 {{define "content"}}
     <h1>{{.AnalyticsApi.DateStart}} &mdash; {{.AnalyticsApi.DateEnd}}</h1>
 
-    <h2>Top referrals</h2>
+    <h2>
+        <a href="{{ permalink "content-pages" .Profile .AnalyticsApi }}">Pages</a>
+    </h2>
 
     <ul>
-        {{range $row := .DataReferrals}}
+        {{range $row := .DataTopPages}}
+        <li>{{index $row 1}} &mdash; {{index $row 0}}</li>
+        {{end}}
+    </ul>
+
+    <h2>
+        <a href="{{ permalink "trafficsources-all-traffic" .Profile .AnalyticsApi }}">Referrers</a>
+    </h2>
+
+    <ul>
+        {{range $row := .DataReferrers}}
         <li>{{index $row 1}} &mdash; {{index $row 0}}</li>
         {{end}}
     </ul>

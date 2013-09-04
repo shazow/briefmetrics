@@ -1,17 +1,10 @@
 package api
 
 import (
-	"runtime"
-	"reflect"
-	"time"
-	"fmt"
 	"appengine"
 	"appengine/memcache"
 	"code.google.com/p/google-api-go-client/analytics/v3"
-	"github.com/shazow/memoizer"
 )
-
-const cacheExpiration = time.Hour
 
 type AnalyticsApi struct {
 	*AnalyticsApi
@@ -22,47 +15,51 @@ type AnalyticsApi struct {
 	DateEnd    string
 }
 
-type AppengineCache struct {
-	*memoizer.BaseCache
-	Context appengine.Context
-	DefaultExpiration time.Duration
-	KeyPrefix string
-}
+func (a *AnalyticsApi) Cache(keySuffix string, f func() (*analytics.GaData, error), result *analytics.GaData) error {
+	key := a.ProfileId + ":" + a.DateStart + ":" + keySuffix
 
-func (c *AppengineCache) CreateKey(f interface{}, callArgs []interface{}) (key string) {
-	fName := runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name()
-	// TODO: Hash function name + args?
-	key = c.KeyPrefix + ":" + fName + ":" + fmt.Sprint(callArgs)
-	c.Context.Infof("Created key:", key)
-	return key
-}
+	_, err := memcache.Gob.Get(a.AppContext, key, result)
+	if err == nil {
+		return nil
+	}
 
-func (c *AppengineCache) Get(key string, object *interface{}) error {
-	r := reflect.ValueOf(object).Elem()
-	_, err := memcache.Gob.Get(c.Context, key, r)
+	r, err := f()
+	if err != nil {
+		return err
+	}
 
-	*object = r.Interface()
-	c.Context.Infof(".Get err:", err)
-	return err
-}
- 
-func (c *AppengineCache) Set(key string, object interface{}) error {
-	memcache.Gob.Set(c.Context, &memcache.Item{
-		Key: key,
-		Object: object,
-		Expiration: c.DefaultExpiration,
+	*result = *r
+	a.AppContext.Debugf("Saving cache to:", key)
+	err = memcache.Gob.Set(a.AppContext, &memcache.Item{
+		Key:        key,
+		Object:     result,
+		// Expiration: cacheExpiration,
 	})
+	if err != nil {
+		a.AppContext.Errorf("Failed to cache key [%s] because:", key, err)
+	}
 	return nil
 }
 
-func (a *AnalyticsApi) Referrals() (*analytics.GaData, error) {
-	a.AppContext.Infof("Fetching referrals from GA.")
+func (a *AnalyticsApi) Profiles() (r *analytics.Profiles, err error) {
+	return a.Client.Management.Profiles.List("~all", "~all").Do()
+}
+
+func (a *AnalyticsApi) Referrers() (r *analytics.GaData, err error) {
 	q := a.Client.Data.Ga.
 		Get("ga:"+a.ProfileId, a.DateStart, a.DateEnd, "ga:visits").
 		Dimensions("ga:fullReferrer").
 		Filters("ga:medium==referral").
 		Sort("-ga:visits").
 		MaxResults(10)
+	return q.Do()
+}
 
+func (a *AnalyticsApi) TopPages() (r *analytics.GaData, err error) {
+	q := a.Client.Data.Ga.
+		Get("ga:"+a.ProfileId, a.DateStart, a.DateEnd, "ga:pageviews").
+		Dimensions("ga:pagePath").
+		Sort("-ga:pageviews").
+		MaxResults(10)
 	return q.Do()
 }

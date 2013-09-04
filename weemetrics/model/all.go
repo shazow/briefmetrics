@@ -12,10 +12,11 @@ type Account struct {
 }
 
 type AnalyticsProfile struct {
-	AccountId     string
-	WebPropertyId string
-	ProfileId     string
-	WebsiteUrl    string
+	AccountId             string
+	WebPropertyId         string
+	ProfileId             string
+	InternalWebPropertyId string
+	WebsiteUrl            string
 }
 
 type Subscription struct {

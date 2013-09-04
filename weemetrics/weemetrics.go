@@ -2,10 +2,10 @@ package weemetrics
 
 import (
 	"appengine/datastore"
+	"code.google.com/p/goauth2/oauth"
 	"code.google.com/p/google-api-go-client/analytics/v3"
 	"code.google.com/p/google-api-go-client/oauth2/v2"
 	"github.com/gorilla/schema"
-	"github.com/shazow/memoizer"
 	"github.com/xeonx/timeago"
 	"log"
 	"net/http"
@@ -98,7 +98,20 @@ func AccountConnectHandler(c Controller) {
 }
 
 func AccountLoginHandler(c Controller) {
-	http.Redirect(c.ResponseWriter, c.Request, OAuthConfig.AuthCodeURL(""), http.StatusSeeOther)
+	if c.UserId == 0 {
+		http.Redirect(c.ResponseWriter, c.Request, OAuthConfig.AuthCodeURL(""), http.StatusSeeOther)
+		return
+	}
+
+	account, _, err := api.Account.Get(c.AppContext, c.UserId)
+	if err != nil || account.Token.RefreshToken != "" {
+		http.Redirect(c.ResponseWriter, c.Request, OAuthConfig.AuthCodeURL(""), http.StatusSeeOther)
+		return
+	}
+
+	forceLoginConfig := oauth.Config(OAuthConfig)
+	forceLoginConfig.ApprovalPrompt = "force"
+	http.Redirect(c.ResponseWriter, c.Request, forceLoginConfig.AuthCodeURL(""), http.StatusSeeOther)
 }
 
 func AccountLogoutHandler(c Controller) {
@@ -148,14 +161,20 @@ func SettingsHandler(c Controller) {
 
 	c.OAuthTransport.Token = &account.Token
 	client := c.OAuthTransport.Client()
-
-	analyticsApi, err := analytics.New(client)
+	analyticsClient, err := analytics.New(client)
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	result, err := analyticsApi.Management.Profiles.List("~all", "~all").Do()
+	analyticsApi := api.AnalyticsApi{
+		AppContext: c.AppContext,
+		Client:     analyticsClient,
+	}
+
+	result := new(analytics.Profiles)
+	//err = analyticsApi.Cache("profiles:" + accountKey.StringID(), analyticsApi.Profiles, &result)
+	result, err = analyticsApi.Profiles()
 	if err != nil {
 		c.Error(err)
 		return
@@ -200,23 +219,22 @@ func ReportHandler(c Controller) {
 		DateEnd:    time.Now().Format(dateFormat),
 	}
 
-	cacher := api.AppengineCache{
-		Context:           c.AppContext,
-		DefaultExpiration: time.Hour,
-		KeyPrefix:         analyticsApi.ProfileId + ":" + analyticsApi.DateStart,
-	}
-	memoize := memoizer.Memoize{
-		Cache: &cacher,
-	}
-	referralData, err := memoize.Call(analyticsApi.Referrals)
-
-	if err != nil {
+	referrerData := new(analytics.GaData)
+	if err = analyticsApi.Cache("referrers", analyticsApi.Referrers, referrerData); err != nil {
 		c.Error(err)
 		return
 	}
 
+	pageData := new(analytics.GaData)
+	if err = analyticsApi.Cache("topPages", analyticsApi.TopPages, pageData); err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.TemplateContext["Profile"] = subscription.Profile
 	c.TemplateContext["AnalyticsApi"] = analyticsApi
-	c.TemplateContext["DataReferrals"] = referralData.(*analytics.GaData).Rows
+	c.TemplateContext["DataReferrers"] = referrerData.Rows
+	c.TemplateContext["DataTopPages"] = pageData.Rows
 
 	c.Render("templates/base.html", "templates/report.html")
 }

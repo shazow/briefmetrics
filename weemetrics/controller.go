@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"strings"
 	api "weemetrics/api"
+	model "weemetrics/model"
 )
 
 const (
@@ -44,6 +45,25 @@ type Controller struct {
 	UserId          int64
 }
 
+func TemplateReplace(s string, replace string, with string) string {
+	r := strings.Replace(s, replace, with, -1)
+	return r
+}
+
+func TemplatePermalink(report string, profile model.AnalyticsProfile, analyticsApi api.AnalyticsApi) string {
+	r := "https://www.google.com/analytics/web/#report/" + report
+	r += "/a" + profile.AccountId + "w" + profile.InternalWebPropertyId + "p" + profile.ProfileId + "/?"
+
+	if analyticsApi.DateStart != "" {
+		r += "_u.date00=" + strings.Replace(analyticsApi.DateStart, "-", "", -1) + "&"
+	}
+	if analyticsApi.DateEnd != "" {
+		r += "_u.date01=" + strings.Replace(analyticsApi.DateEnd, "-", "", -1) + "&"
+	}
+
+	return r
+}
+
 func (c *Controller) SessionSave() {
 	c.Session.Save(c.Request, c.ResponseWriter)
 }
@@ -52,10 +72,24 @@ func (c *Controller) Render(filenames ...string) {
 	c.TemplateContext["Messages"] = c.Session.Flashes()
 	c.SessionSave()
 
+	templateFuncs := template.FuncMap{
+		"replace": TemplateReplace,
+		"permalink": TemplatePermalink,
+	}
+
 	// TODO: Cache templates?
-	err := template.Must(template.ParseFiles(filenames...)).Execute(c.ResponseWriter, c.TemplateContext)
+	t := template.New("content")
+	t = t.Funcs(templateFuncs)
+	t, err := t.ParseFiles(filenames...)
 	if err != nil {
 		c.Error(err)
+		return
+	}
+
+	err  = t.Execute(c.ResponseWriter, c.TemplateContext)
+	if err != nil {
+		c.Error(err)
+		return
 	}
 }
 
