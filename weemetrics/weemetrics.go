@@ -211,14 +211,16 @@ func ReportHandler(c Controller) {
 	}
 
 	const dateFormat = "2006-01-02"
+	startDate := time.Now().Add(-24 * 3 * time.Hour) // TODO: Previous Sunday
 	analyticsApi := api.AnalyticsApi{
 		AppContext: c.AppContext,
 		Client:     analyticsClient,
 		ProfileId:  subscription.Profile.ProfileId,
-		DateStart:  time.Now().Add(-24 * 7 * time.Hour).Format(dateFormat),
-		DateEnd:    time.Now().Format(dateFormat),
+		DateStart:  startDate.Add(-24 * 6 * time.Hour).Format(dateFormat),
+		DateEnd:    startDate.Format(dateFormat),
 	}
 
+	// TODO: Make async
 	referrerData := new(analytics.GaData)
 	if err = analyticsApi.Cache("referrers", analyticsApi.Referrers, referrerData); err != nil {
 		c.Error(err)
@@ -231,10 +233,24 @@ func ReportHandler(c Controller) {
 		return
 	}
 
+	socialData := new(analytics.GaData)
+	if err = analyticsApi.Cache("socialReferrers", analyticsApi.SocialReferrers, socialData); err != nil {
+		c.Error(err)
+		return
+	}
+
+	summaryData := new(analytics.GaData)
+	if err = analyticsApi.Cache("summary", analyticsApi.Summary, summaryData); err != nil {
+		c.Error(err)
+		return
+	}
+
 	c.TemplateContext["Profile"] = subscription.Profile
 	c.TemplateContext["AnalyticsApi"] = analyticsApi
 	c.TemplateContext["DataReferrers"] = referrerData.Rows
+	c.TemplateContext["DataSocial"] = socialData.Rows
 	c.TemplateContext["DataTopPages"] = pageData.Rows
+	c.TemplateContext["DataSummary"] = summaryData.Rows
 
 	c.Render("templates/base.html", "templates/report.html")
 }

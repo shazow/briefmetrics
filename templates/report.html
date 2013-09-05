@@ -1,8 +1,14 @@
 {{define "content"}}
     <h1>{{.AnalyticsApi.DateStart}} &mdash; {{.AnalyticsApi.DateEnd}}</h1>
 
+    <ul>
+        {{range $row := .DataSummary}}
+        <li>{{$row}}</li>
+        {{end}}
+    </ul>
+
     <h2>
-        <a href="{{ permalink "content-pages" .Profile .AnalyticsApi }}">Pages</a>
+        <a href="{{ permalink `content-pages` .Profile .AnalyticsApi }}">Pages</a>
     </h2>
 
     <ul>
@@ -12,11 +18,21 @@
     </ul>
 
     <h2>
-        <a href="{{ permalink "trafficsources-all-traffic" .Profile .AnalyticsApi }}">Referrers</a>
+        <a href="{{ permalink `trafficsources-referrals` .Profile .AnalyticsApi }}">Referrers</a>
     </h2>
 
     <ul>
         {{range $row := .DataReferrers}}
+        <li>{{index $row 1}} &mdash; {{index $row 0}}</li>
+        {{end}}
+    </ul>
+
+    <h2>
+        <a href="{{ permalink `social-sources` .Profile .AnalyticsApi }}">Social</a>
+    </h2>
+
+    <ul>
+        {{range $row := .DataSocial}}
         <li>{{index $row 1}} &mdash; {{index $row 0}}</li>
         {{end}}
     </ul>

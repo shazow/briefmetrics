@@ -31,8 +31,8 @@ func (a *AnalyticsApi) Cache(keySuffix string, f func() (*analytics.GaData, erro
 	*result = *r
 	a.AppContext.Debugf("Saving cache to:", key)
 	err = memcache.Gob.Set(a.AppContext, &memcache.Item{
-		Key:        key,
-		Object:     result,
+		Key:    key,
+		Object: result,
 		// Expiration: cacheExpiration,
 	})
 	if err != nil {
@@ -43,6 +43,13 @@ func (a *AnalyticsApi) Cache(keySuffix string, f func() (*analytics.GaData, erro
 
 func (a *AnalyticsApi) Profiles() (r *analytics.Profiles, err error) {
 	return a.Client.Management.Profiles.List("~all", "~all").Do()
+}
+
+func (a *AnalyticsApi) Summary() (r *analytics.GaData, err error) {
+	q := a.Client.Data.Ga.
+		Get("ga:"+a.ProfileId, a.DateStart, a.DateEnd, "ga:visits,ga:uniquePageviews,ga:timeOnSite,ga:bounces").
+		Dimensions("ga:date")
+	return q.Do()
 }
 
 func (a *AnalyticsApi) Referrers() (r *analytics.GaData, err error) {
@@ -61,5 +68,14 @@ func (a *AnalyticsApi) TopPages() (r *analytics.GaData, err error) {
 		Dimensions("ga:pagePath").
 		Sort("-ga:pageviews").
 		MaxResults(10)
+	return q.Do()
+}
+
+func (a *AnalyticsApi) SocialReferrers() (r *analytics.GaData, err error) {
+	q := a.Client.Data.Ga.
+		Get("ga:"+a.ProfileId, a.DateStart, a.DateEnd, "ga:visits").
+		Dimensions("ga:socialNetwork").
+		Sort("-ga:visits").
+		MaxResults(5)
 	return q.Do()
 }
