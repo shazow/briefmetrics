@@ -15,6 +15,7 @@ import (
 	"strings"
 	"time"
 	"strconv"
+	"io"
 	api "weemetrics/api"
 	model "weemetrics/model"
 )
@@ -99,18 +100,22 @@ func (c *Controller) SessionSave() {
 	c.Session.Save(c.Request, c.ResponseWriter)
 }
 
-func (c *Controller) Render(filenames ...string) {
-	c.TemplateContext["Messages"] = c.Session.Flashes()
-	c.SessionSave()
-
+func (c *Controller) RenderTo(out io.Writer, filenames ...string) {
 	// TODO: Cache templates?
 	rootName := filepath.Base(filenames[0])
 	t := template.Must(template.New(rootName).Funcs(templateFuncs).ParseFiles(filenames...))
-	err := t.ExecuteTemplate(c.ResponseWriter, rootName, c.TemplateContext)
+	err := t.ExecuteTemplate(out, rootName, c.TemplateContext)
 	if err != nil {
 		c.Error(err)
 		return
 	}
+}
+
+func (c *Controller) Render(filenames ...string) {
+	c.TemplateContext["Messages"] = c.Session.Flashes()
+	c.SessionSave()
+
+	c.RenderTo(c.ResponseWriter, filenames...)
 }
 
 func (c *Controller) Error(err error) {

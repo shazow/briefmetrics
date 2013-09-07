@@ -2,6 +2,7 @@ package weemetrics
 
 import (
 	"appengine/datastore"
+	"appengine/mail"
 	"code.google.com/p/goauth2/oauth"
 	"code.google.com/p/google-api-go-client/analytics/v3"
 	"code.google.com/p/google-api-go-client/oauth2/v2"
@@ -10,6 +11,7 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"bytes"
 	api "weemetrics/api"
 	model "weemetrics/model"
 )
@@ -184,6 +186,55 @@ func SettingsHandler(c Controller) {
 	c.Render("templates/base.html", "templates/settings.html")
 }
 
+func generateReport(c Controller, account *model.Account, subscription *model.Subscription) error {
+	c.OAuthTransport.Token = &account.Token
+	client := c.OAuthTransport.Client()
+	analyticsClient, err := analytics.New(client)
+	if err != nil {
+		return err
+	}
+
+	const dateFormat = "2006-01-02"
+	startDate := time.Now().Add(-24 * 3 * time.Hour) // TODO: Previous Sunday
+	analyticsApi := api.AnalyticsApi{
+		AppContext: c.AppContext,
+		Client:     analyticsClient,
+		ProfileId:  subscription.Profile.ProfileId,
+		DateStart:  startDate.Add(-24 * 6 * time.Hour).Format(dateFormat),
+		DateEnd:    startDate.Format(dateFormat),
+	}
+
+	// TODO: Make async
+	referrerData := new(analytics.GaData)
+	if err = analyticsApi.Cache("referrers", analyticsApi.Referrers, referrerData); err != nil {
+		return err
+	}
+
+	pageData := new(analytics.GaData)
+	if err = analyticsApi.Cache("topPages", analyticsApi.TopPages, pageData); err != nil {
+		return err
+	}
+
+	socialData := new(analytics.GaData)
+	if err = analyticsApi.Cache("socialReferrers", analyticsApi.SocialReferrers, socialData); err != nil {
+		return err
+	}
+
+	summaryData := new(analytics.GaData)
+	if err = analyticsApi.Cache("summary", analyticsApi.Summary, summaryData); err != nil {
+		return err
+	}
+
+	c.TemplateContext["Profile"] = subscription.Profile
+	c.TemplateContext["AnalyticsApi"] = analyticsApi
+	c.TemplateContext["referrerData"] = referrerData
+	c.TemplateContext["socialData"] = socialData
+	c.TemplateContext["pageData"] = pageData
+	c.TemplateContext["summaryData"] = summaryData
+	
+	return nil
+}
+
 func ReportHandler(c Controller) {
 	if c.UserId == 0 {
 		http.Redirect(c.ResponseWriter, c.Request, "/account/login", http.StatusForbidden)
@@ -202,58 +253,30 @@ func ReportHandler(c Controller) {
 		return
 	}
 
-	c.OAuthTransport.Token = &account.Token
-	client := c.OAuthTransport.Client()
-	analyticsClient, err := analytics.New(client)
-	if err != nil {
-		c.Error(err)
-		return
+	generateReport(c, account, subscription)
+
+	if c.Request.FormValue("send") != "" {
+		var message bytes.Buffer 
+
+		c.RenderTo(&message, "templates/base_email.html", "templates/report.html")
+
+        msg := &mail.Message{
+                Sender:  "Andrey Petrov <andrey.petrov@shazow.net>",
+                To:      subscription.Emails,
+                Subject: "Analytics report",
+                Body:    message.String(),
+        }
+        if err := mail.Send(c.AppContext, msg); err != nil {
+			c.Error(err)
+			return
+        }
+
+		c.AppContext.Debugf("Sent report to: ", subscription.Emails)
 	}
 
-	const dateFormat = "2006-01-02"
-	startDate := time.Now().Add(-24 * 3 * time.Hour) // TODO: Previous Sunday
-	analyticsApi := api.AnalyticsApi{
-		AppContext: c.AppContext,
-		Client:     analyticsClient,
-		ProfileId:  subscription.Profile.ProfileId,
-		DateStart:  startDate.Add(-24 * 6 * time.Hour).Format(dateFormat),
-		DateEnd:    startDate.Format(dateFormat),
-	}
-
-	// TODO: Make async
-	referrerData := new(analytics.GaData)
-	if err = analyticsApi.Cache("referrers", analyticsApi.Referrers, referrerData); err != nil {
-		c.Error(err)
-		return
-	}
-
-	pageData := new(analytics.GaData)
-	if err = analyticsApi.Cache("topPages", analyticsApi.TopPages, pageData); err != nil {
-		c.Error(err)
-		return
-	}
-
-	socialData := new(analytics.GaData)
-	if err = analyticsApi.Cache("socialReferrers", analyticsApi.SocialReferrers, socialData); err != nil {
-		c.Error(err)
-		return
-	}
-
-	summaryData := new(analytics.GaData)
-	if err = analyticsApi.Cache("summary", analyticsApi.Summary, summaryData); err != nil {
-		c.Error(err)
-		return
-	}
-
-	c.TemplateContext["Profile"] = subscription.Profile
-	c.TemplateContext["AnalyticsApi"] = analyticsApi
-	c.TemplateContext["referrerData"] = referrerData
-	c.TemplateContext["socialData"] = socialData
-	c.TemplateContext["pageData"] = pageData
-	c.TemplateContext["summaryData"] = summaryData
-
-	c.Render("templates/base_email.html", "templates/report.html")
+	c.RenderTo(c.ResponseWriter, "templates/base_email.html", "templates/report.html")
 }
+
 
 func init() {
 	OAuthConfig.ClientId = "909659267876-k6qlc3i22rpsfj9t7r1998tvt9l7ghms.apps.googleusercontent.com" // XXX: Fetch from file
