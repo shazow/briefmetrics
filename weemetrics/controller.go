@@ -10,6 +10,7 @@ import (
 	"html/template"
 	"net/http"
 	"strings"
+	"path/filepath"
 	api "weemetrics/api"
 	model "weemetrics/model"
 )
@@ -64,6 +65,11 @@ func TemplatePermalink(report string, profile model.AnalyticsProfile, analyticsA
 	return r
 }
 
+var templateFuncs = template.FuncMap{
+	"replace":   TemplateReplace,
+	"permalink": TemplatePermalink,
+}
+
 func (c *Controller) SessionSave() {
 	c.Session.Save(c.Request, c.ResponseWriter)
 }
@@ -72,21 +78,10 @@ func (c *Controller) Render(filenames ...string) {
 	c.TemplateContext["Messages"] = c.Session.Flashes()
 	c.SessionSave()
 
-	templateFuncs := template.FuncMap{
-		"replace": TemplateReplace,
-		"permalink": TemplatePermalink,
-	}
-
 	// TODO: Cache templates?
-	t := template.New("content")
-	t = t.Funcs(templateFuncs)
-	t, err := t.ParseFiles(filenames...)
-	if err != nil {
-		c.Error(err)
-		return
-	}
-
-	err  = t.Execute(c.ResponseWriter, c.TemplateContext)
+	rootName := filepath.Base(filenames[0])
+	t := template.Must(template.New(rootName).Funcs(templateFuncs).ParseFiles(filenames...))
+	err := t.ExecuteTemplate(c.ResponseWriter, rootName, c.TemplateContext)
 	if err != nil {
 		c.Error(err)
 		return
