@@ -47,8 +47,8 @@ func (a *AnalyticsApi) Profiles() (r *analytics.Profiles, err error) {
 
 func (a *AnalyticsApi) Summary() (r *analytics.GaData, err error) {
 	q := a.Client.Data.Ga.
-		Get("ga:"+a.ProfileId, a.DateStart, a.DateEnd, "ga:visits,ga:uniquePageviews,ga:timeOnSite,ga:bounces").
-		Dimensions("ga:date")
+		Get("ga:"+a.ProfileId, a.DateStart, a.DateEnd, "ga:pageviews,ga:uniquePageviews,ga:timeOnSite")
+		//Dimensions("ga:date")
 	return q.Do()
 }
 

@@ -1,39 +1,45 @@
 {{define "content"}}
     <h1>{{.AnalyticsApi.DateStart}} &mdash; {{.AnalyticsApi.DateEnd}}</h1>
 
-    <ul>
-        {{range $row := .DataSummary}}
-        <li>{{$row}}</li>
-        {{end}}
-    </ul>
+    {{with $row := index .summaryData.Rows 0}}
+    {{index $row 1 | comma}} people spent a whopping total of {{index $row 2 | timeago}} on your sweet site.
+    {{end}}
+
+    <span class="todo">Compare to last month. Show chart.</span>
 
     <h2>
         <a href="{{ permalink `content-pages` .Profile .AnalyticsApi }}">Pages</a>
     </h2>
 
     <ul>
-        {{range $row := .DataTopPages}}
+        {{range $row := .pageData.Rows}}
         <li>{{index $row 1}} &mdash; {{index $row 0}}</li>
         {{end}}
     </ul>
+
+    <span class="todo">Linkify.</span>
 
     <h2>
         <a href="{{ permalink `trafficsources-referrals` .Profile .AnalyticsApi }}">Referrers</a>
     </h2>
 
     <ul>
-        {{range $row := .DataReferrers}}
+        {{range $row := .referrerData.Rows}}
         <li>{{index $row 1}} &mdash; {{index $row 0}}</li>
         {{end}}
     </ul>
+
+    <span class="todo">Remove anything with {facebook,google,twitter}. Add a Search section.</span>
 
     <h2>
         <a href="{{ permalink `social-sources` .Profile .AnalyticsApi }}">Social</a>
     </h2>
 
     <ul>
-        {{range $row := .DataSocial}}
+        {{range $row := .socialData.Rows}}
         <li>{{index $row 1}} &mdash; {{index $row 0}}</li>
         {{end}}
     </ul>
+
+    <span class="todo">Lots of styling.</span>
 {{end}}

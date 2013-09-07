@@ -247,12 +247,12 @@ func ReportHandler(c Controller) {
 
 	c.TemplateContext["Profile"] = subscription.Profile
 	c.TemplateContext["AnalyticsApi"] = analyticsApi
-	c.TemplateContext["DataReferrers"] = referrerData.Rows
-	c.TemplateContext["DataSocial"] = socialData.Rows
-	c.TemplateContext["DataTopPages"] = pageData.Rows
-	c.TemplateContext["DataSummary"] = summaryData.Rows
+	c.TemplateContext["referrerData"] = referrerData
+	c.TemplateContext["socialData"] = socialData
+	c.TemplateContext["pageData"] = pageData
+	c.TemplateContext["summaryData"] = summaryData
 
-	c.Render("templates/base.html", "templates/report.html")
+	c.Render("templates/base_email.html", "templates/report.html")
 }
 
 func init() {

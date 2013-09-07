@@ -7,10 +7,14 @@ import (
 	"code.google.com/p/google-api-go-client/analytics/v3"
 	"code.google.com/p/google-api-go-client/oauth2/v2"
 	"github.com/gorilla/sessions"
+	"github.com/xeonx/timeago"
+	"github.com/dustin/go-humanize"
 	"html/template"
 	"net/http"
-	"strings"
 	"path/filepath"
+	"strings"
+	"time"
+	"strconv"
 	api "weemetrics/api"
 	model "weemetrics/model"
 )
@@ -65,9 +69,30 @@ func TemplatePermalink(report string, profile model.AnalyticsProfile, analyticsA
 	return r
 }
 
+var timeagoNoPrefix = timeago.Config(timeago.English)
+
+func TemplateTimeago(seconds string) string {
+	remainder, _ := time.ParseDuration(seconds + "s")
+	day := time.Hour * 24
+	if remainder > day {
+		hours := remainder % day
+		remainder -= hours
+		days := remainder / day
+		return strconv.FormatInt(days.Nanoseconds(), 10) + " days and " + hours.String()
+	}
+	return remainder.String()
+}
+
+func TemplateComma(number string) string {
+	i, _ := strconv.ParseInt(number, 10, 64)
+	return humanize.Comma(i)
+}
+
 var templateFuncs = template.FuncMap{
 	"replace":   TemplateReplace,
 	"permalink": TemplatePermalink,
+	"timeago":   TemplateTimeago,
+	"comma":   TemplateComma,
 }
 
 func (c *Controller) SessionSave() {
@@ -121,4 +146,8 @@ func AddController(pattern string, f func(Controller)) {
 
 		f(controller)
 	})
+}
+
+func init() {
+	timeagoNoPrefix.PastSuffix, timeagoNoPrefix.FuturePrefix = "", ""
 }
