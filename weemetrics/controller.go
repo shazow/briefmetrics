@@ -4,51 +4,47 @@ import (
 	"appengine"
 	"appengine/urlfetch"
 	"code.google.com/p/goauth2/oauth"
-	"code.google.com/p/google-api-go-client/analytics/v3"
-	"code.google.com/p/google-api-go-client/oauth2/v2"
-	"github.com/gorilla/sessions"
-	"github.com/xeonx/timeago"
+	"github.com/BurntSushi/toml"
 	"github.com/dustin/go-humanize"
+	"github.com/gorilla/sessions"
+	"github.com/mattbaird/gochimp"
+	"github.com/xeonx/timeago"
 	"html/template"
+	"io"
 	"net/http"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
-	"strconv"
-	"io"
 	api "weemetrics/api"
 	model "weemetrics/model"
 )
 
-const (
-	sessionSecret = "FaZFic5qKlzhXungl1Yw7ScbRtFl2ZW2" // XXX: Make secret
-	sessionName   = "weemetrics"
-)
+type Config struct {
+	SessionSecret string
+	SessionName   string
 
-var sessionStore = sessions.NewCookieStore([]byte(sessionSecret))
-
-var scopes = []string{
-	oauth2.UserinfoEmailScope,
-	analytics.AnalyticsReadonlyScope,
+	AnalyticsAPI oauth.Config
+	MandrillAPI  gochimp.MandrillAPI
 }
 
-var OAuthConfig = oauth.Config{
-	RedirectURL: "http://localhost:8080/account/connect",
-	Scope:       strings.Join(scopes, " "),
-	AuthURL:     "https://accounts.google.com/o/oauth2/auth",
-	TokenURL:    "https://accounts.google.com/o/oauth2/token",
-	AccessType:  "offline",
-}
+var AppConfig Config
+
+var SessionStore *sessions.CookieStore
 
 type Controller struct {
 	Request         *http.Request
 	ResponseWriter  http.ResponseWriter
 	Session         *sessions.Session
-	AppContext      appengine.Context
 	TemplateContext map[string]interface{}
-	Transport       *urlfetch.Transport
-	OAuthTransport  *oauth.Transport
-	UserId          int64
+
+	// AppEngine-specific
+	AppContext     appengine.Context
+	Transport      *urlfetch.Transport
+	OAuthTransport *oauth.Transport
+
+	// App-specific
+	UserId int64
 }
 
 func TemplateReplace(s string, replace string, with string) string {
@@ -93,7 +89,7 @@ var templateFuncs = template.FuncMap{
 	"replace":   TemplateReplace,
 	"permalink": TemplatePermalink,
 	"timeago":   TemplateTimeago,
-	"comma":   TemplateComma,
+	"comma":     TemplateComma,
 }
 
 func (c *Controller) SessionSave() {
@@ -125,14 +121,14 @@ func (c *Controller) Error(err error) {
 func AddController(pattern string, f func(Controller)) {
 	// Wrap controller function with instantiated Controller object for the first parameter.
 	http.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
-		session, _ := sessionStore.Get(r, sessionName)
+		session, _ := SessionStore.Get(r, AppConfig.SessionName)
 		appContext := appengine.NewContext(r)
 
 		transport := &urlfetch.Transport{
 			Context: appContext,
 		}
 		oauthTransport := &oauth.Transport{
-			Config:    &OAuthConfig,
+			Config:    &AppConfig.AnalyticsAPI,
 			Transport: transport,
 		}
 
@@ -155,4 +151,14 @@ func AddController(pattern string, f func(Controller)) {
 
 func init() {
 	timeagoNoPrefix.PastSuffix, timeagoNoPrefix.FuturePrefix = "", ""
+
+	if _, err := toml.DecodeFile("config.toml", &AppConfig); err != nil {
+		panic(err)
+	}
+	
+	SessionStore = sessions.NewCookieStore([]byte(AppConfig.SessionSecret))
+
+	// Swap out MandrillAPI object with initialized one
+	m, _ := gochimp.NewMandrill(AppConfig.MandrillAPI.Key)
+	AppConfig.MandrillAPI = *m
 }

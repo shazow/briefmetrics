@@ -3,12 +3,14 @@ package api
 import (
 	"appengine"
 	"appengine/memcache"
+	"code.google.com/p/goauth2/oauth"
 	"code.google.com/p/google-api-go-client/analytics/v3"
 )
 
 type AnalyticsApi struct {
-	*AnalyticsApi
+	*Api
 	AppContext appengine.Context
+	OAuth      *oauth.Config
 	Client     *analytics.Service
 	ProfileId  string
 	DateStart  string
