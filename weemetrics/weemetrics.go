@@ -2,12 +2,12 @@ package weemetrics
 
 import (
 	"appengine/datastore"
-	"appengine/mail"
 	"bytes"
 	"code.google.com/p/goauth2/oauth"
 	"code.google.com/p/google-api-go-client/analytics/v3"
 	"code.google.com/p/google-api-go-client/oauth2/v2"
 	"github.com/gorilla/schema"
+	"github.com/mattbaird/gochimp"
 	"github.com/xeonx/timeago"
 	"net/http"
 	"time"
@@ -157,6 +157,11 @@ func SettingsHandler(c Controller) {
 	}
 
 	c.OAuthTransport.Token = &account.Token
+	c.OAuthTransport.Config.TokenCache = model.TokenCache{
+		Key:     accountKey,
+		Account: *account,
+		Context: c.AppContext,
+	}
 	client := c.OAuthTransport.Client()
 	analyticsClient, err := analytics.New(client)
 	if err != nil {
@@ -181,8 +186,13 @@ func SettingsHandler(c Controller) {
 	c.Render("templates/base.html", "templates/settings.html")
 }
 
-func generateReport(c Controller, account *model.Account, subscription *model.Subscription) error {
+func generateReport(c Controller, accountKey *datastore.Key, account *model.Account, subscription *model.Subscription) error {
 	c.OAuthTransport.Token = &account.Token
+	c.OAuthTransport.Config.TokenCache = model.TokenCache{
+		Key:     accountKey,
+		Account: *account,
+		Context: c.AppContext,
+	}
 	client := c.OAuthTransport.Client()
 	analyticsClient, err := analytics.New(client)
 	if err != nil {
@@ -248,21 +258,36 @@ func ReportHandler(c Controller) {
 		return
 	}
 
-	generateReport(c, account, subscription)
+	err = generateReport(c, accountKey, account, subscription)
+	if err != nil {
+		c.Error(err)
+		return
+	}
 
 	if c.Request.FormValue("send") != "" {
-		var message bytes.Buffer
+		var html bytes.Buffer
 
-		c.RenderTo(&message, "templates/base_email.html", "templates/report.html")
+		c.RenderTo(&html, "templates/base_email.html", "templates/report.html")
 
-		msg := &mail.Message{
-			Sender:   "Andrey Petrov <shazow@gmail.com>",
-			To:       subscription.Emails,
-			Subject:  "Analytics report",
-			Body:     "HTML must be enabled to view the report.",
-			HTMLBody: message.String(),
+		recipients := make([]gochimp.Recipient, len(subscription.Emails))
+		for i, email := range subscription.Emails {
+			recipients[i].Email = email
 		}
-		if err := mail.Send(c.AppContext, msg); err != nil {
+		msg := gochimp.Message{
+			FromName:    "Andrey Petrov",
+			FromEmail:   "andrey.petrov@shazow.net",
+			To:          recipients,
+			Subject:     "Analytics report",
+			Html:        html.String(),
+			TrackOpens:  true,
+			TrackClicks: true,
+			AutoText:    true,
+			InlineCss:   true,
+		}
+
+		mandrill := gochimp.MandrillAPI(AppConfig.MandrillAPI)
+		mandrill.Transport = c.Transport
+		if _, err := mandrill.MessageSend(msg, true); err != nil {
 			c.Error(err)
 			return
 		}

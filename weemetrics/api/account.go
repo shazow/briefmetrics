@@ -9,6 +9,7 @@ import (
 
 type AccountApi struct{ *AccountApi }
 
+// TODO: Move context in here?
 var Account = AccountApi{}
 
 func (a *AccountApi) Create(context appengine.Context, account model.Account) (*datastore.Key, error) {
@@ -35,7 +36,9 @@ func (a *AccountApi) Create(context appengine.Context, account model.Account) (*
 func (a *AccountApi) Get(context appengine.Context, id int64) (*model.Account, *datastore.Key, error) {
 	key := datastore.NewKey(context, "Account", "", id, nil)
 	account := new(model.Account)
-	return account, key, datastore.Get(context, key, account)
+	err := datastore.Get(context, key, account)
+
+	return account, key, err
 }
 
 func (a *AccountApi) GetUser(s *sessions.Session) int64 {

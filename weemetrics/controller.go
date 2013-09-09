@@ -127,8 +127,9 @@ func AddController(pattern string, f func(Controller)) {
 		transport := &urlfetch.Transport{
 			Context: appContext,
 		}
+		oauthConfig := oauth.Config(AppConfig.AnalyticsAPI)
 		oauthTransport := &oauth.Transport{
-			Config:    &AppConfig.AnalyticsAPI,
+			Config:    &oauthConfig,
 			Transport: transport,
 		}
 
@@ -149,11 +150,20 @@ func AddController(pattern string, f func(Controller)) {
 	})
 }
 
+var ConfigPaths = []string{".dev/config.toml", "config.toml"}
+
 func init() {
 	timeagoNoPrefix.PastSuffix, timeagoNoPrefix.FuturePrefix = "", ""
 
-	if _, err := toml.DecodeFile("config.toml", &AppConfig); err != nil {
-		panic(err)
+	var lastError error
+	for _, path := range ConfigPaths {
+		if _, lastError = toml.DecodeFile(path, &AppConfig); lastError == nil {
+			break
+		}
+	}
+
+	if lastError != nil {
+		panic("Failed to load config.")
 	}
 	
 	SessionStore = sessions.NewCookieStore([]byte(AppConfig.SessionSecret))
