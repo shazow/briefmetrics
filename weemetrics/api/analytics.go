@@ -17,30 +17,44 @@ type AnalyticsApi struct {
 	DateEnd    string
 }
 
-func (a *AnalyticsApi) Cache(keySuffix string, f func() (*analytics.GaData, error), result *analytics.GaData) error {
-	key := a.ProfileId + ":" + a.DateStart + ":" + keySuffix
+type AnalyticsResult struct {
+	Label string
+	Error error
+	GaData analytics.GaData
+}
 
-	_, err := memcache.Gob.Get(a.AppContext, key, result)
+func (a *AnalyticsApi) Cache(label string, f func() (*analytics.GaData, error), result chan AnalyticsResult) {
+	key := a.ProfileId + ":" + a.DateStart + ":" + label
+
+	r := AnalyticsResult{Label: label}
+	_, err := memcache.Gob.Get(a.AppContext, key, &r.GaData)
 	if err == nil {
-		return nil
+		result <- r
+		return
+	} else if err != memcache.ErrCacheMiss {
+		a.AppContext.Errorf("Failed to retrieve cache key [%s] because:", key, err)
 	}
 
-	r, err := f()
+	data, err := f()
+	r.GaData = *data
 	if err != nil {
-		return err
+		r.Error = err
+		result <- r
+		return
 	}
 
-	*result = *r
 	a.AppContext.Debugf("Saving cache to:", key)
 	err = memcache.Gob.Set(a.AppContext, &memcache.Item{
 		Key:    key,
-		Object: result,
+		Object: r.GaData,
 		// Expiration: cacheExpiration,
 	})
 	if err != nil {
 		a.AppContext.Errorf("Failed to cache key [%s] because:", key, err)
+		r.Error = err
 	}
-	return nil
+
+	result <- r
 }
 
 func (a *AnalyticsApi) Profiles() (r *analytics.Profiles, err error) {
@@ -50,7 +64,6 @@ func (a *AnalyticsApi) Profiles() (r *analytics.Profiles, err error) {
 func (a *AnalyticsApi) Summary() (r *analytics.GaData, err error) {
 	q := a.Client.Data.Ga.
 		Get("ga:"+a.ProfileId, a.DateStart, a.DateEnd, "ga:pageviews,ga:uniquePageviews,ga:timeOnSite")
-		//Dimensions("ga:date")
 	return q.Do()
 }
 

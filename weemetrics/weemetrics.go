@@ -209,33 +209,27 @@ func generateReport(c Controller, accountKey *datastore.Key, account *model.Acco
 		DateEnd:    startDate.Format(dateFormat),
 	}
 
-	// TODO: Make async
-	referrerData := new(analytics.GaData)
-	if err = analyticsApi.Cache("referrers", analyticsApi.Referrers, referrerData); err != nil {
-		return err
-	}
-
-	pageData := new(analytics.GaData)
-	if err = analyticsApi.Cache("topPages", analyticsApi.TopPages, pageData); err != nil {
-		return err
-	}
-
-	socialData := new(analytics.GaData)
-	if err = analyticsApi.Cache("socialReferrers", analyticsApi.SocialReferrers, socialData); err != nil {
-		return err
-	}
-
-	summaryData := new(analytics.GaData)
-	if err = analyticsApi.Cache("summary", analyticsApi.Summary, summaryData); err != nil {
-		return err
-	}
-
 	c.TemplateContext["Profile"] = subscription.Profile
 	c.TemplateContext["AnalyticsApi"] = analyticsApi
-	c.TemplateContext["referrerData"] = referrerData
-	c.TemplateContext["socialData"] = socialData
-	c.TemplateContext["pageData"] = pageData
-	c.TemplateContext["summaryData"] = summaryData
+
+	numResults := 4
+	results := make(chan api.AnalyticsResult)
+	defer close(results)
+
+	go analyticsApi.Cache("referrer", analyticsApi.Referrers, results)
+	go analyticsApi.Cache("page", analyticsApi.TopPages, results)
+	go analyticsApi.Cache("social", analyticsApi.SocialReferrers, results)
+	go analyticsApi.Cache("summary", analyticsApi.Summary, results)
+
+	for ; numResults > 0; numResults-- {
+		r := <- results
+
+		if r.Error != nil {
+			return r.Error
+		}
+
+		c.TemplateContext[r.Label + "Data"] = r.GaData
+	}
 
 	return nil
 }
