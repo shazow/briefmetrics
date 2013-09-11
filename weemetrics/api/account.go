@@ -9,7 +9,7 @@ import (
 
 type AccountApi struct{ *AccountApi }
 
-// TODO: Move context in here?
+// TODO: Move context+session in here?
 var Account = AccountApi{}
 
 func (a *AccountApi) Create(context appengine.Context, account model.Account) (*datastore.Key, error) {

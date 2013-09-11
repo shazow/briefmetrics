@@ -186,54 +186,6 @@ func SettingsHandler(c Controller) {
 	c.Render("templates/base.html", "templates/settings.html")
 }
 
-func generateReport(c Controller, accountKey *datastore.Key, account *model.Account, subscription *model.Subscription) error {
-	c.OAuthTransport.Token = &account.Token
-	c.OAuthTransport.Config.TokenCache = model.TokenCache{
-		Key:     accountKey,
-		Account: *account,
-		Context: c.AppContext,
-	}
-	client := c.OAuthTransport.Client()
-	analyticsClient, err := analytics.New(client)
-	if err != nil {
-		return err
-	}
-
-	const dateFormat = "2006-01-02"
-	startDate := time.Now().Add(-24 * 3 * time.Hour) // TODO: Previous Sunday
-	analyticsApi := api.AnalyticsApi{
-		AppContext: c.AppContext,
-		Client:     analyticsClient,
-		ProfileId:  subscription.Profile.ProfileId,
-		DateStart:  startDate.Add(-24 * 6 * time.Hour).Format(dateFormat),
-		DateEnd:    startDate.Format(dateFormat),
-	}
-
-	c.TemplateContext["Profile"] = subscription.Profile
-	c.TemplateContext["AnalyticsApi"] = analyticsApi
-
-	numResults := 4
-	results := make(chan api.AnalyticsResult)
-	defer close(results)
-
-	go analyticsApi.Cache("referrer", analyticsApi.Referrers, results)
-	go analyticsApi.Cache("page", analyticsApi.TopPages, results)
-	go analyticsApi.Cache("social", analyticsApi.SocialReferrers, results)
-	go analyticsApi.Cache("summary", analyticsApi.Summary, results)
-
-	for ; numResults > 0; numResults-- {
-		r := <- results
-
-		if r.Error != nil {
-			return r.Error
-		}
-
-		c.TemplateContext[r.Label + "Data"] = r.GaData
-	}
-
-	return nil
-}
-
 func ReportHandler(c Controller) {
 	if c.UserId == 0 {
 		http.Redirect(c.ResponseWriter, c.Request, "/account/login", http.StatusForbidden)
@@ -252,33 +204,27 @@ func ReportHandler(c Controller) {
 		return
 	}
 
-	err = generateReport(c, accountKey, account, subscription)
+	c.OAuthTransport.Token = &account.Token
+	c.OAuthTransport.Config.TokenCache = model.TokenCache{
+		Key:     accountKey,
+		Account: *account,
+		Context: c.AppContext,
+	}
+	client := c.OAuthTransport.Client()
+
+	templateContext, err := api.Report.Generate(c.AppContext, client, accountKey, account, subscription)
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
+	c.TemplateContext = *templateContext
+
 	if c.Request.FormValue("send") != "" {
-		var html bytes.Buffer
-
-		c.RenderTo(&html, "templates/base_email.html", "templates/report.html")
-
-		recipients := make([]gochimp.Recipient, len(subscription.Emails))
-		for i, email := range subscription.Emails {
-			recipients[i].Email = email
+		if msg, err := api.Report.Compose(templateContext, subscription); err != nil {
+			c.Error(err)
+			return
 		}
-		msg := gochimp.Message{
-			FromName:    "Andrey Petrov",
-			FromEmail:   "andrey.petrov@shazow.net",
-			To:          recipients,
-			Subject:     "Analytics report",
-			Html:        html.String(),
-			TrackOpens:  true,
-			TrackClicks: true,
-			AutoText:    true,
-			InlineCss:   true,
-		}
-
 		mandrill := gochimp.MandrillAPI(AppConfig.MandrillAPI)
 		mandrill.Transport = c.Transport
 		if _, err := mandrill.MessageSend(msg, true); err != nil {
@@ -289,8 +235,44 @@ func ReportHandler(c Controller) {
 		c.AppContext.Debugf("Sent report to: ", subscription.Emails)
 	}
 
-	c.RenderTo(c.ResponseWriter, "templates/base_email.html", "templates/report.html")
+	RenderTo(c.ResponseWriter, c.TemplateContext, "templates/base_email.html", "templates/report.html")
 }
+
+func CronHandler(c Controller) {
+	subscriptions, keys, err := api.Subscription.GetPending(c.AppContext)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	for i, k := range keys {
+		subscription := subscriptions[i]
+		account, accountKey, err := api.Account.Get(c.AppContext, k.IntID())
+
+		if err!= nil {
+			c.AppContext.Errorf("CronHandler: Failed to get account, skipping [%d]:", k.IntID(), err)
+			continue
+		}
+
+		if templateContext, err := api.Report.Generate(c.AppContext, client, accountKey, account, subscription); err != nil {
+			c.AppContext.Errorf("CronHandler: Failed to generate report, skipping [%d]:", k.IntID(), err)
+			continue
+		}
+
+		if msg, err := api.Report.Compose(templateContext, subscription); err != nil {
+			c.AppContext.Errorf("CronHandler: Failed to compose email, skipping [%d]:", k.IntID(), err)
+			continue
+		}
+
+		mandrill := gochimp.MandrillAPI(AppConfig.MandrillAPI)
+		mandrill.Transport = c.Transport
+		if _, err := mandrill.MessageSend(msg, true); err != nil {
+			c.AppContext.Errorf("CronHandler: Failed to send email, skipping [%d]:", k.IntID(), err)
+			continue
+		}
+	}
+}
+
 
 func init() {
 	AddController("/", IndexHandler)
@@ -299,6 +281,7 @@ func init() {
 	AddController("/account/logout", AccountLogoutHandler)
 	AddController("/settings", SettingsHandler)
 	AddController("/report", ReportHandler)
+	AddController("/cron", CronHandler)
 
 	// TODO: Implement "/api" handler
 }
