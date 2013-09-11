@@ -1,4 +1,4 @@
-package weemetrics
+package briefmetrics
 
 import (
 	"appengine"
@@ -8,8 +8,8 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/mattbaird/gochimp"
 	"net/http"
-	api "weemetrics/api"
-	model "weemetrics/model"
+	api "briefmetrics/api"
+	model "briefmetrics/model"
 )
 
 type Config struct {

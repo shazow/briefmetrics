@@ -8,8 +8,8 @@ import (
 	"github.com/mattbaird/gochimp"
 	"time"
 	"net/http"
-	model "weemetrics/model"
-	util "weemetrics/util"
+	model "briefmetrics/model"
+	util "briefmetrics/util"
 )
 
 type ReportApi struct{ *Api }

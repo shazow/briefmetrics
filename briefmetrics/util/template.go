@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	model "weemetrics/model"
+	model "briefmetrics/model"
 )
 
 // Template FuncMap:

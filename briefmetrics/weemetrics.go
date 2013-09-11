@@ -1,4 +1,4 @@
-package weemetrics
+package briefmetrics
 
 import (
 	"appengine/datastore"
@@ -11,8 +11,8 @@ import (
 	"github.com/xeonx/timeago"
 	"net/http"
 	"time"
-	api "weemetrics/api"
-	model "weemetrics/model"
+	api "briefmetrics/api"
+	model "briefmetrics/model"
 )
 
 var FormDecoder = schema.NewDecoder()

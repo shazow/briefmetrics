@@ -1,2 +1,2 @@
 tags:
-	ctags -R ${GOPATH} weemetrics/
+	ctags -R ${GOPATH} briefmetrics/

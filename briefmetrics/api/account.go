@@ -4,7 +4,7 @@ import (
 	"appengine"
 	"appengine/datastore"
 	"github.com/gorilla/sessions"
-	model "weemetrics/model"
+	model "briefmetrics/model"
 )
 
 type AccountApi struct{ *AccountApi }

@@ -4,7 +4,7 @@ import (
 	"appengine"
 	"appengine/datastore"
 	"time"
-	model "weemetrics/model"
+	model "briefmetrics/model"
 )
 
 type SubscriptionApi struct{ *Api }
