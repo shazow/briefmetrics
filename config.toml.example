@@ -1,0 +1,14 @@
+SessionSecret = "CHANGE THIS"
+SessionName = "briefstats"
+
+[AnalyticsAPI]
+ClientID = "CHANGE THIS"
+ClientSecret = "CHANGE THIS"
+RedirectURL = "https://localhost:8000/account/connect"
+AuthURL = "https://accounts.google.com/o/oauth2/auth"
+TokenURL = "https://accounts.google.com/o/oauth2/token"
+Scope = "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/analytics.readonly"
+AccessType = "offline"
+
+[MandrillAPI]
+Key = "CHANGE THIS"
