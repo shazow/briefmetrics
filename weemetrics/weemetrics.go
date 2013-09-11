@@ -245,31 +245,40 @@ func CronHandler(c Controller) {
 		return
 	}
 
-	for i, k := range keys {
+	now := time.Now()
+
+	for i, subscriptionKey := range keys {
 		subscription := subscriptions[i]
-		account, accountKey, err := api.Account.Get(c.AppContext, k.IntID())
+		account, accountKey, err := api.Account.Get(c.AppContext, subscriptionKey.parent().IntID())
 
 		if err!= nil {
-			c.AppContext.Errorf("CronHandler: Failed to get account, skipping [%d]:", k.IntID(), err)
+			c.AppContext.Errorf("CronHandler: Failed to get account, skipping [%d]:", subscriptionKey.IntID(), err)
 			continue
 		}
 
 		if templateContext, err := api.Report.Generate(c.AppContext, client, accountKey, account, subscription); err != nil {
-			c.AppContext.Errorf("CronHandler: Failed to generate report, skipping [%d]:", k.IntID(), err)
+			c.AppContext.Errorf("CronHandler: Failed to generate report, skipping [%d]:", subscriptionKey.IntID(), err)
 			continue
 		}
 
 		if msg, err := api.Report.Compose(templateContext, subscription); err != nil {
-			c.AppContext.Errorf("CronHandler: Failed to compose email, skipping [%d]:", k.IntID(), err)
+			c.AppContext.Errorf("CronHandler: Failed to compose email, skipping [%d]:", subscriptionKey.IntID(), err)
 			continue
 		}
 
 		mandrill := gochimp.MandrillAPI(AppConfig.MandrillAPI)
 		mandrill.Transport = c.Transport
 		if _, err := mandrill.MessageSend(msg, true); err != nil {
-			c.AppContext.Errorf("CronHandler: Failed to send email, skipping [%d]:", k.IntID(), err)
+			c.AppContext.Errorf("CronHandler: Failed to send email, skipping [%d]:", subscriptionKey.IntID(), err)
 			continue
 		}
+
+		subscription.NextUpdate = now
+	}
+
+	if _, err = datastore.PutMulti(keys, subscriptions); err != nil {
+		c.Error(err)
+		return
 	}
 }
 

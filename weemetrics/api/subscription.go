@@ -45,7 +45,7 @@ func (a *SubscriptionApi) Get(context appengine.Context, accountKey *datastore.K
 
 func (a *SubscriptionApi) GetPending(context appengine.Context) ([]model.Subscription, []*datastore.Key, error) {
 	q := datastore.NewQuery("Subscription").
-		Filter("NextUpdate >=", time.Now())
+		Filter("NextUpdate <=", time.Now())
 
 	var subscriptions []model.Subscription
 	keys, err := q.GetAll(context, &subscriptions)
