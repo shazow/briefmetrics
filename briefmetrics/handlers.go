@@ -2,7 +2,6 @@ package briefmetrics
 
 import (
 	"appengine/datastore"
-	"bytes"
 	"code.google.com/p/goauth2/oauth"
 	"code.google.com/p/google-api-go-client/analytics/v3"
 	"code.google.com/p/google-api-go-client/oauth2/v2"
@@ -13,6 +12,7 @@ import (
 	"time"
 	api "briefmetrics/api"
 	model "briefmetrics/model"
+	util "briefmetrics/util"
 )
 
 var FormDecoder = schema.NewDecoder()
@@ -221,13 +221,15 @@ func ReportHandler(c Controller) {
 	c.TemplateContext = *templateContext
 
 	if c.Request.FormValue("send") != "" {
-		if msg, err := api.Report.Compose(templateContext, subscription); err != nil {
+		msg, err := api.Report.Compose(templateContext, subscription)
+		if err != nil {
 			c.Error(err)
 			return
 		}
+
 		mandrill := gochimp.MandrillAPI(AppConfig.MandrillAPI)
 		mandrill.Transport = c.Transport
-		if _, err := mandrill.MessageSend(msg, true); err != nil {
+		if _, err := mandrill.MessageSend(*msg, true); err != nil {
 			c.Error(err)
 			return
 		}
@@ -235,7 +237,7 @@ func ReportHandler(c Controller) {
 		c.AppContext.Debugf("Sent report to: ", subscription.Emails)
 	}
 
-	RenderTo(c.ResponseWriter, c.TemplateContext, "templates/base_email.html", "templates/report.html")
+	util.RenderTo(c.ResponseWriter, c.TemplateContext, "templates/base_email.html", "templates/report.html")
 }
 
 func CronHandler(c Controller) {
@@ -249,26 +251,38 @@ func CronHandler(c Controller) {
 
 	for i, subscriptionKey := range keys {
 		subscription := subscriptions[i]
-		account, accountKey, err := api.Account.Get(c.AppContext, subscriptionKey.parent().IntID())
+		account, accountKey, err := api.Account.Get(c.AppContext, subscriptionKey.Parent().IntID())
+
+		// FIXME: Race condition?
+		c.OAuthTransport.Token = &account.Token
+		c.OAuthTransport.Config.TokenCache = model.TokenCache{
+			Key:     accountKey,
+			Account: *account,
+			Context: c.AppContext,
+		}
+		client := c.OAuthTransport.Client()
+
 
 		if err!= nil {
 			c.AppContext.Errorf("CronHandler: Failed to get account, skipping [%d]:", subscriptionKey.IntID(), err)
 			continue
 		}
 
-		if templateContext, err := api.Report.Generate(c.AppContext, client, accountKey, account, subscription); err != nil {
+		templateContext, err := api.Report.Generate(c.AppContext, client, accountKey, account, &subscription)
+		if err != nil {
 			c.AppContext.Errorf("CronHandler: Failed to generate report, skipping [%d]:", subscriptionKey.IntID(), err)
 			continue
 		}
 
-		if msg, err := api.Report.Compose(templateContext, subscription); err != nil {
+		msg, err := api.Report.Compose(templateContext, &subscription)
+		if err != nil {
 			c.AppContext.Errorf("CronHandler: Failed to compose email, skipping [%d]:", subscriptionKey.IntID(), err)
 			continue
 		}
 
 		mandrill := gochimp.MandrillAPI(AppConfig.MandrillAPI)
 		mandrill.Transport = c.Transport
-		if _, err := mandrill.MessageSend(msg, true); err != nil {
+		if _, err := mandrill.MessageSend(*msg, true); err != nil {
 			c.AppContext.Errorf("CronHandler: Failed to send email, skipping [%d]:", subscriptionKey.IntID(), err)
 			continue
 		}
@@ -276,7 +290,7 @@ func CronHandler(c Controller) {
 		subscription.NextUpdate = now
 	}
 
-	if _, err = datastore.PutMulti(keys, subscriptions); err != nil {
+	if _, err = datastore.PutMulti(c.AppContext, keys, subscriptions); err != nil {
 		c.Error(err)
 		return
 	}

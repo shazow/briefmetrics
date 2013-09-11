@@ -83,5 +83,5 @@ func (a *ReportApi) Compose(templateContext *map[string]interface{}, subscriptio
 		InlineCss:   true,
 	}
 
-	return msg, nil
+	return &msg, nil
 }

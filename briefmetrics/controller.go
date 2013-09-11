@@ -9,7 +9,7 @@ import (
 	"github.com/mattbaird/gochimp"
 	"net/http"
 	api "briefmetrics/api"
-	model "briefmetrics/model"
+	util "briefmetrics/util"
 )
 
 type Config struct {
