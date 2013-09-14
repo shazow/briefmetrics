@@ -35,7 +35,7 @@ func (a *ReportApi) Generate(context appengine.Context, httpClient *http.Client,
 
 	templateContext := make(map[string]interface{})
 	templateContext["Profile"] = subscription.Profile
-	templateContext["AnalyticsApi"] = analyticsApi
+	templateContext["AnalyticsApi"] = &analyticsApi
 
 	numResults := 4
 	results := make(chan AnalyticsResult)

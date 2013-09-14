@@ -5,6 +5,7 @@ import (
 	"appengine/memcache"
 	"code.google.com/p/goauth2/oauth"
 	"code.google.com/p/google-api-go-client/analytics/v3"
+	"strings"
 )
 
 type AnalyticsApi struct {
@@ -18,8 +19,8 @@ type AnalyticsApi struct {
 }
 
 type AnalyticsResult struct {
-	Label string
-	Error error
+	Label  string
+	Error  error
 	GaData analytics.GaData
 }
 
@@ -93,4 +94,17 @@ func (a *AnalyticsApi) SocialReferrers() (r *analytics.GaData, err error) {
 		Sort("-ga:visits").
 		MaxResults(5)
 	return q.Do()
+}
+
+func (a *AnalyticsApi) UrlDateBoundary() string {
+	r := ""
+
+	if a.DateStart != "" {
+		r += "_u.date00=" + strings.Replace(a.DateStart, "-", "", -1) + "&"
+	}
+	if a.DateEnd != "" {
+		r += "_u.date01=" + strings.Replace(a.DateEnd, "-", "", -1) + "&"
+	}
+
+	return r
 }

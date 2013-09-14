@@ -9,17 +9,18 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	model "briefmetrics/model"
 )
 
 // Template FuncMap:
 
 var timeagoNoPrefix = timeago.Config(timeago.English)
 
-type DateBoundary struct {
-	DateStart string
-	DateEnd string
+type DateBounder interface {
+	UrlDateBoundary() string
+}
+
+type AnalyticsID interface {
+	UrlID() string
 }
 
 func TemplateReplace(s string, replace string, with string) string {
@@ -27,18 +28,8 @@ func TemplateReplace(s string, replace string, with string) string {
 	return r
 }
 
-func TemplatePermalink(report string, profile model.AnalyticsProfile, d DateBoundary) string {
-	r := "https://www.google.com/analytics/web/#report/" + report
-	r += "/a" + profile.AccountId + "w" + profile.InternalWebPropertyId + "p" + profile.ProfileId + "/?"
-
-	if d.DateStart != "" {
-		r += "_u.date00=" + strings.Replace(d.DateStart, "-", "", -1) + "&"
-	}
-	if d.DateEnd != "" {
-		r += "_u.date01=" + strings.Replace(d.DateEnd, "-", "", -1) + "&"
-	}
-
-	return r
+func TemplatePermalink(report string, profile AnalyticsID, d DateBounder) string {
+	return "https://www.google.com/analytics/web/#report/" + report + "/" + profile.UrlID() + "/?" + d.UrlDateBoundary()
 }
 
 

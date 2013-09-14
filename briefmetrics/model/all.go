@@ -21,6 +21,10 @@ type AnalyticsProfile struct {
 	WebsiteUrl            string
 }
 
+func (p AnalyticsProfile) UrlID() string {
+	return "a" + p.AccountId + "w" + p.InternalWebPropertyId + "p" + p.ProfileId
+}
+
 type Subscription struct {
 	Emails     []string
 	NextUpdate time.Time

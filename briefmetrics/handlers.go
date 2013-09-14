@@ -218,8 +218,6 @@ func ReportHandler(c Controller) {
 		return
 	}
 
-	c.TemplateContext = *templateContext
-
 	if c.Request.FormValue("send") != "" {
 		msg, err := api.Report.Compose(templateContext, subscription)
 		if err != nil {
@@ -237,7 +235,7 @@ func ReportHandler(c Controller) {
 		c.AppContext.Debugf("Sent report to: ", subscription.Emails)
 	}
 
-	util.RenderTo(c.ResponseWriter, c.TemplateContext, "templates/base_email.html", "templates/report.html")
+	util.RenderTo(c.ResponseWriter, *templateContext, "templates/base_email.html", "templates/report.html")
 }
 
 func CronHandler(c Controller) {
