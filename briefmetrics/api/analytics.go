@@ -97,14 +97,14 @@ func (a *AnalyticsApi) SocialReferrers() (r *analytics.GaData, err error) {
 }
 
 func (a *AnalyticsApi) UrlDateBoundary() string {
-	r := ""
+	parts := make([]string, 2)
 
 	if a.DateStart != "" {
-		r += "_u.date00=" + strings.Replace(a.DateStart, "-", "", -1) + "&"
+		parts = append(parts, "_u.date00=" + strings.Replace(a.DateStart, "-", "", -1))
 	}
 	if a.DateEnd != "" {
-		r += "_u.date01=" + strings.Replace(a.DateEnd, "-", "", -1) + "&"
+		parts = append(parts, "_u.date01=" + strings.Replace(a.DateEnd, "-", "", -1))
 	}
 
-	return r
+	return strings.Join(parts, "&")
 }

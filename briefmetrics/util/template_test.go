@@ -8,17 +8,18 @@ import (
 )
 
 func TestReplace(t *testing.T) {
-	if TemplateReplace("-foo-bar-baz-", "-", "_") != "_foo_bar_baz_" {
-		t.Errorf("Failed.")
+	expected := "_foo_bar_baz_"
+	if r := TemplateReplace("-foo-bar-baz-", "-", "_"); r != expected {
+		t.Errorf("%s != %s", r, expected)
 	}
 }
 
 func TestPermalink(t *testing.T) {
 	p := model.AnalyticsProfile{
-		AccountId:             "xxx",
-		WebPropertyId:         "yyy",
-		ProfileId:             "zzz",
-		InternalWebPropertyId: "000",
+		AccountId:             "000",
+		WebPropertyId:         "111",
+		ProfileId:             "222",
+		InternalWebPropertyId: "333",
 	}
 
 	d := api.AnalyticsApi{
@@ -26,7 +27,8 @@ func TestPermalink(t *testing.T) {
 		DateEnd:   "2013-11-30",
 	}
 
-	if TemplatePermalink("foo", p, &d) != "asdf" {
-		t.Errorf("Failed.")
+	expected := "https://www.google.com/analytics/web/#report/foo/a000w333p222/?_u.date00=20131129&_u.date01=20131130"
+	if r := TemplatePermalink("foo", p, &d); r != expected {
+		t.Errorf("%s != %s", r, expected)
 	}
 }
