@@ -1,0 +1,4 @@
+cron:
+- description: send reports
+  url: /_cron
+  schedule: every 6 hours

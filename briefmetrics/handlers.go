@@ -247,9 +247,16 @@ func CronHandler(c Controller) {
 
 	now := time.Now()
 
+	// TODO: Use the TaskQueue.
 	for i, subscriptionKey := range keys {
-		subscription := subscriptions[i]
+		subscription := &subscriptions[i]
+		if subscription.NextUpdate.After(now) {
+			c.AppContext.Errorf("CronHandler: Premature subscription (NextUpdate: %s), skipping: %s", subscription.NextUpdate, subscriptionKey)
+			continue
+		}
+
 		account, accountKey, err := api.Account.Get(c.AppContext, subscriptionKey.Parent().IntID())
+		c.AppContext.Infof("CronHandler: Processing subscription for account: %s", account.Email)
 
 		// FIXME: Race condition?
 		c.OAuthTransport.Token = &account.Token
@@ -266,13 +273,13 @@ func CronHandler(c Controller) {
 			continue
 		}
 
-		templateContext, err := api.Report.Generate(c.AppContext, client, accountKey, account, &subscription)
+		templateContext, err := api.Report.Generate(c.AppContext, client, accountKey, account, subscription)
 		if err != nil {
 			c.AppContext.Errorf("CronHandler: Failed to generate report, skipping [%d]:", subscriptionKey.IntID(), err)
 			continue
 		}
 
-		msg, err := api.Report.Compose(templateContext, &subscription)
+		msg, err := api.Report.Compose(templateContext, subscription)
 		if err != nil {
 			c.AppContext.Errorf("CronHandler: Failed to compose email, skipping [%d]:", subscriptionKey.IntID(), err)
 			continue
@@ -285,7 +292,8 @@ func CronHandler(c Controller) {
 			continue
 		}
 
-		subscription.NextUpdate = now
+		// Next update: Next week.
+		subscription.NextUpdate = subscription.NextUpdate.Add(time.Hour * 24 * 7)
 	}
 
 	if _, err = datastore.PutMulti(c.AppContext, keys, subscriptions); err != nil {
@@ -302,7 +310,7 @@ func init() {
 	AddController("/account/logout", AccountLogoutHandler)
 	AddController("/settings", SettingsHandler)
 	AddController("/report", ReportHandler)
-	AddController("/cron", CronHandler)
+	AddController("/_cron", CronHandler)
 
 	// TODO: Implement "/api" handler
 }
