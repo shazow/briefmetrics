@@ -2,6 +2,9 @@ package briefmetrics
 
 import (
 	"appengine/datastore"
+	api "briefmetrics/api"
+	model "briefmetrics/model"
+	util "briefmetrics/util"
 	"code.google.com/p/goauth2/oauth"
 	"code.google.com/p/google-api-go-client/analytics/v3"
 	"code.google.com/p/google-api-go-client/oauth2/v2"
@@ -9,10 +12,8 @@ import (
 	"github.com/mattbaird/gochimp"
 	"github.com/xeonx/timeago"
 	"net/http"
+	"strconv"
 	"time"
-	api "briefmetrics/api"
-	model "briefmetrics/model"
-	util "briefmetrics/util"
 )
 
 var FormDecoder = schema.NewDecoder()
@@ -94,6 +95,48 @@ func AccountConnectHandler(c Controller) {
 	http.Redirect(c.ResponseWriter, c.Request, "/", http.StatusSeeOther)
 }
 
+func AccountDisconnectHandler(c Controller) {
+	token := c.Request.FormValue("token")
+	if token == "" && c.UserId == 0 {
+		http.Redirect(c.ResponseWriter, c.Request, "/account/login", http.StatusForbidden)
+		return
+	}
+
+	if c.Request.FormValue("confirmed") == "" {
+		c.TemplateContext["Token"] = token
+		c.Render("templates/base.html", "templates/disconnect.html")
+		return
+	}
+
+	keyId, err := strconv.ParseInt(token, 10, 64)
+	if err != nil && c.UserId == 0 {
+		c.Error(err)
+	} else if err != nil {
+		keyId = c.UserId
+	}
+
+	accountKey := datastore.NewKey(c.AppContext, "Account", "", keyId, nil)
+
+	q := datastore.NewQuery("Subscription").
+		Ancestor(accountKey).
+		KeysOnly()
+	subscriptionKeys, err := q.GetAll(c.AppContext, nil)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	err = datastore.DeleteMulti(c.AppContext, append(subscriptionKeys, accountKey))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	api.Account.LogoutUser(c.Session)
+	c.Session.AddFlash("Goodbye.")
+	http.Redirect(c.ResponseWriter, c.Request, "/", http.StatusSeeOther)
+}
+
 func AccountLoginHandler(c Controller) {
 	if c.UserId == 0 {
 		http.Redirect(c.ResponseWriter, c.Request, AppConfig.AnalyticsAPI.AuthCodeURL(""), http.StatusSeeOther)
@@ -113,7 +156,7 @@ func AccountLoginHandler(c Controller) {
 
 func AccountLogoutHandler(c Controller) {
 	api.Account.LogoutUser(c.Session)
-	c.Session.AddFlash("Goodbye.")
+	c.Session.AddFlash("Bye for now.")
 	c.SessionSave()
 
 	http.Redirect(c.ResponseWriter, c.Request, "/", http.StatusSeeOther)
@@ -267,8 +310,7 @@ func CronHandler(c Controller) {
 		}
 		client := c.OAuthTransport.Client()
 
-
-		if err!= nil {
+		if err != nil {
 			c.AppContext.Errorf("CronHandler: Failed to get account, skipping [%d]:", subscriptionKey.IntID(), err)
 			continue
 		}
@@ -302,10 +344,10 @@ func CronHandler(c Controller) {
 	}
 }
 
-
 func init() {
 	AddController("/", IndexHandler)
 	AddController("/account/connect", AccountConnectHandler)
+	AddController("/account/disconnect", AccountDisconnectHandler)
 	AddController("/account/login", AccountLoginHandler)
 	AddController("/account/logout", AccountLogoutHandler)
 	AddController("/settings", SettingsHandler)

@@ -1,5 +1,5 @@
 {{define "content"}}
-    <h1>{{.AnalyticsApi.DateStart}} &mdash; {{.AnalyticsApi.DateEnd}}</h1>
+    <h1>{{ .Title }}</h1>
 
     {{with $row := index .summaryData.Rows 0}}
     {{index $row 1 | comma}} people spent a whopping total of {{index $row 2 | timeago}} on your sweet site.
@@ -42,4 +42,10 @@
     </ul>
 
     <span class="todo">TODO: Lots of styling.</span>
+
+    <p>
+        Looking for something different?
+        <a href="http://www.briefmetrics.com/account/settings">Change subscription</a> &middot;
+        <a href="http://www.briefmetrics.com/account/disconnect?token={{ .Token }}">Delete account</a>
+    </p>
 {{end}}
