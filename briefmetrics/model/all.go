@@ -1,14 +1,15 @@
 package model
 
 import (
-	"code.google.com/p/goauth2/oauth"
 	"appengine"
 	"appengine/datastore"
+	"code.google.com/p/goauth2/oauth"
 	"time"
 )
 
 type Account struct {
 	Email       string
+	EmailToken  string
 	Token       oauth.Token
 	TimeCreated time.Time
 }
@@ -31,9 +32,8 @@ type Subscription struct {
 	Profile    AnalyticsProfile
 }
 
-
 type TokenCache struct {
-	Key *datastore.Key
+	Key     *datastore.Key
 	Account Account
 	Context appengine.Context
 }
@@ -42,7 +42,7 @@ func (c TokenCache) Token() (*oauth.Token, error) {
 	return &c.Account.Token, nil
 }
 
-func (c TokenCache) PutToken(token *oauth.Token) (error) {
+func (c TokenCache) PutToken(token *oauth.Token) error {
 	c.Account.Token = *token
 	_, err := datastore.Put(c.Context, c.Key, &c.Account)
 	c.Context.Debugf("Refreshed token: ", c.Account.Email)

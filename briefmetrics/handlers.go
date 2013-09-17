@@ -13,7 +13,9 @@ import (
 	"github.com/xeonx/timeago"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
+	"errors"
 )
 
 var FormDecoder = schema.NewDecoder()
@@ -79,6 +81,7 @@ func AccountConnectHandler(c Controller) {
 
 	account := model.Account{
 		Email:       tokenInfo.Email,
+		EmailToken:  util.RandomString(16, ""),
 		Token:       *token,
 		TimeCreated: time.Now(),
 	}
@@ -108,14 +111,32 @@ func AccountDisconnectHandler(c Controller) {
 		return
 	}
 
-	keyId, err := strconv.ParseInt(token, 10, 64)
-	if err != nil && c.UserId == 0 {
-		c.Error(err)
-	} else if err != nil {
+	var keyId int64
+	var confirmToken string
+	var err error
+
+	if token != "" {
+		parts := strings.Split(token, "-")
+		keyId, err = strconv.ParseInt(parts[0], 10, 64)
+		if err != nil {
+			c.Error(err)
+			return
+		}
+		confirmToken = parts[1]
+	} else if c.UserId != 0 {
 		keyId = c.UserId
 	}
 
-	accountKey := datastore.NewKey(c.AppContext, "Account", "", keyId, nil)
+	account, accountKey, err := api.Account.Get(c.AppContext, keyId)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	if token != "" && account.EmailToken != confirmToken {
+		c.Error(errors.New("Invalid email token."))
+		return
+	}
 
 	q := datastore.NewQuery("Subscription").
 		Ancestor(accountKey).
@@ -195,6 +216,8 @@ func SettingsHandler(c Controller) {
 
 		c.Session.AddFlash("Saved settings.")
 		c.SessionSave()
+
+		// TODO: TaskQueue report for last week.
 		http.Redirect(c.ResponseWriter, c.Request, "/", http.StatusSeeOther)
 		return
 	}

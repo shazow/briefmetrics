@@ -10,6 +10,7 @@ import (
 	"github.com/mattbaird/gochimp"
 	"net/http"
 	"time"
+	"fmt"
 )
 
 type ReportApi struct{ *Api }
@@ -37,7 +38,7 @@ func (a *ReportApi) Generate(context appengine.Context, httpClient *http.Client,
 
 	templateContext := make(map[string]interface{})
 	templateContext["Title"] = "Week of " + startDate.Format(formatDateHuman)
-	templateContext["Token"] = accountKey.IntID()
+	templateContext["Token"] = fmt.Sprintf("%d-%s", accountKey.IntID(), account.EmailToken)
 	templateContext["Profile"] = subscription.Profile
 	templateContext["AnalyticsApi"] = &analyticsApi
 
