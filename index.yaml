@@ -1,13 +1,4 @@
 indexes:
 
-- kind: Account
-  properties:
-  - name: Email
-
 - kind: Subscription
   ancestor: yes
-
-- kind: Subscription
-  properties:
-  - name: NextUpdate
-    direction: desc
