@@ -3,13 +3,14 @@ package briefmetrics
 import (
 	"appengine"
 	"appengine/urlfetch"
+	api "briefmetrics/api"
+	util "briefmetrics/util"
 	"code.google.com/p/goauth2/oauth"
 	"github.com/BurntSushi/toml"
 	"github.com/gorilla/sessions"
 	"github.com/mattbaird/gochimp"
+	"encoding/gob"
 	"net/http"
-	api "briefmetrics/api"
-	util "briefmetrics/util"
 )
 
 type Config struct {
@@ -20,7 +21,7 @@ type Config struct {
 	MandrillAPI  gochimp.MandrillAPI
 }
 
-func (c Config) Analytics() oauth.Config{
+func (c Config) Analytics() oauth.Config {
 	return oauth.Config(c.AnalyticsAPI)
 }
 
@@ -113,10 +114,12 @@ func init() {
 	if lastError != nil {
 		panic("Failed to load config.")
 	}
-	
+
 	SessionStore = sessions.NewCookieStore([]byte(AppConfig.SessionSecret))
 
 	// Swap out MandrillAPI object with initialized one
 	m, _ := gochimp.NewMandrill(AppConfig.MandrillAPI.Key)
 	AppConfig.MandrillAPI = *m
+
+	gob.Register(Config{})
 }

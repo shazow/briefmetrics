@@ -253,7 +253,7 @@ func SettingsHandler(c Controller) {
 		c.SessionSave()
 
 		// TaskQueue report for last week.
-		api.ReportAsyncSend.Call(c.AppContext, AppConfig, time.Now(), *accountKey, *account, subscriptionKey, subscription)
+		api.ReportAsyncSend.Call(c.AppContext, AppConfig, time.Now(), *accountKey, *account, *subscriptionKey, subscription)
 
 		http.Redirect(c.ResponseWriter, c.Request, "/", http.StatusSeeOther)
 		return
