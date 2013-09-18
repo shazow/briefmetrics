@@ -1,10 +1,10 @@
 package util
 
 import (
+	"github.com/dustin/go-humanize"
+	"github.com/xeonx/timeago"
 	"html/template"
 	"io"
-	"github.com/xeonx/timeago"
-	"github.com/dustin/go-humanize"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -32,7 +32,6 @@ func TemplatePermalink(report string, profile AnalyticsID, d DateBounder) string
 	return "https://www.google.com/analytics/web/#report/" + report + "/" + profile.UrlID() + "/?" + d.UrlDateBoundary()
 }
 
-
 func TemplateTimeago(seconds string) string {
 	remainder, _ := time.ParseDuration(seconds + "s")
 	day := time.Hour * 24
@@ -50,11 +49,26 @@ func TemplateComma(number string) string {
 	return humanize.Comma(i)
 }
 
+func TemplateLinkify(s string) template.HTML {
+	url := s
+	if !strings.Contains(url, "://") {
+		url = "http://" + url
+	}
+
+	return template.HTML("<a href=\"" + url + "\">" + s + "</a>")
+}
+
+func TemplateHighlight(s string) template.HTML {
+	return template.HTML("<span class=\"highlight\">" + s + "</span>")
+}
+
 var templateFuncs = template.FuncMap{
 	"replace":   TemplateReplace,
 	"permalink": TemplatePermalink,
 	"timeago":   TemplateTimeago,
 	"comma":     TemplateComma,
+	"linkify":   TemplateLinkify,
+	"highlight":   TemplateHighlight,
 }
 
 // Render helpers:

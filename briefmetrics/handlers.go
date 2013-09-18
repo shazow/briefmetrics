@@ -8,6 +8,7 @@ import (
 	"code.google.com/p/goauth2/oauth"
 	"code.google.com/p/google-api-go-client/analytics/v3"
 	"code.google.com/p/google-api-go-client/oauth2/v2"
+	"errors"
 	"github.com/gorilla/schema"
 	"github.com/mattbaird/gochimp"
 	"github.com/xeonx/timeago"
@@ -15,7 +16,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"errors"
 )
 
 var FormDecoder = schema.NewDecoder()
@@ -155,6 +155,7 @@ func AccountDisconnectHandler(c Controller) {
 
 	api.Account.LogoutUser(c.Session)
 	c.Session.AddFlash("Goodbye.")
+	c.SessionSave()
 	http.Redirect(c.ResponseWriter, c.Request, "/", http.StatusSeeOther)
 }
 
@@ -195,33 +196,6 @@ func SettingsHandler(c Controller) {
 		return
 	}
 
-	// Is there a form submission?
-	c.Request.ParseForm()
-	analyticsProfile := new(model.AnalyticsProfile)
-	err = FormDecoder.Decode(analyticsProfile, c.Request.Form)
-
-	if err == nil && analyticsProfile.ProfileId != "" {
-		sub := model.Subscription{
-			Emails:  []string{account.Email},
-			Profile: *analyticsProfile,
-		}
-
-		// TODO: Verify analyticsProfile is valid per account?
-		// TODO: Fill analyticsProfile.WebsiteUrl
-		_, err := api.Subscription.Create(c.AppContext, accountKey, sub)
-		if err != nil {
-			c.Error(err)
-			return
-		}
-
-		c.Session.AddFlash("Saved settings.")
-		c.SessionSave()
-
-		// TODO: TaskQueue report for last week.
-		http.Redirect(c.ResponseWriter, c.Request, "/", http.StatusSeeOther)
-		return
-	}
-
 	c.OAuthTransport.Token = &account.Token
 	c.OAuthTransport.Config.TokenCache = model.TokenCache{
 		Key:     accountKey,
@@ -241,10 +215,54 @@ func SettingsHandler(c Controller) {
 	}
 
 	result := new(analytics.Profiles)
+	// TODO: Cache
 	//err = analyticsApi.Cache("profiles:" + accountKey.StringID(), analyticsApi.Profiles, &result)
 	result, err = analyticsApi.Profiles()
 	if err != nil {
 		c.Error(err)
+		return
+	}
+
+	// Is there a form submission?
+	internalId := c.Request.FormValue("id")
+
+	if internalId != "" {
+		analyticsProfile := model.AnalyticsProfile{
+			InternalWebPropertyId: internalId,
+		}
+
+		// Find the relevant item
+		for _, profile := range result.Items {
+			if profile.InternalWebPropertyId == internalId {
+				analyticsProfile.AccountId = profile.AccountId
+				analyticsProfile.WebPropertyId = profile.WebPropertyId
+				analyticsProfile.ProfileId = profile.Id
+				analyticsProfile.WebsiteUrl = profile.WebsiteUrl
+				break
+			}
+		}
+
+		if analyticsProfile.AccountId == "" {
+			c.Error(errors.New("Invalid property id: " + internalId))
+			return
+		}
+
+		sub := model.Subscription{
+			Emails:  []string{account.Email},
+			Profile: analyticsProfile,
+		}
+
+		_, err := api.Subscription.Create(c.AppContext, accountKey, sub)
+		if err != nil {
+			c.Error(err)
+			return
+		}
+
+		c.Session.AddFlash("Created subscription for " + analyticsProfile.WebsiteUrl)
+		c.SessionSave()
+
+		// TODO: TaskQueue report for last week.
+		http.Redirect(c.ResponseWriter, c.Request, "/", http.StatusSeeOther)
 		return
 	}
 
@@ -301,7 +319,7 @@ func ReportHandler(c Controller) {
 		c.AppContext.Debugf("Sent report to: ", subscription.Emails)
 	}
 
-	util.RenderTo(c.ResponseWriter, *templateContext, "templates/base_email.html", "templates/report.html")
+	util.RenderTo(c.ResponseWriter, templateContext, "templates/base_email.html", "templates/report.html")
 }
 
 func CronHandler(c Controller) {

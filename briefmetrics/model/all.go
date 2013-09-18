@@ -5,7 +5,10 @@ import (
 	"appengine/datastore"
 	"code.google.com/p/goauth2/oauth"
 	"time"
+	"regexp"
 )
+
+var reHumanUrl = regexp.MustCompile(`^(\w*://)?(www\.)?(.+)/?$`)
 
 type Account struct {
 	Email       string
@@ -24,6 +27,10 @@ type AnalyticsProfile struct {
 
 func (p AnalyticsProfile) UrlID() string {
 	return "a" + p.AccountId + "w" + p.InternalWebPropertyId + "p" + p.ProfileId
+}
+
+func (p AnalyticsProfile) HumanWebsiteUrl() string {
+	return reHumanUrl.ReplaceAllString(p.WebsiteUrl, "$3")
 }
 
 type Subscription struct {

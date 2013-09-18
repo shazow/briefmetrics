@@ -20,7 +20,7 @@ var Report = ReportApi{}
 const formatDateISO = "2006-01-02"
 const formatDateHuman = "January 2, 2006"
 
-func (a *ReportApi) Generate(context appengine.Context, httpClient *http.Client, accountKey *datastore.Key, account *model.Account, subscription *model.Subscription) (*map[string]interface{}, error) {
+func (a *ReportApi) Generate(context appengine.Context, httpClient *http.Client, accountKey *datastore.Key, account *model.Account, subscription *model.Subscription) (map[string]interface{}, error) {
 	analyticsClient, err := analytics.New(httpClient)
 	if err != nil {
 		return nil, err
@@ -28,16 +28,19 @@ func (a *ReportApi) Generate(context appengine.Context, httpClient *http.Client,
 
 	// Week + Sunday offset
 	startDate := time.Now().Add(-24*7*time.Hour - time.Hour*24*time.Duration(time.Now().Weekday()))
+	endDate := startDate.Add(24*7*time.Hour)
+
 	analyticsApi := AnalyticsApi{
 		AppContext: context,
 		Client:     analyticsClient,
 		ProfileId:  subscription.Profile.ProfileId,
 		DateStart:  startDate.Add(-24 * 6 * time.Hour).Format(formatDateISO),
-		DateEnd:    startDate.Format(formatDateISO),
+		DateEnd:    endDate.Format(formatDateISO),
 	}
 
 	templateContext := make(map[string]interface{})
-	templateContext["Title"] = "Week of " + startDate.Format(formatDateHuman)
+	templateContext["Subject"] = "Weekly report for " + subscription.Profile.HumanWebsiteUrl()
+	templateContext["Title"] = endDate.Format(formatDateHuman)
 	templateContext["Token"] = fmt.Sprintf("%d-%s", accountKey.IntID(), account.EmailToken)
 	templateContext["Profile"] = subscription.Profile
 	templateContext["AnalyticsApi"] = &analyticsApi
@@ -61,13 +64,13 @@ func (a *ReportApi) Generate(context appengine.Context, httpClient *http.Client,
 		templateContext[r.Label+"Data"] = r.GaData
 	}
 
-	return &templateContext, nil
+	return templateContext, nil
 }
 
-func (a *ReportApi) Compose(templateContext *map[string]interface{}, subscription *model.Subscription) (*gochimp.Message, error) {
+func (a *ReportApi) Compose(templateContext map[string]interface{}, subscription *model.Subscription) (*gochimp.Message, error) {
 	var html bytes.Buffer
 
-	err := util.RenderTo(&html, *templateContext, "templates/base_email.html", "templates/report.html")
+	err := util.RenderTo(&html, templateContext, "templates/base_email.html", "templates/report.html")
 	if err != nil {
 		return nil, err
 	}
@@ -77,10 +80,10 @@ func (a *ReportApi) Compose(templateContext *map[string]interface{}, subscriptio
 		recipients[i].Email = email
 	}
 	msg := gochimp.Message{
-		FromName:    "Andrey Petrov",
-		FromEmail:   "andrey.petrov@shazow.net",
+		FromName:    "Briefmetrics",
+		FromEmail:   "support@briefmetrics.com",
 		To:          recipients,
-		Subject:     "Briefmetrics weekly report",
+		Subject:     templateContext["Subject"].(string),
 		Html:        html.String(),
 		TrackOpens:  true,
 		TrackClicks: true,
