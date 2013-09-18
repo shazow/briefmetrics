@@ -1,8 +1,8 @@
 {{define "content"}}
     <h1>{{ .Title }}</h1>
 
+    {{range $row := .summaryData.Rows}}
     <p style="margin-bottom: 2em;">
-    {{with $row := index .summaryData.Rows 0}}
     In 7 days, {{index $row 1 | comma | highlight}} people spent a whopping total of {{index $row 2 | timeago | highlight}} on your sweet site.
     {{end}}
     </p>
