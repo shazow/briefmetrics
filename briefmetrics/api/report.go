@@ -3,6 +3,7 @@ package api
 import (
 	"appengine"
 	"appengine/datastore"
+	"appengine/urlfetch"
 	"appengine/delay"
 	model "briefmetrics/model"
 	util "briefmetrics/util"
@@ -11,7 +12,6 @@ import (
 	"code.google.com/p/google-api-go-client/analytics/v3"
 	"fmt"
 	"github.com/mattbaird/gochimp"
-	"net/http"
 	"time"
 )
 
@@ -93,7 +93,7 @@ func (a *ReportApi) Compose(templateContext map[string]interface{}, subscription
 
 type APIConfig interface {
 	Analytics() oauth.Config
-	Mandrill(http.RoundTripper) gochimp.MandrillAPI
+	Mandrill(*urlfetch.Transport) gochimp.MandrillAPI
 }
 
 func (a *ReportApi) Send(appContext appengine.Context, apiConfig APIConfig, sinceTime time.Time, accountKey datastore.Key, account model.Account, subscriptionKey datastore.Key, subscription model.Subscription) {

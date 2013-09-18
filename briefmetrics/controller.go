@@ -25,7 +25,7 @@ func (c Config) Analytics() oauth.Config {
 	return oauth.Config(c.AnalyticsAPI)
 }
 
-func (c Config) Mandrill(transport http.RoundTripper) gochimp.MandrillAPI {
+func (c Config) Mandrill(transport *urlfetch.Transport) gochimp.MandrillAPI {
 	mandrill := gochimp.MandrillAPI(c.MandrillAPI)
 	mandrill.Transport = transport
 	return mandrill
