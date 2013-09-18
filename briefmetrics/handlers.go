@@ -376,6 +376,9 @@ func CronHandler(c Controller) {
 		}
 
 		// Next update: Next week.
+		if subscription.NextUpdate.Year() == 1 {
+			subscription.NextUpdate = now.Truncate(time.Hour)
+		}
 		subscription.NextUpdate = subscription.NextUpdate.Add(time.Hour * 24 * 7)
 	}
 
