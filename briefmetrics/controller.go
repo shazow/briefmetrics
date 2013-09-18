@@ -20,6 +20,16 @@ type Config struct {
 	MandrillAPI  gochimp.MandrillAPI
 }
 
+func (c Config) Analytics() oauth.Config{
+	return oauth.Config(c.AnalyticsAPI)
+}
+
+func (c Config) Mandrill(transport http.RoundTripper) gochimp.MandrillAPI {
+	mandrill := gochimp.MandrillAPI(c.MandrillAPI)
+	mandrill.Transport = transport
+	return mandrill
+}
+
 var AppConfig Config
 
 var SessionStore *sessions.CookieStore

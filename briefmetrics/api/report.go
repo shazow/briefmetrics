@@ -3,14 +3,16 @@ package api
 import (
 	"appengine"
 	"appengine/datastore"
+	"appengine/delay"
 	model "briefmetrics/model"
 	util "briefmetrics/util"
 	"bytes"
+	"code.google.com/p/goauth2/oauth"
 	"code.google.com/p/google-api-go-client/analytics/v3"
+	"fmt"
 	"github.com/mattbaird/gochimp"
 	"net/http"
 	"time"
-	"fmt"
 )
 
 type ReportApi struct{ *Api }
@@ -20,15 +22,10 @@ var Report = ReportApi{}
 const formatDateISO = "2006-01-02"
 const formatDateHuman = "January 2, 2006"
 
-func (a *ReportApi) Generate(context appengine.Context, httpClient *http.Client, accountKey *datastore.Key, account *model.Account, subscription *model.Subscription) (map[string]interface{}, error) {
-	analyticsClient, err := analytics.New(httpClient)
-	if err != nil {
-		return nil, err
-	}
-
+func (a *ReportApi) Generate(context appengine.Context, sinceTime time.Time, analyticsClient *analytics.Service, accountKey *datastore.Key, account *model.Account, subscription *model.Subscription) (map[string]interface{}, error) {
 	// Week + Sunday offset
-	startDate := time.Now().Add(-24*7*time.Hour - time.Hour*24*time.Duration(time.Now().Weekday()))
-	endDate := startDate.Add(24*7*time.Hour)
+	startDate := sinceTime.Add(-24*7*time.Hour - time.Hour*24*time.Duration(sinceTime.Weekday()))
+	endDate := startDate.Add(24 * 7 * time.Hour)
 
 	analyticsApi := AnalyticsApi{
 		AppContext: context,
@@ -93,3 +90,47 @@ func (a *ReportApi) Compose(templateContext map[string]interface{}, subscription
 
 	return &msg, nil
 }
+
+type APIConfig interface {
+	Analytics() oauth.Config
+	Mandrill(http.RoundTripper) gochimp.MandrillAPI
+}
+
+func (a *ReportApi) Send(appContext appengine.Context, apiConfig APIConfig, sinceTime time.Time, accountKey datastore.Key, account model.Account, subscriptionKey datastore.Key, subscription model.Subscription) {
+	analyticsApi := AnalyticsApi{
+		AppContext: appContext,
+	}
+	analyticsApi.SetupClient(apiConfig.Analytics(), &accountKey, &account)
+
+	templateContext, err := Report.Generate(appContext, sinceTime, analyticsApi.Client, &accountKey, &account, &subscription)
+	if err != nil {
+		appContext.Errorf("Delayed: Failed to generate report [%d]: ", subscriptionKey.IntID(), err)
+		return
+	}
+	message, err := Report.Compose(templateContext, &subscription)
+	if err != nil {
+		appContext.Errorf("Delayed: Failed to compose email [%d]: ", subscriptionKey.IntID(), err)
+		return
+	}
+
+	mandrill := apiConfig.Mandrill(analyticsApi.Transport)
+	_, err = mandrill.MessageSend(*message, true)
+	if err != nil {
+		appContext.Errorf("Delayed: Failed to send email [%d]: ", subscriptionKey.IntID(), err)
+		return
+	}
+
+	// Next update: Next week.
+	if subscription.NextUpdate.Year() == 1 {
+		subscription.NextUpdate = time.Now().Truncate(time.Hour)
+	}
+	subscription.NextUpdate = subscription.NextUpdate.Add(time.Hour * 24 * 7)
+
+	_, err = datastore.Put(appContext, &subscriptionKey, &subscription)
+	if err != nil {
+		appContext.Errorf("Delayed: Failed to reschedule subscription [%d]: ", subscriptionKey.IntID(), err)
+		return
+	}
+}
+
+var ReportAsyncSend = delay.Func("ReportSend", Report.Send)

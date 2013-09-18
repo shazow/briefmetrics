@@ -2,6 +2,9 @@ package api
 
 import (
 	"appengine"
+	"appengine/datastore"
+	"appengine/urlfetch"
+	model "briefmetrics/model"
 	"appengine/memcache"
 	"code.google.com/p/goauth2/oauth"
 	"code.google.com/p/google-api-go-client/analytics/v3"
@@ -11,8 +14,8 @@ import (
 type AnalyticsApi struct {
 	*Api
 	AppContext appengine.Context
-	OAuth      *oauth.Config
 	Client     *analytics.Service
+	Transport  *urlfetch.Transport
 	ProfileId  string
 	DateStart  string
 	DateEnd    string
@@ -107,4 +110,31 @@ func (a *AnalyticsApi) UrlDateBoundary() string {
 	}
 
 	return strings.Join(parts, "&")
+}
+
+func (a *AnalyticsApi) SetupClient(oauthConfig oauth.Config, accountKey *datastore.Key, account *model.Account) error {
+	transport := &urlfetch.Transport{
+		Context: a.AppContext,
+	}
+
+	oauthConfig.TokenCache = model.TokenCache{
+		Key:     accountKey,
+		Account: *account,
+		Context: a.AppContext,
+	}
+
+	oauthTransport := &oauth.Transport{
+		Config:    &oauthConfig,
+		Transport: transport,
+		Token: &account.Token,
+	}
+	client := oauthTransport.Client()
+	analyticsClient, err := analytics.New(client)
+	if err != nil {
+		return err
+	}
+
+	a.Client = analyticsClient
+	a.Transport = transport
+	return nil
 }

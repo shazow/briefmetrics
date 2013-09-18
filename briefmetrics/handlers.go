@@ -196,22 +196,13 @@ func SettingsHandler(c Controller) {
 		return
 	}
 
-	c.OAuthTransport.Token = &account.Token
-	c.OAuthTransport.Config.TokenCache = model.TokenCache{
-		Key:     accountKey,
-		Account: *account,
-		Context: c.AppContext,
+	analyticsApi := api.AnalyticsApi{
+		AppContext: c.AppContext,
 	}
-	client := c.OAuthTransport.Client()
-	analyticsClient, err := analytics.New(client)
+	analyticsApi.SetupClient(AppConfig.AnalyticsAPI, accountKey, account)
 	if err != nil {
 		c.Error(err)
 		return
-	}
-
-	analyticsApi := api.AnalyticsApi{
-		AppContext: c.AppContext,
-		Client:     analyticsClient,
 	}
 
 	result := new(analytics.Profiles)
@@ -247,12 +238,12 @@ func SettingsHandler(c Controller) {
 			return
 		}
 
-		sub := model.Subscription{
+		subscription := model.Subscription{
 			Emails:  []string{account.Email},
 			Profile: analyticsProfile,
 		}
 
-		_, err := api.Subscription.Create(c.AppContext, accountKey, sub)
+		subscriptionKey, err := api.Subscription.Create(c.AppContext, accountKey, subscription)
 		if err != nil {
 			c.Error(err)
 			return
@@ -261,7 +252,9 @@ func SettingsHandler(c Controller) {
 		c.Session.AddFlash("Created subscription for " + analyticsProfile.WebsiteUrl)
 		c.SessionSave()
 
-		// TODO: TaskQueue report for last week.
+		// TaskQueue report for last week.
+		api.ReportAsyncSend.Call(c.AppContext, AppConfig, time.Now(), *accountKey, *account, subscriptionKey, subscription)
+
 		http.Redirect(c.ResponseWriter, c.Request, "/", http.StatusSeeOther)
 		return
 	}
@@ -271,6 +264,7 @@ func SettingsHandler(c Controller) {
 }
 
 func ReportHandler(c Controller) {
+	// TODO: Use generalized api.Report.Send
 	if c.UserId == 0 {
 		http.Redirect(c.ResponseWriter, c.Request, "/account/login", http.StatusForbidden)
 		return
@@ -288,15 +282,16 @@ func ReportHandler(c Controller) {
 		return
 	}
 
-	c.OAuthTransport.Token = &account.Token
-	c.OAuthTransport.Config.TokenCache = model.TokenCache{
-		Key:     accountKey,
-		Account: *account,
-		Context: c.AppContext,
+	analyticsApi := api.AnalyticsApi{
+		AppContext: c.AppContext,
 	}
-	client := c.OAuthTransport.Client()
+	err = analyticsApi.SetupClient(AppConfig.AnalyticsAPI, accountKey, account)
+	if err != nil {
+		c.Error(err)
+		return
+	}
 
-	templateContext, err := api.Report.Generate(c.AppContext, client, accountKey, account, subscription)
+	templateContext, err := api.Report.Generate(c.AppContext, time.Now(), analyticsApi.Client, accountKey, account, subscription)
 	if err != nil {
 		c.Error(err)
 		return
@@ -340,51 +335,14 @@ func CronHandler(c Controller) {
 		}
 
 		account, accountKey, err := api.Account.Get(c.AppContext, subscriptionKey.Parent().IntID())
-		c.AppContext.Infof("CronHandler: Processing subscription for account: %s", account.Email)
-
-		// FIXME: Race condition?
-		c.OAuthTransport.Token = &account.Token
-		c.OAuthTransport.Config.TokenCache = model.TokenCache{
-			Key:     accountKey,
-			Account: *account,
-			Context: c.AppContext,
-		}
-		client := c.OAuthTransport.Client()
-
 		if err != nil {
 			c.AppContext.Errorf("CronHandler: Failed to get account, skipping [%d]:", subscriptionKey.IntID(), err)
 			continue
 		}
 
-		templateContext, err := api.Report.Generate(c.AppContext, client, accountKey, account, subscription)
-		if err != nil {
-			c.AppContext.Errorf("CronHandler: Failed to generate report, skipping [%d]:", subscriptionKey.IntID(), err)
-			continue
-		}
+		c.AppContext.Infof("CronHandler: Processing subscription for account: %s", account.Email)
 
-		msg, err := api.Report.Compose(templateContext, subscription)
-		if err != nil {
-			c.AppContext.Errorf("CronHandler: Failed to compose email, skipping [%d]:", subscriptionKey.IntID(), err)
-			continue
-		}
-
-		mandrill := gochimp.MandrillAPI(AppConfig.MandrillAPI)
-		mandrill.Transport = c.Transport
-		if _, err := mandrill.MessageSend(*msg, true); err != nil {
-			c.AppContext.Errorf("CronHandler: Failed to send email, skipping [%d]:", subscriptionKey.IntID(), err)
-			continue
-		}
-
-		// Next update: Next week.
-		if subscription.NextUpdate.Year() == 1 {
-			subscription.NextUpdate = now.Truncate(time.Hour)
-		}
-		subscription.NextUpdate = subscription.NextUpdate.Add(time.Hour * 24 * 7)
-	}
-
-	if _, err = datastore.PutMulti(c.AppContext, keys, subscriptions); err != nil {
-		c.Error(err)
-		return
+		api.ReportAsyncSend.Call(c.AppContext, AppConfig, now, *accountKey, *account, *subscriptionKey, *subscription)
 	}
 }
 
