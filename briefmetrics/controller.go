@@ -26,9 +26,9 @@ func (c Config) Analytics() oauth.Config {
 }
 
 func (c Config) Mandrill(transport *urlfetch.Transport) gochimp.MandrillAPI {
-	mandrill := gochimp.MandrillAPI(c.MandrillAPI)
+	mandrill, _ := gochimp.NewMandrill(c.MandrillAPI.Key)
 	mandrill.Transport = transport
-	return mandrill
+	return *mandrill
 }
 
 var AppConfig Config

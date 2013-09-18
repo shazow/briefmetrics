@@ -113,7 +113,11 @@ func (a *ReportApi) Send(appContext appengine.Context, apiConfig APIConfig, sinc
 		return
 	}
 
-	mandrill := apiConfig.Mandrill(analyticsApi.Transport)
+	transport := urlfetch.Transport{
+		Context: appContext,
+		Deadline: 10 * time.Second,
+	}
+	mandrill := apiConfig.Mandrill(&transport)
 	_, err = mandrill.MessageSend(*message, true)
 	if err != nil {
 		appContext.Errorf("Delayed: Failed to send email [%d]: ", subscriptionKey.IntID(), err)
