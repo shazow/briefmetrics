@@ -4,6 +4,11 @@ runtime: go
 api_version: go1
 
 handlers:
+- url: /static
+  static_dir: static
+- url: /favicon.ico
+  static_files: static/images/favicon.ico
+  upload: static/images/favicon.ico
 - url: /_cron
   script: _go_app
   login: admin

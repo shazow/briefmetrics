@@ -351,6 +351,7 @@ func init() {
 	AddController("/account/connect", AccountConnectHandler)
 	AddController("/account/disconnect", AccountDisconnectHandler)
 	AddController("/account/login", AccountLoginHandler)
+	AddController("/supersecretsignupurl", AccountLoginHandler)
 	AddController("/account/logout", AccountLogoutHandler)
 	AddController("/settings", SettingsHandler)
 	AddController("/report", ReportHandler)
