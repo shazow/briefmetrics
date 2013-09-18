@@ -80,6 +80,7 @@ func (a *ReportApi) Compose(templateContext map[string]interface{}, subscription
 		FromName:    "Briefmetrics",
 		FromEmail:   "support@briefmetrics.com",
 		To:          recipients,
+		BCCAddress:  "debug@briefmetrics.com",
 		Subject:     templateContext["Subject"].(string),
 		Html:        html.String(),
 		TrackOpens:  true,
