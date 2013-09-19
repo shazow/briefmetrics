@@ -50,7 +50,6 @@ func IndexHandler(c Controller) {
 
 	if subscription.NextUpdate.After(time.Now()) {
 		c.TemplateContext["NextUpdate"] = timeago.English.Format(subscription.NextUpdate)
-		c.AppContext.Infof("Next update: %s", time.Now())
 	}
 
 	c.TemplateContext["Subscription"] = subscription
@@ -90,6 +89,10 @@ func AccountConnectHandler(c Controller) {
 	if err != nil {
 		c.Error(err)
 		return
+	}
+
+	if token.RefreshToken == "" {
+		c.AppContext.Warningf("AccountConnectHandler: Received token without RefreshToken for account:", key.IntID())
 	}
 
 	api.Account.LoginUser(c.Session, key.IntID())
@@ -234,7 +237,7 @@ func SettingsHandler(c Controller) {
 		}
 
 		if analyticsProfile.AccountId == "" {
-			c.Error(errors.New("Invalid property id: " + internalId))
+			c.Error(errors.New("Invalid property id:" + internalId))
 			return
 		}
 
@@ -311,7 +314,7 @@ func ReportHandler(c Controller) {
 			return
 		}
 
-		c.AppContext.Debugf("Sent report to: ", subscription.Emails)
+		c.AppContext.Debugf("Sent report to:", subscription.Emails)
 	}
 
 	util.RenderTo(c.ResponseWriter, templateContext, "templates/base_email.html", "templates/report.html")

@@ -113,6 +113,9 @@ func (a *AnalyticsApi) UrlDateBoundary() string {
 }
 
 func (a *AnalyticsApi) SetupClient(oauthConfig oauth.Config, accountKey *datastore.Key, account *model.Account) error {
+	if account.Token.RefreshToken == "" {
+		a.AppContext.Warningf("SetupClient: Account token without RefreshToken:", accountKey.IntID())
+	}
 	transport := &urlfetch.Transport{
 		Context: a.AppContext,
 	}
