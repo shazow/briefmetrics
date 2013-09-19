@@ -107,23 +107,26 @@ func (a *ReportApi) Send(appContext appengine.Context, apiConfig APIConfig, sinc
 	var message *gochimp.Message
 	var err error
 
+	// TODO: Rewrite this less branchily
 	if account.Token.RefreshToken == "" {
+		// No refresh token :(
 		message, err = Report.Compose(nil, "templates/email/error_auth.html", "Problem with your Briefmetrics account", &subscription)
-		if err != nil {
-			appContext.Errorf("api.Report.Send: Failed to compose auth error email [%d]: ", subscriptionKey.IntID(), err)
-			return
-		}
 	} else {
 		templateContext, subject, err := Report.Generate(appContext, sinceTime, analyticsApi.Client, &accountKey, &account, &subscription)
 		if err != nil {
 			appContext.Errorf("api.Report.Send: Failed to generate report [%d]: ", subscriptionKey.IntID(), err)
 			return
 		}
-		message, err = Report.Compose(templateContext, "templates/email/report.html", subject, &subscription)
-		if err != nil {
-			appContext.Errorf("api.Report.Send: Failed to compose email [%d]: ", subscriptionKey.IntID(), err)
-			return
+		if len(templateContext["pageData"].(analytics.GaData).Rows) == 0 {
+			// No data :(
+			message, err = Report.Compose(templateContext, "templates/email/error_empty.html", subject, &subscription)
+		} else {
+			message, err = Report.Compose(templateContext, "templates/email/report.html", subject, &subscription)
 		}
+	}
+	if err != nil {
+		appContext.Errorf("api.Report.Send: Failed to compose email [%d]: ", subscriptionKey.IntID(), err)
+		return
 	}
 
 	_, err = mandrillApi.MessageSend(*message, true)

@@ -93,6 +93,8 @@ func AccountConnectHandler(c Controller) {
 
 	if token.RefreshToken == "" {
 		c.AppContext.Warningf("AccountConnectHandler: Received token without RefreshToken for account:", key.IntID())
+	} else {
+		c.AppContext.Debugf("AccountConnectHandler: Got a RefreshToken for account:", key.IntID())
 	}
 
 	api.Account.LoginUser(c.Session, key.IntID())

@@ -100,7 +100,7 @@ func (a *AnalyticsApi) SocialReferrers() (r *analytics.GaData, err error) {
 }
 
 func (a *AnalyticsApi) UrlDateBoundary() string {
-	parts := make([]string, 2)
+	parts := []string{}
 
 	if a.DateStart != "" {
 		parts = append(parts, "_u.date00=" + strings.Replace(a.DateStart, "-", "", -1))

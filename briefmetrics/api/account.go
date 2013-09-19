@@ -22,8 +22,7 @@ func (a *AccountApi) Create(context appengine.Context, account model.Account) (*
 
 	keys, err := q.GetAll(context, nil)
 	if err == nil && len(keys) > 0 {
-		datastore.Put(context, keys[0], &account)
-		return keys[0], nil
+		return datastore.Put(context, keys[0], &account)
 	}
 
 	key := datastore.NewIncompleteKey(context, "Account", nil)

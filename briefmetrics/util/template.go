@@ -28,8 +28,12 @@ func TemplateReplace(s string, replace string, with string) string {
 	return r
 }
 
-func TemplatePermalink(report string, profile AnalyticsID, d DateBounder) string {
-	return "https://www.google.com/analytics/web/#report/" + report + "/" + profile.UrlID() + "/?" + d.UrlDateBoundary()
+func TemplatePermalink(section string, profile AnalyticsID, d DateBounder) string {
+	r := "https://www.google.com/analytics/web/#" + section + "/" + profile.UrlID() + "/"
+	if d != nil {
+		r += "?" + d.UrlDateBoundary()
+	}
+	return r
 }
 
 func TemplateTimeago(seconds string) string {
