@@ -1,10 +1,13 @@
 {{define "content"}}
+
     {{$startDate := .StartDate}}
     {{range $row := .summaryData.Rows}}
     <p style="margin-bottom: 2em;">
         {{index $row 1 | comma | highlight}} people visited in 7 days since {{$startDate}}, and they spent a whopping total of {{index $row 2 | timeago | highlight}} on your sweet site.
     </p>
     {{end}}
+
+    <img src="{{ .SummaryChartUrl }}" alt="Summary Chart" />
 
     <table>
         <thead>

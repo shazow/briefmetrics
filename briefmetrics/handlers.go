@@ -173,6 +173,7 @@ func AccountLoginHandler(c Controller) {
 		if err == nil && account.Token.RefreshToken == "" {
 			forceLoginConfig := oauth.Config(AppConfig.AnalyticsAPI)
 			forceLoginConfig.ApprovalPrompt = "force"
+			c.AppContext.Debugf("Forcing login redirect, would have been:", forceLoginConfig.AuthCodeURL(""))
 			forceLoginConfig.AccessType = "offline"
 			next = forceLoginConfig.AuthCodeURL("")
 		}

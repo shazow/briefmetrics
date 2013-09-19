@@ -63,6 +63,13 @@ func (a *ReportApi) Generate(context appengine.Context, sinceTime time.Time, ana
 		templateContext[r.Label+"Data"] = r.GaData
 	}
 
+	chart := util.Chart{
+		Size: "600x200",
+		Colors: []string{"8BB6CA", "224499"},
+		Data: [][]string{[]string{"1","5","10","25","30","50"}, []string{"1","2","3"}},
+	}
+	templateContext["SummaryChartUrl"] = chart.Url()
+
 	return templateContext, subject, nil
 }
 
