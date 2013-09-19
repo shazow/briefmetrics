@@ -6,7 +6,7 @@
     <ul>
         {{range .AnalyticsProfiles}}
         <li>
-            <a href="/settings?id={{.InternalWebPropertyId}}">{{.WebPropertyId}}</a> {{.WebsiteUrl}} ({{.Name}})
+            <a href="/settings?profile_id={{.Id}}">{{.WebPropertyId}}</a> {{.WebsiteUrl}} ({{.Name}})
         </li>
         {{end}}
     </ul>

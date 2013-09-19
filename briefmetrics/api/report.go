@@ -20,25 +20,26 @@ type ReportApi struct{ *Api }
 var Report = ReportApi{}
 
 const formatDateISO = "2006-01-02"
-const formatDateHuman = "January 2, 2006"
+const formatDateHuman = "January 2"
 
 func (a *ReportApi) Generate(context appengine.Context, sinceTime time.Time, analyticsClient *analytics.Service, accountKey *datastore.Key, account *model.Account, subscription *model.Subscription) (map[string]interface{}, string, error) {
 	// Week + Sunday offset
 	startDate := sinceTime.Add(-24*7*time.Hour - time.Hour*24*time.Duration(sinceTime.Weekday()))
-	endDate := startDate.Add(24 * 7 * time.Hour)
+	endDate := startDate.Add(24 * 6 * time.Hour)
 
 	analyticsApi := AnalyticsApi{
 		AppContext: context,
 		Client:     analyticsClient,
 		ProfileId:  subscription.Profile.ProfileId,
-		DateStart:  startDate.Add(-24 * 6 * time.Hour).Format(formatDateISO),
+		DateStart:  startDate.Format(formatDateISO),
 		DateEnd:    endDate.Format(formatDateISO),
 	}
 
 	subject := "Weekly report for " + subscription.Profile.HumanWebsiteUrl()
 	templateContext := make(map[string]interface{})
 	templateContext["Subject"] = subject
-	templateContext["Title"] = endDate.Format(formatDateHuman)
+	templateContext["StartDate"] = startDate.Format(formatDateHuman)
+	templateContext["NextDate"] = startDate.Add(24 * 7 * time.Hour).Format(formatDateHuman)
 	templateContext["Token"] = fmt.Sprintf("%d-%s", accountKey.IntID(), account.EmailToken)
 	templateContext["Profile"] = subscription.Profile
 	templateContext["AnalyticsApi"] = &analyticsApi

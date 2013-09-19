@@ -220,26 +220,26 @@ func SettingsHandler(c Controller) {
 	}
 
 	// Is there a form submission?
-	internalId := c.Request.FormValue("id")
+	profileId := c.Request.FormValue("profile_id")
 
-	if internalId != "" {
+	if profileId != "" {
 		analyticsProfile := model.AnalyticsProfile{
-			InternalWebPropertyId: internalId,
+			ProfileId: profileId,
 		}
 
 		// Find the relevant item
 		for _, profile := range result.Items {
-			if profile.InternalWebPropertyId == internalId {
+			if profile.Id == profileId {
 				analyticsProfile.AccountId = profile.AccountId
 				analyticsProfile.WebPropertyId = profile.WebPropertyId
-				analyticsProfile.ProfileId = profile.Id
+				analyticsProfile.InternalWebPropertyId  = profile.InternalWebPropertyId
 				analyticsProfile.WebsiteUrl = profile.WebsiteUrl
 				break
 			}
 		}
 
 		if analyticsProfile.AccountId == "" {
-			c.Error(errors.New("Invalid property id:" + internalId))
+			c.Error(errors.New("Invalid profile id:" + profileId))
 			return
 		}
 
