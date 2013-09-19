@@ -165,20 +165,21 @@ func AccountDisconnectHandler(c Controller) {
 }
 
 func AccountLoginHandler(c Controller) {
-	if c.UserId == 0 {
-		http.Redirect(c.ResponseWriter, c.Request, AppConfig.AnalyticsAPI.AuthCodeURL(""), http.StatusSeeOther)
-		return
+	next := AppConfig.AnalyticsAPI.AuthCodeURL("")
+
+	if c.UserId != 0 {
+		account, _, err := api.Account.Get(c.AppContext, c.UserId)
+
+		if err == nil && account.Token.RefreshToken == "" {
+			forceLoginConfig := oauth.Config(AppConfig.AnalyticsAPI)
+			forceLoginConfig.ApprovalPrompt = "force"
+			forceLoginConfig.AccessType = "offline"
+			next = forceLoginConfig.AuthCodeURL("")
+		}
 	}
 
-	account, _, err := api.Account.Get(c.AppContext, c.UserId)
-	if err != nil || account.Token.RefreshToken != "" {
-		http.Redirect(c.ResponseWriter, c.Request, AppConfig.AnalyticsAPI.AuthCodeURL(""), http.StatusSeeOther)
-		return
-	}
-
-	forceLoginConfig := oauth.Config(AppConfig.AnalyticsAPI)
-	forceLoginConfig.ApprovalPrompt = "force"
-	http.Redirect(c.ResponseWriter, c.Request, forceLoginConfig.AuthCodeURL(""), http.StatusSeeOther)
+	c.AppContext.Debugf("Login redirect:", next)
+	http.Redirect(c.ResponseWriter, c.Request, next, http.StatusSeeOther)
 }
 
 func AccountLogoutHandler(c Controller) {

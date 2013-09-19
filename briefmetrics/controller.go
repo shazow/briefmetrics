@@ -66,6 +66,7 @@ func (c *Controller) Render(filenames ...string) {
 }
 
 func (c *Controller) Error(err error) {
+	// TODO: Show error page
 	http.Error(c.ResponseWriter, err.Error(), http.StatusInternalServerError)
 }
 
