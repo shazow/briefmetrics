@@ -294,14 +294,14 @@ func ReportHandler(c Controller) {
 		return
 	}
 
-	templateContext, err := api.Report.Generate(c.AppContext, time.Now(), analyticsApi.Client, accountKey, account, subscription)
+	templateContext, subject, err := api.Report.Generate(c.AppContext, time.Now(), analyticsApi.Client, accountKey, account, subscription)
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
 	if c.Request.FormValue("send") != "" {
-		msg, err := api.Report.Compose(templateContext, subscription)
+		msg, err := api.Report.Compose(templateContext, "templates/email/report.html", subject, subscription)
 		if err != nil {
 			c.Error(err)
 			return
@@ -317,7 +317,7 @@ func ReportHandler(c Controller) {
 		c.AppContext.Debugf("Sent report to:", subscription.Emails)
 	}
 
-	util.RenderTo(c.ResponseWriter, templateContext, "templates/base_email.html", "templates/report.html")
+	util.RenderTo(c.ResponseWriter, templateContext, "templates/email/base.html", "templates/email/report.html")
 }
 
 func CronHandler(c Controller) {

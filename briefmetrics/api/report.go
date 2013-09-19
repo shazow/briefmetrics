@@ -22,7 +22,7 @@ var Report = ReportApi{}
 const formatDateISO = "2006-01-02"
 const formatDateHuman = "January 2, 2006"
 
-func (a *ReportApi) Generate(context appengine.Context, sinceTime time.Time, analyticsClient *analytics.Service, accountKey *datastore.Key, account *model.Account, subscription *model.Subscription) (map[string]interface{}, error) {
+func (a *ReportApi) Generate(context appengine.Context, sinceTime time.Time, analyticsClient *analytics.Service, accountKey *datastore.Key, account *model.Account, subscription *model.Subscription) (map[string]interface{}, string, error) {
 	// Week + Sunday offset
 	startDate := sinceTime.Add(-24*7*time.Hour - time.Hour*24*time.Duration(sinceTime.Weekday()))
 	endDate := startDate.Add(24 * 7 * time.Hour)
@@ -35,8 +35,9 @@ func (a *ReportApi) Generate(context appengine.Context, sinceTime time.Time, ana
 		DateEnd:    endDate.Format(formatDateISO),
 	}
 
+	subject := "Weekly report for " + subscription.Profile.HumanWebsiteUrl()
 	templateContext := make(map[string]interface{})
-	templateContext["Subject"] = "Weekly report for " + subscription.Profile.HumanWebsiteUrl()
+	templateContext["Subject"] = subject
 	templateContext["Title"] = endDate.Format(formatDateHuman)
 	templateContext["Token"] = fmt.Sprintf("%d-%s", accountKey.IntID(), account.EmailToken)
 	templateContext["Profile"] = subscription.Profile
@@ -55,19 +56,19 @@ func (a *ReportApi) Generate(context appengine.Context, sinceTime time.Time, ana
 		r := <-results
 
 		if r.Error != nil {
-			return nil, r.Error
+			return nil, subject, r.Error
 		}
 
 		templateContext[r.Label+"Data"] = r.GaData
 	}
 
-	return templateContext, nil
+	return templateContext, subject, nil
 }
 
-func (a *ReportApi) Compose(templateContext map[string]interface{}, subscription *model.Subscription) (*gochimp.Message, error) {
+func (a *ReportApi) Compose(templateContext map[string]interface{}, template string, subject string, subscription *model.Subscription) (*gochimp.Message, error) {
 	var html bytes.Buffer
 
-	err := util.RenderTo(&html, templateContext, "templates/base_email.html", "templates/report.html")
+	err := util.RenderTo(&html, templateContext, "templates/email/base.html", template)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +82,7 @@ func (a *ReportApi) Compose(templateContext map[string]interface{}, subscription
 		FromEmail:   "support@briefmetrics.com",
 		To:          recipients,
 		BCCAddress:  "debug@briefmetrics.com",
-		Subject:     templateContext["Subject"].(string),
+		Subject:     subject,
 		Html:        html.String(),
 		TrackOpens:  true,
 		TrackClicks: true,
@@ -102,26 +103,32 @@ func (a *ReportApi) Send(appContext appengine.Context, apiConfig APIConfig, sinc
 		AppContext: appContext,
 	}
 	analyticsApi.SetupClient(apiConfig.Analytics(), &accountKey, &account)
+	mandrillApi := apiConfig.Mandrill(analyticsApi.Transport)
+	var message *gochimp.Message
+	var err error
 
-	templateContext, err := Report.Generate(appContext, sinceTime, analyticsApi.Client, &accountKey, &account, &subscription)
-	if err != nil {
-		appContext.Errorf("Delayed: Failed to generate report [%d]: ", subscriptionKey.IntID(), err)
-		return
-	}
-	message, err := Report.Compose(templateContext, &subscription)
-	if err != nil {
-		appContext.Errorf("Delayed: Failed to compose email [%d]: ", subscriptionKey.IntID(), err)
-		return
+	if account.Token.RefreshToken == "" {
+		message, err = Report.Compose(nil, "templates/email/error_auth.html", "Problem with your Briefmetrics account", &subscription)
+		if err != nil {
+			appContext.Errorf("api.Report.Send: Failed to compose auth error email [%d]: ", subscriptionKey.IntID(), err)
+			return
+		}
+	} else {
+		templateContext, subject, err := Report.Generate(appContext, sinceTime, analyticsApi.Client, &accountKey, &account, &subscription)
+		if err != nil {
+			appContext.Errorf("api.Report.Send: Failed to generate report [%d]: ", subscriptionKey.IntID(), err)
+			return
+		}
+		message, err = Report.Compose(templateContext, "templates/email/report.html", subject, &subscription)
+		if err != nil {
+			appContext.Errorf("api.Report.Send: Failed to compose email [%d]: ", subscriptionKey.IntID(), err)
+			return
+		}
 	}
 
-	transport := urlfetch.Transport{
-		Context: appContext,
-		Deadline: 10 * time.Second,
-	}
-	mandrill := apiConfig.Mandrill(&transport)
-	_, err = mandrill.MessageSend(*message, true)
+	_, err = mandrillApi.MessageSend(*message, true)
 	if err != nil {
-		appContext.Errorf("Delayed: Failed to send email [%d]: ", subscriptionKey.IntID(), err)
+		appContext.Errorf("api.Report.Send: Failed to send email [%d]: ", subscriptionKey.IntID(), err)
 		return
 	}
 
@@ -133,7 +140,7 @@ func (a *ReportApi) Send(appContext appengine.Context, apiConfig APIConfig, sinc
 
 	_, err = datastore.Put(appContext, &subscriptionKey, &subscription)
 	if err != nil {
-		appContext.Errorf("Delayed: Failed to reschedule subscription [%d]: ", subscriptionKey.IntID(), err)
+		appContext.Errorf("api.Report.Send: Failed to reschedule subscription [%d]: ", subscriptionKey.IntID(), err)
 		return
 	}
 }
