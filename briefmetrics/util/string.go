@@ -2,6 +2,7 @@ package util
 
 import (
 	"math/rand"
+	"time"
 )
 
 const defaultAlphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -15,4 +16,9 @@ func RandomString(length int, alphabet string) string {
 		r[i] = byte(alphabet[rand.Intn(len(alphabet))])
 	}
 	return string(r)
+}
+
+func init() {
+	// FIXME: Is there a way to seed in AppEngine without a timing attack?
+	rand.Seed(time.Now().UnixNano())
 }
