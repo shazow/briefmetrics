@@ -257,6 +257,7 @@ func SettingsHandler(c Controller) {
 		}
 
 		c.Session.AddFlash("Created subscription for " + analyticsProfile.WebsiteUrl)
+		c.Session.AddFlash("First report has been queued. Please check your Spam folder if you don't see it in your Inbox in a few minutes.")
 		c.SessionSave()
 
 		// TaskQueue report for last week.
