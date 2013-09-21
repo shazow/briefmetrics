@@ -66,13 +66,26 @@ func TemplateHighlight(s string) template.HTML {
 	return template.HTML("<span class=\"highlight\">" + s + "</span>")
 }
 
+func TemplateItoa(i int) string {
+	return TemplateComma(strconv.Itoa(i))
+}
+
 var templateFuncs = template.FuncMap{
 	"replace":   TemplateReplace,
 	"permalink": TemplatePermalink,
 	"timeago":   TemplateTimeago,
 	"comma":     TemplateComma,
 	"linkify":   TemplateLinkify,
-	"highlight":   TemplateHighlight,
+	"highlight": TemplateHighlight,
+	"itoa":      TemplateItoa,
+
+	// Comparisons
+	"eq": eq, // ==
+	"ge": ge, // >=
+	"gt": gt, // >
+	"le": le, // <=
+	"lt": lt, // <
+	"ne": ne, // !=
 }
 
 // Render helpers:

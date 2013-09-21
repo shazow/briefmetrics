@@ -13,14 +13,61 @@ import (
 	"fmt"
 	"github.com/mattbaird/gochimp"
 	"time"
+	"strconv"
 )
 
 type ReportApi struct{ *Api }
 
 var Report = ReportApi{}
 
+const formatDateGa = "20060102"
 const formatDateISO = "2006-01-02"
-const formatDateHuman = "January 2"
+const formatDateHuman = "Monday, January 2"
+
+func reformatHistoricData(data analytics.GaData) (*[][]int, int, error) {
+	r := [][]int{
+		[]int{},
+		[]int{},
+	}
+
+	if len(data.Rows) == 0 {
+		return &r, 0, nil
+	}
+
+	var d time.Time
+	var err error
+	var total int
+	var max int
+	var month time.Month
+	var currentData *[]int
+	i := -1
+
+	for _, row := range data.Rows {
+		d, err = time.Parse(formatDateGa, row[0])
+		if err != nil {
+			return nil, max, err
+		}
+
+		if d.Month() != month {
+			if total > max {
+				max = total
+			}
+			month = d.Month()
+			i += 1
+			currentData = &r[i]
+			total = 0
+		}
+
+		value, err := strconv.Atoi(row[1])
+		if err != nil {
+			return nil, max, err
+		}
+		total += value
+		*currentData = append(*currentData, total)
+	}
+
+	return &r, max, nil
+}
 
 func (a *ReportApi) Generate(context appengine.Context, sinceTime time.Time, analyticsClient *analytics.Service, accountKey *datastore.Key, account *model.Account, subscription *model.Subscription) (map[string]interface{}, string, error) {
 	// Week + Sunday offset
@@ -39,12 +86,12 @@ func (a *ReportApi) Generate(context appengine.Context, sinceTime time.Time, ana
 	templateContext := make(map[string]interface{})
 	templateContext["Subject"] = subject
 	templateContext["StartDate"] = startDate.Format(formatDateHuman)
-	templateContext["NextDate"] = startDate.Add(24 * 7 * time.Hour).Format(formatDateHuman)
+	templateContext["NextDate"] = endDate.Add(24 * 9 * time.Hour).Format(formatDateHuman)
 	templateContext["Token"] = fmt.Sprintf("%d-%s", accountKey.IntID(), account.EmailToken)
 	templateContext["Profile"] = subscription.Profile
 	templateContext["AnalyticsApi"] = &analyticsApi
 
-	numResults := 4
+	numResults := 5
 	results := make(chan AnalyticsResult)
 	defer close(results)
 
@@ -52,7 +99,9 @@ func (a *ReportApi) Generate(context appengine.Context, sinceTime time.Time, ana
 	go analyticsApi.Cache("page", analyticsApi.TopPages, results)
 	go analyticsApi.Cache("social", analyticsApi.SocialReferrers, results)
 	go analyticsApi.Cache("summary", analyticsApi.Summary, results)
+	go analyticsApi.Cache("historic", analyticsApi.Historic, results)
 
+	var chart *util.Chart
 	for ; numResults > 0; numResults-- {
 		r := <-results
 
@@ -60,14 +109,29 @@ func (a *ReportApi) Generate(context appengine.Context, sinceTime time.Time, ana
 			return nil, subject, r.Error
 		}
 
+		if r.Label == "historic" {
+			chartData, max, err := reformatHistoricData(r.GaData)
+			if err != nil {
+				return nil, subject, err
+			}
+
+			chart = &util.Chart{
+				Size: "600x200",
+				Data: *chartData,
+				Max: max,
+			}
+			continue
+		}
 		templateContext[r.Label+"Data"] = r.GaData
 	}
 
-	chart := util.Chart{
-		Size: "600x200",
-		Colors: []string{"8BB6CA", "224499"},
-		Data: [][]string{[]string{"1","5","10","25","30","50"}, []string{"1","2","3"}},
+	lenCurrent := len(chart.Data[1])
+	if lenCurrent > len(chart.Data[0]) {
+		lenCurrent = len(chart.Data[0])
 	}
+	templateContext["TotalLast"] = chart.Data[0][len(chart.Data[0])-1]
+	templateContext["TotalLastRelative"] = chart.Data[0][lenCurrent]
+	templateContext["TotalCurrent"] = chart.Data[1][len(chart.Data[1])-1]
 	templateContext["SummaryChartUrl"] = chart.Url()
 
 	return templateContext, subject, nil
@@ -143,6 +207,7 @@ func (a *ReportApi) Send(appContext appengine.Context, apiConfig APIConfig, sinc
 		return
 	}
 
+	// FIXME: Next week Monday, not Sunday!
 	// Next update: Next week.
 	if subscription.NextUpdate.Year() == 1 {
 		subscription.NextUpdate = time.Now().Truncate(time.Hour)

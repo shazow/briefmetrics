@@ -1,13 +1,22 @@
 {{define "content"}}
+    <p>
+        Your site had <span class="chartTop">{{ .TotalCurrent | itoa }} views so far this month</span>
+        {{ if ge .TotalCurrent .TotalLastRelative }}
+        , compared to last month's {{ .TotalLastRelative | itoa }} views at this time.
+        You're on your way to beat <span class="chartBottom">last months's total of {{ .TotalLast | itoa }}</span>.
+        {{ else }}
+        , compared to <span class="chartBottom">last month's {{ .TotalLastRelative | itoa }} views</span> at this time.
+        {{ end }}
+    </p>
+
+    <img src="{{ .SummaryChartUrl }}" />
 
     {{$startDate := .StartDate}}
     {{range $row := .summaryData.Rows}}
     <p style="margin-bottom: 2em;">
-        {{index $row 1 | comma | highlight}} people visited in 7 days since {{$startDate}}, and they spent a whopping total of {{index $row 2 | timeago | highlight}} on your sweet site.
+        This week, {{index $row 1 | comma | highlight}} unique people spent a combined {{index $row 2 | timeago | highlight}} on your sweet site.
     </p>
     {{end}}
-
-    <img src="{{ .SummaryChartUrl }}" alt="Summary Chart" />
 
     <table>
         <thead>
@@ -75,7 +84,7 @@
     </table>
 
     <p>
-        You can look forward to the next report on {{.NextDate | highlight}}.
+        You can look forward to your next report on {{.NextDate | highlight}}.
     </p>
 
     <h2>Coming soon (aka. my shameless public TODO list)</h2>

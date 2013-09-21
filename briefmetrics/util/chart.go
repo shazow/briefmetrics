@@ -1,23 +1,28 @@
 package util
 
 import (
-	"strings"
+	"strconv"
 )
 
 type Chart struct {
 	Size   string
-	Colors []string
-	Data   [][]string
+	Data   [][]int
+	Max    int
 }
 
-func encodeData(d [][]string, width int) string {
+func encodeData(d [][]int, width int, divisor int) string {
 	r := "t:"
 	for i, row := range d {
 		pad := width - len(row)
 		if i != 0 {
 			r += "|"
 		}
-		r += strings.Join(row, ",")
+		for j, value := range row {
+			if j != 0 {
+				r += ","
+			}
+			r += strconv.Itoa(value / divisor)
+		}
 		for j := 0; j < pad; j++ {
 			r += ",_"
 		}
@@ -29,9 +34,9 @@ func (c Chart) Url() string {
 	return "https://chart.googleapis.com/chart" +
 		"?chs=" + c.Size +
 		"&cht=ls" +
-		"&chco=" + strings.Join(c.Colors, ",") +
-		"&chd=" + encodeData(c.Data, len(c.Data[0])) +
+		"&chco=ffffff,9c1a32" +
+		"&chd=" + encodeData(c.Data, len(c.Data[0]), c.Max/100) +
 		"&chg=-1,-1,0,0" +
 		"&chls=1|1" +
-		"&chm=B,CAE4F0,0,0,0|B,3072F3,1,0,0,1"
+		"&chm=B,CE234233,0,0,0|B,CE234277,1,0,0,1"
 }

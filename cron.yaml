@@ -1,4 +1,5 @@
 cron:
 - description: send reports
   url: /_cron
-  schedule: every 6 hours
+  schedule: every monday 08:15
+  timezone: US/Pacific

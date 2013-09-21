@@ -3,12 +3,13 @@ package api
 import (
 	"appengine"
 	"appengine/datastore"
+	"appengine/memcache"
 	"appengine/urlfetch"
 	model "briefmetrics/model"
-	"appengine/memcache"
 	"code.google.com/p/goauth2/oauth"
 	"code.google.com/p/google-api-go-client/analytics/v3"
 	"strings"
+	"time"
 )
 
 type AnalyticsApi struct {
@@ -65,6 +66,22 @@ func (a *AnalyticsApi) Profiles() (r *analytics.Profiles, err error) {
 	return a.Client.Management.Profiles.List("~all", "~all").Do()
 }
 
+func (a *AnalyticsApi) Historic() (r *analytics.GaData, err error) {
+	dateEnd, err := time.Parse(formatDateISO, a.DateEnd)
+	if err != nil {
+		return nil, err
+	}
+
+	// Pull data back from start of the previous month
+	dateStart := dateEnd.Add(-time.Hour * 24 * time.Duration(dateEnd.Day()+6))
+	dateStart = dateStart.Add(-time.Hour * 24 * time.Duration(dateStart.Day()-1))
+
+	q := a.Client.Data.Ga.
+		Get("ga:"+a.ProfileId, dateStart.Format(formatDateISO), dateEnd.Format(formatDateISO), "ga:pageviews").
+		Dimensions("ga:date")
+	return q.Do()
+}
+
 func (a *AnalyticsApi) Summary() (r *analytics.GaData, err error) {
 	q := a.Client.Data.Ga.
 		Get("ga:"+a.ProfileId, a.DateStart, a.DateEnd, "ga:pageviews,ga:uniquePageviews,ga:timeOnSite")
@@ -103,10 +120,10 @@ func (a *AnalyticsApi) UrlDateBoundary() string {
 	parts := []string{}
 
 	if a.DateStart != "" {
-		parts = append(parts, "_u.date00=" + strings.Replace(a.DateStart, "-", "", -1))
+		parts = append(parts, "_u.date00="+strings.Replace(a.DateStart, "-", "", -1))
 	}
 	if a.DateEnd != "" {
-		parts = append(parts, "_u.date01=" + strings.Replace(a.DateEnd, "-", "", -1))
+		parts = append(parts, "_u.date01="+strings.Replace(a.DateEnd, "-", "", -1))
 	}
 
 	return strings.Join(parts, "&")
@@ -129,7 +146,7 @@ func (a *AnalyticsApi) SetupClient(oauthConfig oauth.Config, accountKey *datasto
 	oauthTransport := &oauth.Transport{
 		Config:    &oauthConfig,
 		Transport: transport,
-		Token: &account.Token,
+		Token:     &account.Token,
 	}
 	client := oauthTransport.Client()
 	analyticsClient, err := analytics.New(client)
