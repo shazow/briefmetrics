@@ -24,7 +24,7 @@ var FormDecoder = schema.NewDecoder()
 
 func IndexHandler(c Controller) {
 	if c.UserId == 0 {
-		c.Render("templates/base.html", "templates/login.html")
+		c.Render("templates/base.html", "templates/public.html")
 		return
 	}
 
@@ -33,7 +33,7 @@ func IndexHandler(c Controller) {
 		api.Account.LogoutUser(c.Session)
 		c.Session.AddFlash("Session expired.")
 		c.Session.Save(c.Request, c.ResponseWriter)
-		c.Render("templates/base.html", "templates/login.html")
+		c.Render("templates/base.html", "templates/public.html")
 		return
 	} else if err != nil {
 		c.Error(err)

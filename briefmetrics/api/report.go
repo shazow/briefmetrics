@@ -66,6 +66,11 @@ func reformatHistoricData(data analytics.GaData) (*[][]int, int, error) {
 		*currentData = append(*currentData, total)
 	}
 
+	// FIXME: Is this broken?
+	if total > max {
+		max = total
+	}
+
 	return &r, max, nil
 }
 
