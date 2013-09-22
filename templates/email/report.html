@@ -1,11 +1,11 @@
 {{define "content"}}
     <p>
-        Your site had <span class="chartTop">{{ .TotalCurrent | itoa }} views so far this month</span>
+        Your site had <span class="chartTop">{{ .TotalCurrent | itoa }} views so far this month,</span>
         {{ if ge .TotalCurrent .TotalLastRelative }}
-        , compared to last month's {{ .TotalLastRelative | itoa }} views at this time.
+        compared to last month's {{ .TotalLastRelative | itoa }} views at this time.
         You're on your way to beat <span class="chartBottom">last months's total of {{ .TotalLast | itoa }}</span>.
         {{ else }}
-        , compared to <span class="chartBottom">last month's {{ .TotalLastRelative | itoa }} views</span> at this time.
+        compared to <span class="chartBottom">last month's {{ .TotalLastRelative | itoa }} views</span> at this time.
         {{ end }}
     </p>
 
@@ -13,8 +13,9 @@
 
     {{$startDate := .StartDate}}
     {{range $row := .summaryData.Rows}}
+    <h2>Last week</h2>
     <p style="margin-bottom: 2em;">
-        This week, {{index $row 1 | comma | highlight}} unique people spent a combined {{index $row 2 | timeago | highlight}} on your sweet site.
+        {{index $row 1 | comma | highlight}} unique people spent a combined {{index $row 2 | timeago | highlight}} in 7 days since {{ $startDate }}.
     </p>
     {{end}}
 

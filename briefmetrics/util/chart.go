@@ -12,6 +12,7 @@ type Chart struct {
 
 func encodeData(d [][]int, width int, divisor int) string {
 	r := "t:"
+
 	for i, row := range d {
 		pad := width - len(row)
 		if i != 0 {
@@ -27,6 +28,21 @@ func encodeData(d [][]int, width int, divisor int) string {
 			r += ",_"
 		}
 	}
+
+	weekOffset := len(d[1]) - 7
+	weekPad := width - weekOffset - 7
+	week := d[1][weekOffset:len(d[1])]
+	r += "|_"
+	for j := 1; j < weekOffset; j++ {
+		r += ",_"
+	}
+	for _, value := range week {
+		r += "," + strconv.Itoa(value / divisor)
+	}
+	for j := 0; j < weekPad; j++ {
+		r += ",_"
+	}
+
 	return r
 }
 
@@ -34,9 +50,9 @@ func (c Chart) Url() string {
 	return "https://chart.googleapis.com/chart" +
 		"?chs=" + c.Size +
 		"&cht=ls" +
-		"&chco=ffffff,9c1a32" +
+		"&chco=ffffff00,9c1a32,ffffff00" +
 		"&chd=" + encodeData(c.Data, len(c.Data[0]), c.Max/100) +
 		"&chg=-1,-1,0,0" +
 		"&chls=1|1" +
-		"&chm=B,CE234233,0,0,0|B,CE234277,1,0,0,1"
+		"&chm=B,CE234233,0,0,0|B,CE234277,1,0,0,1|B,CE234240,2,0,0,2"
 }
