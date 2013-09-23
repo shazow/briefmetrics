@@ -76,6 +76,7 @@ func reformatHistoricData(data analytics.GaData) (*[][]int, int, error) {
 
 func (a *ReportApi) Generate(context appengine.Context, sinceTime time.Time, analyticsClient *analytics.Service, accountKey *datastore.Key, account *model.Account, subscription *model.Subscription) (map[string]interface{}, string, error) {
 	// Week + Sunday offset
+	// TODO: Use .AddDate(0, -months, -days)
 	startDate := sinceTime.Add(-24*7*time.Hour - time.Hour*24*time.Duration(sinceTime.Weekday()))
 	endDate := startDate.Add(24 * 6 * time.Hour)
 

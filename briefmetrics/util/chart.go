@@ -12,6 +12,9 @@ type Chart struct {
 
 func encodeData(d [][]int, width int, divisor int) string {
 	r := "t:"
+	if divisor <= 0 {
+		return r
+	}
 
 	for i, row := range d {
 		pad := width - len(row)
