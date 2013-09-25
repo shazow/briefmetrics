@@ -166,17 +166,24 @@ func AccountDisconnectHandler(c Controller) {
 
 func AccountLoginHandler(c Controller) {
 	next := AppConfig.AnalyticsAPI.AuthCodeURL("")
+	forceApproval := false
 
-	if c.UserId != 0 {
+	if c.Request.FormValue("force") != "" {
+		forceApproval = true
+	} else if c.UserId != 0 {
 		account, _, err := api.Account.Get(c.AppContext, c.UserId)
 
 		if err == nil && account.Token.RefreshToken == "" {
-			forceLoginConfig := oauth.Config(AppConfig.AnalyticsAPI)
-			forceLoginConfig.ApprovalPrompt = "force"
-			c.AppContext.Debugf("Forcing login redirect, would have been:", forceLoginConfig.AuthCodeURL(""))
-			forceLoginConfig.AccessType = "offline"
-			next = forceLoginConfig.AuthCodeURL("")
+			forceApproval = true
 		}
+	}
+
+	if forceApproval {
+		forceLoginConfig := oauth.Config(AppConfig.AnalyticsAPI)
+		forceLoginConfig.ApprovalPrompt = "force"
+		c.AppContext.Debugf("Forcing login redirect, would have been:", forceLoginConfig.AuthCodeURL(""))
+		forceLoginConfig.AccessType = "offline"
+		next = forceLoginConfig.AuthCodeURL("")
 	}
 
 	c.AppContext.Debugf("Login redirect:", next)
