@@ -3,6 +3,8 @@ todo:
 - text: "Subscribe to multiple sites."
 - text: "Paid subscriptions."
 - text: "Add a \"What's new\" section."
+- text: "Delta changed since last week."
+- text: "Daily reports."
 
 done:
 - date: 2013-09-21
