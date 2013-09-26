@@ -62,7 +62,7 @@ func (a *AnalyticsApi) Cache(label string, f func() (*analytics.GaData, error), 
 	result <- r
 }
 
-func (a *AnalyticsApi) Profiles() (r *analytics.Profiles, err error) {
+func (a *AnalyticsApi) Profiles() (*analytics.Profiles, error) {
 	return a.Client.Management.Profiles.List("~all", "~all").Do()
 }
 
@@ -82,13 +82,13 @@ func (a *AnalyticsApi) Historic() (r *analytics.GaData, err error) {
 	return q.Do()
 }
 
-func (a *AnalyticsApi) Summary() (r *analytics.GaData, err error) {
+func (a *AnalyticsApi) Summary() (*analytics.GaData, error) {
 	q := a.Client.Data.Ga.
 		Get("ga:"+a.ProfileId, a.DateStart, a.DateEnd, "ga:pageviews,ga:uniquePageviews,ga:timeOnSite")
 	return q.Do()
 }
 
-func (a *AnalyticsApi) Referrers() (r *analytics.GaData, err error) {
+func (a *AnalyticsApi) Referrers() (*analytics.GaData, error) {
 	q := a.Client.Data.Ga.
 		Get("ga:"+a.ProfileId, a.DateStart, a.DateEnd, "ga:visits").
 		Dimensions("ga:fullReferrer").
@@ -98,7 +98,7 @@ func (a *AnalyticsApi) Referrers() (r *analytics.GaData, err error) {
 	return q.Do()
 }
 
-func (a *AnalyticsApi) TopPages() (r *analytics.GaData, err error) {
+func (a *AnalyticsApi) TopPages() (*analytics.GaData, error) {
 	q := a.Client.Data.Ga.
 		Get("ga:"+a.ProfileId, a.DateStart, a.DateEnd, "ga:pageviews").
 		Dimensions("ga:pagePath").
@@ -107,7 +107,7 @@ func (a *AnalyticsApi) TopPages() (r *analytics.GaData, err error) {
 	return q.Do()
 }
 
-func (a *AnalyticsApi) SocialReferrers() (r *analytics.GaData, err error) {
+func (a *AnalyticsApi) SocialReferrers() (*analytics.GaData, error) {
 	q := a.Client.Data.Ga.
 		Get("ga:"+a.ProfileId, a.DateStart, a.DateEnd, "ga:visits").
 		Dimensions("ga:socialNetwork").

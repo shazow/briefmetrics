@@ -50,6 +50,9 @@ func encodeData(d [][]int, width int, divisor int) string {
 }
 
 func (c Chart) Url() string {
+	if c.Max == 0 {
+		return ""
+	}
 	return "https://chart.googleapis.com/chart" +
 		"?chs=" + c.Size +
 		"&cht=ls" +

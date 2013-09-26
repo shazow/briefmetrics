@@ -9,7 +9,9 @@
         {{ end }}
     </p>
 
+    {{ if .SummaryChartUrl }}
     <img src="{{ .SummaryChartUrl }}" />
+    {{ end }}
 
     {{$startDate := .StartDate}}
     {{range $row := .summaryData.Rows}}
@@ -19,6 +21,7 @@
     </p>
     {{end}}
 
+    {{ if .pageData.Rows }}
     <table>
         <thead>
             <tr>
@@ -40,7 +43,13 @@
             {{end}}
         </tbody>
     </table>
+    {{ else }}
+    <h3>
+        <a href="{{ permalink `report/content-pages` .Profile .AnalyticsApi }}">No Page Visits</a>
+    </h3>
+    {{ end }}
 
+    {{ if .referrerData.Rows }}
     <table>
         <thead>
             <tr>
@@ -61,8 +70,13 @@
             {{end}}
         </tbody>
     </table>
+    {{ else }}
+    <h3>
+        <a href="{{ permalink `report/trafficsources-referrals` .Profile .AnalyticsApi }}">No Referrers</a>
+    </h3>
+    {{ end }}
 
-
+    {{ if .socialData.Rows }}
     <table>
         <thead>
             <tr>
@@ -83,6 +97,11 @@
             {{end}}
         </tbody>
     </table>
+    {{ else }}
+    <h3>
+        <a href="{{ permalink `report/social-sources` .Profile .AnalyticsApi }}">No Social Sources</a>
+    </h3>
+    {{ end }}
 
     <p>
         You can look forward to your next report on {{.NextDate | highlight}}.
