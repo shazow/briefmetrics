@@ -3,9 +3,12 @@ import os
 from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
-README = open(os.path.join(here, 'README.txt')).read()
 
-requires = open('requirements.txt').readlines()
+with open(os.path.join(here, 'README.txt')) as f:
+    README = f.read()
+
+with open(os.path.join(here, 'requirements.txt')) as f:
+    requires = f.readlines()
 
 setup(name='briefmetrics',
       version='0.0',
