@@ -49,7 +49,7 @@ fixtures: setup requirements
 
 ### Database:
 
-ALEMBIC_VERSIONS=migration/versions/*.py
+ALEMBIC_VERSIONS=migration/versions/
 ALEMBIC_OUT=alembic.log
 
 $(ALEMBIC_OUT): $(ALEMBIC_VERSIONS)
