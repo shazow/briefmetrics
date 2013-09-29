@@ -2,36 +2,37 @@
 use = egg:briefmetrics
 
 # Pyramid
-pyramid.reload_templates = true
+pyramid.reload_templates = false
 pyramid.debug_authorization = false
 pyramid.debug_notfound = false
 pyramid.debug_routematch = false
 pyramid.default_locale_name = en
-pyramid.includes = pyramid_debugtoolbar
+pyramid.includes = pyramid_exclog
+
+# Debugging emails
+exclog.extra_info = true
 
 # Mail
-mail.mailer_class = DummyMailer
-mail.debug = 1
+mail.host = localhost
+mail.port = 25
 
 # Sessions
 session.type = file
 session.data_dir = %(here)s/data/sessions/data
 session.lock_dir = %(here)s/data/sessions/lock
 session.key = briefmetrics
-session.secret = somesecret
+session.secret = XXX
 
 # Database
-sqlalchemy.url = sqlite:///%(here)s/briefmetrics.db
-
-# Alembic migration
-script_location = alembic
+sqlalchemy.url = XXX
 
 # Templates
 mako.directories = briefmetrics.web:templates
 mako.strict_undefined = true
 
-# Features
-features.offline = true
+# OAuth
+api.google.client_id = XXX
+api.google.client_secret = XXX
 
 
 [server:main]
@@ -57,20 +58,20 @@ h = briefmetrics.lib.helpers
 # Begin logging configuration
 
 [loggers]
-keys = root, briefmetrics, sqlalchemy, alembic, beaker
+keys = root, briefmetrics, sqlalchemy, alembic, exc_logger
 
 [handlers]
-keys = console
+keys = console, mail
 
 [formatters]
 keys = generic
 
 [logger_root]
-level = DEBUG
+level = WARN
 handlers = console
 
 [logger_briefmetrics]
-level = DEBUG
+level = WARN
 handlers =
 qualname = briefmetrics
 
@@ -87,15 +88,21 @@ level = INFO
 handlers =
 qualname = alembic
 
-[logger_beaker]
-level = WARN
-handlers =
-qualname = beaker
+[logger_exc_logger]
+level = ERROR
+handlers = mail
+qualname = exc_logger
 
 [handler_console]
 class = StreamHandler
 args = (sys.stderr,)
 level = NOTSET
+formatter = generic
+
+[handler_mail]
+class = handlers.SMTPHandler
+args = (('localhost', 25), 'admin@briefmetrics.com', ['errors@briefmetrics.com'], '[briefmetrics] Application error')
+level = ERROR
 formatter = generic
 
 [formatter_generic]
