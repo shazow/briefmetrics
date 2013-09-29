@@ -1,12 +1,20 @@
 from pyramid import tweens, httpexceptions
 
 from briefmetrics.lib.exceptions import LoginRequired, APIError
-from briefmetrics.lib import helpers
+
+
+def _dict_view_prefixed(d, prefix):
+    return {key[len(prefix):]: d[key] for key in d if key.startswith(prefix)}
 
 
 def _setup_features(RequestCls, settings, prefix='features.'):
-    settings_features = dict((key[len(prefix):], settings[key]) for key in settings if key.startswith(prefix))
+    settings_features = _dict_view_prefixed(settings, prefix)
     RequestCls.DEFAULT_FEATURES.update(settings_features)
+
+
+def _setup_api(settings):
+    from briefmetrics.api import google
+    google.oauth_config.update(_dict_view_prefixed(settings, 'api.google.'))
 
 
 def _setup_models(settings):
@@ -69,6 +77,9 @@ def setup_config(config):
 
     # Figure out which features are enabled by default
     _setup_features(Request, settings)
+
+    # Set API key values from config
+    _setup_api(settings)
 
     # Need more setup? Do it here.
     # ...

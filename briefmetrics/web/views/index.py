@@ -3,4 +3,4 @@ from .base import Controller
 
 class IndexController(Controller):
     def index(self):
-        return "Hello, world."
+        return self._render('index.mako')

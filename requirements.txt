@@ -11,3 +11,5 @@ pyramid_mako==0.2
 pytz==2013d
 stripe==1.9.5
 unstdlib==1.5.3
+requests==2.0.0
+requests-oauthlib==0.4.0
