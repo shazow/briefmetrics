@@ -1,5 +1,4 @@
-from pyramid import tweens
-from pyramid import httpexceptions
+from pyramid import tweens, httpexceptions
 
 from briefmetrics.lib.exceptions import LoginRequired, APIError
 from briefmetrics.lib import helpers
@@ -20,13 +19,6 @@ def _setup_models(settings):
 
     engine = engine_from_config(settings, 'sqlalchemy.')
     model.init(engine)
-
-    # Set password hash maxtime for User object.
-    model.User.PASSWORD_MAXTIME = float(settings.get('password.hash_maxtime', 0.0001))
-
-
-def _template_globals_factory(system):
-    return {'h': helpers}
 
 
 def _login_tween(handler, registry):
@@ -61,15 +53,11 @@ def setup_config(config):
     config.include('pyramid_handlers') # Handler-based routes
     config.include('pyramid_mailer') # Email
 
-    # Globals for templates
-    config.set_renderer_globals_factory(_template_globals_factory)
-
     # Beaker sessions
     from pyramid_beaker import session_factory_from_settings
     config.set_session_factory(session_factory_from_settings(settings))
 
     # Routes
-    config.add_renderer(".mako", "pyramid.mako_templating.renderer_factory")
     config.add_static_view("static", "briefmetrics.web:static")
 
     # More routes
