@@ -1,9 +1,18 @@
 from requests_oauthlib import OAuth2Session
 
+from briefmetrics import model
+from briefmetrics.model.meta import Session
+from briefmetrics.lib.exceptions import APIError
+
+
 oauth_config = {
     'auth_url': 'https://accounts.google.com/o/oauth2/auth',
     'token_url': 'https://accounts.google.com/o/oauth2/token',
-    'scope': ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/analytics.readonly'],
+    'scope': [
+        'https://www.googleapis.com/auth/userinfo.email',
+        'https://www.googleapis.com/auth/userinfo.profile',
+        'https://www.googleapis.com/auth/analytics.readonly',
+    ],
 
     # Populate these during setup:
     # 'client_id': ...,

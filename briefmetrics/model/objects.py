@@ -51,8 +51,8 @@ class Account(meta.Model): # OAuth Service Account (such as Google Analytics)
     oauth_token = Column(_types.MutationDict.as_mutable(_types.JSONEncodedDict), default=dict)
 
     # Owner
-    user_id = Column(types.Integer, ForeignKey(User.id, ondelete='CASCADE'))
-    user = orm.relationship(User, innerjoin=True, backref='account')
+    user_id = Column(types.Integer, ForeignKey(User.id, ondelete='CASCADE'), index=True)
+    user = orm.relationship(User, innerjoin=True, backref=orm.backref('account', uselist=False))
 
 
 class Report(meta.Model): # Property within an account (such as a website)
