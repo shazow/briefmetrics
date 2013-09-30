@@ -1,4 +1,21 @@
 from sqlalchemy import types
+from sqlalchemy.ext.mutable import Mutable
+
+import collections
+import datetime
+import json
+import time
+
+
+class SchemaEncoder(json.JSONEncoder):
+    """Encoder for converting Model objects into JSON."""
+
+    def default(self, obj):
+        if isinstance(obj, datetime.date):
+            return time.strftime('%Y-%m-%dT%H:%M:%SZ', obj.utctimetuple())
+        elif hasattr(obj, '__json__'):
+            return obj.__json__()
+        return json.JSONEncoder.default(self, obj)
 
 
 class Enum(types.TypeDecorator):
@@ -47,3 +64,41 @@ class Enum(types.TypeDecorator):
     def copy_value(self, value):
         "Convert named value to internal id representation"
         return self.name_lookup.get(value)
+
+
+class JSONEncodedDict(types.TypeDecorator):
+    impl = types.LargeBinary
+
+    def process_bind_param(self, value, dialect):
+        return value is not None and json.dumps(value, cls=SchemaEncoder)
+
+    def process_result_value(self, value, dialect):
+        return value is not None and json.loads(value) or {}
+
+
+class MutationDict(dict, Mutable, collections.MutableMapping):
+    @classmethod
+    def coerce(cls, key, value):
+        "Convert plain dictionaries to MutationDict."
+        if not isinstance(value, MutationDict):
+            if isinstance(value, dict):
+                return MutationDict(value)
+
+            # this call will raise ValueError
+            return Mutable.coerce(key, value)
+        else:
+            return value
+
+    def __setitem__(self, key, value):
+        "Detect dictionary set events and emit change events."
+        dict.__setitem__(self, key, value)
+        self.changed()
+
+    def __delitem__(self, key):
+        "Detect dictionary del events and emit change events."
+        dict.__delitem__(self, key)
+        self.changed()
+
+    def update(self, E, **F):
+        dict.update(self, E, **F)
+        self.changed()

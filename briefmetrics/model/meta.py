@@ -1,13 +1,9 @@
 """SQLAlchemy Metadata and Session object"""
-import datetime
-import json
-import time
-
 from sqlalchemy import MetaData
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 
-__all__ = ['Session', 'metadata', 'Model', 'SchemaEncoder']
+__all__ = ['Session', 'metadata', 'Model']
 
 
 # Remove expire_on_commit=False if autorefreshing of committed objects is
@@ -82,14 +78,3 @@ class _Base(object):
 
 
 Model = declarative_base(metadata=metadata, cls=_Base)
-
-
-class SchemaEncoder(json.JSONEncoder):
-    """Encoder for converting Model objects into JSON."""
-
-    def default(self, obj):
-        if isinstance(obj, datetime.date):
-            return time.strftime('%Y-%m-%dT%H:%M:%SZ', obj.utctimetuple())
-        elif isinstance(obj, Model):
-            return obj.__json__()
-        return json.JSONEncoder.default(self, obj)

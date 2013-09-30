@@ -5,7 +5,7 @@ from functools import wraps
 
 from briefmetrics.web.environment import httpexceptions, Response
 from briefmetrics.lib.exceptions import APIControllerError, LoginRequired
-from briefmetrics.model.meta import SchemaEncoder
+from briefmetrics.model._types import SchemaEncoder
 
 
 API_METHOD_MAP = {}
