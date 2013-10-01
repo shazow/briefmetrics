@@ -1,0 +1,139 @@
+$margin-small: 10px;
+$margin: $margin-small * 2;
+$span: 40px;
+
+$font-size: 16px;
+
+$color-text: rgb(93, 93, 93);
+$color-header: rgb(60, 60, 60);
+$color-emphasis: rgb(170, 170, 170);
+$color-background: #fff;
+$color-shadow: rgba(20, 20, 20, 0.6);
+$color-border: rgba(255, 255, 255, 0.05);
+
+$border-width: 1px;
+
+
+// Blueprint configuration:
+
+$link-color: #f37934;
+$link-hover-color: lighten($link-color, 10%);
+$font-color: $color-text;
+
+$blueprint-font-family: "Ubuntu", "Helvetica Neue", Arial, Helvetica, sans-serif !default;
+$blueprint-grid-columns: 16;
+$blueprint-grid-margin: $margin-small;
+$blueprint-grid-width: $span - $margin-small;
+
+$container-width: $blueprint-grid-columns * $span - $blueprint-grid-margin;
+
+
+@import "blueprint";
+@import "blueprint/reset";
+@import "blueprint/colors";
+@import "blueprint/typography";
+@import "compass/css3";
+
+
+body {
+    @include blueprint-typography-body();
+    background-color: $color-background;
+    font-size: $font-size;
+}
+
+@include blueprint-typography-defaults();
+
+footer {
+    @include container;
+    font-size: 0.8em;
+    border-top: 5px solid #ddd;
+    text-align: center;
+    margin-bottom: 1em;
+    margin-top: 3em;
+    padding-top: 0.5em;
+}
+
+a {
+    text-decoration: none;
+}
+
+p {
+    margin-bottom: 1em;
+}
+
+h1, h2 {
+    font-size: 2em;
+    color: $color-header;
+    line-height: 26px;
+
+    small {
+        text-transform: uppercase;
+        font-size: 14px;
+        font-weight: bold;
+        color: $color-emphasis;
+        margin-left: -1em;
+    }
+}
+
+h1 {
+    margin-top: $margin-small;
+}
+
+em {
+    color: $color-emphasis;
+    font-style: normal;
+}
+
+strong {
+    color: desaturate(lighten($font-color, 50%), 80%);
+}
+
+ul, ol {
+    margin: 0 0 1em 0;
+    padding: 0;
+}
+
+li {
+    list-style: none;
+}
+
+label {
+    display: block;
+}
+
+small {
+    color: darken($color-text, 50%);
+}
+
+
+input {
+    border: $border-width solid rgba(0, 0, 0, 0.5);
+    padding: 0 7px;
+    margin: 0 0.5em 0 0;
+    font-size: 2em;
+    line-height: 1.5em;
+    vertical-align: middle;
+
+    @include border-radius(3px);
+
+    &[type="submit"] {
+        font-size: 1em;
+        padding: 0 2em;
+        line-height: 3em;
+        background: #73B909;
+        border-color: #73B909;
+        color: #2e4a04;
+        cursor: pointer;
+
+        &:hover {
+            background: #90c83b;
+            border-color: #90c83b;
+        }
+    }
+}
+
+.container {
+    @include container;
+    margin: 0 auto $margin auto;
+}
+
