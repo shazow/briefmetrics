@@ -1,1 +1,1 @@
-Hello, world.
+<%inherit file="base.mako"/>

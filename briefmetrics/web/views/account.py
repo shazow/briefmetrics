@@ -28,3 +28,7 @@ class AccountController(Controller):
         api.account.login_user_id(self.request, user.id)
 
         return self._redirect(location=self.next)
+
+    def logout(self):
+        api.account.logout_user(self.request)
+        return self._redirect(location=self.next or '/')

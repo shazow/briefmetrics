@@ -1,1 +1,1 @@
-from . import api, index, account
+from . import api, index, account, admin
