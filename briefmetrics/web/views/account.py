@@ -1,6 +1,7 @@
 from .base import Controller
 
-from briefmetrics import api
+from briefmetrics import api, model
+from briefmetrics.lib.exceptions import LoginRequired
 
 class AccountController(Controller):
 
@@ -35,3 +36,28 @@ class AccountController(Controller):
     def logout(self):
         api.account.logout_user(self.request)
         return self._redirect(location=self.next or '/')
+
+    def unsubscribe(self):
+        # TODO: Move to API?
+        user_id = api.account.get_user_id(self.request)
+        token = self.request.params.get('token')
+
+        if not user_id and not token:
+            raise LoginRequired(next=self.current_path)
+
+        id, email_token = token.split('-', 2)
+        user = model.User.get_by(id=id, email_token=email_token)
+        if not user:
+            self.request.flash('Invalid token. Try signing in to unsubscribe?')
+            return self._render('unsubscribe.mako')
+
+        confirmed = self.request.params.get('confirmed')
+        if not confirmed:
+            self.c.token = token
+            return self._render('unsubscribe.mako')
+
+        user.delete()
+        model.Session.commit()
+        self.request.flash('Good bye.')
+
+        return self._redirect(location=self.request.route_path('index'))

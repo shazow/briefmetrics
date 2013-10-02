@@ -1,6 +1,5 @@
 from requests_oauthlib import OAuth2Session
 
-from briefmetrics import model
 from briefmetrics.model.meta import Session
 from briefmetrics.lib.exceptions import APIError
 
