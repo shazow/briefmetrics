@@ -19,11 +19,14 @@ class AccountController(Controller):
         token = api.google.auth_token(oauth, url)
 
         # Identify user
-        r = oauth.get('https://www.googleapis.com/oauth2/v1/userinfo').json()
+        r = oauth.get('https://www.googleapis.com/oauth2/v1/userinfo')
+        r.raise_for_status()
+
+        user_info = r.json(indent=4)
         user = api.account.get_or_create(
-            email=r['email'],
+            email=user_info['email'],
             token=token,
-            display_name=r['name'],
+            display_name=user_info['name'],
         )
         api.account.login_user_id(self.request, user.id)
 

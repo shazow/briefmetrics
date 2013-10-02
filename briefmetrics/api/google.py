@@ -22,8 +22,15 @@ oauth_config = {
 def _dict_view(d, keys):
     return {k: d[k] for k in keys}
 
-def _update_token(token):
-    print "XXX: Token expired, update: ", token
+def _token_updater(old_token):
+    # TODO: Does this work?
+    def wrapped(new_token):
+        print "Updating refresh token?", new_token
+        if not old_token:
+            return
+
+        old_token.update(new_token)
+        Session.commit()
 
 
 def auth_session(request, token=None, state=None):
@@ -34,7 +41,7 @@ def auth_session(request, token=None, state=None):
         scope=oauth_config['scope'],
         auto_refresh_url=oauth_config['token_url'],
         auto_refresh_kwargs=_dict_view(oauth_config, ['client_id', 'client_secret']),
-        token_updater=_update_token,
+        token_updater=_token_updater(token),
         token=token,
         state=state,
     )
@@ -53,3 +60,11 @@ def auth_token(oauth, response_url):
         authorization_response=response_url,
         client_secret=oauth_config['client_secret'],
     )
+
+
+def get_profiles(request, account):
+    g = auth_session(request, account.oauth_token)
+    r = g.get('https://www.googleapis.com/analytics/v3/management/accounts/~all/webproperties/~all/profiles')
+    r.raise_for_status()
+
+    return r.json()

@@ -1,1 +1,7 @@
-from . import api, index, account, admin
+from . import (
+    account,
+    admin,
+    api,
+    index,
+    report,
+)

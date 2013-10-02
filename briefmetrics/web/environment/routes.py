@@ -24,5 +24,8 @@ def add_routes(config):
     with handler_routes(config, views.admin.AdminController) as route:
         route('admin', '/admin', action='index')
 
+    with handler_routes(config, views.report.ReportController) as route:
+        route('report', '/report', action='index')
+
 
     return config

@@ -57,16 +57,17 @@ class Account(meta.Model): # OAuth Service Account (such as Google Analytics)
 
 class Report(meta.Model): # Property within an account (such as a website)
     __tablename__ = 'report'
+    __json_whitelist__ = ['id', 'time_next', 'account_id', 'display_name']
 
     id = Column(types.Integer, primary_key=True)
     time_created = Column(types.DateTime, default=now, nullable=False)
     time_updated = Column(types.DateTime, onupdate=now)
 
     time_last = Column(types.DateTime)
-    time_next = Column(types.DateTime, default=now, index=True)
+    time_next = Column(types.DateTime, index=True)
 
     # Owner
-    account_id = Column(types.Integer, ForeignKey(Account.id, ondelete='CASCADE'))
+    account_id = Column(types.Integer, ForeignKey(Account.id, ondelete='CASCADE'), index=True)
     account = orm.relationship(Account, innerjoin=True, backref='reports')
 
     display_name = Column(types.Unicode)
@@ -85,5 +86,5 @@ class Subscription(meta.Model): # Subscription to a report
     user_id = Column(types.Integer, ForeignKey(User.id, ondelete='CASCADE'))
     user = orm.relationship(User, innerjoin=True, backref='subscriptions')
 
-    report_id = Column(types.Integer, ForeignKey(Account.id, ondelete='CASCADE'))
+    report_id = Column(types.Integer, ForeignKey(Account.id, ondelete='CASCADE'), index=True)
     report = orm.relationship(Account, innerjoin=True, backref='subscriptions')

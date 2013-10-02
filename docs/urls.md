@@ -1,0 +1,3 @@
+
+* /account/connect
+* /account/unsubscribe
