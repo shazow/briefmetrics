@@ -7,7 +7,7 @@
 <ul>
 % for item in c.result['items']:
     <li>
-        <a href="/settings?profile_id=${item['id']}">${item['webPropertyId']}</a> ${item['websiteUrl']} (${item['name']})
+        ${repr(item)}
     </li>
 % endfor
 </ul>

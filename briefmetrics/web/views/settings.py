@@ -3,50 +3,65 @@ from unstdlib import get_many
 
 from briefmetrics import api, model
 from briefmetrics.lib.exceptions import APIControllerError
+from briefmetrics.lib import helpers as h
 
-from .api import expose_api
+from .api import expose_api, handle_api
 from .base import Controller
-
-
-RE_HUMAN_URL = re.compile('^(\w*://)?(www\.)?(.+)/?$')
 
 
 @expose_api('settings.subscribe')
 def settings_subscribe(request):
     # TODO: Support multiple
-    profile_id, = get_many(request.params, ['profile_id'])
+    profile_ids = set(map(int, request.params.getall('id')))
     user_id = api.account.get_user_id(request, required=True)
 
     account = model.Account.get_by(user_id=user_id)
     if not account:
         raise APIControllerError("Account does not exist for user: %s" % user_id)
 
-    report = model.Report.get_or_create(account_id=account.id)
-    if report.remote_data and report.remote_data['id'] == profile_id:
-        request.flash('Already subscribed to %s' % report.display_name)
-        return {'report': report}
+    # Delete removed reports
+    num_deleted = 0
+    for report in account.reports:
+        if report.id in profile_ids:
+            profile_ids.discard(report.id)
+            continue
+        else:
+            num_deleted += 1
+            report.delete()
 
-    profiles = api.google.get_profile(request, account)
+    if not profile_ids and num_deleted:
+        request.flash('Removed subscription.')
+        model.Session.commit()
+        return
+    elif not profile_ids:
+        request.flash('Nothing changed.')
+        return
 
-    p = next((item for item in profiles['items'] if item['id'] == profile_id), None)
-    if not p:
-        request.flash('Invalid profile id: %s' % profile_id)
-        return {}
+    # Add new reports.
+    r = api.google.get_profiles(request, account)
+    for item in r['items']:
+        if int(item['id']) not in profile_ids:
+            continue
 
-    report.remote_data = p
-    report.display_name = RE_HUMAN_URL.match(p['websiteUrl']).group(3)
-    model.Subscription.get_or_create(user_id=user_id, report=report)
+        report = model.Report.create(account_id=account.id)
+        report.remote_data = item
+        report.display_name = h.human_url(item['websiteUrl']) or item['name']
+        model.Subscription.create(user_id=user_id, report=report)
+
+        profile_ids.discard(report.id)
+
     model.Session.commit()
 
-    request.flash('Changed subscription to %s' % report.display_name)
-
-    return {'report': report}
+    request.flash('Updated subscription.')
 
 
 class SettingsController(Controller):
 
+    @handle_api('settings.subscribe')
     def index(self):
         user_id = api.account.get_user_id(self.request, required=True)
-        self.c.result = api.google.get_profile(self.request, user_id)
+        account = model.Account.get_by(user_id=user_id)
+        self.c.report_ids = set(r.remote_data['id'] for r in account.reports)
+        self.c.result = api.google.get_profiles(self.request, account)
 
-        return self._render('report.mako')
+        return self._render('settings.mako')

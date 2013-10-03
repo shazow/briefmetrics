@@ -3,6 +3,8 @@ from .base import Controller
 from briefmetrics import api, model
 from briefmetrics.lib.exceptions import LoginRequired
 
+from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
+
 class AccountController(Controller):
 
     def login(self):
@@ -17,13 +19,17 @@ class AccountController(Controller):
         oauth = api.google.auth_session(self.request, state=self.session.get('oauth_state'))
 
         url = self.request.current_route_url().replace('http://', 'https://') # We lie, because honeybadger.
-        token = api.google.auth_token(oauth, url)
+
+        try:
+            token = api.google.auth_token(oauth, url)
+        except InvalidGrantError:  # Try again.
+            return self._redirect(self.request.route_path('account_login'))
 
         # Identify user
         r = oauth.get('https://www.googleapis.com/oauth2/v1/userinfo')
         r.raise_for_status()
 
-        user_info = r.json(indent=4)
+        user_info = r.json()
         user = api.account.get_or_create(
             email=user_info['email'],
             token=token,
@@ -45,8 +51,15 @@ class AccountController(Controller):
         if not user_id and not token:
             raise LoginRequired(next=self.current_path)
 
-        id, email_token = token.split('-', 2)
-        user = model.User.get_by(id=id, email_token=email_token)
+        user = None
+        if token:
+            id, email_token = token.split('-', 2)
+            user = model.User.get_by(id=id, email_token=email_token)
+        elif user_id:
+            user = model.User.get(user_id)
+
+        self.c.token = token
+
         if not user:
             self.request.flash('Invalid token. Try signing in to unsubscribe?')
             return self._render('unsubscribe.mako')

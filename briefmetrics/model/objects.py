@@ -17,9 +17,12 @@ __all__ = [
 
 log = logging.getLogger(__name__)
 
+# FIXME: Cascades are broken in dev.
+
 
 class User(meta.Model): # Email address / login
     __tablename__ = 'user'
+    __json_whitelist__ = ['id', 'email']
 
     id = Column(types.Integer, primary_key=True)
     time_created = Column(types.DateTime, default=now, nullable=False)
@@ -42,6 +45,7 @@ class User(meta.Model): # Email address / login
 
 class Account(meta.Model): # OAuth Service Account (such as Google Analytics)
     __tablename__ = 'account'
+    __json_whitelist__ = ['id', 'user_id', 'display_name']
 
     id = Column(types.Integer, primary_key=True)
     time_created = Column(types.DateTime, default=now, nullable=False)
@@ -84,7 +88,7 @@ class Subscription(meta.Model): # Subscription to a report
     time_updated = Column(types.DateTime, onupdate=now)
 
     user_id = Column(types.Integer, ForeignKey(User.id, ondelete='CASCADE'))
-    user = orm.relationship(User, innerjoin=True, backref='subscriptions')
+    user = orm.relationship(User, innerjoin=True)
 
-    report_id = Column(types.Integer, ForeignKey(Account.id, ondelete='CASCADE'), index=True)
-    report = orm.relationship(Account, innerjoin=True, backref='subscriptions')
+    report_id = Column(types.Integer, ForeignKey(Report.id, ondelete='CASCADE'), index=True)
+    report = orm.relationship(Report, innerjoin=True)

@@ -13,6 +13,7 @@ The template globals (``h`` et al) are set in
 ``briefmetrics/web/environment.py``.
 """
 
+import re
 from unstdlib import html, slugify
 from pyramid.asset import abspath_from_asset_spec  # TODO: Adopt this into unstdlib?
 
@@ -36,3 +37,10 @@ def text_if(cond, text):
     if cond:
         return html.literal(text)
     return ''
+
+
+RE_HUMAN_URL = re.compile('^(\w*://)?(www\.)?(.+)/?$')
+
+def human_url(s):
+    m = RE_HUMAN_URL.match(s)
+    return m and m.group(3)

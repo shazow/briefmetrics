@@ -1,3 +1,5 @@
+import time
+
 from requests_oauthlib import OAuth2Session
 
 from briefmetrics.model.meta import Session
@@ -31,8 +33,13 @@ def _token_updater(old_token):
         old_token.update(new_token)
         Session.commit()
 
+    return wrapped
+
 
 def auth_session(request, token=None, state=None):
+    if token and 'expires_at' in token:
+        token['expires_in'] = int(token['expires_at'] - time.time())
+
     # TODO: Investigate if OAuth2Session reuses connections?
     return OAuth2Session(
         oauth_config['client_id'],
@@ -54,16 +61,38 @@ def auth_url(oauth):
 
 
 def auth_token(oauth, response_url):
-    return oauth.fetch_token(
+    token = oauth.fetch_token(
         oauth_config['token_url'],
         authorization_response=response_url,
         client_secret=oauth_config['client_secret'],
     )
 
+    return {
+        'access_token': token['access_token'],
+        'token_type': token['token_type'],
+        'refresh_token': token['refresh_token'],
+        'expires_at': int(time.time()),
+    }
+
 
 def get_profiles(request, account):
     g = auth_session(request, account.oauth_token)
     r = g.get('https://www.googleapis.com/analytics/v3/management/accounts/~all/webproperties/~all/profiles')
+    r.raise_for_status()
+
+    return r.json()
+
+def report_summary(oauth, report):
+    params = {
+        'ids': report.remote_data['id'],
+        'start-date': '2012-01-01',
+        'end-date': '2012-01-07',
+        'metrics': 'ga:visits',
+        'dimensions': 'ga:fullReferrer,ga:source,ga:medium',
+        'sort': '-ga:visits',
+        'max-results': '30',
+    }
+    r = oauth.get('https://www.googleapis.com/analytics/v3/data/ga', params=params)
     r.raise_for_status()
 
     return r.json()

@@ -4,4 +4,5 @@ from . import (
     api,
     index,
     report,
+    settings,
 )
