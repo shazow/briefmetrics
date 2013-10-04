@@ -1,0 +1,17 @@
+todo:
+- text: "Remove anything with {facebook,google,twitter} and merge Organic Search results with Social."
+- text: "Subscribe to multiple sites."
+- text: "Paid subscriptions."
+- text: "Add a \"What's new\" section."
+- text: "Delta changed since last week."
+- text: "Daily reports."
+- text: "Browser anamolies = broken site?"
+  notify: "badr"
+
+done:
+- date: 2013-09-21
+  text: "Chart comparing performance to last month."
+- date: 2013-09-21
+  text: "\"Next Report: ...\""
+- date: 2013-09-21
+  text: "Error emails for broken state."
