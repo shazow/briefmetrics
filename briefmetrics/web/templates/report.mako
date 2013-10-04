@@ -5,9 +5,9 @@
 <h1>Report</h1>
 
 <ul>
-% for item in c.result['items']:
+% for row in c.result['rows']:
     <li>
-        ${repr(item)}
+        ${repr(row)}
     </li>
 % endfor
 </ul>

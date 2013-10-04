@@ -8,12 +8,16 @@ class ReportController(Controller):
         user = api.account.get_user(self.request, required=True, joinedload='account.reports')
 
         if not user.account.reports:
-            self.request.flash('Select a profile.')
             return self._redirect(self.request.route_path('settings'))
 
-
+        # TODO: Handle arbitrary reports
         report = user.account.reports[0]
-        oauth = api.google.oauth_session(self.request, user.account.oauth_token)
-        self.result = api.google.report_summary(oauth, report)
+        oauth = api.google.auth_session(self.request, user.account.oauth_token)
+
+        self.c.result = api.google.Query(oauth).report_summary(
+            id=report.remote_data['id'],
+            date_start='2012-01-01',
+            date_end='2012-01-07',
+        )
 
         return self._render('report.mako')

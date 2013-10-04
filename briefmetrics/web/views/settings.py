@@ -38,7 +38,8 @@ def settings_subscribe(request):
         return
 
     # Add new reports.
-    r = api.google.get_profiles(request, account)
+    oauth = api.google.auth_session(request, account.oauth_token)
+    r = api.google.Query(oauth).get_profiles(account_id=account.id)
     for item in r['items']:
         if int(item['id']) not in profile_ids:
             continue
@@ -61,7 +62,9 @@ class SettingsController(Controller):
     def index(self):
         user_id = api.account.get_user_id(self.request, required=True)
         account = model.Account.get_by(user_id=user_id)
+        oauth = api.google.auth_session(self.request, account.oauth_token)
+
         self.c.report_ids = set(r.remote_data['id'] for r in account.reports)
-        self.c.result = api.google.get_profiles(self.request, account)
+        self.c.result = api.google.Query(oauth).get_profiles(account_id=account.id)
 
         return self._render('settings.mako')
