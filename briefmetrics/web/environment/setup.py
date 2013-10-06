@@ -28,6 +28,10 @@ def _setup_models(settings):
     engine = engine_from_config(settings, 'sqlalchemy.')
     model.init(engine)
 
+def _setup_cache_regions(settings):
+    from briefmetrics.lib import cache
+    cache.ReportRegion.configure_from_config(settings, 'cache.report.')
+
 
 def _login_tween(handler, registry):
     def _login_handler(request):
@@ -80,6 +84,9 @@ def setup_config(config):
 
     # Set API key values from config
     _setup_api(settings)
+
+    # Load configuration for cache regions
+    _setup_cache_regions(settings)
 
     # Need more setup? Do it here.
     # ...

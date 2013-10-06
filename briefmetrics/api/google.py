@@ -1,33 +1,11 @@
 import time
-import inspect
 
 from requests_oauthlib import OAuth2Session
-from dogpile.cache import make_region
 
 from briefmetrics.model.meta import Session
 from briefmetrics.lib.exceptions import APIError
+from briefmetrics.lib.cache import ReportRegion
 
-
-def make_key_generator(namespace, fn):
-    spec = inspect.getargs(fn.__code__).args
-
-    def generate_key(*arg, **kw):
-        kw.update(zip(spec, arg))
-        kw.pop('self', None)
-
-        key = (namespace or '') + ':' + ':'.join(str(kw[k]) for k in sorted(kw))
-        return key
-    return generate_key
-
-
-report_cache = make_region(
-    function_key_generator=make_key_generator,
-).configure(
-    'dogpile.cache.dbm',
-    arguments = {
-        "filename": "report_cache.dbm"
-    }
-)
 
 oauth_config = {
     'auth_url': 'https://accounts.google.com/o/oauth2/auth',
@@ -99,29 +77,74 @@ def auth_token(oauth, response_url):
     return _clean_token(token)
 
 
+DATE_GA_FORMAT = '%Y-%m-%d'
+
 class Query(object):
     def __init__(self, oauth):
         self.api = oauth
 
-    @report_cache.cache_on_arguments()
+    @ReportRegion.cache_on_arguments()
     def get_profiles(self, account_id):
+        # account_id used for caching, not in query.
         r = self.api.get('https://www.googleapis.com/analytics/v3/management/accounts/~all/webproperties/~all/profiles')
         r.raise_for_status()
 
         return r.json()
 
-    @report_cache.cache_on_arguments()
+    @ReportRegion.cache_on_arguments()
     def report_summary(self, id, date_start, date_end):
         params = {
             'ids': 'ga:%s' % id,
             'start-date': date_start,
             'end-date': date_end,
-            'metrics': 'ga:visits',
-            'dimensions': 'ga:fullReferrer,ga:source,ga:medium',
-            'sort': '-ga:visits',
-            'max-results': '30',
+            'metrics': 'ga:pageviews,ga:uniquePageviews,ga:timeOnSite',
         }
         r = self.api.get('https://www.googleapis.com/analytics/v3/data/ga', params=params)
         r.raise_for_status()
+        return r.json()
 
+    @ReportRegion.cache_on_arguments()
+    def report_referrers(self, id, date_start, date_end):
+        params = {
+            'ids': 'ga:%s' % id,
+            'start-date': date_start,
+            'end-date': date_end,
+            'metrics': 'ga:visits',
+            'dimensions': 'ga:fullReferrer',
+            'filter': 'ga:medium==referral',
+            'sort': '-ga:visits',
+            'max-results': '10',
+        }
+        r = self.api.get('https://www.googleapis.com/analytics/v3/data/ga', params=params)
+        r.raise_for_status()
+        return r.json()
+
+    @ReportRegion.cache_on_arguments()
+    def report_pages(self, id, date_start, date_end):
+        params = {
+            'ids': 'ga:%s' % id,
+            'start-date': date_start,
+            'end-date': date_end,
+            'metrics': 'ga:pageviews',
+            'dimensions': 'ga:pagePath',
+            'sort': '-ga:pageviews',
+            'max-results': '10',
+        }
+        r = self.api.get('https://www.googleapis.com/analytics/v3/data/ga', params=params)
+        r.raise_for_status()
+        return r.json()
+
+    @ReportRegion.cache_on_arguments()
+    def report_social(self, id, date_start, date_end):
+        params = {
+            'ids': 'ga:%s' % id,
+            'start-date': date_start,
+            'end-date': date_end,
+            'metrics': 'ga:visits',
+            'dimensions': 'ga:socialNetwork',
+            'sort': '-ga:visits',
+            'max-results': '5',
+        }
+        r = self.api.get('https://www.googleapis.com/analytics/v3/data/ga', params=params)
+        r.raise_for_status()
         return r.json()

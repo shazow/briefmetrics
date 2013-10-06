@@ -42,6 +42,10 @@ class User(meta.Model): # Email address / login
 
     # TODO: Paid plan?
 
+    @property
+    def unsubscribe_token(self):
+        return '%s-%s' % (self.email_token, self.id)
+
 
 class Account(meta.Model): # OAuth Service Account (such as Google Analytics)
     __tablename__ = 'account'
