@@ -1,5 +1,7 @@
 <%inherit file="base_email.mako"/>
 
+${h.chart(c.historic_data, width=600, height=200)}
+
 <h2>Last week</h2>
 % if c.report_summary.get('rows'):
     <%

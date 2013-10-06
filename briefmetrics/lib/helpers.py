@@ -19,6 +19,7 @@ from urllib import urlencode
 from unstdlib import html, slugify
 from pyramid.asset import abspath_from_asset_spec  # TODO: Adopt this into unstdlib?
 
+from .gcharts import chart
 
 def stylesheet_link(request, asset_spec):
     real_path = abspath_from_asset_spec(asset_spec)
@@ -58,7 +59,7 @@ def num_ordinal(n): # lol
 def human_date(d):
     return d.strftime('%A %b ') + str(d.day) + num_ordinal(d.day)
 
-def human_time(seconds=None, **relativetime):
+def human_time(seconds=None):
     r = []
     rem = 0
     for div, unit in [(3600.0, 'hr'), (60.0, 'min'), (1.0, 'sec')]:

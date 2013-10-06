@@ -1,4 +1,5 @@
 import time
+from datetime import timedelta
 
 from requests_oauthlib import OAuth2Session
 
@@ -144,6 +145,23 @@ class Query(object):
             'dimensions': 'ga:socialNetwork',
             'sort': '-ga:visits',
             'max-results': '5',
+        }
+        r = self.api.get('https://www.googleapis.com/analytics/v3/data/ga', params=params)
+        r.raise_for_status()
+        return r.json()
+
+    @ReportRegion.cache_on_arguments()
+    def report_historic(self, id, date_start, date_end):
+        # Pull data back from start of the previous month
+        date_start = date_end - timedelta(days=date_end.day)
+        date_start -= timedelta(days=date_start.day - 1)
+
+        params = {
+            'ids': 'ga:%s' % id,
+            'start-date': date_start,
+            'end-date': date_end,
+            'metrics': 'ga:pageviews',
+            'dimensions': 'ga:date,ga:month',
         }
         r = self.api.get('https://www.googleapis.com/analytics/v3/data/ga', params=params)
         r.raise_for_status()

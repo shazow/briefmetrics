@@ -1,9 +1,54 @@
-from unstdlib import now
 import datetime
+from itertools import groupby
 
 from .base import Controller
 
 from briefmetrics import api
+
+def _encode_value(n, div, max_value, alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-.'):
+    if n is None:
+        return '__'
+
+    n *= max_value / div
+    return '%s%s' % (alphabet[int(float(n) / 64)], alphabet[int(n % 64)])
+
+def _encode_chart(rows, max_value=4095, month_idx=1, value_idx=2):
+    if not rows:
+        return
+
+    size = 0
+    div = 0
+    sum = 0
+
+    months = []
+
+    for month_num, data in groupby(rows, lambda r: r[month_idx]):
+        rows = []
+        for row in data:
+            rows.append(sum)
+            sum += float(row[value_idx])
+
+        rows.append(sum)
+        div = max(div, sum)
+        sum = 0
+
+        # Pad?
+        num_rows = len(rows)
+        if num_rows < size:
+            rows += [None] * (size - num_rows)
+        else:
+            size = num_rows
+
+        months.append(rows)
+
+    div = div or 1
+    max_value = min(max_value, div)
+
+    return 'e:' + ','.join(
+        ''.join(
+            _encode_value(value, div, max_value) for value in month
+        ) for month in months)
+
 
 class ReportController(Controller):
 
@@ -41,5 +86,8 @@ class ReportController(Controller):
         self.c.report_referrers = q.report_referrers(**params)
         self.c.report_pages = q.report_pages(**params)
         self.c.report_social = q.report_social(**params)
+
+        r = q.report_historic(**params)
+        self.c.historic_data = _encode_chart(r.get('rows', []))
 
         return self._render('report.mako')

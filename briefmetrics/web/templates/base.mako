@@ -29,7 +29,7 @@
 
 
 <div class="content">
-${widgets.flash_messages(request.session.pop_flash())}
+${widgets.flash_messages(request.session.pop_flash() + request.pop_flash())}
 
 ${next.body()}
 </div>
