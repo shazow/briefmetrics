@@ -81,6 +81,8 @@ class Report(meta.Model): # Property within an account (such as a website)
     display_name = Column(types.Unicode)
     remote_data = Column(_types.MutationDict.as_mutable(_types.JSONEncodedDict), default=dict) # WebPropertyId, ProfileId, etc.
 
+    users = orm.relationship(User, innerjoin=True, secondary='subscription', backref='reports')
+
     # TODO: Add type (daily, weekly, monthly)
 
 

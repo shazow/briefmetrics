@@ -1,10 +1,17 @@
+import logging
 import datetime
 from itertools import groupby
+from unstdlib import now
+from sqlalchemy import orm
 
 from briefmetrics.lib.controller import Controller, Context
 from briefmetrics.lib.gcharts import encode_rows
+from briefmetrics import model
 
-from . import google as api_google
+from . import google as api_google, email as api_email
+
+
+log = logging.getLogger(__name__)
 
 
 def _cumulative_by_month(rows, month_idx=1, value_idx=2):
@@ -64,3 +71,47 @@ def render_weekly(request, user, context):
     context.user = user
 
     return Controller(request, context=context)._render_template('report.mako')
+
+
+def send_weekly(request, report, since_time=None):
+    since_time = since_time or now()
+
+    if report.time_next and report.time_next > since_time:
+        log.warn('send_weekly too early, skipping for report: %s' % report.id)
+        return
+
+    # Last Sunday
+    date_start = since_time.date() - datetime.timedelta(days=6) # Last week
+    date_start -= datetime.timedelta(days=date_start.weekday()+1) # Sunday of that week
+
+    context = fetch_weekly(request, report, date_start)
+
+    log.info('Sending report to [%d] users: %s' % (len(report.users), report.display_name))
+
+    for user in report.users:
+        html = render_weekly(request, user, context)
+
+        message = api_email.create_message(request,
+            to_email=user.email,
+            subject=context.subject, 
+            html=html,
+        )
+        api_email.send_message(request, message)
+
+    report.time_last = now()
+    report.time_next = datetime.datetime(*date_start.timetuple()[:3]) + datetime.timedelta(days=7)
+
+    model.Session.commit()
+
+
+def send_all(request, since_time=None):
+    since_time = since_time or now()
+
+    q = model.Session.query(model.Report).filter(
+        (model.Report.time_next <= since_time) | (model.Report.time_next == None)
+    )
+    q = q.options(orm.joinedload(model.Report.account))
+    reports = q.all()
+
+    for report in reports:
+        send_weekly(request, report, since_time)
