@@ -1,5 +1,15 @@
 <%inherit file="base_email.mako"/>
 
+<p>
+    Your site had <span class="chartTop">${h.human_int(c.total_current)} views so far this month</span>,
+    % if c.total_current >= c.total_last_relative:
+    compared to last month's ${h.human_int(c.total_last_relative)} views at this time.
+    You're on your way to beat <span class="chartBottom">last months's total of ${h.human_int(c.total_last)}</span>.
+    % else:
+    compared to <span class="chartBottom">last month's ${h.human_int(c.total_last_relative)} views</span> at this time.
+    % endif
+</p>
+
 ${h.chart(c.historic_data, width=600, height=200)}
 
 <h2>Last week</h2>

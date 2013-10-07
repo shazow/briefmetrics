@@ -53,6 +53,8 @@ def settings_subscribe(request):
 
     model.Session.commit()
 
+    # TODO: Queue new report
+
     request.flash('Updated subscription.')
 
 

@@ -30,39 +30,17 @@ def encode_value(n, div, max_value, alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefgh
     n *= max_value / div
     return '%s%s' % (alphabet[int(float(n) / 64)], alphabet[int(n % 64)])
 
-def encode_rows(rows, max_value=4095, month_idx=1, value_idx=2):
-    if not rows:
+def padded(a, num):
+    return a + [None] * (num - len(a))
+
+def encode_rows(months, max_value, month_idx=1, value_idx=2):
+    if not months:
         return
 
-    size = 0
-    div = 0
-    sum = 0
-
-    months = []
-
-    for month_num, data in groupby(rows, lambda r: r[month_idx]):
-        rows = []
-        for row in data:
-            rows.append(sum)
-            sum += float(row[value_idx])
-
-        rows.append(sum)
-        div = max(div, sum)
-        sum = 0
-
-        # Pad?
-        num_rows = len(rows)
-        if num_rows < size:
-            rows += [None] * (size - num_rows)
-        else:
-            size = num_rows
-
-        months.append(rows)
-
-    div = div or 1
-    max_value = min(max_value, div)
+    size = len(months[0])
+    max_value = max(1, max_value)
 
     return 'e:' + ','.join(
         ''.join(
-            encode_value(value, div, max_value) for value in month
+            encode_value(value, max_value, 4095) for value in padded(month, size)
         ) for month in months)
