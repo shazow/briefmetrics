@@ -1,9 +1,8 @@
 import datetime
 
-from briefmetrics.lib.controller import Controller
-
 from briefmetrics import api
 from briefmetrics.web.environment import Response
+from briefmetrics.lib.controller import Controller
 
 class ReportController(Controller):
 
@@ -22,5 +21,13 @@ class ReportController(Controller):
 
         context = api.report.fetch_weekly(self.request, report, date_start)
         html = api.report.render_weekly(self.request, user, context)
+
+        if self.request.params.get('send'):
+            message = api.email.create_message(self.request,
+                to_email=user.email,
+                subject=context.subject, 
+                html=html,
+            )
+            api.email.send_message(self.request, message)
 
         return Response(html)

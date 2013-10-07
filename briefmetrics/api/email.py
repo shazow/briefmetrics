@@ -1,4 +1,5 @@
 import requests
+import json
 
 
 http_session = requests.session()
@@ -6,12 +7,14 @@ http_session = requests.session()
 API_URL = 'https://mandrillapp.com/api/1.0/'
 
 
-def create_message(request, to, subject, html):
+def create_message(request, to_email, subject, html):
     settings = request.registry.settings
     message = {
-        'from_name': settings.get('email.from_name'),
-        'from_email': settings.get('email.from_email'),
-        'to': to,
+        'from_name': settings['mail.from_name'],
+        'from_email': settings['mail.from_email'],
+        'to': [{
+            'email': to_email,
+        }],
         'subject': subject,
         'html': html,
         'track_opens': True,
@@ -20,7 +23,7 @@ def create_message(request, to, subject, html):
         'inline_css': True,
     }
 
-    debug_bcc = settings.get('email.debug_bcc')
+    debug_bcc = settings.get('mail.debug_bcc')
     if debug_bcc:
         message['bcc_address'] = debug_bcc
 
@@ -35,7 +38,7 @@ def send_message(request, message):
     }
 
     headers = {'content-type': 'application/json'}
-    r = http_session.post(API_URL + 'messages/send.json', data=params, headers=headers)
+    r = http_session.post(API_URL + 'messages/send.json', data=json.dumps(params), headers=headers)
     r.raise_for_status()
 
     return r.json()

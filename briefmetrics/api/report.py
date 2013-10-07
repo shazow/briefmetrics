@@ -15,6 +15,7 @@ def fetch_weekly(request, report, date_start):
     c = Context(report=report, date_start=date_start, date_end=date_end)
     c.base_url = report.remote_data.get('websiteUrl', '')
     c.date_next = date_start + datetime.timedelta(days=7)
+    c.subject = "Weekly report for %s" % report.display_name
 
     params = {
         'id': report.remote_data['id'],
