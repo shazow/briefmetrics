@@ -4,7 +4,7 @@ from briefmetrics import api
 from briefmetrics import model
 from briefmetrics.model.meta import Session
 
-from .base import Controller
+from briefmetrics.lib.controller import Controller
 
 
 class AdminController(Controller):

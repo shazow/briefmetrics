@@ -33,9 +33,10 @@ mako.strict_undefined = true
 # Features
 features.offline = true
 
-# OAuth
+# API
 api.google.client_id = XXX
 api.google.client_secret = XXX
+api.mandrill.key = XXX
 
 
 [server:main]

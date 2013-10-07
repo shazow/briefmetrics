@@ -2,7 +2,7 @@
 
 <div class="container">
 
-    <h1>Settings</h1>
+    <h1>Select a site</h1>
 
     <form action="${request.current_route_path()}" method="post">
 

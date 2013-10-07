@@ -18,7 +18,6 @@ from urllib import urlencode
 
 from unstdlib import html, slugify
 from pyramid.asset import abspath_from_asset_spec  # TODO: Adopt this into unstdlib?
-
 from .gcharts import chart
 
 def stylesheet_link(request, asset_spec):

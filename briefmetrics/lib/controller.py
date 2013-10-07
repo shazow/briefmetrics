@@ -2,7 +2,8 @@ from collections import defaultdict
 
 from briefmetrics.web.environment import render_to_response, render
 from briefmetrics.web.environment import httpexceptions
-from briefmetrics.lib import helpers as h
+
+from . import helpers as h
 
 
 class Context(dict):
@@ -26,11 +27,11 @@ class Controller(object):
     """
     DEFAULT_NEXT = '/'
 
-    def __init__(self, request):
+    def __init__(self, request, context=None):
         self.title = None
         self.request = request
         self.session = request.session
-        self.context = self.c = Context()
+        self.context = self.c = context or Context()
         self.default = DefaultContext(str)
 
         self.previous_url = self.request.referer

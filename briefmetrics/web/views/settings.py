@@ -6,7 +6,7 @@ from briefmetrics.lib.exceptions import APIControllerError
 from briefmetrics.lib import helpers as h
 
 from .api import expose_api, handle_api
-from .base import Controller
+from briefmetrics.lib.controller import Controller
 
 
 @expose_api('settings.subscribe')

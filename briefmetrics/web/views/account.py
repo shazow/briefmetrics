@@ -1,4 +1,4 @@
-from .base import Controller
+from briefmetrics.lib.controller import Controller
 
 from briefmetrics import api, model
 from briefmetrics.lib.exceptions import LoginRequired
@@ -53,15 +53,16 @@ class AccountController(Controller):
 
         user = None
         if token:
-            id, email_token = token.split('-', 2)
-            user = model.User.get_by(id=id, email_token=email_token)
-        elif user_id:
+            email_token, id = token.split('-', 2)
+            user = model.User.get_by(id=int(id), email_token=email_token)
+
+        if not user and user_id:
             user = model.User.get(user_id)
 
+        self.c.user = user
         self.c.token = token
 
         if not user:
-            self.request.flash('Invalid token. Try signing in to unsubscribe?')
             return self._render('unsubscribe.mako')
 
         confirmed = self.request.params.get('confirmed')

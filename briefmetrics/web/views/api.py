@@ -60,9 +60,16 @@ def handle_api(method_whitelist=None):
 
             try:
                 api_controller(self.request, method_whitelist=method_whitelist)
+
             except APIControllerError, e:
-                self.request.session.flash(e.message)
+                self.request.flash(e.message)
                 return fn(self)
+
+            finally:
+                # FIXME: This is repeated
+                for message in self.request.pop_flash():
+                    # Copy request-level messages to session storage.
+                    self.request.session.flash(message)
 
             next = self.request.params.get('next') or self.request.referer
             return httpexceptions.HTTPSeeOther(next)

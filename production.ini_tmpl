@@ -30,9 +30,10 @@ sqlalchemy.url = XXX
 mako.directories = briefmetrics.web:templates
 mako.strict_undefined = true
 
-# OAuth
+# API
 api.google.client_id = XXX
 api.google.client_secret = XXX
+api.mandrill.key = XXX
 
 
 [server:main]

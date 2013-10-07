@@ -1,6 +1,6 @@
 from briefmetrics import api
 
-from .base import Controller
+from briefmetrics.lib.controller import Controller
 
 
 class IndexController(Controller):
