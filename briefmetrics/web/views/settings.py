@@ -37,6 +37,7 @@ def settings_subscribe(request):
         request.flash('Nothing changed.')
         return
 
+    # TODO: Migrate to API
     # Add new reports.
     oauth = api.google.auth_session(request, account.oauth_token)
     r = api.google.Query(oauth).get_profiles(account_id=account.id)
