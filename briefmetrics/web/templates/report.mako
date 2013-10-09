@@ -12,7 +12,13 @@
 
 ${h.chart(c.historic_data, width=600, height=200)}
 
-<h2>Last week</h2>
+<h2>
+    Last week
+    <% overlap_days = 7 - c.date_end.day %>
+    % if overlap_days > 0:
+        <span class="quiet">(includes ${h.format_int(overlap_days, '{} day')} from last month)</span>
+    % endif
+</h2>
 % if c.report_summary.get('rows'):
     <%
         pageviews, uniques, seconds = c.report_summary['rows'][0]

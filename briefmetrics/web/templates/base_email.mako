@@ -95,6 +95,12 @@
         color: #666;
         font-size: 0.8em;
     }
+
+    .quiet {
+        font-size: 0.8em;
+        color: #999;
+        font-weight: normal;
+    }
     </style>
 </head>
 <body>

@@ -1,6 +1,5 @@
 from urllib import urlencode
 from random import randint
-from itertools import groupby
 
 from unstdlib.html import literal
 

@@ -20,6 +20,8 @@ from unstdlib import html, slugify
 from pyramid.asset import abspath_from_asset_spec  # TODO: Adopt this into unstdlib?
 from .gcharts import chart
 
+_Default = object()
+
 def stylesheet_link(request, asset_spec):
     real_path = abspath_from_asset_spec(asset_spec)
     url_path = request.static_path(asset_spec)
@@ -71,7 +73,7 @@ def human_time(seconds=None):
     return ' '.join(r)
 
 def human_int(n):
-    return '{:,}'.format(int(n))
+    return u'{:,}'.format(int(n))
 
 def ga_permalink(section, report, date_start=None, date_end=None):
     awp = "a{accountId}w{internalWebPropertyId}p{id}".format(**report.remote_data)
@@ -87,3 +89,49 @@ def ga_permalink(section, report, date_start=None, date_end=None):
         r += '?' + urlencode(params)
 
     return r
+
+def format_int(n, singular=_Default, plural=_Default):
+    """
+    Return `singular.format(n)` if n is 1, or `plural.format(n)` otherwise. If
+    plural is not specified, then it is assumed to be same as singular but
+    suffixed with an 's'.
+
+    :param n:
+        Integer which determines pluralness.
+
+    :param singular:
+        String with a format() placeholder for n. (Default: `u"{:,}"`)
+
+    :param plural:
+        String with a format() placeholder for n. (Default: If singular is not
+        default, then it's `singular + u"s"`. Otherwise it's same as singular.)
+
+    Example: ::
+
+        >>> format_int(1000)
+        u'1,000'
+        >>> format_int(1, u"{} day")
+        u'1 day'
+        >>> format_int(2, u"{} day")
+        u'2 days'
+        >>> format_int(2, u"{} box", u"{} boxen")
+        u'2 boxen'
+        >>> format_int(20000, u"{:,} box", u"%d boxen")
+        u'20,000 boxen'
+    """
+    n = int(n)
+
+    if singular in (None, _Default):
+        if plural is _Default:
+            plural = None
+
+        singular = u'{:,}'
+
+    elif plural is _Default:
+        plural = singular + u's'
+
+    if n == 1 or not plural:
+        return singular.format(n)
+
+    return plural.format(n)
+
