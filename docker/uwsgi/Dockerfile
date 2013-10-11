@@ -2,7 +2,7 @@
 # Borrowed from https://github.com/vvlad/dockerfiles-postgresql-9.3
 #
 # First run:
-#     $ docker build -t uwsgi .
+#     $ docker build -t uwsgi -rm=true .
 #     $ ID=$(docker run -v "path/to/src:/app/src" -v "path/to/socks:/app/socks" -d uwsgi)
 #     $ docker wait $ID
 #     $ docker logs $ID

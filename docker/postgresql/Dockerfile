@@ -2,7 +2,7 @@
 # Borrowed from https://github.com/vvlad/dockerfiles-postgresql-9.3
 #
 # First run:
-#     $ docker build -t postgresql .
+#     $ docker build -t postgresql -rm=true .
 #     $ ID=$(docker run -e "CREATE_DB=foo" -v "path/to/socks:/var/run/postgresql" -d postgresql)
 #     $ docker wait $ID
 #     $ docker logs $ID
@@ -37,5 +37,5 @@ RUN rm /usr/sbin/policy-rc.d
 ADD init.sh /init.sh
 
 EXPOSE  :5432
-VOLUME  ["/var/lib/postgresql", "/etc/postgresql", "/var/run/postgresql"]
+VOLUME  ["/var/lib/postgresql", "/etc/postgresql", "/app/socks"]
 CMD     ["/init.sh"]

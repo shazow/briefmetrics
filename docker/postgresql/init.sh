@@ -23,4 +23,4 @@ if [ "$CREATE_DB" ]; then
 fi
 
 pgtune -i /etc/postgresql/9.3/main/postgresql.conf -o /etc/postgresql/9.3/main/postgresql.conf  -TWeb -M`free  -ob| grep Mem: | awk '{ printf "%d",$2 }'`
-su postgres -c "/usr/lib/postgresql/9.3/bin/postgres -c config_file='/etc/postgresql/9.3/main/postgresql.conf' -c unix_socket_directoryies='/var/run/postgresql'"
+su postgres -c "/usr/lib/postgresql/9.3/bin/postgres -c config_file='/etc/postgresql/9.3/main/postgresql.conf' -c unix_socket_directoryies='/app/socks'"
