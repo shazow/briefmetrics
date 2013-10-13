@@ -13,6 +13,7 @@ if [ ! -d /var/lib/postgresql/9.3/main ] ; then
 local   all             postgres                                trust
 host    all             all         0.0.0.0/0                   md5
 EOF
+    pg_createcluster 9.3 main
     pg_ctlcluster 9.3 main start
     password=${MASTER_PASSWORD:-$(< /dev/urandom tr -dc A-Za-z0-9 | head -c 16)}
     psql -U postgres -c "ALTER USER postgres WITH PASSWORD '$password';" &> /dev/null
@@ -20,8 +21,8 @@ EOF
 
     pg_ctlcluster 9.3 main stop
 
+    echo "* Credentials: url=\"postgres://postgres:$password@$IP_ADDRESS/db\""
     exit 0
 fi
 
-echo "  url=\"postgres://postgres:$password@$IP_ADDRESS/db\""
 su postgres -c "$POSTGRES_BIN -c config_file=\"$POSTGRES_CONFIG\" -c listen_addresses='*'"

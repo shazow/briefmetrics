@@ -10,7 +10,6 @@
 FROM       ubuntu:12.04
 MAINTAINER Andrey Petrov "andrey.petrov@shazow.net"
 
-
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN locale-gen en_US.UTF-8
@@ -28,6 +27,7 @@ RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc
 
 RUN apt-get -y update
 RUN apt-get -y install postgresql-9.3
+RUN pg_dropcluster 9.3 main --stop
 
 ADD init.sh /init.sh
 
