@@ -31,6 +31,6 @@ RUN apt-get -y install postgresql-9.3
 
 ADD init.sh /init.sh
 
-EXPOSE  5432
+EXPOSE  5432:5432
 VOLUME  ["/var/lib/postgresql", "/etc/postgresql"]
 CMD     ["/init.sh"]
