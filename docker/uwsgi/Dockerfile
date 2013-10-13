@@ -26,6 +26,5 @@ RUN pip install virtualenv
 
 ADD init.sh /init.sh
 
-EXPOSE  :8080
 VOLUME  ["/app/src", "/app/env", "/app/socks"]
 CMD     ["/init.sh"]
