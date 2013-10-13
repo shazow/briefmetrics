@@ -8,12 +8,12 @@ POSTGRES_BIN="/usr/lib/postgresql/9.3/bin/postgres"
 POSTGRES_CONFIG="/etc/postgresql/9.3/main/postgresql.conf"
 
 
-if [ ! -d /var/lib/postgresql/9.3/main ] ; then
+if [ ! -d "/var/lib/postgresql/9.3/main" ] ; then
+    pg_createcluster 9.3 main
     cat > "/etc/postgresql/9.3/main/pg_hba.conf" << EOF
 local   all             postgres                                trust
 host    all             all         0.0.0.0/0                   md5
 EOF
-    pg_createcluster 9.3 main
     pg_ctlcluster 9.3 main start
     password=${MASTER_PASSWORD:-$(< /dev/urandom tr -dc A-Za-z0-9 | head -c 16)}
     psql -U postgres -c "ALTER USER postgres WITH PASSWORD '$password';" &> /dev/null
