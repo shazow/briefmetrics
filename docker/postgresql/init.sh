@@ -20,9 +20,8 @@ EOF
 
     pg_ctlcluster 9.3 main stop
 
-    echo "  url=\"postgres://postgres:$password@$IP_ADDRESS/db\""
-
     exit 0
 fi
 
+echo "  url=\"postgres://postgres:$password@$IP_ADDRESS/db\""
 su postgres -c "$POSTGRES_BIN -c config_file=\"$POSTGRES_CONFIG\" -c listen_addresses='*'"
