@@ -1,0 +1,55 @@
+{
+    "columnHeaders": [
+        {
+            "columnType": "METRIC",
+            "dataType": "INTEGER",
+            "name": "ga:pageviews"
+        },
+        {
+            "columnType": "METRIC",
+            "dataType": "INTEGER",
+            "name": "ga:uniquePageviews"
+        },
+        {
+            "columnType": "METRIC",
+            "dataType": "TIME",
+            "name": "ga:timeOnSite"
+        }
+    ],
+    "containsSampledData": false,
+    "itemsPerPage": 1000,
+    "kind": "analytics#gaData",
+    "profileInfo": {
+        "accountId": "111111",
+        "internalWebPropertyId": "111113",
+        "profileId": "111112",
+        "profileName": "example.com",
+        "tableId": "ga:111112",
+        "webPropertyId": "UA-111114-1"
+    },
+    "query": {
+        "end-date": "2013-01-07",
+        "ids": "ga:111112",
+        "max-results": 1000,
+        "metrics": [
+            "ga:pageviews",
+            "ga:uniquePageviews",
+            "ga:timeOnSite"
+        ],
+        "start-date": "2013-01-01",
+        "start-index": 1
+    },
+    "rows": [
+        [
+            "6778",
+            "5964",
+            "549384.0"
+        ]
+    ],
+    "totalResults": 1,
+    "totalsForAllResults": {
+        "ga:pageviews": "6778",
+        "ga:timeOnSite": "549384.0",
+        "ga:uniquePageviews": "5964"
+    }
+}
