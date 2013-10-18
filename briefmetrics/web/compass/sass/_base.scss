@@ -79,11 +79,6 @@ h1 {
     margin-top: $margin-small;
 }
 
-em {
-    color: $color-emphasis;
-    font-style: normal;
-}
-
 strong {
     color: desaturate(darken($font-color, 20%), 50%);
 }
