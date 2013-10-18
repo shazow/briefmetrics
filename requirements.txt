@@ -14,3 +14,4 @@ unstdlib==1.5.3
 requests==2.0.0
 requests-oauthlib==0.4.0
 dogpile.cache==0.5.0
+WebTest==2.0.9
