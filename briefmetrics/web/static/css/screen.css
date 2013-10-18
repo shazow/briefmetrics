@@ -332,3 +332,34 @@ input[type="submit"]:hover {
   *zoom: 1;
   margin: 0 auto 20px auto;
 }
+
+nav {
+  background: #eee;
+  margin-bottom: 1em;
+}
+nav ul {
+  margin: 0;
+  padding: 0;
+  width: 630px;
+  margin: 0 auto;
+  overflow: hidden;
+  *zoom: 1;
+}
+nav li {
+  margin: 0 0 0 1em;
+  display: inline-block;
+  list-style: none;
+}
+nav li.logo {
+  margin: 0;
+}
+nav li.logo a {
+  color: #3c3c3c;
+}
+nav h1 {
+  line-height: 1.5em;
+  margin: 0;
+}
+nav li.logged-in a {
+  color: red;
+}

@@ -1,1 +1,36 @@
 @import "_base";
+
+
+nav {
+    background: #eee;
+    margin-bottom: 1em;
+
+    ul {
+        margin: 0;
+        padding: 0;
+        @include container;
+    }
+
+    li {
+        margin: 0 0 0 1em;
+        display: inline-block;
+        list-style: none;
+    }
+
+    li.logo {
+        margin: 0;
+
+        a {
+            color: $color-header;
+        }
+    }
+
+    h1 {
+        line-height: 1.5em;
+        margin: 0;
+    }
+
+    li.logged-in a {
+        color: red;
+    }
+}

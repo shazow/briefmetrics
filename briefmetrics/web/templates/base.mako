@@ -20,9 +20,30 @@
 
 
 <%block name="header">
-% if is_logged_in:
-    Welcome. (<A href="${request.route_path('account_logout')}">Log out</a>)
-% endif
+<%
+    nav = [
+        #('Pricing', '#', ''),
+        #('About', '#', ''),
+    ]
+
+    if is_logged_in:
+        nav += [
+            ('Settings', request.route_path('settings'), 'logged-in'),
+            ('Log out', request.route_path('account_logout'), 'logged-in'),
+        ]
+%>
+<nav>
+    <ul>
+        <li class="logo">
+            <h1><a href="/">Briefmetrics</a></h1>
+        </li>
+        % for label, href, css_class in nav:
+        <li${h.text_if(css_class, ' class="%s"' % css_class)}>
+            <a href="${href}">${label}</a>
+        </li>
+        % endfor
+    </ul>
+</nav>
 </%block>
 
 

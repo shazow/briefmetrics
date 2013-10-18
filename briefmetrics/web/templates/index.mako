@@ -2,8 +2,6 @@
 
 <div class="container">
 
-    <h1>Briefmetrics</h1>
-
     <p>
         Currently in pre-launch testing.
     </p>
