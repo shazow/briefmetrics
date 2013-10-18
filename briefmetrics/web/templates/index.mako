@@ -17,4 +17,3 @@
 <p>
     Email <a href="mailto:join@briefmetrics.com">join@briefmetrics.com</a> to apply for the early testing group.
 </p>
-
