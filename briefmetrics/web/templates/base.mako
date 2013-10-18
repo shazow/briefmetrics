@@ -10,7 +10,7 @@
         <title>Briefmetrics</title>
     % endif
 
-    <link rel="icon" type="image/png" href="/static/images/icon_32px.png" />
+    <link rel="icon" type="image/png" href="/static/images/icon_32px.png?1" />
     ${h.stylesheet_link(request, 'briefmetrics.web:static/css/screen.css')}
 
     <%block name="extra_head"></%block>
