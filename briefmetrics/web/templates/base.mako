@@ -22,8 +22,6 @@
 <%block name="header">
 % if is_logged_in:
     Welcome. (<A href="${request.route_path('account_logout')}">Log out</a>)
-% else:
-    <A href="${request.route_path('account_login')}">Sign in</a>?
 % endif
 </%block>
 
@@ -35,7 +33,6 @@ ${next.body()}
 </div>
 
 <%block name="footer">
-    <footer>Questions? <a href="mailto:support@briefmetrics.com">support@briefmetrics.com</a></footer>
 </%block>
 
 <script>

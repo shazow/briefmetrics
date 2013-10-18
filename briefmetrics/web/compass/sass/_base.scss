@@ -85,16 +85,15 @@ em {
 }
 
 strong {
-    color: desaturate(lighten($font-color, 50%), 80%);
+    color: desaturate(darken($font-color, 20%), 50%);
 }
 
 ul, ol {
     margin: 0 0 1em 0;
-    padding: 0;
 }
 
 li {
-    list-style: none;
+    margin: 0.5em 0 0.5em 0;
 }
 
 label {
