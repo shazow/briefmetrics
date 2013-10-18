@@ -4,6 +4,7 @@ SETUP_OUT=*.egg-info
 
 
 all: setup requirements model_upgrade
+	@echo hi
 
 requirements: $(REQUIREMENTS_OUT)
 
