@@ -262,7 +262,7 @@ p {
 }
 
 h1, h2 {
-  font-size: 2em;
+  font-size: 1.6em;
   color: #3c3c3c;
   line-height: 26px;
 }
@@ -357,6 +357,7 @@ nav li.logo a {
   color: #3c3c3c;
 }
 nav h1 {
+  font-size: 2em;
   line-height: 1.5em;
   margin: 0;
 }
