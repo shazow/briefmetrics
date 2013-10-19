@@ -66,6 +66,7 @@ def human_time(seconds=None):
     for div, unit in [(3600.0, 'hr'), (60.0, 'min'), (1.0, 'sec')]:
         rem = seconds % div
         v = (seconds - rem) / div
+        seconds = rem
         if not v:
             continue
         r.append('%d%s' % (v, unit))

@@ -24,7 +24,7 @@ ${h.chart(c.historic_data, width=600, height=200)}
         pageviews, uniques, seconds = c.report_summary['rows'][0]
     %>
 <p style="margin-bottom: 2em;">
-    <span class="highlight">${h.human_int(uniques)}</span> unique people each spent
+    <span class="highlight">${h.human_int(uniques)}</span> unique people spent on average
     <span class="highlight">${h.human_time(float(seconds) / int(uniques))}</span> over
     <span class="highlight">${'%0.1f' % (float(pageviews) / float(uniques))}</span> pageviews
     on your site in 7 days since ${h.human_date(c.date_start)}.
