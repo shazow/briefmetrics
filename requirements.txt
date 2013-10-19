@@ -1,6 +1,9 @@
 Mako==0.9.0
 SQLAlchemy==0.8.2
+WebTest==2.0.9
 alembic==0.6
+dogpile.cache==0.5.0
+celery==3.0.24
 pyramid==1.5a2
 pyramid_beaker==0.8
 pyramid_debugtoolbar==1.0.8
@@ -9,9 +12,7 @@ pyramid_handlers==0.5
 pyramid_mailer==0.13
 pyramid_mako==0.2
 pytz==2013d
+requests-oauthlib==0.4.0
+requests==2.0.0
 stripe==1.9.5
 unstdlib==1.5.3
-requests==2.0.0
-requests-oauthlib==0.4.0
-dogpile.cache==0.5.0
-WebTest==2.0.9

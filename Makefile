@@ -47,7 +47,13 @@ fixtures: setup requirements
 	echo "model.drop_all(); model.create_all(); fixtures.populate_dev()" | pshell $(INI_FILE) -p python
 
 
-### Database:
+## Celery:
+
+celery: setup requirements
+	INI_FILE=$(INI_FILE) celery worker -B --app=briefmetrics.tasks.setup
+
+
+## Database:
 
 ALEMBIC_VERSIONS=migration/versions/
 ALEMBIC_OUT=alembic.log

@@ -14,7 +14,7 @@ class TestApp(TestCase):
         import os
         import paste.deploy
 
-        env_test_ini = os.environ.get('TEST_INI', 'test.ini')
+        env_test_ini = os.environ.get('INI_FILE', 'test.ini')
         here_dir = os.path.dirname(os.path.abspath(__file__))
         conf_dir = os.path.dirname(os.path.dirname(here_dir))
         test_ini = os.path.join(conf_dir, env_test_ini)
