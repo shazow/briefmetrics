@@ -32,6 +32,9 @@ def _setup_cache_regions(settings):
     from briefmetrics.lib import cache
     cache.ReportRegion.configure_from_config(settings, 'cache.report.')
 
+def _setup_celery(settings):
+    from briefmetrics.tasks import setup as tasks_setup
+    tasks_setup.init(settings)
 
 def _login_tween(handler, registry):
     def _login_handler(request):
@@ -87,6 +90,9 @@ def setup_config(config):
 
     # Load configuration for cache regions
     _setup_cache_regions(settings)
+
+    # Setup Celery
+    _setup_celery(settings)
 
     # Need more setup? Do it here.
     # ...
