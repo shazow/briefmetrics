@@ -94,7 +94,7 @@ class Subscription(meta.Model): # Subscription to a report
     time_created = Column(types.DateTime, default=now, nullable=False)
     time_updated = Column(types.DateTime, onupdate=now)
 
-    user_id = Column(types.Integer, ForeignKey(User.id, ondelete='CASCADE'))
+    user_id = Column(types.Integer, ForeignKey(User.id, ondelete='CASCADE')) # TODO: index=true
     user = orm.relationship(User, innerjoin=True)
 
     report_id = Column(types.Integer, ForeignKey(Report.id, ondelete='CASCADE'), index=True)
