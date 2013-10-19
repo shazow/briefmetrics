@@ -39,11 +39,12 @@ def settings_subscribe(request):
 
     # TODO: Migrate to API
     # Add new reports.
-    queued_reports = 0
+    queued_reports = []
     oauth = api.google.auth_session(request, account.oauth_token)
     r = api.google.Query(oauth).get_profiles(account_id=account.id)
     for item in r['items']:
-        if int(item['id']) not in profile_ids:
+        profile_id = int(item['id'])
+        if profile_id not in profile_ids:
             continue
 
         report = model.Report.create(account_id=account.id)
@@ -51,14 +52,14 @@ def settings_subscribe(request):
         report.display_name = h.human_url(item['websiteUrl']) or item['name']
         model.Subscription.create(user_id=user_id, report=report)
 
-        profile_ids.discard(report.id)
-
-        tasks.report.send_weekly.delay(report.id)
-        queued_reports += 1
+        queued_reports.append(report)
+        profile_ids.discard(profile_id)
 
     model.Session.commit()
 
-    # TODO: Queue new report
+    # Queue new reports
+    for report in queued_reports:
+        tasks.report.send_weekly.delay(report.id)
 
     if queued_reports:
         request.flash("First report has been queued. Please check your Spam folder if you don't see it in your Inbox in a few minutes.")

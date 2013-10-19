@@ -13,9 +13,11 @@ def init(settings):
     class Config:
         BROKER_URL = settings['celery.broker']
         CELERY_POOL_RESTARTS = True
-        CELERY_SEND_TASK_ERROR_EMAILS = True
-        ADMINS = [('Briefmetrics Celery', 'errors@briefmetrics.com')]
-        SERVER_EMAIL = 'admin@briefmetrics.com'
+
+        if settings.get('mail.enabled', 'false') != 'false':
+            CELERY_SEND_TASK_ERROR_EMAILS = True
+            ADMINS = [('Briefmetrics Celery', 'errors@briefmetrics.com')]
+            SERVER_EMAIL = 'admin@briefmetrics.com'
 
     celery.config_from_object(Config)
 
