@@ -13,10 +13,19 @@ class AdminController(Controller):
     title = 'Admin Panel'
 
     def index(self):
-        u = api.account.get_user(self.request, required=True)
-        assert u.is_admin
-
+        api.account.get_admin(self.request)
         self.c.users = Session.query(model.User).options(orm.joinedload('account')).all()
 
         return self._render('admin/index.mako')
+
+    def login_as(self):
+        u = api.account.get_admin(self.request)
+
+        user_id = int(self.request.params.get('id'))
+
+        self.session['user_id'] = user_id
+        self.session['admin_id'] = u.id
+        self.session.save()
+
+        return self._redirect(self.request.route_path('index'))
 

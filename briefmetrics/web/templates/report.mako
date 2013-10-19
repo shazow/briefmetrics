@@ -112,22 +112,22 @@ ${h.chart(c.historic_data, width=600, height=200)}
     </h3>
 % endif
 
-    <p>
-        You can look forward to your next report on ${h.human_date(c.date_next)}.
-    </p>
+<p>
+    You can look forward to your next report on ${h.human_date(c.date_next)}.
+</p>
 
-    <h2>Coming soon (aka. my shameless public TODO list)</h2>
-    <ul>
-        <li class="done">Rewriting Briefmetrics from AppEngine + Go, to good ol' fashioned self-deployed Python. Expect something new next week!</li>
-    </ul>
+<h2>Coming soon (aka. my shameless public TODO list)</h2>
+<ul>
+    <li class="done">Rewriting Briefmetrics from AppEngine + Go, to good ol' fashioned self-deployed Python. Expect something new next week!</li>
+</ul>
 
-    <h2>Please send feedback!</h2>
-    <p>
-        Reply to this email with comments, suggestions, requests, praise, or selfies.
-    </p>
+<h2>Please send feedback!</h2>
+<p>
+    Reply to this email with comments, suggestions, requests, praise, or selfies.
+</p>
 
-    <p class="footer">
-        Looking for something different?
-        <a href="http://briefmetrics.com/settings">Change subscription</a> &middot;
-        <a href="http://briefmetrics.com/account/disconnect?token=${c.user.unsubscribe_token}">Delete account</a>
-    </p>
+<p class="footer">
+    Looking for something different?
+    <a href="http://briefmetrics.com/settings">Change subscription</a> &middot;
+    <a href="http://briefmetrics.com/account/disconnect?token=${c.user.unsubscribe_token}">Delete account</a>
+</p>

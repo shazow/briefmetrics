@@ -11,7 +11,8 @@
         % else:
             ✗
         % endif
-            ${u.email} (${u.account.display_name})<br />
+            ${u.email} (${u.account.display_name})
+            <a class="button" href="${request.route_path('admin_login_as', _query={'id': u.id})}">➠</a>
         </li>
     % endfor
     </ul>
