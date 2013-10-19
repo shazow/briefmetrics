@@ -1,7 +1,7 @@
 import re
 from unstdlib import get_many
 
-from briefmetrics import api, model
+from briefmetrics import api, model, tasks
 from briefmetrics.lib.exceptions import APIControllerError
 from briefmetrics.lib import helpers as h
 
@@ -39,6 +39,7 @@ def settings_subscribe(request):
 
     # TODO: Migrate to API
     # Add new reports.
+    queued_reports = 0
     oauth = api.google.auth_session(request, account.oauth_token)
     r = api.google.Query(oauth).get_profiles(account_id=account.id)
     for item in r['items']:
@@ -52,11 +53,17 @@ def settings_subscribe(request):
 
         profile_ids.discard(report.id)
 
+        tasks.report.send_weekly.delay(report.id)
+        queued_reports += 1
+
     model.Session.commit()
 
     # TODO: Queue new report
 
-    request.flash('Updated subscription.')
+    if queued_reports:
+        request.flash("First report has been queued. Please check your Spam folder if you don't see it in your Inbox in a few minutes.")
+    else:
+        request.flash('Updated subscription.')
 
 
 class SettingsController(Controller):

@@ -12,6 +12,10 @@ celery = Celery(
 def init(settings):
     class Config:
         BROKER_URL = settings['celery.broker']
+        CELERY_POOL_RESTARTS = True
+        CELERY_SEND_TASK_ERROR_EMAILS = True
+        ADMINS = [('Briefmetrics Celery', 'errors@briefmetrics.com')]
+        SERVER_EMAIL = 'admin@briefmetrics.com'
 
     celery.config_from_object(Config)
 
@@ -20,9 +24,9 @@ ini_file = os.environ.get('INI_FILE')
 if ini_file:
     init(paste.deploy.appconfig('config:' + ini_file, relative_to='.'))
 
+
 @worker_init.connect
 def bootstrap_pyramid(signal, sender):
     from pyramid.paster import bootstrap
     booted = bootstrap(ini_file)
     sender.app.request = booted['request']
-    print signal, sender, sender.app

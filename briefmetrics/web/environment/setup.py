@@ -35,6 +35,7 @@ def _setup_cache_regions(settings):
 def _setup_celery(settings):
     from briefmetrics.tasks import setup as tasks_setup
     tasks_setup.init(settings)
+    tasks_setup.celery.control.broadcast('pool_restart', arguments={'reload': True})
 
 def _login_tween(handler, registry):
     def _login_handler(request):
