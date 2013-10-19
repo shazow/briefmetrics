@@ -128,6 +128,6 @@ ${h.chart(c.historic_data, width=600, height=200)}
 
     <p class="footer">
         Looking for something different?
-        <a href="http://www.briefmetrics.com/settings">Change subscription</a> &middot;
-        <a href="http://www.briefmetrics.com/account/disconnect?token=${c.user.unsubscribe_token}">Delete account</a>
+        <a href="http://briefmetrics.com/settings">Change subscription</a> &middot;
+        <a href="http://briefmetrics.com/account/disconnect?token=${c.user.unsubscribe_token}">Delete account</a>
     </p>
