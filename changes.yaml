@@ -9,7 +9,7 @@ todo:
 
 done:
 - text: "Add a \"What's new\" section."
-- text: "Subscribe to multiple sites."
+- text: "Subscribe to multiple sites. (Ping me if you need this.)"
 - text: "Prune insignificantly tiny results in Top N lists."
 - text: "Chart comparing performance to last month."
 - text: "\"Next Report: ...\""
