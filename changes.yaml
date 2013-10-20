@@ -4,6 +4,7 @@ todo:
 - text: "Delta changed since last week."
 - text: "Paid subscriptions."
 - text: "Remove anything with {facebook,google,twitter} and merge Organic Search results with Social."
+- text: "Referrer lifetime stats."
 - text: "Broken site alerts by detecting browser anamolies."
   notify: "badr"
 
