@@ -5,6 +5,7 @@ from unstdlib import now
 
 from briefmetrics.lib.controller import Controller, Context
 from briefmetrics.lib.gcharts import encode_rows
+from briefmetrics.lib import changes
 from briefmetrics import model
 
 from . import google as api_google, email as api_email
@@ -62,6 +63,7 @@ def fetch_weekly(request, report, date_start):
     c.total_current = r[1][-1]
     c.total_last = r[0][-1]
     c.total_last_relative = r[0][len(r[1]) - 1]
+    c.changes = changes
 
     return c
 

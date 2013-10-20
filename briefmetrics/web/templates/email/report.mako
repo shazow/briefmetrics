@@ -56,7 +56,12 @@ ${widgets.data_table(
 
 <h2>Coming soon (aka. my shameless public TODO list)</h2>
 <ul>
-    <li class="done">Rewriting Briefmetrics from AppEngine + Go, to good ol' fashioned self-deployed Python. Expect something new next week!</li>
+% for todo in c.changes.TODO:
+    <li>${todo['text']}</li>
+% endfor
+% for done in c.changes.DONE[:5]:
+    <li class="done">${done['text']}</li>
+% endfor
 </ul>
 
 <h2>Please send feedback!</h2>
