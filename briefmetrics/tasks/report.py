@@ -24,7 +24,7 @@ def send_weekly(report_id, since_time=None):
 
 
 @periodic_task(run_every=crontab(hour=10, minute=42, day_of_week='sun')) # FIXME: 'mon'
-def send_all(report_id, since_time=None):
+def send_all(since_time=None):
     since_time = since_time or now()
 
     q = model.Session.query(model.Report).filter(
