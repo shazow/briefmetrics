@@ -16,8 +16,10 @@ def init(settings):
 
         if settings.get('mail.enabled', 'false') != 'false':
             CELERY_SEND_TASK_ERROR_EMAILS = True
+            EMAIL_HOST = settings.get('mail.host')
+            EMAIL_PORT = settings.get('mail.port')
             ADMINS = [('Briefmetrics Celery', 'errors@briefmetrics.com')]
-            SERVER_EMAIL = 'admin@briefmetrics.com'
+            SERVER_EMAIL = 'service+celery@briefmetrics.com'
 
     celery.config_from_object(Config)
 
