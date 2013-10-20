@@ -100,4 +100,6 @@ def send_weekly(request, report, since_time=None):
     report.time_last = now()
     report.time_next = datetime.datetime(*date_start.timetuple()[:3]) + datetime.timedelta(days=7)
 
+    # TODO: Preferred time
+
     model.Session.commit()

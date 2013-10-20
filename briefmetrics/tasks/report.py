@@ -23,7 +23,7 @@ def send_weekly(report_id, since_time=None):
     api.report.send_weekly(celery.request, report)
 
 
-@periodic_task(run_every=crontab(hour=10, minute=42, day_of_week='sun')) # FIXME: 'mon'
+@periodic_task(run_every=crontab(hour=8))
 def send_all(since_time=None):
     since_time = since_time or now()
 
