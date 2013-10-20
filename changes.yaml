@@ -8,6 +8,7 @@ todo:
   notify: "badr"
 
 done:
+- text: "Rewrite Go -> Python and migrate away from AppEngine."
 - text: "Add a \"What's new\" section."
 - text: "Subscribe to multiple sites. (Ping me if you need this.)"
 - text: "Prune insignificantly tiny results in Top N lists."
