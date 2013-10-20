@@ -44,15 +44,16 @@ def text_if(cond, text):
 
 RE_HUMAN_URL = re.compile('^(\w*://)?(www\.)?(.+)/?$')
 
-def human_url(s):
+def human_url(s, max_length=None):
     m = RE_HUMAN_URL.match(s)
-    return m and m.group(3)
+    r = m.group(3) if m else s
+    return truncate(r, max_length=max_length)
 
-def human_link(href, attrs=None):
+def human_link(href, attrs=None, max_length=None):
     if '://' not in href:
         href = 'http://' + href
 
-    return html.tag('a', human_url(href), attrs={'href': href})
+    return html.tag('a', human_url(href, max_length=max_length), attrs={'href': href})
 
 def num_ordinal(n): # lol
     return 'th' if 11 <= n <=13 else {1:'st', 2:'nd', 3:'rd'}.get(n % 10, 'th')
@@ -75,6 +76,11 @@ def human_time(seconds=None):
 
 def human_int(n):
     return u'{:,}'.format(int(n))
+
+def truncate(s, max_length=80):
+    if not max_length or len(s) <= max_length:
+        return s
+    return s[:max_length-1] + u'\u2026'
 
 def ga_permalink(section, report, date_start=None, date_end=None):
     awp = "a{accountId}w{internalWebPropertyId}p{id}".format(**report.remote_data)

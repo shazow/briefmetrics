@@ -85,6 +85,11 @@ strong {
 
 ul, ol {
     margin: 0 0 1em 0;
+
+    &.vertical {
+        list-style: none;
+        padding: 0;
+    }
 }
 
 li {

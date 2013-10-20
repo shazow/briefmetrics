@@ -6,7 +6,7 @@
 
     <form action="${request.current_route_path()}" method="post">
 
-        <ul class="ga-profiles">
+        <ul class="ga-profiles vertical">
         % for item in c.result['items']:
             <%
                 subscribe_url = request.route_path(

@@ -69,7 +69,7 @@ def fetch_weekly(request, report, date_start):
 def render_weekly(request, user, context):
     context.user = user
 
-    return Controller(request, context=context)._render_template('report.mako')
+    return Controller(request, context=context)._render_template('email/report.mako')
 
 
 def send_weekly(request, report, since_time=None):

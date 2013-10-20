@@ -285,6 +285,10 @@ strong {
 ul, ol {
   margin: 0 0 1em 0;
 }
+ul.vertical, ol.vertical {
+  list-style: none;
+  padding: 0;
+}
 
 li {
   margin: 0.5em 0 0.5em 0;
