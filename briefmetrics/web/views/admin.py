@@ -1,6 +1,6 @@
 from sqlalchemy import orm
 
-from briefmetrics import api, model, task
+from briefmetrics import api, model, tasks
 from briefmetrics.model.meta import Session
 
 from briefmetrics.lib.controller import Controller
@@ -31,6 +31,6 @@ class AdminController(Controller):
     def test_errors(self):
         api.account.get_admin(self.request)
 
-        task.admin.test_errors.delay("This is a test.")
+        tasks.admin.test_errors.delay("This is a test.")
 
         raise Exception("This is a test.")
