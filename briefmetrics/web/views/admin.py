@@ -1,7 +1,6 @@
 from sqlalchemy import orm
 
-from briefmetrics import api
-from briefmetrics import model
+from briefmetrics import api, model, task
 from briefmetrics.model.meta import Session
 
 from briefmetrics.lib.controller import Controller
@@ -29,3 +28,9 @@ class AdminController(Controller):
 
         return self._redirect(self.request.route_path('index'))
 
+    def test_errors(self):
+        api.account.get_admin(self.request)
+
+        task.admin.test_errors.delay("This is a test.")
+
+        raise Exception("This is a test.")
