@@ -1,3 +1,4 @@
+# TODO: Move into __init__.py ala model?
 from celery import Celery
 from celery.signals import worker_init
 
@@ -13,6 +14,8 @@ def init(settings):
     class Config:
         BROKER_URL = settings['celery.broker']
         CELERY_POOL_RESTARTS = True
+        CELERY_DISABLE_RATE_LIMITS = True
+        CELERY_TIMEZONE = 'US/Eastern'
 
         if settings.get('mail.enabled', 'false') != 'false':
             CELERY_SEND_TASK_ERROR_EMAILS = True

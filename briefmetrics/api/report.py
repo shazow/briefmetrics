@@ -2,7 +2,6 @@ import logging
 import datetime
 from itertools import groupby
 from unstdlib import now
-from sqlalchemy import orm
 
 from briefmetrics.lib.controller import Controller, Context
 from briefmetrics.lib.gcharts import encode_rows
@@ -102,16 +101,3 @@ def send_weekly(request, report, since_time=None):
     report.time_next = datetime.datetime(*date_start.timetuple()[:3]) + datetime.timedelta(days=7)
 
     model.Session.commit()
-
-
-def send_all(request, since_time=None):
-    since_time = since_time or now()
-
-    q = model.Session.query(model.Report).filter(
-        (model.Report.time_next <= since_time) | (model.Report.time_next == None)
-    )
-    q = q.options(orm.joinedload(model.Report.account))
-    reports = q.all()
-
-    for report in reports:
-        send_weekly(request, report, since_time)
