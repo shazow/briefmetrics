@@ -1,6 +1,5 @@
 # TODO: Move into __init__.py ala model?
-from celery import Celery
-from celery.signals import worker_init
+from celery import Celery, signals
 
 import os
 import paste.deploy
@@ -32,8 +31,14 @@ if ini_file:
     init(paste.deploy.appconfig('config:' + ini_file, relative_to='.'))
 
 
-@worker_init.connect
+@signals.worker_init.connect
 def bootstrap_pyramid(signal, sender):
     from pyramid.paster import bootstrap
     booted = bootstrap(ini_file)
     sender.app.request = booted['request']
+
+
+@signals.task_postrun.connect
+def close_session(*args, **kwargs):
+    from briefmetrics.model.meta import Session
+    db.session.remove()
