@@ -59,6 +59,8 @@ def num_ordinal(n): # lol
     return 'th' if 11 <= n <=13 else {1:'st', 2:'nd', 3:'rd'}.get(n % 10, 'th')
 
 def human_date(d):
+    if not d:
+        return
     return d.strftime('%A %b ') + str(d.day) + num_ordinal(d.day)
 
 def human_time(seconds=None):
