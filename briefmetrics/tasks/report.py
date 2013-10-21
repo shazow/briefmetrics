@@ -24,7 +24,7 @@ def send_weekly(report_id, since_time=None):
 
 
 @periodic_task(run_every=crontab(hour=8))
-def send_all(since_time=None):
+def send_all(since_time=None, async=True):
     since_time = since_time or now()
 
     q = model.Session.query(model.Report).filter(
@@ -33,7 +33,11 @@ def send_all(since_time=None):
     q = q.options(orm.joinedload(model.Report.account))
     reports = q.all()
 
+    send_fn = send_weekly
+    if async:
+        send_fn = send_weekly.delay
+
     for report in reports:
-        send_weekly.delay(report_id=report.id, since_time=since_time)
+        send_fn(report_id=report.id, since_time=since_time)
 
     logger.info('Queued %d reports for sending.' % len(reports))
