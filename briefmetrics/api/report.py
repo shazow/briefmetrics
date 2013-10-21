@@ -45,7 +45,7 @@ def fetch_weekly(request, report, date_start):
     c.date_next = date_start + datetime.timedelta(days=7)
 
     c.subject = u"Weekly report \u2019til %s: %s" % (
-        date_start.strftime('%b %d'),
+        date_end.strftime('%b %d'),
         report.display_name,
     )
 
