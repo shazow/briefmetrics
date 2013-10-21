@@ -3,7 +3,7 @@
 <div class="container">
 
     <h2>Users</h2>
-    <ul>
+    <ol>
     % for u in c.users:
         <li>
         % if u.account.oauth_token and u.account.oauth_token.get('refresh_token'):
@@ -21,6 +21,6 @@
             </ul>
         </li>
     % endfor
-    </ul>
+    </ol>
 
 </div>
