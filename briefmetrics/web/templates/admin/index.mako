@@ -13,6 +13,12 @@
         % endif
             ${u.email} (${u.account.display_name})
             <a class="button" href="${request.route_path('admin_login_as', _query={'id': u.id})}">➠</a>
+
+            <ul>
+            % for r in u.account.reports:
+                <li>${r.display_name} (next report: ${h.human_date(r.time_next)})
+            % endfor
+            </ul>
         </li>
     % endfor
     </ul>

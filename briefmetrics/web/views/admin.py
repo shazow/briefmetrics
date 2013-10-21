@@ -13,7 +13,9 @@ class AdminController(Controller):
 
     def index(self):
         api.account.get_admin(self.request)
-        self.c.users = Session.query(model.User).options(orm.joinedload('account')).all()
+        q = Session.query(model.User)
+        q = q.options(orm.joinedload_all('account.reports'))
+        self.c.users = q.all()
 
         return self._render('admin/index.mako')
 
