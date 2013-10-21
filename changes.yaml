@@ -9,6 +9,7 @@ todo:
   notify: "badr"
 
 done:
+- text: "Better subject line and fixed autonomous email sending, I hope. (Sorry for the late report today!)"
 - text: "Rewrite Go -> Python and migrate AppEngine -> Docker while shaving all the yaks."
 - text: "Add a \"What's new\" section."
 - text: "Subscribe to multiple sites. (Ping me if you need this.)"
