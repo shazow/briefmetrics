@@ -41,4 +41,4 @@ def bootstrap_pyramid(signal, sender):
 @signals.task_postrun.connect
 def close_session(*args, **kwargs):
     from briefmetrics.model.meta import Session
-    db.session.remove()
+    Session.remove()
