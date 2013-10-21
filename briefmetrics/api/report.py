@@ -74,7 +74,7 @@ def render_weekly(request, user, context):
     return Controller(request, context=context)._render_template('email/report.mako')
 
 
-def send_weekly(request, report, since_time=None):
+def send_weekly(request, report, since_time=None, pretend=False):
     since_time = since_time or now()
 
     if report.time_next and report.time_next > since_time:
@@ -92,12 +92,18 @@ def send_weekly(request, report, since_time=None):
     for user in report.users:
         html = render_weekly(request, user, context)
 
+        if pretend:
+            continue
+
         message = api_email.create_message(request,
             to_email=user.email,
             subject=context.subject, 
             html=html,
         )
         api_email.send_message(request, message)
+
+    if pretend:
+        return
 
     report.time_last = now()
     report.time_next = datetime.datetime(*date_start.timetuple()[:3]) + datetime.timedelta(days=7)
