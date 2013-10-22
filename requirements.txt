@@ -17,3 +17,4 @@ requests==2.0.0
 stripe==1.9.5
 unstdlib==1.5.3
 pyyaml==3.10
+mock==1.0.1

@@ -30,7 +30,9 @@ def _setup_models(settings):
 
 def _setup_cache_regions(settings):
     from briefmetrics.lib import cache
-    cache.ReportRegion.configure_from_config(settings, 'cache.report.')
+    if not hasattr(cache.ReportRegion, 'backend'):
+        # Hacky to avoid configuring multiple times in tests and such :(
+        cache.ReportRegion.configure_from_config(settings, 'cache.report.')
 
 def _setup_celery(settings):
     from briefmetrics.tasks import setup as tasks_setup

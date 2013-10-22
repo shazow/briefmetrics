@@ -1,85 +1,14 @@
 {
-    "columnHeaders": [
-        {
-            "columnType": "DIMENSION",
-            "dataType": "STRING",
-            "name": "ga:pagePath"
-        },
-        {
-            "columnType": "METRIC",
-            "dataType": "INTEGER",
-            "name": "ga:pageviews"
-        }
-    ],
-    "containsSampledData": false,
-    "itemsPerPage": 10,
-    "kind": "analytics#gaData",
-    "profileInfo": {
-        "accountId": "111111",
-        "internalWebPropertyId": "111113",
-        "profileId": "111112",
-        "profileName": "example.com",
-        "tableId": "ga:111112",
-        "webPropertyId": "UA-111114-1"
-    },
-    "query": {
-        "dimensions": "ga:pagePath",
-        "end-date": "2013-01-07",
-        "ids": "ga:111112",
-        "max-results": 10,
-        "metrics": [
-            "ga:pageviews"
-        ],
-        "sort": [
-            "-ga:pageviews"
-        ],
-        "start-date": "2013-01-01",
-        "start-index": 1
-    },
     "rows": [
         [
-            "/blog/top-five-of-something/",
-            "1353"
-        ],
-        [
-            "/blog/how-to-choose-something/",
-            "389"
-        ],
-        [
-            "/blog/",
-            "362"
-        ],
-        [
-            "/blog/diy-your-something/",
-            "211"
-        ],
-        [
-            "/blog/so-youre-a-something/",
-            "188"
-        ],
-        [
-            "/blog/what-are-somethings/",
-            "156"
-        ],
-        [
-            "/blog/what-does-a-something-do/",
-            "140"
-        ],
-        [
-            "/blog/top-10-questions-about-something/",
-            "114"
-        ],
-        [
-            "/blog/what-to-include-on-a-something/",
-            "90"
-        ],
-        [
-            "/blog/42-unique-somethings/",
-            "89"
+            "1000",
+            "500",
+            "345"
         ]
     ],
-    "totalResults": 583,
     "totalsForAllResults": {
-        "ga:pageviews": "6170"
+        "ga:pageviews": "1000",
+        "ga:uniquePageviews": "500",
+        "ga:timeOnSite": "345"
     }
 }

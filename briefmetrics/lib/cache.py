@@ -1,6 +1,7 @@
 import inspect
 
-from dogpile.cache import make_region
+from dogpile.cache import make_region, register_backend
+from dogpile.cache.api import CacheBackend, NO_VALUE
 
 
 # Note: This lives in https://gist.github.com/shazow/6838337
@@ -54,3 +55,19 @@ def make_key_generator(namespace, fn, value_mangler=str, arg_blacklist=('self', 
 ReportRegion = make_region(
     function_key_generator=make_key_generator,
 )
+
+
+class DisabledBackend(CacheBackend):
+    def __init__(self, arguments):
+        pass
+
+    def get(self, key):
+        return NO_VALUE
+
+    def set(self, key, value):
+        pass
+
+    def delete(self, key):
+        pass
+
+register_backend("DisabledBackend", "briefmetrics.lib.cache", "DisabledBackend")
