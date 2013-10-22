@@ -47,9 +47,11 @@ class TestWeb(TestModel):
         super(TestWeb, self).setUp()
 
         from webtest import TestApp
+        from pyramid.threadlocal import get_current_request 
         self.app = TestApp(self.wsgi_app)
         self.csrf_token = self.settings['session.constant_csrf_token']
-        self.request = web.environment.Request.blank('/')
+        self.request = get_current_request()
+        self.request.registry = self.config.registry
 
     def call_api(self, method, format='json', csrf_token=_DEFAULT, _status=None, _extra_params=None, **params):
         if csrf_token is _DEFAULT:

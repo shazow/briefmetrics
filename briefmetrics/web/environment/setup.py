@@ -117,9 +117,11 @@ def setup_testing(**settings):
 
     # FIXME: Remove the Registry-related stuff once
     # https://github.com/Pylons/pyramid/issues/856 is fixed.
+    from .request import Request
     from pyramid.registry import Registry
     registry = Registry('testing')
-    config = testing.setUp(registry=registry, settings=settings)
+    request = Request.blank('/') 
+    config = testing.setUp(registry=registry, settings=settings, request=request)
     config.registry = registry
     config.setup_registry(settings=settings)
 

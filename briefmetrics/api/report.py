@@ -48,6 +48,7 @@ def fetch_weekly(request, report, date_start):
         date_end.strftime('%b %d'),
         report.display_name,
     )
+    c.report = report
 
     params = {
         'id': report.remote_data['id'],
@@ -55,9 +56,16 @@ def fetch_weekly(request, report, date_start):
         'date_end': date_end,
     }
 
+    c.has_data = True
+    c.report_pages = q.report_pages(**params)
+    if not c.report_pages.get('rows'):
+        # No data :(
+        c.subject = u"Problem with your Briefmetrics account"
+        c.has_data = False
+        return c
+
     c.report_summary = q.report_summary(**params)
     c.report_referrers = q.report_referrers(**params)
-    c.report_pages = q.report_pages(**params)
     c.report_social = q.report_social(**params)
 
     r = q.report_historic(**params)
@@ -75,7 +83,11 @@ def fetch_weekly(request, report, date_start):
 def render_weekly(request, user, context):
     context.user = user
 
-    return Controller(request, context=context)._render_template('email/report.mako')
+    template = 'email/report.mako'
+    if not context.has_data:
+        template = 'email/error_empty.mako'
+
+    return Controller(request, context=context)._render_template(template)
 
 
 def send_weekly(request, report, since_time=None, pretend=False):
@@ -91,7 +103,11 @@ def send_weekly(request, report, since_time=None, pretend=False):
 
     context = fetch_weekly(request, report, date_start)
 
-    log.info('Sending report to [%d] users: %s' % (len(report.users), report.display_name))
+    send_users = report.users
+    if not context.has_data:
+        send_users = [report.account.user]
+
+    log.info('Sending report to [%d] users: %s' % (len(send_users), report.display_name))
 
     for user in report.users:
         html = render_weekly(request, user, context)
