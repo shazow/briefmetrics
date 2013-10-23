@@ -55,7 +55,7 @@ body {
   color: #5d5d5d;
   font-size: 75%;
   background-color: #f6faee;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -371,6 +371,37 @@ nav li.logged-in a {
 
 .intro h1 {
   font-size: 4em;
+  font-weight: bold;
   line-height: 1em;
-  margin-top: 1em;
+  margin-top: 0.5em;
+}
+.intro h1 a {
+  color: #53bb9b;
+}
+.intro .signup {
+  display: table-row;
+  padding: 0 1em;
+}
+.intro .cta {
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 7px;
+  -ms-border-radius: 7px;
+  -o-border-radius: 7px;
+  border-radius: 7px;
+  width: 60%;
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  background-color: #eea937;
+  color: #fff;
+  padding: 0 20px;
+  margin: 0 20px;
+  font-size: 1.8em;
+  cursor: pointer;
+}
+.intro .details {
+  display: table-cell;
+  font-size: 0.8em;
+  list-style: none;
+  margin: 0;
 }

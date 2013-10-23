@@ -39,7 +39,39 @@ nav {
 .intro {
     h1 {
         font-size: 4em;
+        font-weight: bold;
         line-height: 1em;
-        margin-top: 1em;
+        margin-top: 0.5em;
+
+        a {
+            color: #53bb9b;
+        }
+    }
+
+    .signup {
+        display: table-row;
+        padding: 0 1em;
+    }
+
+    .cta {
+        @include border-radius(7px);
+        width: 60%;
+
+        display: table-cell;
+        vertical-align: middle;
+        text-align: center;
+        background-color: #eea937;
+        color: #fff;
+        padding: 0 20px;
+        margin: 0 20px;
+        font-size: 1.8em;
+        cursor: pointer;
+    }
+
+    .details {
+        display: table-cell;
+        font-size: 0.8em;
+        list-style: none;
+        margin: 0;
     }
 }
