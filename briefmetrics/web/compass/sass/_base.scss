@@ -84,8 +84,12 @@ h1 {
     margin-top: $margin-small;
 }
 
+h2 {
+    color: #40413e;
+}
+
 strong {
-    color: desaturate(darken($font-color, 20%), 50%);
+    color: desaturate(darken($font-color, 10%), 50%);
 }
 
 ul, ol {

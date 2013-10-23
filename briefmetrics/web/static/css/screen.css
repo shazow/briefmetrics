@@ -281,8 +281,12 @@ h1 {
   margin-top: 10px;
 }
 
+h2 {
+  color: #40413e;
+}
+
 strong {
-  color: #313131;
+  color: #4a4a4a;
 }
 
 ul, ol {
@@ -341,7 +345,7 @@ input[type="submit"]:hover {
 }
 
 nav {
-  background: #eee;
+  background: #dcefc5;
   margin-bottom: 1em;
 }
 nav ul {
@@ -405,6 +409,11 @@ nav li.logged-in a {
 }
 .intro .cta:hover {
   background: #f8a915;
+}
+.intro .cta small {
+  display: block;
+  color: #fee8c0;
+  font-size: 0.8em;
 }
 .intro .details {
   display: table-cell;

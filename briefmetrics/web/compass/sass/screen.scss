@@ -2,7 +2,7 @@
 
 
 nav {
-    background: #eee;
+    background: darken($color-background, 10%);
     margin-bottom: 1em;
 
     ul {
@@ -65,6 +65,12 @@ nav {
 
         &:hover {
             background: #f8a915;
+        }
+
+        small {
+            display: block;
+            color: #fee8c0;
+            font-size: 0.8em;
         }
     }
 
