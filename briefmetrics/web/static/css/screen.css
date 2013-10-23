@@ -379,8 +379,8 @@ nav li.logged-in a {
   color: #53bb9b;
 }
 .intro .signup {
-  display: table-row;
-  padding: 0 1em;
+  display: table;
+  margin: 3em 0;
 }
 .intro .cta {
   -webkit-border-radius: 7px;
@@ -396,7 +396,7 @@ nav li.logged-in a {
   color: #fff;
   padding: 0 20px;
   margin: 0 20px;
-  font-size: 1.8em;
+  font-size: 1.5em;
   cursor: pointer;
 }
 .intro .details {
