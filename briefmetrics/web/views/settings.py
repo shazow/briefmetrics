@@ -12,7 +12,7 @@ from briefmetrics.lib.controller import Controller
 @expose_api('settings.subscribe')
 def settings_subscribe(request):
     # TODO: Support multiple
-    profile_ids = set(map(int, request.params.getall('id')))
+    profile_ids = set(int(id) for id in request.params.getall('id') if id)
     user_id = api.account.get_user_id(request, required=True)
 
     account = model.Account.get_by(user_id=user_id)

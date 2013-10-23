@@ -336,12 +336,23 @@ input[type="submit"]:hover {
   border-color: #90c83b;
 }
 
+select {
+  font-size: 2em;
+}
+
 .container {
   width: 630px;
   margin: 0 auto;
   overflow: hidden;
   *zoom: 1;
   margin: 0 auto 20px auto;
+}
+
+.flash-messages {
+  width: 630px;
+  margin: 0 auto;
+  overflow: hidden;
+  *zoom: 1;
 }
 
 nav {

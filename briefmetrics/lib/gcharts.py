@@ -14,8 +14,8 @@ def chart(encoded_data, width=250, height=100):
         'chs': '{0}x{1}'.format(width, height),
         'chd': encoded_data,
         'cht': 'ls',
-        'chco': 'ffffff00|9c1a32|ffffff00',
-        'chm': 'B,CE234233,0,0,0|B,CE234277,1,0,0,1|B,CE234240,2,0,0,2',
+        'chco': 'fce09b|32dcb5|ffffff00',
+        'chm': 'B,fce09b90,0,0,0|B,32dcb560,1,0,0,1|B,CE234240,2,0,0,2',
     }
     url = API_URL % randint(0,9)
 

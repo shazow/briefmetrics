@@ -140,6 +140,10 @@ input {
     }
 }
 
+select {
+    font-size: 2em;
+}
+
 .container {
     @include container;
     margin: 0 auto $margin auto;

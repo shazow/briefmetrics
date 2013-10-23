@@ -1,5 +1,8 @@
 @import "_base";
 
+.flash-messages {
+    @include container;
+}
 
 nav {
     background: darken($color-background, 10%);

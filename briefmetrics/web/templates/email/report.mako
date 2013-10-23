@@ -11,7 +11,7 @@
     % endif
 </p>
 
-${h.chart(c.historic_data, width=600, height=200)}
+${h.chart(c.historic_data, width=560, height=200)}
 
 <h2>
     Last week
@@ -46,7 +46,7 @@ ${widgets.data_table(
 
 ${widgets.data_table(
     c.report_social.get('rows'),
-    'Referrers',
+    'Social',
     h.ga_permalink('report/social-sources', c.report, date_start=c.date_start, date_end=c.date_end),
 )}
 

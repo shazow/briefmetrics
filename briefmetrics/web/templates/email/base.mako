@@ -5,9 +5,23 @@
     <meta charset="utf-8" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
+    h1, h2, h3, h4, h5 {
+        font-weight: normal;
+        font-size: 21px;
+        color: #000;
+    }
+    .content {
+        background-color: #fff;
+        max-width: 560px;
+        margin: 0 auto;
+        padding: 10px 20px;
+        border-radius: 5px;
+    }
+
     body {
-        color: #444;
-        font-family: sans-serif;
+        background-color: #f6faee;
+        font: 15px/1.6 Arial, sans-serif;
+        color: #666;
     }
     .todo {
         font-size: 0.8em;
@@ -61,27 +75,16 @@
 
     .highlight {
         background: #ffad39;
-        padding: 1px 3px;
+        padding: 1px 2px;
         color: #33230b;
-        -webkit-border-radius: 3px;
-        -moz-border-radius: 3px;
-        border-radius: 3px;
     }
     .chartTop {
-        background: #e38192;
-        padding: 1px 3px;
-        color: #190408;
-        -webkit-border-radius: 3px;
-        -moz-border-radius: 3px;
-        border-radius: 3px;
+        background: #beeee1;
+        padding: 1px 2px;
     }
     .chartBottom {
-        background: #f5d3d9;
-        padding: 1px 3px;
-        color: #33230b;
-        -webkit-border-radius: 3px;
-        -moz-border-radius: 3px;
-        border-radius: 3px;
+        background: #fce09b;
+        padding: 1px 2px;
     }
     .done {
         text-decoration: line-through;
@@ -105,7 +108,9 @@
 </head>
 <body>
 
+<div class="content">
 ${next.body()}
+</div>
 
 </body>
 
