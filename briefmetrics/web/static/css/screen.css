@@ -51,10 +51,10 @@ a img {
 
 body {
   line-height: 1.5;
-  font-family: "Ubuntu", "Helvetica Neue", Arial, Helvetica, sans-serif;
+  font-family: "Nunito", "Helvetica Neue", Arial, Helvetica, sans-serif;
   color: #5d5d5d;
   font-size: 75%;
-  background-color: white;
+  background-color: #f6faee;
   font-size: 16px;
 }
 
@@ -367,4 +367,10 @@ nav h1 {
 }
 nav li.logged-in a {
   color: red;
+}
+
+.intro h1 {
+  font-size: 4em;
+  line-height: 1em;
+  margin-top: 1em;
 }

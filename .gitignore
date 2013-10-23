@@ -6,3 +6,5 @@
 /*.log
 /*.dbm*
 *.ini
+/celerybeat-*
+/*.csv

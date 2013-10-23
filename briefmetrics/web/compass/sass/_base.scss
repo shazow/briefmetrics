@@ -7,7 +7,7 @@ $font-size: 16px;
 $color-text: rgb(93, 93, 93);
 $color-header: rgb(60, 60, 60);
 $color-emphasis: rgb(170, 170, 170);
-$color-background: #fff;
+$color-background: #f6faee;
 $color-shadow: rgba(20, 20, 20, 0.6);
 $color-border: rgba(255, 255, 255, 0.05);
 
@@ -20,7 +20,7 @@ $link-color: #f37934;
 $link-hover-color: lighten($link-color, 10%);
 $font-color: $color-text;
 
-$blueprint-font-family: "Ubuntu", "Helvetica Neue", Arial, Helvetica, sans-serif !default;
+$blueprint-font-family: "Nunito", "Helvetica Neue", Arial, Helvetica, sans-serif !default;
 $blueprint-grid-columns: 16;
 $blueprint-grid-margin: $margin-small;
 $blueprint-grid-width: $span - $margin-small;

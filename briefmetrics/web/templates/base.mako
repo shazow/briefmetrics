@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     % if title:
         <title>${title} | Briefmetrics</title>
@@ -11,6 +12,8 @@
     % endif
 
     <link rel="icon" type="image/png" href="/static/images/icon_32px.png?1" />
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Nunito:300,700" />
+
     ${h.stylesheet_link(request, 'briefmetrics.web:static/css/screen.css')}
 
     <%block name="extra_head"></%block>

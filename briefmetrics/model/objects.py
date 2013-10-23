@@ -73,7 +73,6 @@ class Report(meta.Model): # Property within an account (such as a website)
 
     time_last = Column(types.DateTime)
     time_next = Column(types.DateTime, index=True)
-    num_sent = Column(types.Integer, default=0) # Only includes scheduled reports, used for trials.
 
     # Owner
     account_id = Column(types.Integer, ForeignKey(Account.id, ondelete='CASCADE'), index=True)

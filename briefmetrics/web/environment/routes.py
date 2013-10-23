@@ -15,6 +15,8 @@ def add_routes(config):
 
     with handler_routes(config, views.index.IndexController) as route:
         route('index', '/', action='index')
+        route('privacy', '/privacy', action='privacy')
+        route('security', '/security', action='security')
 
     with handler_routes(config, views.account.AccountController) as route:
         route('account_login', '/account/supersecretloginurl', action='login')
