@@ -50,17 +50,22 @@ nav {
 
     .cta {
         @include border-radius(7px);
+        @include background-image(linear-gradient(#f8a915, #ea9613));
+        border: 1px solid #d28811;
         width: 60%;
 
         display: table-cell;
         vertical-align: middle;
         text-align: center;
-        background-color: #6082bc;
         color: #fff;
         padding: 0 20px;
         margin: 0 20px;
         font-size: 1.5em;
         cursor: pointer;
+
+        &:hover {
+            background: #f8a915;
+        }
     }
 
     .details {

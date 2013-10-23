@@ -4,11 +4,11 @@ $span: 40px;
 
 $font-size: 15px;
 
-$color-text: rgb(93, 93, 93);
+$color-text: #616666;
 $color-link: rgb(243, 121, 52);
-$color-header: #9aafd5;
+$color-header: #37b89a;
 $color-emphasis: rgb(170, 170, 170);
-$color-background: #fff;
+$color-background: #f4faed;
 $color-shadow: rgba(20, 20, 20, 0.6);
 $color-border: rgba(255, 255, 255, 0.05);
 
@@ -47,7 +47,7 @@ body {
 footer {
     @include container;
     font-size: 0.8em;
-    border-top: 5px solid #ddd;
+    border-top: 5px solid desaturate(darken($color-background, 10%), 40%);
     text-align: center;
     margin-bottom: 1em;
     margin-top: 3em;

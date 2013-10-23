@@ -30,7 +30,6 @@
         <ul class="details">
             <li>No credit card required.</li>
             <li>$8/month after if you'd like to continue.</li>
-            <li>Requires a Google Analytics account.</a>
             <li>Please read our simple <a href="/privacy">Privacy Policy</a>.</li>
         </ul>
     </div>

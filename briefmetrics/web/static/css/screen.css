@@ -52,15 +52,15 @@ a img {
 body {
   line-height: 1.5;
   font-family: "Nunito", "Helvetica Neue", Arial, Helvetica, sans-serif;
-  color: #5d5d5d;
+  color: #616666;
   font-size: 75%;
-  background-color: white;
+  background-color: #f4faed;
   font-size: 15px;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: normal;
-  color: #4c4c4c;
+  color: #505555;
 }
 h1 img, h2 img, h3 img, h4 img, h5 img, h6 img {
   margin: 0;
@@ -233,11 +233,11 @@ caption {
 }
 
 .quiet {
-  color: #909090;
+  color: #949999;
 }
 
 .loud {
-  color: #3b3b3b;
+  color: #404343;
 }
 
 footer {
@@ -246,7 +246,7 @@ footer {
   overflow: hidden;
   *zoom: 1;
   font-size: 0.8em;
-  border-top: 5px solid #ddd;
+  border-top: 5px solid #dae0d4;
   text-align: center;
   margin-bottom: 1em;
   margin-top: 3em;
@@ -263,7 +263,7 @@ p {
 
 h1, h2 {
   font-size: 1.6em;
-  color: #9aafd5;
+  color: #37b89a;
   line-height: 26px;
 }
 h1 small, h2 small {
@@ -274,7 +274,7 @@ h1 small, h2 small {
   margin-left: -1em;
 }
 h1 a, h1 a:visited, h1 a:active, h1 a:hover, h2 a, h2 a:visited, h2 a:active, h2 a:hover {
-  color: #9aafd5;
+  color: #37b89a;
 }
 
 h1 {
@@ -282,7 +282,7 @@ h1 {
 }
 
 strong {
-  color: #2a2a2a;
+  color: #313131;
 }
 
 ul, ol {
@@ -361,7 +361,7 @@ nav li.logo {
   margin: 0;
 }
 nav li.logo a {
-  color: #9aafd5;
+  color: #37b89a;
 }
 nav h1 {
   font-size: 2em;
@@ -387,16 +387,24 @@ nav li.logged-in a {
   -ms-border-radius: 7px;
   -o-border-radius: 7px;
   border-radius: 7px;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f8a915), color-stop(100%, #ea9613));
+  background-image: -webkit-linear-gradient(#f8a915, #ea9613);
+  background-image: -moz-linear-gradient(#f8a915, #ea9613);
+  background-image: -o-linear-gradient(#f8a915, #ea9613);
+  background-image: linear-gradient(#f8a915, #ea9613);
+  border: 1px solid #d28811;
   width: 60%;
   display: table-cell;
   vertical-align: middle;
   text-align: center;
-  background-color: #6082bc;
   color: #fff;
   padding: 0 20px;
   margin: 0 20px;
   font-size: 1.5em;
   cursor: pointer;
+}
+.intro .cta:hover {
+  background: #f8a915;
 }
 .intro .details {
   display: table-cell;
