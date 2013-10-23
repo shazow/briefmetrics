@@ -54,7 +54,7 @@ body {
   font-family: "Nunito", "Helvetica Neue", Arial, Helvetica, sans-serif;
   color: #5d5d5d;
   font-size: 75%;
-  background-color: #f6faee;
+  background-color: white;
   font-size: 15px;
 }
 
@@ -263,7 +263,7 @@ p {
 
 h1, h2 {
   font-size: 1.6em;
-  color: #3c3c3c;
+  color: #9aafd5;
   line-height: 26px;
 }
 h1 small, h2 small {
@@ -272,6 +272,9 @@ h1 small, h2 small {
   font-weight: bold;
   color: #aaaaaa;
   margin-left: -1em;
+}
+h1 a, h1 a:visited, h1 a:active, h1 a:hover, h2 a, h2 a:visited, h2 a:active, h2 a:hover {
+  color: #9aafd5;
 }
 
 h1 {
@@ -358,7 +361,7 @@ nav li.logo {
   margin: 0;
 }
 nav li.logo a {
-  color: #3c3c3c;
+  color: #9aafd5;
 }
 nav h1 {
   font-size: 2em;
@@ -371,12 +374,8 @@ nav li.logged-in a {
 
 .intro h1 {
   font-size: 4em;
-  font-weight: bold;
   line-height: 1em;
   margin-top: 0.5em;
-}
-.intro h1 a {
-  color: #53bb9b;
 }
 .intro .signup {
   display: table;
@@ -392,7 +391,7 @@ nav li.logged-in a {
   display: table-cell;
   vertical-align: middle;
   text-align: center;
-  background-color: #eea937;
+  background-color: #6082bc;
   color: #fff;
   padding: 0 20px;
   margin: 0 20px;

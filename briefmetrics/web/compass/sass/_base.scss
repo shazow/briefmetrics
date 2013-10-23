@@ -5,9 +5,10 @@ $span: 40px;
 $font-size: 15px;
 
 $color-text: rgb(93, 93, 93);
-$color-header: rgb(60, 60, 60);
+$color-link: rgb(243, 121, 52);
+$color-header: #9aafd5;
 $color-emphasis: rgb(170, 170, 170);
-$color-background: #f6faee;
+$color-background: #fff;
 $color-shadow: rgba(20, 20, 20, 0.6);
 $color-border: rgba(255, 255, 255, 0.05);
 
@@ -16,7 +17,7 @@ $border-width: 1px;
 
 // Blueprint configuration:
 
-$link-color: #f37934;
+$link-color: $color-link;
 $link-hover-color: lighten($link-color, 10%);
 $font-color: $color-text;
 
@@ -72,6 +73,10 @@ h1, h2 {
         font-weight: bold;
         color: $color-emphasis;
         margin-left: -1em;
+    }
+
+    a, a:visited, a:active, a:hover {
+        color: $color-header;
     }
 }
 

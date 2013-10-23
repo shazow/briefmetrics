@@ -24,7 +24,7 @@
     <div class="signup">
         <a class="cta" href="/account/login">
             Sign in with Google Analytics<br />
-            for 2 free reports
+            (includes 2 free reports)
         </a>
 
         <ul class="details">
