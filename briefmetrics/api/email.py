@@ -31,7 +31,6 @@ def create_message(request, to_email, subject, html):
 
 
 def send_message(request, message):
-    assert False
     params = {
         'key': request.registry.settings['api.mandrill.key'],
         'async': True,
