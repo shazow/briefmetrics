@@ -18,8 +18,14 @@
         border-radius: 5px;
     }
 
+    @media only screen and (max-device-width: 600px) {
+        .content {
+            padding: 5px 10px; !important
+        }
+    }
+
     body {
-        background-color: #f6faee;
+        background-color: #ecfadd;
         font: 15px/1.6 Arial, sans-serif;
         color: #666;
     }
@@ -34,6 +40,7 @@
 
     a {
         text-decoration: none;
+        color: #25ad83;
     }
     p, ul, table {
         margin-top: 0.5em;
@@ -41,6 +48,11 @@
     }
     p {
         line-height: 1.5em;
+    }
+    table {
+        width: 100%;
+        table-layout: fixed;
+        font-size: 0.9em;
     }
     thead, h3 {
         color: #000;
@@ -53,24 +65,23 @@
     }
     td {
         padding-right: 1em;
+        overflow: hidden;
+        white-space: nowrap;
     }
     td.number {
         text-align: right;
         vertical-align: top;
+        width: 3.5em;
+    }
+    h1 {
+        margin: 0;
+        text-align: center;
+        padding: 1em 0 1em 0;
     }
 
     h2 {
         margin-top: 1.5em;
         font-size: 1em;
-    }
-    thead td > a, h3 > a {
-        background: #ce2342;
-        color: #f9e4e8;
-        text-decoration: none;
-        padding: 1px 3px;
-        -webkit-border-radius: 3px;
-        -moz-border-radius: 3px;
-        border-radius: 3px;
     }
 
     .highlight {
@@ -90,6 +101,14 @@
         text-decoration: line-through;
         color: #888;
     }
+    a.permalink {
+        float: right;
+        background: #ecfadd;
+        color: #9db883;
+        line-height: 1em;
+        padding: 3px 6px;
+        font-size: 0.8em;
+    }
 
     .footer {
         border-top: 1px solid #ddd;
@@ -98,7 +117,6 @@
         color: #666;
         font-size: 0.8em;
     }
-
     .quiet {
         font-size: 0.8em;
         color: #999;
@@ -107,6 +125,10 @@
     </style>
 </head>
 <body>
+
+<h1>
+    <img src="${request.static_url('briefmetrics.web:static/images/email_logo.png')}" />
+</h1>
 
 <div class="content">
 ${next.body()}

@@ -51,7 +51,10 @@ def human_url(s, max_length=None):
 
 def human_link(href, attrs=None, max_length=None):
     if '://' not in href:
-        href = 'http://' + href
+        if '.' in href:
+            href = 'http://' + href
+        else:
+            return href
 
     return html.tag('a', human_url(href, max_length=max_length), attrs={'href': href})
 

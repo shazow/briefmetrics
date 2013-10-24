@@ -5,11 +5,13 @@
 <table>
     <thead>
         <tr>
-            <td>
+            <td class="number">
                 Views
             </td>
             <td>
-                <a href="${report_link}">${title}</a>
+                ${title}
+
+                <a class="permalink" href="${report_link}">Full report</a>
             </td>
         </tr>
     </thead>
