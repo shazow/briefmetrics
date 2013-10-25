@@ -8,6 +8,10 @@ from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
 class AccountController(Controller):
 
     def login(self):
+        user_id = api.account.get_user_id(self.request)
+        if user_id:
+            return self._redirect(location=self.request.route_path('settings'))
+
         # TODO: Use `next` for state?
         oauth = api.google.auth_session(self.request)
         next, state = api.google.auth_url(oauth)

@@ -396,6 +396,15 @@ nav li.logged-in a {
   display: table;
   margin: 3em 0;
 }
+.intro .signup .cta {
+  width: 60%;
+  display: table-cell;
+  margin: 0 20px;
+}
+.intro .closer {
+  text-align: center;
+  margin-top: 2em;
+}
 .intro .cta {
   -webkit-border-radius: 7px;
   -moz-border-radius: 7px;
@@ -408,13 +417,11 @@ nav li.logged-in a {
   background-image: -o-linear-gradient(#f8a915, #ea9613);
   background-image: linear-gradient(#f8a915, #ea9613);
   border: 1px solid #d28811;
-  width: 60%;
-  display: table-cell;
+  display: inline-block;
   vertical-align: middle;
   text-align: center;
   color: #fff;
-  padding: 0 20px;
-  margin: 0 20px;
+  padding: 5px 20px;
   font-size: 1.5em;
   cursor: pointer;
 }
@@ -431,4 +438,21 @@ nav li.logged-in a {
   font-size: 0.8em;
   list-style: none;
   margin: 0;
+}
+
+.screenshot {
+  -moz-border-radius-topleft: 10px;
+  -webkit-border-top-left-radius: 10px;
+  border-top-left-radius: 10px;
+  -moz-border-radius-topright: 10px;
+  -webkit-border-top-right-radius: 10px;
+  border-top-right-radius: 10px;
+  border: 2px solid #dbe8cc;
+  padding: 20px 10px 10px 10px;
+  background: #fff;
+  text-align: center;
+}
+.screenshot h3 {
+  color: #bbb;
+  line-height: 2em;
 }

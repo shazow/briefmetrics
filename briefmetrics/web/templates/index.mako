@@ -33,6 +33,21 @@
         </ul>
     </div>
 
+    <div class="screenshot">
+        <h3>Sample Report</h3>
+        <img src="/static/images/screenshot.png" alt="Sample Report Screenshot" height="875px"/>
+        <p>
+            ... and much more!
+        </p>
+    </div>
+
+    <div class="closer">
+        <a class="cta" href="/account/login">
+            Sign in with Google Analytics
+            <small>get your first report now</small>
+        </a>
+    </div>
+
 </div>
 
 <footer>

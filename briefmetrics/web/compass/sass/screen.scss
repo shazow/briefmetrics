@@ -49,20 +49,29 @@ nav {
     .signup {
         display: table;
         margin: 3em 0;
+
+        .cta {
+            width: 60%;
+            display: table-cell;
+            margin: 0 20px;
+        }
+    }
+
+    .closer {
+        text-align: center;
+        margin-top: 2em;
     }
 
     .cta {
         @include border-radius(7px);
         @include background-image(linear-gradient(#f8a915, #ea9613));
         border: 1px solid #d28811;
-        width: 60%;
+        display: inline-block;
 
-        display: table-cell;
         vertical-align: middle;
         text-align: center;
         color: #fff;
-        padding: 0 20px;
-        margin: 0 20px;
+        padding: 5px 20px;
         font-size: 1.5em;
         cursor: pointer;
 
@@ -82,5 +91,18 @@ nav {
         font-size: 0.8em;
         list-style: none;
         margin: 0;
+    }
+}
+
+.screenshot {
+    @include border-top-radius(10px);
+    border: 2px solid darken(desaturate($color-background, 20%), 10%);
+    padding: 20px 10px 10px 10px;
+    background: #fff;
+    text-align: center;
+
+    h3 {
+        color: #bbb;
+        line-height: 2em;
     }
 }
