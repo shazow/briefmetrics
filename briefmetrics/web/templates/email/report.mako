@@ -14,27 +14,36 @@
 ${h.chart(c.historic_data, width=560, height=200)}
 
 <h2>
-    Last week
+    Last week&hellip;
     <% overlap_days = 7 - c.date_end.day %>
     % if overlap_days > 0:
         <span class="quiet">(includes ${h.format_int(overlap_days, '{} day')} from last month)</span>
     % endif
 </h2>
+
 % if c.report_summary.get('rows'):
+    <table class="overview">
+        <tr>
+            ${widgets.overview_cell(c.report_summary['rows'], 4, 'Bounce Rate', is_percent=True)}
+            ${widgets.overview_cell(c.report_summary['rows'], 1, 'Pageviews')}
+        </tr>
+    </table>
     <%
-        pageviews, uniques, seconds = c.report_summary['rows'][0]
+        pageviews, uniques, seconds, bounces = c.report_summary['rows'][0][1:5]
     %>
 <p style="margin-bottom: 2em;">
-    <span class="highlight">${h.human_int(uniques)}</span> unique people spent on average
-    <span class="highlight">${h.human_time(float(seconds) / int(uniques))}</span> over
-    <span class="highlight">${'%0.1f' % (float(pageviews) / float(uniques))}</span> pageviews
-    on your site in 7 days since ${h.human_date(c.date_start)}.
+    <span class="highlight">${h.human_int(uniques)}</span>
+    unique visitors each spent an average of
+    <span class="highlight">${h.human_time(float(seconds) / int(uniques))}</span>
+    over
+    <span class="highlight">${'%0.1f' % (float(pageviews) / float(uniques))}</span>
+    pageviews per session.
 </p>
 % endif
 
 ${widgets.data_table(
     c.report_pages.get('rows'),
-    'Pages',
+    'Top Pages',
     h.ga_permalink('report/content-pages', c.report, date_start=c.date_start, date_end=c.date_end),
 )}
 
@@ -51,7 +60,7 @@ ${widgets.data_table(
 )}
 
 <p>
-    You can look forward to your next report on ${h.human_date(c.date_next)}.
+    You can look forward to your next report on <span class="highlight">${h.human_date(c.date_next)}</span>.
 </p>
 
 <h2>Coming soon (aka. my shameless public TODO list)</h2>

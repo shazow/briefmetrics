@@ -26,7 +26,6 @@ def _dict_view(d, keys):
     return {k: d[k] for k in keys}
 
 def _token_updater(old_token):
-    # TODO: Does this work?
     def wrapped(new_token):
         token = _clean_token(new_token)
 
@@ -84,21 +83,26 @@ class Query(object):
     def __init__(self, oauth):
         self.api = oauth
 
+    # NOTE: Expire by adding expiration_time=...
+
     @ReportRegion.cache_on_arguments()
     def get_profiles(self, account_id):
         # account_id used for caching, not in query.
         r = self.api.get('https://www.googleapis.com/analytics/v3/management/accounts/~all/webproperties/~all/profiles')
         r.raise_for_status()
-
         return r.json()
 
-    @ReportRegion.cache_on_arguments()
+    @ReportRegion.cache_on_arguments() 
     def report_summary(self, id, date_start, date_end):
+        # Grab an extra week
+        date_start = date_start - timedelta(days=7)
         params = {
             'ids': 'ga:%s' % id,
             'start-date': date_start,
             'end-date': date_end,
-            'metrics': 'ga:pageviews,ga:uniquePageviews,ga:timeOnSite',
+            'metrics': 'ga:pageviews,ga:uniquePageviews,ga:timeOnSite,ga:visitBounceRate',
+            'dimensions': 'ga:week',
+            'sort': '-ga:week',
         }
         r = self.api.get('https://www.googleapis.com/analytics/v3/data/ga', params=params)
         r.raise_for_status()

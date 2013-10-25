@@ -3,6 +3,7 @@
 <head>
     <title>${c.subject}</title>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width"> 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
     h1, h2, h3, h4, h5 {
@@ -14,14 +15,8 @@
         background-color: #fff;
         max-width: 560px;
         margin: 0 auto;
-        padding: 10px 20px;
+        padding: 5px 10px;
         border-radius: 5px;
-    }
-
-    @media only screen and (max-device-width: 600px) {
-        .content {
-            padding: 5px 10px; !important
-        }
     }
 
     body {
@@ -52,26 +47,33 @@
     table {
         width: 100%;
         table-layout: fixed;
+        border-collapse: collapse;
         font-size: 0.9em;
     }
-    thead, h3 {
+    thead {
+        background: #ecfadd;
         color: #000;
         font-weight: bold;
         font-size: 0.8em;
         text-transform: uppercase;
     }
+    thead .number {
+        color: #526440;
+    }
     tbody {
-        font-family: serif;
+        font-size: 0.9em;
     }
     td {
         padding-right: 1em;
         overflow: hidden;
         white-space: nowrap;
+        padding-top: 2px;
+        padding-bottom: 2px;
     }
     td.number {
         text-align: right;
         vertical-align: top;
-        width: 3.5em;
+        width: 4.5em;
     }
     h1 {
         margin: 0;
@@ -81,11 +83,11 @@
 
     h2 {
         margin-top: 1.5em;
-        font-size: 1em;
+        font-size: 1.5em;
     }
 
     .highlight {
-        background: #ffad39;
+        background: #fce09b;
         padding: 1px 2px;
         color: #33230b;
     }
@@ -103,11 +105,29 @@
     }
     a.permalink {
         float: right;
-        background: #ecfadd;
         color: #9db883;
-        line-height: 1em;
-        padding: 3px 6px;
+        line-height: 2em;
         font-size: 0.8em;
+    }
+    .overview {
+        font-size: 1em;
+        text-align: center;
+        font-weight: bold;
+    }
+    .overview strong {
+        font-size: 2em;
+        color: #ffad39;
+        display: block;
+        line-height: 1em;
+        font-weight: normal;
+    }
+    .overview small{
+        color: green;
+        display: block;
+        font-weight: normal;
+    }
+    .overview small.neg {
+        color: red;
     }
 
     .footer {
@@ -121,6 +141,9 @@
         font-size: 0.8em;
         color: #999;
         font-weight: normal;
+    }
+    .optional-inverse {
+        display: none;
     }
     </style>
 </head>

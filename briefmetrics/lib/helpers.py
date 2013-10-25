@@ -82,6 +82,12 @@ def human_time(seconds=None):
 def human_int(n):
     return u'{:,}'.format(int(n))
 
+def human_percent(f):
+    fmt = u'{:0.1%}'
+    if f < 0.1:
+        fmt = u'{:0.2%}'
+    return fmt.format(float(f))
+
 def truncate(s, max_length=80):
     if not max_length or len(s) <= max_length:
         return s

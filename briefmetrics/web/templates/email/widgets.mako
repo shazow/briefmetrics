@@ -29,5 +29,27 @@
     % endfor
     </tbody>
 </table>
+</%def>
 
+
+<%def name="overview_cell(rows, column, label, is_percent=False, is_optional=False)">
+    <%
+        last_val, cur_val = float(rows[1][column]), float(rows[0][column])
+
+        if is_percent:
+            formatted_val = h.human_percent(cur_val / 100.0)
+        else:
+            formatted_val = h.human_int(cur_val)
+
+        delta = (cur_val / last_val) - 1
+    %>
+    <td ${h.text_if(is_optional, 'class="optional"')}>
+        <strong>${formatted_val}</strong>
+        <span>${label}</span>
+        % if delta > 0:
+            <small>+${h.human_percent(delta)}</small>
+        % else:
+            <small class="neg">${h.human_percent(delta)}</small>
+        % endif
+    </td>
 </%def>
