@@ -94,7 +94,6 @@
     .highlight {
         background: #fce09b;
         padding: 1px 2px;
-        color: #33230b;
     }
     .chartTop {
         background: #beeee1;
