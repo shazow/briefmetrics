@@ -11,7 +11,7 @@
         <title>Briefmetrics</title>
     % endif
 
-    <link rel="icon" type="image/png" href="/static/images/icon_32px.png?1" />
+    <link rel="icon" type="image/png" href="/static/images/icon_32px.png?5" />
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Nunito:300,700" />
 
     ${h.stylesheet_link(request, 'briefmetrics.web:static/css/screen.css')}
