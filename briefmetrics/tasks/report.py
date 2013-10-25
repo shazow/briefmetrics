@@ -15,7 +15,10 @@ logger = get_task_logger(__name__)
 
 @celery.task(ignore_result=True)
 def send_weekly(report_id, since_time=None, pretend=False):
-    report = model.Report.get(report_id)
+    report = model.Session.query(model.Report).options(
+        orm.joinedload(model.Report.account),
+        orm.joinedload(model.Report.users),
+    ).get(report_id)
     if not report:
         logger.warn('Invalid report id, skipping: %s' % report_id)
         return
@@ -30,7 +33,6 @@ def send_all(since_time=None, async=True, pretend=False):
     q = model.Session.query(model.Report).filter(
         (model.Report.time_next <= since_time) | (model.Report.time_next == None)
     )
-    q = q.options(orm.joinedload(model.Report.account))
     reports = q.all()
 
     send_fn = send_weekly

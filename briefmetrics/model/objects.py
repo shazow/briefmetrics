@@ -40,7 +40,8 @@ class User(meta.Model): # Email address / login
     is_admin = Column(types.Boolean, default=False, nullable=False)
     invited_by_user_id = Column(types.Integer)
 
-    # TODO: Paid plan?
+    plan = Column(types.String, default='tester')
+    num_remaining = Column(types.Integer)
 
     @property
     def unsubscribe_token(self):

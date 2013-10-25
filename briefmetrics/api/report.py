@@ -97,6 +97,14 @@ def send_weekly(request, report, since_time=None, pretend=False):
         log.warn('send_weekly too early, skipping for report: %s' % report.id)
         return
 
+    owner = report.account.user
+    if owner.num_remaining is not None and owner.num_remaining <= 0:
+        # TODO: Send final email?
+        log.info('User [%d] expired, deleting report: %s' % (owner.id, report.display_name))
+        report.delete()
+        model.Session.commit()
+        return
+
     # Last Sunday
     date_start = since_time.date() - datetime.timedelta(days=6) # Last week
     date_start -= datetime.timedelta(days=date_start.weekday()+1) # Sunday of that week
@@ -125,8 +133,10 @@ def send_weekly(request, report, since_time=None, pretend=False):
     if pretend:
         return
 
-    report.time_last = now()
+    if owner.num_remaining:
+        owner.num_remaining -= 1
 
+    report.time_last = now()
     if not report.time_next:
         report.time_next = datetime.datetime(*date_start.timetuple()[:3]) + datetime.timedelta(days=7)
 

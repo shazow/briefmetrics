@@ -68,11 +68,44 @@ class TestReport(test.TestWeb):
     def test_send_weekly(self):
         report = self._create_report()
         self.assertEqual(report.time_next, None)
+        self.assertEqual(model.Report.count(), 1)
+
+        user = report.account.user
+        user.num_remaining = 1
+        model.Session.commit()
+
+        tasks.report.celery.request = self.request
 
         with mock.patch('briefmetrics.api.email.send_message') as send_message:
-            tasks.report.celery.request = self.request
             tasks.report.send_all(async=False)
             self.assertTrue(send_message.called)
 
+        self.assertEqual(model.Report.count(), 1)
+
         Session.refresh(report)
         self.assertNotEqual(report.time_next, None)
+        self.assertEqual(report.account.user.num_remaining, 0)
+
+        # Send all too early
+        with mock.patch('briefmetrics.api.email.send_message') as send_message:
+            tasks.report.send_all(async=False)
+            self.assertFalse(send_message.called)
+
+        self.assertEqual(model.Report.count(), 1)
+
+        Session.refresh(report)
+        self.assertEqual(report.account.user.num_remaining, 0)
+
+        # Reset time and send again
+        report.time_next = None
+        model.Session.commit()
+
+        with mock.patch('briefmetrics.api.email.send_message') as send_message:
+            tasks.report.send_all(async=False)
+            self.assertFalse(send_message.called)
+
+        # Report should be deleted.
+        self.assertEqual(model.Report.count(), 0)
+
+        model.Session.refresh(user)
+        self.assertEqual(user.num_remaining, 0)
