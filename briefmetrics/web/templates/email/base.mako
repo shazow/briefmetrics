@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width"> 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style type="text/css">
+    @media screen and (min-width: 620px) {
+        .content {
+            padding: 10px 20px !important;
+        }
+    }
     h1, h2, h3, h4, h5 {
         font-weight: normal;
         font-size: 21px;

@@ -47,7 +47,7 @@ class AccountController(Controller):
         api.account.logout_user(self.request)
         return self._redirect(location=self.next or '/')
 
-    def unsubscribe(self):
+    def delete(self):
         # TODO: Move to API?
         user_id = api.account.get_user_id(self.request)
         token = self.request.params.get('token')

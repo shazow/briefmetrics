@@ -19,11 +19,10 @@ def add_routes(config):
         route('security', '/security', action='security')
 
     with handler_routes(config, views.account.AccountController) as route:
-        route('account_login', '/account/supersecretloginurl', action='login')
+        route('account_login', '/account/login', action='login')
         route('account_logout', '/account/logout', action='logout')
         route('account_connect', '/account/connect', action='connect')
-        route('account_unsubscribe', '/account/unsubscribe', action='unsubscribe')
-        route('account_disconnect', '/account/disconnect', action='unsubscribe') # Backwards compat
+        route('account_delete', '/account/delete', action='delete')
 
     with handler_routes(config, views.admin.AdminController) as route:
         route('admin', '/admin', action='index')

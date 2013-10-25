@@ -5,7 +5,7 @@
     Are you sure you want to delete your account?
     <%
         delete_url = request.route_path(
-            'account_unsubscribe',
+            'account_delete',
             _query={'token': c.token or '', 'confirmed': 'true'},
         )
         cancel_url = request.route_path('index')
