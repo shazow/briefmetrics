@@ -47,10 +47,5 @@
             <small>get your first report now</small>
         </a>
     </div>
-
 </div>
-
-<footer>
-Questions? Send an email to <a href="mailto:join@briefmetrics.com">support@briefmetrics.com</a>
-</footer>
 

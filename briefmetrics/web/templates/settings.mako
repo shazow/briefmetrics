@@ -4,12 +4,23 @@
 <div class="container">
 
     <section id="plan" ${h.text_if(not c.report_ids, 'style="display:none;"')}>
-        <h2>Plan: ${c.user.plan and c.user.plan.title()}</h2>
+        <h2>Plan</h2>
 
         % if c.user.stripe_customer_id:
-        <p>
-            Free reports until subscription starts: <strong>${c.user.num_remaining}</strong>
-        </p>
+            % if c.user.num_remaining:
+            <p>
+                Free reports until subscription starts: <strong>${c.user.num_remaining}</strong>
+            </p>
+            % else:
+            <p>
+                $8 per month.
+            </p>
+            % endif
+            <ul>
+                <li>
+                    <a href="?method=settings.payments_cancel&csrf_token=${session.get_csrf_token()}">Cancel subscription</a>
+                </li>
+            </ul>
         % elif c.user.num_remaining:
         <p>
             Free reports remaining: <strong>${c.user.num_remaining}</strong>
@@ -73,6 +84,13 @@
         </form>
     </section>
 
+    <section id="delete">
+        <h2>Account</h2>
+
+        <ul>
+            <li><a href="${request.route_path('account_delete')}">Cancel subscription &amp; delete account</a> (cannot be undone)
+        </ul>
+    </section>
 </div>
 
 <%block name="tail">

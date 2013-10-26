@@ -57,6 +57,9 @@ ${next.body()}
 </div>
 
 <%block name="footer">
+<footer>
+Questions? Send an email to <a href="mailto:join@briefmetrics.com">support@briefmetrics.com</a>
+</footer>
 </%block>
 
 <script>

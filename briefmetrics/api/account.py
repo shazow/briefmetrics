@@ -143,12 +143,15 @@ def set_payments(user_id, card_token, plan='personal'):
 
 
 def delete_payments(user):
-    if not user.stripe_customer_id:
-        # Nothing to do.
-        return
+    if user.stripe_customer_id:
+        customer = stripe.Customer.retrieve(user.stripe_customer_id)
+        customer.delete()
+        user.stripe_customer_id = None
 
-    customer = stripe.Customer.retrieve(user.stripe_customer_id)
-    customer.delete()
+    if not user.num_remaining:
+        user.num_remaining = 0
+
+    Session.commit()
 
 
 def start_subscription(user):

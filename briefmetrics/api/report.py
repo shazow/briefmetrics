@@ -76,6 +76,7 @@ def fetch_weekly(request, report, date_start):
     c.total_last = r[0][-1]
     c.total_last_relative = r[0][len(r[1]) - 1]
     c.changes = changes
+    c.owner = report.account.user
 
     return c
 
@@ -108,6 +109,7 @@ def send_weekly(request, report, since_time=None, pretend=False):
 
         # Create subscription for customer
         api_account.start_subscription(owner)
+        owner.num_remaining = None
 
     # Last Sunday
     date_start = since_time.date() - datetime.timedelta(days=6) # Last week

@@ -60,20 +60,16 @@ ${widgets.data_table(
 )}
 
 <p>
+    % if c.owner.num_remaining is None or c.owner.stripe_customer_id:
     You can look forward to your next report on <span class="highlight">${h.human_date(c.date_next)}</span>.
+    % elif c.owner.num_remaining == 0:
+    % elif c.owner.num_remaining > 0:
+        You have <span class="highlight">${c.owner.num_remaining} free reports</span> remaining.
+        <a href="${request.route_url('settings')}">Add a credit card</a> now to get ${c.owner.num_remaining} extra free reports!
+    % endif
 </p>
 
-<h2>Coming soon (aka. my shameless public TODO list)</h2>
-<ul>
-% for todo in c.changes.TODO:
-    <li>${todo['text']}</li>
-% endfor
-% for done in c.changes.DONE[:5]:
-    <li class="done">${done['text']}</li>
-% endfor
-</ul>
-
-<h2>Please send feedback!</h2>
+<h2>Please send feedback</h2>
 <p>
     Reply to this email with comments, suggestions, requests, praise, or selfies.
 </p>
