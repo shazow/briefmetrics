@@ -31,6 +31,8 @@ class User(meta.Model): # Email address / login
     email = Column(types.Unicode, nullable=False, index=True, unique=True)
     email_token = Column(types.String, default=lambda: random_string(16), nullable=False)
 
+    display_name = Column(types.Unicode)
+
     is_verified = Column(types.Boolean, default=False, nullable=False)
     time_verified = Column(types.DateTime)
 
@@ -43,7 +45,6 @@ class User(meta.Model): # Email address / login
     plan = Column(types.String, default='tester')
     num_remaining = Column(types.Integer)
 
-    # For making credit card payments
     stripe_customer_id = Column(types.String)
 
     @property

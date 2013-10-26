@@ -17,13 +17,13 @@
     <div>
         <label>Month
             <div>
-                <input type="text" size="2" class="card-expiry-month" placeholder="MM" data-stripe="exp-month" />
-                <span>/</span>
+                <input type="text" size="2" class="card-date card-expiry-month" placeholder="MM" data-stripe="exp-month" />
+                <span class="card-expiry-sep">/</span>
             </div>
         </label>
         <label>Year
             <div>
-                <input type="text" size="4" class="card-expiry-year" placeholder="YYYY" data-stripe="exp-year" />
+                <input type="text" size="4" class="card-date card-expiry-year" placeholder="YYYY" data-stripe="exp-year" />
             </div>
         </label>
         <label>
@@ -35,7 +35,7 @@
 
 <%def name="payment_form()">
     <form action="${request.route_path('api')}" method="post" class="payment">
-        ${payment_form_body(include_submit=True)}
+        ${payment_form_body()}
 
         <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
         <input type="hidden" name="method" value="settings.payments" />

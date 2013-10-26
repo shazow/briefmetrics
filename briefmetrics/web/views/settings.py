@@ -73,7 +73,7 @@ def settings_payments(request):
     stripe_token, = get_many(request.params, required=['stripe_token'])
     stripe.api_key = request.registry.settings['stripe.private_key']
 
-    description = 'Briefmetrics'
+    description = 'Briefmetrics User: %s' % u.email
 
     if u.stripe_customer_id:
         customer = stripe.Customer.retrieve(u.stripe_customer_id)
@@ -97,10 +97,11 @@ class SettingsController(Controller):
 
     @handle_api('settings.subscribe')
     def index(self):
-        user_id = api.account.get_user_id(self.request, required=True)
-        account = model.Account.get_by(user_id=user_id)
+        user = api.account.get_user(self.request, required=True, joinedload=['account'])
+        account = user.account
         oauth = api.google.auth_session(self.request, account.oauth_token)
 
+        self.c.user = user
         self.c.report_ids = set(r.remote_data['id'] for r in account.reports)
         self.c.result = api.google.Query(oauth).get_profiles(account_id=account.id)
 

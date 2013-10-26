@@ -348,6 +348,15 @@ select {
   margin: 0 auto 20px auto;
 }
 
+input[type="submit"] {
+  font-size: 1.5em;
+  line-height: 2em;
+}
+
+section {
+  margin-bottom: 2em;
+}
+
 .flash-messages {
   width: 630px;
   margin: 0 auto;
@@ -455,4 +464,33 @@ nav li.logged-in a {
 .screenshot h3 {
   color: #bbb;
   line-height: 2em;
+}
+
+.payment {
+  margin-bottom: 2em;
+}
+.payment > div {
+  overflow: hidden;
+  margin-bottom: 0.5em;
+}
+.payment label {
+  float: left;
+}
+.payment input[type="text"] {
+  display: inline-block;
+}
+.payment input[type="submit"] {
+  margin-top: 21px;
+  width: 195px;
+}
+.payment .card-expiry-month {
+  margin-right: 0;
+}
+.payment .card-expiry-sep {
+  padding: 0 0.4em;
+  vertical-align: middle;
+  font-size: 2em;
+}
+.payment .card-date {
+  text-align: center;
 }

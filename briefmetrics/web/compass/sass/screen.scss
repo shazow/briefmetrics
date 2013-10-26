@@ -1,5 +1,14 @@
 @import "_base";
 
+input[type="submit"] {
+    font-size: 1.5em;
+    line-height: 2em;
+}
+
+section {
+    margin-bottom: 2em;
+}
+
 .flash-messages {
     @include container;
 }
@@ -104,5 +113,35 @@ nav {
     h3 {
         color: #bbb;
         line-height: 2em;
+    }
+}
+
+.payment {
+    &>div {
+        overflow: hidden;
+        margin-bottom: 0.5em;
+    }
+
+    margin-bottom: 2em;
+    label {
+        float: left;
+    }
+    input[type="text"] {
+        display: inline-block;
+    }
+    input[type="submit"] {
+        margin-top: 21px;
+        width: span(5) + 5px;
+    }
+    .card-expiry-month {
+        margin-right: 0;
+    }
+    .card-expiry-sep {
+        padding: 0 0.4em;
+        vertical-align: middle;
+        font-size: 2em;
+    }
+    .card-date {
+        text-align: center;
     }
 }
