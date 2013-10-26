@@ -79,10 +79,7 @@ class AccountController(Controller):
             self.c.token = token
             return self._render('unsubscribe.mako')
 
-        # XXX: Delete Stripe customer
-
-        user.delete()
-        model.Session.commit()
+        api.account.delete(user_id=user_id)
         self.request.flash('Good bye.')
 
         return self._redirect(location=self.request.route_path('index'))

@@ -107,8 +107,20 @@ def get_or_create(user_id=None, email=None, token=None, display_name=None, **cre
     return u
 
 
+def delete(user_id):
+    u = model.User.get(user_id)
+    if not u:
+        raise APIError('Invalid user: %s' % user_id)
+
+    delete_payments(u)
+    u.delete()
+    Session.commit()
+
+
 def set_payments(user_id, card_token, plan='briefmetrics_personal'):
     u = model.User.get(user_id)
+    if not u:
+        raise APIError('Invalid user: %s' % user_id)
 
     description = 'Briefmetrics User: %s' % u.email
 
@@ -130,10 +142,18 @@ def set_payments(user_id, card_token, plan='briefmetrics_personal'):
     return u
 
 
-def delete_payments(user_id):
-    pass # XXX
+def delete_payments(user):
+    if not user.stripe_customer_id:
+        # Nothing to do.
+        return
+
+    customer = stripe.Customer.retrieve(user.stripe_customer_id)
+    customer.delete()
 
 
 def start_subscription(user):
+    if not user.stripe_customer_id:
+        raise APIError("Cannot start subscription for user without a credit card: %s" % user.id)
+
     customer = stripe.Customer.retrieve(user.stripe_customer_id)
     customer.update_subscription(plan=user.plan)
