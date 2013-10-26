@@ -351,6 +351,15 @@ select {
 input[type="submit"] {
   font-size: 1.5em;
   line-height: 2em;
+  background: #ea9613;
+  border: 0;
+  vertical-align: middle;
+  text-align: center;
+  color: #fff;
+  cursor: pointer;
+}
+input[type="submit"]:hover {
+  background: #f8a915;
 }
 
 section {
@@ -362,6 +371,11 @@ section {
   margin: 0 auto;
   overflow: hidden;
   *zoom: 1;
+}
+
+.highlight {
+  background: #fce09b;
+  padding: 0px 2px;
 }
 
 nav {

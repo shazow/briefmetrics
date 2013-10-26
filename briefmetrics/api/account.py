@@ -117,7 +117,7 @@ def delete(user_id):
     Session.commit()
 
 
-def set_payments(user_id, card_token, plan='briefmetrics_personal'):
+def set_payments(user_id, card_token, plan='personal'):
     u = model.User.get(user_id)
     if not u:
         raise APIError('Invalid user: %s' % user_id)
@@ -155,5 +155,8 @@ def start_subscription(user):
     if not user.stripe_customer_id:
         raise APIError("Cannot start subscription for user without a credit card: %s" % user.id)
 
+    if not user.plan:
+        raise APIError("Invalid plan: %s" % user.plan)
+
     customer = stripe.Customer.retrieve(user.stripe_customer_id)
-    customer.update_subscription(plan=user.plan)
+    customer.update_subscription(plan="briefmetrics_%s" % user.plan)

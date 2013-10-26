@@ -8,19 +8,19 @@
 
         % if c.user.stripe_customer_id:
         <p>
-            Free reports until subscription starts: ${c.user.num_remaining}
+            Free reports until subscription starts: <strong>${c.user.num_remaining}</strong>
         </p>
         % elif c.user.num_remaining:
         <p>
-            Free reports remaining: ${c.user.num_remaining}
+            Free reports remaining: <strong>${c.user.num_remaining}</strong>
         </p>
 
-        <p>
-            <a href="#" onclick="$('#credit-card').slideDown(); return false;">Add a credit card</a>
-            to upgrade your account and start the $8/mo subscription after
-            your free reports run out. When you upgrade, your remaining free
-            reports are doubled!
-        </p>
+        <ul>
+            <li><a class="highlight" href="#" onclick="$('#credit-card').slideDown(); return false;">Add a credit card</a>
+                to upgrade your account.</li>
+            <li>$8/mo subscription starts only after your free reports run out.</li>
+            <li>When you upgrade, your remaining free reports are doubled!</li>
+        </ul>
         % elif c.user.num_remaining is not None:
             <a href="#" onclick="$('#credit-card').slideDown(); return false;">Add a credit card</a>
             to upgrade your account and start your $8/mo subscription for more
