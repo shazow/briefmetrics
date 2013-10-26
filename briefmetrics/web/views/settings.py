@@ -69,25 +69,10 @@ def settings_subscribe(request):
 
 @expose_api('settings.payments')
 def settings_payments(request):
-    u = api.account.get_user(request, required=True)
+    user_id = api.account.get_user_id(request, required=True)
     stripe_token, = get_many(request.params, required=['stripe_token'])
-    stripe.api_key = request.registry.settings['stripe.private_key']
 
-    description = 'Briefmetrics User: %s' % u.email
-
-    if u.stripe_customer_id:
-        customer = stripe.Customer.retrieve(u.stripe_customer_id)
-        customer.card = stripe_token
-        customer.description = description
-        customer.save()
-    else:
-        customer = stripe.Customer.create(
-            card=stripe_token,
-            description=description,
-            email=u.auth_email and u.auth_email[0].email,
-        )
-        u.stripe_customer_id = customer.id
-        model.Session.commit()
+    api.account.set_payments(user_id, stripe_token)
 
     if request.params.get('format') == 'redirect':
         request.flash('Payment information is set.')

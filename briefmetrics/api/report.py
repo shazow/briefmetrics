@@ -8,7 +8,7 @@ from briefmetrics.lib.gcharts import encode_rows
 from briefmetrics.lib import changes
 from briefmetrics import model
 
-from . import google as api_google, email as api_email
+from . import google as api_google, email as api_email, account as api_account
 
 
 log = logging.getLogger(__name__)
@@ -99,11 +99,15 @@ def send_weekly(request, report, since_time=None, pretend=False):
 
     owner = report.account.user
     if owner.num_remaining is not None and owner.num_remaining <= 0:
-        # TODO: Send final email?
-        log.info('User [%d] expired, deleting report: %s' % (owner.id, report.display_name))
-        report.delete()
-        model.Session.commit()
-        return
+        if not owner.stripe_customer_id:
+            # TODO: Send final email?
+            log.info('User [%d] expired, deleting report: %s' % (owner.id, report.display_name))
+            report.delete()
+            model.Session.commit()
+            return
+
+        # Create subscription for customer
+        api_account.start_subscription(owner)
 
     # Last Sunday
     date_start = since_time.date() - datetime.timedelta(days=6) # Last week

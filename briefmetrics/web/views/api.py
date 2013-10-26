@@ -171,6 +171,6 @@ def index(request):
 
 # Exposed APIs:
 
-@expose_api('ping')
+@expose_api('ping', check_csrf=False)
 def ping(request):
     return {'ping': 'pong'}

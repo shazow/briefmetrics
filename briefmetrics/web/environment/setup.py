@@ -97,6 +97,10 @@ def setup_config(config):
     # Setup Celery
     _setup_celery(settings)
 
+    # Setup Stripe
+    import stripe
+    stripe.api_key = settings['stripe.private_key']
+
     # Need more setup? Do it here.
     # ...
 

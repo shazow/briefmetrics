@@ -42,7 +42,7 @@ class User(meta.Model): # Email address / login
     is_admin = Column(types.Boolean, default=False, nullable=False)
     invited_by_user_id = Column(types.Integer)
 
-    plan = Column(types.String, default='tester')
+    plan = Column(types.String, default='briefmetrics_personal')
     num_remaining = Column(types.Integer)
 
     stripe_customer_id = Column(types.String)

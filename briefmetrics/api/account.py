@@ -1,3 +1,5 @@
+import stripe
+
 from briefmetrics import model
 from briefmetrics.model.meta import Session
 from briefmetrics.lib.exceptions import APIError, LoginRequired
@@ -105,3 +107,33 @@ def get_or_create(user_id=None, email=None, token=None, display_name=None, **cre
     return u
 
 
+def set_payments(user_id, card_token, plan='briefmetrics_personal'):
+    u = model.User.get(user_id)
+
+    description = 'Briefmetrics User: %s' % u.email
+
+    if u.stripe_customer_id:
+        customer = stripe.Customer.retrieve(u.stripe_customer_id)
+        customer.card = card_token
+        customer.description = description
+        customer.save()
+    else:
+        customer = stripe.Customer.create(
+            card=card_token,
+            description=description,
+            email=u.email,
+        )
+        u.stripe_customer_id = customer.id
+
+    u.plan = plan
+    Session.commit()
+    return u
+
+
+def delete_payments(user_id):
+    pass # XXX
+
+
+def start_subscription(user):
+    customer = stripe.Customer.retrieve(user.stripe_customer_id)
+    customer.update_subscription(plan=user.plan)

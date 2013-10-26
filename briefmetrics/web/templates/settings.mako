@@ -3,10 +3,14 @@
 
 <div class="container">
 
-    <section id="plan">
+    <section id="plan" ${h.text_if(not c.report_ids, 'style="display:none;"')}>
         <h2>Plan: ${c.user.plan and c.user.plan.title()}</h2>
 
-        % if c.user.num_remaining:
+        % if c.user.stripe_customer_id:
+        <p>
+            Free reports until subscription starts: ${c.user.num_remaining}
+        </p>
+        % elif c.user.num_remaining:
         <p>
             Free reports remaining: ${c.user.num_remaining}
         </p>

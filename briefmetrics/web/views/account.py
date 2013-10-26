@@ -79,6 +79,8 @@ class AccountController(Controller):
             self.c.token = token
             return self._render('unsubscribe.mako')
 
+        # XXX: Delete Stripe customer
+
         user.delete()
         model.Session.commit()
         self.request.flash('Good bye.')
