@@ -3,7 +3,8 @@
 
 <div class="container">
 
-    <section id="plan" ${h.text_if(not c.report_ids, 'style="display:none;"')}>
+    % if c.report_ids or c.user.stripe_customer_id:
+    <section id="plan">
         <h2>Plan</h2>
 
         % if c.user.stripe_customer_id:
@@ -37,6 +38,7 @@
             to upgrade your account and start your $8/mo subscription to resume reports.
         % endif
     </section>
+    % endif
 
     <section id="credit-card" style="display:none;">
     % if c.user.stripe_customer_id:
