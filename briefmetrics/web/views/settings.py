@@ -1,4 +1,4 @@
-import re
+import stripe
 from unstdlib import get_many
 
 from briefmetrics import api, model, tasks
@@ -65,6 +65,32 @@ def settings_subscribe(request):
         request.flash("First report has been queued. Please check your Spam folder if you don't see it in your Inbox in a few minutes.")
     else:
         request.flash('Updated subscription.')
+
+
+@expose_api('settings.payments')
+def settings_payments(request):
+    u = api.account.get_user(request, required=True)
+    stripe_token, = get_many(request.params, required=['stripe_token'])
+    stripe.api_key = request.registry.settings['stripe.private_key']
+
+    description = 'Briefmetrics'
+
+    if u.stripe_customer_id:
+        customer = stripe.Customer.retrieve(u.stripe_customer_id)
+        customer.card = stripe_token
+        customer.description = description
+        customer.save()
+    else:
+        customer = stripe.Customer.create(
+            card=stripe_token,
+            description=description,
+            email=u.auth_email and u.auth_email[0].email,
+        )
+        u.stripe_customer_id = customer.id
+        model.Session.commit()
+
+    if request.params.get('format') == 'redirect':
+        request.flash('Payment information is set.')
 
 
 class SettingsController(Controller):

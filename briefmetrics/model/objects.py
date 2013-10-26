@@ -43,6 +43,9 @@ class User(meta.Model): # Email address / login
     plan = Column(types.String, default='tester')
     num_remaining = Column(types.Integer)
 
+    # For making credit card payments
+    stripe_customer_id = Column(types.String)
+
     @property
     def unsubscribe_token(self):
         return '%s-%s' % (self.email_token, self.id)

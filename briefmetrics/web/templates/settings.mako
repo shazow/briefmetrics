@@ -36,3 +36,12 @@
     </form>
 
 </div>
+
+<%block name="tail">
+${h.javascript_link(request, 'briefmetrics.web:static/js/core.js')}
+
+<script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+<script type="text/javascript">
+    Stripe.setPublishableKey('${settings["stripe.public_key"]}');
+</script>
+</%block>
