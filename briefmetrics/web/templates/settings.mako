@@ -18,7 +18,7 @@
             % endif
             <ul>
                 <li>
-                    <a href="?method=settings.payments_cancel&csrf_token=${session.get_csrf_token()}">Cancel subscription</a>
+                    <a href="?method=settings.payments_cancel&csrf_token=${session.get_csrf_token()}" onclick="return confirm('Are you sure you want to cancel your Briefmetrics subscription?');">Cancel subscription</a>
                 </li>
             </ul>
         % elif c.user.num_remaining:
@@ -34,8 +34,7 @@
         </ul>
         % elif c.user.num_remaining is not None:
             <a href="#" onclick="$('#credit-card').slideDown(); return false;">Add a credit card</a>
-            to upgrade your account and start your $8/mo subscription for more
-            reports.
+            to upgrade your account and start your $8/mo subscription to resume reports.
         % endif
     </section>
 

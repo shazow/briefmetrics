@@ -1,6 +1,15 @@
 <%inherit file="base.mako"/>
 <%namespace file="widgets.mako" name="widgets" />
 
+% if not c.owner.stripe_customer_id and c.owner.num_remaining <= 1:
+    <p>
+        <strong>This is your final report. :(</strong><br />
+        Please <a href="${request.route_url('settings')}">add a credit card now</a> to keep receiving Briefmetrics reports.
+    </p>
+
+    <h3>Back to your previously scheduled report...</h3>
+% endif
+
 <p>
     Your site had <span class="chartTop">${h.human_int(c.total_current)} views so far this month</span>,
     % if c.total_current >= c.total_last_relative:
@@ -61,11 +70,14 @@ ${widgets.data_table(
 
 <p>
     % if c.owner.num_remaining is None or c.owner.stripe_customer_id:
-    You can look forward to your next report on <span class="highlight">${h.human_date(c.date_next)}</span>.
-    % elif c.owner.num_remaining == 0:
-    % elif c.owner.num_remaining > 0:
-        You have <span class="highlight">${c.owner.num_remaining} free reports</span> remaining.
-        <a href="${request.route_url('settings')}">Add a credit card</a> now to get ${c.owner.num_remaining} extra free reports!
+        You can look forward to your next report on <span class="highlight">${h.human_date(c.date_next)}</span>.
+    % elif c.owner.num_remaining <= 1:
+        <strong>This is your final report. :(</strong><br />
+        Please <a href="${request.route_url('settings')}">add a credit card now</a> to keep receiving Briefmetrics reports.
+    % elif c.owner.num_remaining > 1:
+        <strong>You have <span class="highlight">${c.owner.num_remaining-1} free reports</span> remaining.</strong>
+        <a href="${request.route_url('settings')}">Add a credit card now</a> to get ${c.owner.num_remaining-1} extra free reports!
+        Your next report is scheduled for ${h.human_date(c.date_next)}.
     % endif
 </p>
 

@@ -42,9 +42,12 @@
         text-decoration: none;
         color: #25ad83;
     }
+    a.highlight {
+        background: #c6eadf;
+    }
     p, ul, table {
         margin-top: 0.5em;
-        margin-bottom: 1em;
+        margin-bottom: 1.5em;
     }
     p {
         line-height: 1.5em;
