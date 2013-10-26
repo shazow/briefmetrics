@@ -31,7 +31,7 @@ section {
 }
 
 nav {
-    background: darken($color-background, 10%);
+    padding: 1em 0;
     margin-bottom: 1em;
 
     ul {
@@ -41,27 +41,32 @@ nav {
     }
 
     li {
-        margin: 0 0 0 1em;
+        margin: 0 0.5em 0 0.5em;
+        padding: 0.5em 1em;
         display: inline-block;
         list-style: none;
     }
-
     li.logo {
-        margin: 0;
+        padding: 0;
+        margin-left: 0;
+        margin-right: 1.5em;
+    }
+    .menu {
+        font-size: 0.9em;
+        text-transform: uppercase;
+    }
+    .menu.active, .menu:hover {
+        @include border-radius(1em);
+        background: white;
+    }
 
-        a {
-            color: $color-header;
-        }
+    a, a:visited {
+        color: $color-header;
     }
 
     h1 {
-        font-size: 2em;
+        font-size: 1.8em;
         line-height: 1.5em;
-        margin: 0;
-    }
-
-    li.logged-in a {
-        color: red;
     }
 }
 

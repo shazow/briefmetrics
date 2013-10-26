@@ -8,7 +8,7 @@
     % if title:
         <title>${title} | Briefmetrics</title>
     % else:
-        <title>Briefmetrics</title>
+        <title>Briefmetrics - Easy to understand Google Analytics reports in your inbox</title>
     % endif
 
     <link rel="icon" type="image/png" href="/static/images/icon_32px.png?5" />
@@ -31,17 +31,23 @@
 
     if is_logged_in:
         nav += [
-            ('Settings', request.route_path('settings'), 'logged-in'),
-            ('Log out', request.route_path('account_logout'), 'logged-in'),
+            ('Settings', request.route_path('settings')),
+            ('Log out', request.route_path('account_logout')),
         ]
+
+    current_route = request.current_route_path()
 %>
 <nav>
     <ul>
         <li class="logo">
             <h1><a href="/">Briefmetrics</a></h1>
         </li>
-        % for label, href, css_class in nav:
-        <li${h.text_if(css_class, ' class="%s"' % css_class)}>
+        % for label, href in nav:
+            % if current_route == href:
+        <li class="menu active">
+            % else:
+        <li class="menu">
+            % endif
             <a href="${href}">${label}</a>
         </li>
         % endfor
