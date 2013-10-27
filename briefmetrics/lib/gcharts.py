@@ -4,7 +4,7 @@ from random import randint
 from unstdlib.html import literal
 
 
-API_URL = 'http://%d.chart.apis.google.com/chart'
+API_URL = 'https://chart.googleapis.com/chart'
 
 def chart(encoded_data, width=250, height=100):
     if not encoded_data:
