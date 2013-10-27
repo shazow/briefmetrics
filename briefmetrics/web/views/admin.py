@@ -15,6 +15,7 @@ class AdminController(Controller):
         api.account.get_admin(self.request)
         q = Session.query(model.User)
         q = q.options(orm.joinedload_all('account.reports'))
+        q = q.order_by(model.User.id.asc())
         self.c.users = q.all()
 
         return self._render('admin/index.mako')
