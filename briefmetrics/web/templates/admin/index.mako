@@ -19,15 +19,15 @@
     <h2>Users</h2>
     <ol>
     % for u in c.users:
-        <li>
-            ${user_status('Refresh', u.account.oauth_token and u.account.oauth_token.get('refresh_token', False))}
-            ${user_status('%s Remaining' % u.num_remaining, u.num_remaining != 0)}
-            ${user_status('Card', u.stripe_customer_id)}
-            ${user_status('Ghost', link=request.route_path('admin_login_as', _query={'id': u.id}))}
+        <li value="u.id">
+            <p>
+                ${user_status('Refresh', u.account.oauth_token and u.account.oauth_token.get('refresh_token', False))}
+                ${user_status('%s Remaining' % u.num_remaining, u.num_remaining != 0)}
+                ${user_status('Card', u.stripe_customer_id)}
+                ${user_status('Ghost', link=request.route_path('admin_login_as', _query={'id': u.id}))}
+            </p>
 
-            <div>
-                "${u.account.display_name}" &lt;${u.email}&gt;
-            </div>
+            "${u.account.display_name}" &lt;${u.email}&gt;
 
             <ul>
             % for r in u.account.reports:
