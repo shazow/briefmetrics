@@ -96,7 +96,7 @@ def get_or_create(user_id=None, email=None, token=None, display_name=None, **cre
         u = q.filter(model.User.email==email).first()
 
     if not u:
-        u = model.User.create(email=email, **create_kw)
+        u = model.User.create(email=email, display_name=display_name, **create_kw)
         u.account = model.Account.create(display_name=display_name, user=u)
 
     if token and not (u.account.oauth_token and u.account.oauth_token.get('refresh_token')):
