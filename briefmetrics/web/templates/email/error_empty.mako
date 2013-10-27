@@ -29,9 +29,9 @@
 
 <p>
     If you have other sites you wanted to try Briefmetrics on, you can
-    <a href="http://briefmetrics.com/settings">change your subscription</a>.
+    <a href="https://briefmetrics.com/settings">change your subscription</a>.
     Or if this isn't looking like the right tool for you, no hard feelings if you
-    <a href="http://briefmetrics.com/account/delete?token=${c.user.unsubscribe_token}">delete your account</a>.
+    <a href="https://briefmetrics.com/account/delete?token=${c.user.unsubscribe_token}">delete your account</a>.
 </p>
 
 <p>

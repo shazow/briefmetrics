@@ -157,7 +157,7 @@
 <body>
 
 <h1>
-    <img src="${request.static_url('briefmetrics.web:static/images/email_logo.png')}" />
+    <img src="https://briefmetrics.com/static/images/email_logo.png" />
 </h1>
 
 <div class="content">
