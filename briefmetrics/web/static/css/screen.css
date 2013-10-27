@@ -298,6 +298,10 @@ ul.vertical, ol.vertical {
   padding: 0;
 }
 
+ol {
+  padding-left: 2em;
+}
+
 li {
   margin: 0.5em 0 0.5em 0;
 }
@@ -371,6 +375,26 @@ section {
 .highlight {
   background: #fce09b;
   padding: 0px 2px;
+}
+
+.status {
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+  background: #999;
+  color: white;
+  padding: 1px 5px;
+}
+.status.disabled {
+  background: #ed4f38;
+}
+.status.enabled {
+  background: #37b89a;
+}
+.status a {
+  color: white;
 }
 
 nav {

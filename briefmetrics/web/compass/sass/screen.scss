@@ -26,6 +26,25 @@ section {
     padding: 0px 2px;
 }
 
+.status {
+    @include border-radius(3px);
+    background: #999;
+    color: white;
+    padding: 1px 5px;
+
+    &.disabled {
+        background: #ed4f38;
+    }
+
+    &.enabled {
+        background: #37b89a;
+    }
+
+    a {
+        color: white;
+    }
+}
+
 nav {
     padding: 1em 0;
     margin-bottom: 1em;
