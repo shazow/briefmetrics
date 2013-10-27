@@ -56,6 +56,7 @@ body {
   font-size: 75%;
   background-color: #f4faed;
   font-size: 15px;
+  font-weight: 300;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -404,6 +405,7 @@ nav li.logo {
 nav .menu {
   font-size: 0.9em;
   text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 nav .menu.active, nav .menu:hover {
   -webkit-border-radius: 1em;

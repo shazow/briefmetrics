@@ -40,6 +40,7 @@ body {
     @include blueprint-typography-body();
     background-color: $color-background;
     font-size: $font-size;
+    font-weight: 300;
 }
 
 @include blueprint-typography-defaults();

@@ -54,6 +54,7 @@ nav {
     .menu {
         font-size: 0.9em;
         text-transform: uppercase;
+        letter-spacing: 0.1em;
     }
     .menu.active, .menu:hover {
         @include border-radius(1em);
