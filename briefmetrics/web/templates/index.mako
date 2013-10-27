@@ -24,7 +24,7 @@
     <ul style="margin: 2em 0;">
         <li><strong>Save time by having the reports come to you.</strong> It takes on average <em>12 clicks</em> to get to the most valuable reports in Google Analytics.</li>
         <li><strong>Make better decisions with dynamic reports.</strong> Each email is intelligently crafted to show only what's relevant to you.</li>
-        <li><strong>Share the professional-looking reports with your colleagues.</strong></li>
+        <li><strong>Share the professional reports with your colleagues.</strong></li>
     </ul>
 
     <div class="signup">
