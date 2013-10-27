@@ -18,7 +18,7 @@ def create_message(request, to_email, subject, html):
         'subject': subject,
         'html': html,
         'track_opens': True,
-        'track_clicks': True,
+        'track_clicks': False,
         'auto_text': True,
         'inline_css': True,
     }
