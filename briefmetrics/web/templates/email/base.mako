@@ -84,6 +84,7 @@
         width: 4.5em;
     }
     h1 {
+        line-height: 1em;
         margin: 0;
         text-align: center;
         padding: 1em 0 1em 0;
