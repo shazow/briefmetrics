@@ -21,7 +21,7 @@
     % for u in c.users:
         <li value="${u.id}">
             <p>
-                ${user_status('Refresh', u.account.oauth_token and u.account.oauth_token.get('refresh_token', False))}
+                ${user_status('Token', u.account.oauth_token and u.account.oauth_token.get('refresh_token', False))}
                 ${user_status('%s Remaining' % u.num_remaining, u.num_remaining != 0)}
                 ${user_status('Card', u.stripe_customer_id)}
                 ${user_status('Ghost', link=request.route_path('admin_login_as', _query={'id': u.id}))}
