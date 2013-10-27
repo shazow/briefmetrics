@@ -25,7 +25,9 @@
             ${user_status('Card', u.stripe_customer_id)}
             ${user_status('Ghost', link=request.route_path('admin_login_as', _query={'id': u.id}))}
 
-            ${u.email} (${u.account.display_name})
+            <div>
+                "${u.account.display_name}" &lt;${u.email}&gt;
+            </div>
 
             <ul>
             % for r in u.account.reports:
