@@ -6,6 +6,13 @@
 
 <%block name="header"></%block>
 
+<%
+    if request.features.get('ssl'):
+        login_url = request.route_url('account_login', _scheme='https')
+    else:
+        login_url = request.route_path('account_login')
+%>
+
 <div class="container intro">
 
     <h1><a href="/">Briefmetrics</a></h1>
@@ -21,7 +28,7 @@
     </ul>
 
     <div class="signup">
-        <a class="cta" href="/account/login">
+        <a class="cta" href="${login_url}">
             Sign in with Google Analytics
             <small>includes 3 free reports</small>
         </a>
@@ -42,7 +49,7 @@
     </div>
 
     <div class="closer">
-        <a class="cta" href="/account/login">
+        <a class="cta" href="${login_url}">
             Sign in with Google Analytics
             <small>get your first report now</small>
         </a>

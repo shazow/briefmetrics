@@ -12,6 +12,7 @@ def _teardown_session(request):
 
 class Request(_Request):
     DEFAULT_FEATURES = {
+        'ssl': True,
     }
 
     def __init__(self, *args, **kw):
