@@ -19,7 +19,7 @@
     <h2>Users</h2>
     <ol>
     % for u in c.users:
-        <li value="u.id">
+        <li value="${u.id}">
             <p>
                 ${user_status('Refresh', u.account.oauth_token and u.account.oauth_token.get('refresh_token', False))}
                 ${user_status('%s Remaining' % u.num_remaining, u.num_remaining != 0)}
