@@ -68,6 +68,7 @@ Questions? Send an email to <a href="mailto:join@briefmetrics.com">support@brief
 </footer>
 </%block>
 
+% if not request.features.get('offline'):
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -76,6 +77,7 @@ Questions? Send an email to <a href="mailto:join@briefmetrics.com">support@brief
   ga('create', 'UA-407051-16', 'briefmetrics.com');
   ga('send', 'pageview');
 </script>
+% endif
 
 <%block name="tail"></%block>
 
