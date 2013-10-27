@@ -41,12 +41,8 @@ class AccountController(Controller):
             plan='trial',
         )
         api.account.login_user_id(self.request, user.id)
-
-        has_subscription = model.Subscription.get_by(user_id=user.id)
-        if not has_subscription:
-            return self._redirect(location=self.request.route_path('settings'))
-
-        return self._redirect(location=self.next)
+        # TODO: Redirect to dashboard?
+        return self._redirect(location=self.request.route_path('settings'))
 
     def logout(self):
         api.account.logout_user(self.request)
