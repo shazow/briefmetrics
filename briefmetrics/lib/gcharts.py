@@ -1,5 +1,4 @@
 from urllib import urlencode
-from random import randint
 
 from unstdlib.html import literal
 
@@ -18,7 +17,7 @@ def chart(encoded_data, width=250, height=100):
         'chls': '2|2', # Line width
         'chm': 'B,FFBC0064,0,0,0|B,31DCB560,1,0,0,1', # Fill type, color, ..., ..., z-index
     }
-    url = API_URL % randint(0,9)
+    url = API_URL
 
     return literal('<img src="{0}?{1}" style="width: {2}px; height: {3}px" alt="Chart" />'.format(url, urlencode(params), width, height))
 

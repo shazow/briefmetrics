@@ -54,6 +54,7 @@ ${widgets.data_table(
     c.report_pages.get('rows'),
     'Top Pages',
     h.ga_permalink('report/content-pages', c.report, date_start=c.date_start, date_end=c.date_end),
+    prefix_links='http://%s' % c.report.remote_data['websiteUrl'],
 )}
 
 ${widgets.data_table(

@@ -49,14 +49,19 @@ def human_url(s, max_length=None):
     r = m.group(3) if m else s
     return truncate(r, max_length=max_length)
 
-def human_link(href, attrs=None, max_length=None):
-    if '://' not in href:
+def human_link(href, label=None, attrs=None, max_length=None):
+    if href.startswith('/'):
+        return href
+    elif '://' not in href:
         if '.' in href:
             href = 'http://' + href
         else:
             return href
 
-    return html.tag('a', human_url(href, max_length=max_length), attrs={'href': href})
+    if not label:
+        label = human_url(href, max_length=max_length)
+
+    return html.tag('a', label, attrs={'href': href})
 
 def num_ordinal(n): # lol
     return 'th' if 11 <= n <=13 else {1:'st', 2:'nd', 3:'rd'}.get(n % 10, 'th')
