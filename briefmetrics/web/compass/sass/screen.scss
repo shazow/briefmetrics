@@ -4,16 +4,12 @@ input[type="submit"] {
     font-size: 1.5em;
     line-height: 2em;
 
-    background: #ea9613;
-    border: 0;
+    @include background-image(linear-gradient(#fafafa, #ddd));
 
-    vertical-align: middle;
-    text-align: center;
-    color: #fff;
-    cursor: pointer;
+    color: #555;
 
     &:hover {
-        background: #f8a915;
+        background: #ddd;
     }
 }
 
@@ -153,7 +149,7 @@ nav {
         display: inline-block;
     }
     input[type="submit"] {
-        margin-top: 21px;
+        margin-top: 22px;
         width: span(5) + 5px;
     }
     .card-expiry-month {
