@@ -58,9 +58,10 @@ class TestReport(test.TestWeb):
     def test_fetch_weekly(self):
         report = self._create_report()
 
-        context = api.report.fetch_weekly(self.request, report, datetime.date(2013, 1, 1))
-        self.assertEqual(context.date_next, datetime.date(2013, 1, 14))
-        self.assertEqual(context.subject, u'Weekly report \u2019til Jan 07: example.com')
+        context = api.report.fetch_weekly(self.request, report, datetime.date(2013, 1, 6))
+        self.assertEqual(context.date_end, datetime.date(2013, 1, 12))
+        self.assertEqual(context.date_next, datetime.date(2013, 1, 21))
+        self.assertEqual(context.subject, u'Weekly report \u2019til Jan 12: example.com')
 
         html = api.report.render_weekly(self.request, report.account.user, context)
         self.assertTrue(html)
