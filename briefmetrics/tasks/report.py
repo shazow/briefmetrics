@@ -40,7 +40,7 @@ def send_all(since_time=None, async=True, pretend=False, max_num=None):
         send_fn = send_weekly.delay
 
     for i, report in enumerate(reports):
-        if max_num and i > max_num:
+        if max_num and i >= max_num:
             logger.info('max_num reached, stopping send_all.')
             break
 
