@@ -112,7 +112,7 @@ def send_weekly(request, report, since_time=None, pretend=False):
         owner.num_remaining = None
 
     # Last Sunday
-    date_start = since_time.date() - datetime.timedelta(days=6) # Last week
+    date_start = since_time.date()
     date_start -= datetime.timedelta(days=date_start.weekday()+1) # Sunday of that week
 
     context = fetch_weekly(request, report, date_start)
