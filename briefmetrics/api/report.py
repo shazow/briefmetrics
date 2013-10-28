@@ -42,7 +42,7 @@ def fetch_weekly(request, report, date_start):
 
     c = Context(report=report, date_start=date_start, date_end=date_end)
     c.base_url = report.remote_data.get('websiteUrl', '')
-    c.date_next = date_end + datetime.timedelta(days=7)
+    c.date_next = date_end + datetime.timedelta(days=9)
 
     c.subject = u"Weekly report \u2019til %s: %s" % (
         date_end.strftime('%b %d'),
