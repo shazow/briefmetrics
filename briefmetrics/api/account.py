@@ -137,7 +137,12 @@ def set_payments(user_id, card_token, plan='personal'):
         )
         u.stripe_customer_id = customer.id
 
+    # Plan-related stuff.
+    if not u.plan and u.num_remaining:
+        u.num_remaining *= 2
+
     u.plan = plan
+
     Session.commit()
     return u
 

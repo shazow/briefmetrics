@@ -33,6 +33,7 @@ def settings_subscribe(request):
         request.flash('Removed subscription.')
         model.Session.commit()
         return
+
     elif not profile_ids:
         request.flash('Nothing changed.')
         return
