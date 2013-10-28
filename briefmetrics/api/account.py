@@ -81,7 +81,7 @@ def get(email=None):
     return model.User.get_by(email=email)
 
 
-def get_or_create(user_id=None, email=None, token=None, display_name=None, **create_kw):
+def get_or_create(user_id=None, email=None, token=None, display_name=None, num_remaining=3, **create_kw):
     u = None
 
     q = Session.query(model.User).join(model.Account)
@@ -96,7 +96,7 @@ def get_or_create(user_id=None, email=None, token=None, display_name=None, **cre
         u = q.filter(model.User.email==email).first()
 
     if not u:
-        u = model.User.create(email=email, display_name=display_name, **create_kw)
+        u = model.User.create(email=email, display_name=display_name, num_remaining=num_remaining, **create_kw)
         u.account = model.Account.create(display_name=display_name, user=u)
 
     if token and not (u.account.oauth_token and u.account.oauth_token.get('refresh_token')):
