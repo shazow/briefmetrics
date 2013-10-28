@@ -27,7 +27,7 @@ def send_weekly(report_id, since_time=None, pretend=False):
 
 
 @periodic_task(ignore_result=True, run_every=crontab(hour=8))
-def send_all(since_time=None, async=True, pretend=False):
+def send_all(since_time=None, async=True, pretend=False, max_num=None):
     since_time = since_time or now()
 
     q = model.Session.query(model.Report).filter(
@@ -39,7 +39,11 @@ def send_all(since_time=None, async=True, pretend=False):
     if async:
         send_fn = send_weekly.delay
 
-    for report in reports:
+    for i, report in enumerate(reports):
+        if max_num and i > max_num:
+            logger.info('max_num reached, stopping send_all.')
+            break
+
         send_fn(report_id=report.id, since_time=since_time, pretend=pretend)
 
     logger.info('Queued %d reports for sending.' % len(reports))
