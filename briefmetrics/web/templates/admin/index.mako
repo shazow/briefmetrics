@@ -2,6 +2,7 @@
 
 <%def name="user_status(label, is_enabled=None, link=None)">
 <%
+    label = label.strip()
     if link:
         label = h.html.tag('a', label, attrs={'href': link})
 %>
@@ -22,7 +23,8 @@
         <li value="${u.id}">
             <p>
                 ${user_status('Token', u.account.oauth_token and u.account.oauth_token.get('refresh_token', False))}
-                ${user_status('%s Remaining' % u.num_remaining, u.num_remaining != 0)}
+                ${user_status(u.plan.title() if u.plan else 'Plan', u.plan)}
+                ${user_status(('%s Remaining' % u.num_remaining) if u.num_remaining is not None else 'Paid', u.num_remaining != 0)}
                 ${user_status('Card', u.stripe_customer_id)}
                 ${user_status('Ghost', link=request.route_path('admin_login_as', _query={'id': u.id}))}
             </p>
