@@ -34,13 +34,15 @@
                 ${user_status('Ghost', link=request.route_path('admin_login_as', _query={'id': u.id}), on_hover=True)}
             </p>
 
-            "${u.account.display_name}" &lt;${u.email}&gt;
+            <div class="id">
+                "${u.account.display_name}" &lt;${u.email}&gt;
 
-            <ul>
-            % for r in u.account.reports:
-                <li>${r.display_name} (next report: ${h.human_date(r.time_next)})
-            % endfor
-            </ul>
+                <ul>
+                % for r in u.account.reports:
+                    <li>${r.display_name} (next report: ${h.human_date(r.time_next)})
+                % endfor
+                </ul>
+            </div>
         </li>
     % endfor
     </ol>
