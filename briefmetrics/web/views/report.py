@@ -16,7 +16,7 @@ class ReportController(Controller):
         report = user.account.reports[0]
 
         # Last Sunday
-        date_start = datetime.date.today()
+        date_start = datetime.date.today() - datetime.timedelta(days=6) # Last week
         date_start -= datetime.timedelta(days=date_start.weekday()+1) # Sunday of that week
 
         context = api.report.fetch_weekly(self.request, report, date_start)
