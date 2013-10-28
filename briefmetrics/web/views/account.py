@@ -20,6 +20,11 @@ class AccountController(Controller):
         return self._redirect(location=next)
 
     def connect(self):
+        error = self.request.params.get('error')
+        if error:
+            self.request.flash('Failed to sign in: %s' % error)
+            return self._redirect(location='/')
+
         oauth = api.google.auth_session(self.request, state=self.session.get('oauth_state'))
 
         url = self.request.current_route_url().replace('http://', 'https://') # We lie, because honeybadger.
