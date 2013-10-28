@@ -3,9 +3,10 @@ class BriefmetricsException(Exception):
 
 
 class APIException(BriefmetricsException):
-    def __init__(self, message, code=400):
+    def __init__(self, message, code=400, response=None):
         self.message = message
         self.code = 400
+        self.response = response
 
     def __repr__(self):
         return '%s("%s", code=%d)' % (self.__class__.__name__, self.message, self.code)

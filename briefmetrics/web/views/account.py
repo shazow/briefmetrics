@@ -9,7 +9,8 @@ class AccountController(Controller):
 
     def login(self):
         user_id = api.account.get_user_id(self.request)
-        if user_id:
+        force_login = self.request.params.get('force')
+        if user_id and not force_login:
             return self._redirect(location=self.request.route_path('settings'))
 
         # TODO: Use `next` for state?

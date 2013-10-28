@@ -36,6 +36,10 @@
         % elif c.user.num_remaining is not None:
             <a href="#" onclick="$('#credit-card').slideDown(); return false;">Add a credit card</a>
             to upgrade your account and start your $8/mo subscription to resume reports.
+        % else:
+        <p>
+            You are the proud owner of a free Briefmetrics account. Please enjoy responsibly. :)
+        </p>
         % endif
     </section>
     % endif
@@ -53,6 +57,7 @@
     <section id="site">
         <h2>Select a site</h2>
 
+        % if c.result:
         <form action="${request.current_route_path()}" method="post">
 
             <p>
@@ -83,6 +88,17 @@
             <input type="hidden" name="format" value="redirect" />
             <input type="submit" value="Save Settings" />
         </form>
+        % else:
+        <p>
+            <strong>Briefmetrics was unable to load a list of your Google Analytics properties.</strong> Are you sure you signed in with the correct Google account? 
+        </p>
+        <p>
+            You can delete this account below and try signing in again with a different account.
+        </p>
+        <p>
+            If you don't have any Google Analytics accounts, then Briefmetrics won't be useful for you yet. :)
+        </p>
+        % endif
     </section>
 
     <section id="delete">

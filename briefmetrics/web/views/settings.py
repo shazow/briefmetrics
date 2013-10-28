@@ -1,7 +1,7 @@
 from unstdlib import get_many
 
 from briefmetrics import api, model, tasks
-from briefmetrics.lib.exceptions import APIControllerError
+from briefmetrics.lib.exceptions import APIControllerError, APIError
 from briefmetrics.lib import helpers as h
 
 from .api import expose_api, handle_api
@@ -97,8 +97,16 @@ class SettingsController(Controller):
         account = user.account
         oauth = api.google.auth_session(self.request, account.oauth_token)
 
+        try:
+            self.c.result = api.google.Query(oauth).get_profiles(account_id=account.id)
+        except APIError as e:
+            r = e.response.json()
+            for msg in r['error']['errors']:
+                self.request.flash('Error: %s' % msg['message'])
+
+            self.c.result = []
+
         self.c.user = user
         self.c.report_ids = set(r.remote_data['id'] for r in account.reports)
-        self.c.result = api.google.Query(oauth).get_profiles(account_id=account.id)
 
         return self._render('settings.mako')
