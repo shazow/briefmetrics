@@ -70,10 +70,12 @@ def settings_subscribe(request):
 
 @expose_api('settings.payments')
 def settings_payments(request):
-    user_id = api.account.get_user_id(request, required=True)
+    user = api.account.get_user(request, required=True)
     stripe_token, = get_many(request.params, required=['stripe_token'])
 
-    api.account.set_payments(user_id, stripe_token)
+    api.account.set_payments(user, stripe_token)
+
+    api.email.notify_admin(request, 'Payment added: [%s] %s' % (user.id, user.display_name))
 
     request.flash('Payment information is set.')
 
@@ -83,8 +85,9 @@ def settings_payments_cancel(request):
     user = api.account.get_user(request, required=True)
     api.account.delete_payments(user)
 
-    if request.params.get('format') == 'redirect':
-        request.flash('Subscription cancelled.')
+    api.email.notify_admin(request, 'Payment removed: [%s] %s' % (user.id, user.display_name))
+
+    request.flash('Subscription cancelled.')
 
 
 class SettingsController(Controller):

@@ -108,6 +108,7 @@ def get_or_create(user_id=None, email=None, token=None, display_name=None, **cre
 
 
 def delete(user_id):
+    # TODO: user_id -> user
     u = model.User.get(user_id)
     if not u:
         raise APIError('Invalid user: %s' % user_id)
@@ -117,15 +118,11 @@ def delete(user_id):
     Session.commit()
 
 
-def set_payments(user_id, card_token, plan='personal'):
-    u = model.User.get(user_id)
-    if not u:
-        raise APIError('Invalid user: %s' % user_id)
+def set_payments(user, card_token, plan='personal'):
+    description = 'Briefmetrics User: %s' % user.email
 
-    description = 'Briefmetrics User: %s' % u.email
-
-    if u.stripe_customer_id:
-        customer = stripe.Customer.retrieve(u.stripe_customer_id)
+    if user.stripe_customer_id:
+        customer = stripe.Customer.retrieve(user.stripe_customer_id)
         customer.card = card_token
         customer.description = description
         customer.save()
@@ -133,18 +130,18 @@ def set_payments(user_id, card_token, plan='personal'):
         customer = stripe.Customer.create(
             card=card_token,
             description=description,
-            email=u.email,
+            email=user.email,
         )
-        u.stripe_customer_id = customer.id
+        user.stripe_customer_id = customer.id
 
     # Plan-related stuff.
-    if not u.plan and u.num_remaining:
-        u.num_remaining *= 2
+    if not user.plan and user.num_remaining:
+        user.num_remaining *= 2
 
-    u.plan = plan
+    user.plan = plan
 
     Session.commit()
-    return u
+    return user
 
 
 def delete_payments(user):

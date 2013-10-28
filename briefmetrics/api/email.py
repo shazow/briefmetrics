@@ -1,27 +1,37 @@
 import requests
 import json
+import logging
 
+
+log = logging.getLogger(__name__)
 
 http_session = requests.session()
 
 API_URL = 'https://mandrillapp.com/api/1.0/'
 
 
-def create_message(request, to_email, subject, html):
+def create_message(request, to_email, subject, html=None, text=None, from_name=None, from_email=None):
     settings = request.registry.settings
+    from_name = from_name or settings['mail.from_name']
+    from_email = from_email or settings['mail.from_email']
+
     message = {
-        'from_name': settings['mail.from_name'],
-        'from_email': settings['mail.from_email'],
+        'from_name': from_name,
+        'from_email': from_email,
         'to': [{
             'email': to_email,
         }],
         'subject': subject,
-        'html': html,
         'track_opens': True,
         'track_clicks': False,
         'auto_text': True,
         'inline_css': True,
     }
+
+    if html is not None:
+        message['html'] = html
+    if text is not None:
+        message['text'] = text
 
     debug_bcc = settings.get('mail.debug_bcc')
     if debug_bcc:
@@ -42,3 +52,18 @@ def send_message(request, message):
     r.raise_for_status()
 
     return r.json()
+
+
+def notify_admin(request, subject, text=''):
+    if request.registry.settings.get('mail.enabled', 'false') == 'false':
+        log.info('Skipping notify_admin: %s' % subject)
+        return
+
+    message = create_message(
+        request,
+        to_email='admin@briefmetrics.com',
+        subject='[Briefmetrics] %s' % subject,
+        text=text,
+    )
+
+    return send_message(request, message)
