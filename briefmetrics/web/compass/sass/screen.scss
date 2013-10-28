@@ -30,7 +30,10 @@ section {
     @include border-radius(3px);
     background: #999;
     color: white;
-    padding: 1px 5px;
+    padding: 0px 4px;
+    display: inline-block;
+    min-width: span(2);
+    text-align: center;
 
     &.disabled {
         background: #ed4f38;
@@ -39,10 +42,16 @@ section {
     &.enabled {
         background: #37b89a;
     }
+    &.hidden {
+        display: none;
+    }
 
     a {
         color: white;
     }
+}
+.user-list li:hover .hidden {
+    display: inline-block;
 }
 
 nav {

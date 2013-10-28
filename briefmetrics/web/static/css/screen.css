@@ -385,7 +385,10 @@ section {
   border-radius: 3px;
   background: #999;
   color: white;
-  padding: 1px 5px;
+  padding: 0px 4px;
+  display: inline-block;
+  min-width: 70px;
+  text-align: center;
 }
 .status.disabled {
   background: #ed4f38;
@@ -393,8 +396,15 @@ section {
 .status.enabled {
   background: #37b89a;
 }
+.status.hidden {
+  display: none;
+}
 .status a {
   color: white;
+}
+
+.user-list li:hover .hidden {
+  display: inline-block;
 }
 
 nav {
