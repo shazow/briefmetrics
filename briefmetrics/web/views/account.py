@@ -38,7 +38,7 @@ class AccountController(Controller):
             email=user_info['email'],
             token=token,
             display_name=user_info['name'],
-            plan='trial',
+            plan='personal',
         )
         api.account.login_user_id(self.request, user.id)
         # TODO: Redirect to dashboard?
