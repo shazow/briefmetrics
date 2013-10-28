@@ -1,7 +1,7 @@
 <%inherit file="base.mako"/>
 <%namespace file="widgets.mako" name="widgets" />
 
-% if not c.owner.stripe_customer_id and c.owner.num_remaining <= 1:
+% if not c.owner.stripe_customer_id and c.owner.num_remaining is not None and c.owner.num_remaining <= 1:
     <p>
         <strong>This is your final report. :(</strong><br />
         Please <a href="${request.route_url('settings')}">add a credit card now</a> to keep receiving Briefmetrics reports.
