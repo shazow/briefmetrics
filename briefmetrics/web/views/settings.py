@@ -1,4 +1,4 @@
-from unstdlib import get_many
+from unstdlib import get_many, now
 
 from briefmetrics import api, model, tasks
 from briefmetrics.lib.exceptions import APIControllerError, APIError
@@ -11,7 +11,7 @@ from briefmetrics.lib.controller import Controller
 @expose_api('settings.subscribe')
 def settings_subscribe(request):
     # TODO: Support multiple
-    profile_ids = set(int(id) for id in request.params.getall('id') if id)
+    profile_ids = set(id for id in request.params.getall('id') if id)
     user_id = api.account.get_user_id(request, required=True)
 
     account = model.Account.get_by(user_id=user_id)
@@ -21,8 +21,9 @@ def settings_subscribe(request):
     # Delete removed reports
     num_deleted = 0
     for report in account.reports:
-        if report.id in profile_ids:
-            profile_ids.discard(report.id)
+        profile_id = report.remote_data['id']
+        if profile_id in profile_ids:
+            profile_ids.discard(profile_id)
             continue
         else:
             num_deleted += 1
@@ -43,7 +44,7 @@ def settings_subscribe(request):
     oauth = api.google.auth_session(request, account.oauth_token)
     r = api.google.Query(oauth).get_profiles(account_id=account.id)
     for item in r['items']:
-        profile_id = int(item['id'])
+        profile_id = item['id']
         if profile_id not in profile_ids:
             continue
 
@@ -53,6 +54,7 @@ def settings_subscribe(request):
         model.Subscription.create(user_id=user_id, report=report)
 
         queued_reports.append(report)
+
         profile_ids.discard(profile_id)
 
     model.Session.commit()
