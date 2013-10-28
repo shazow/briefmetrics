@@ -80,6 +80,7 @@ class AccountController(Controller):
             self.c.token = token
             return self._render('unsubscribe.mako')
 
+        api.email.notify_admin(self.request, 'Account deleted: [%s] "%s" <%s>' % (user.id, user.display_name, user.email))
         api.account.delete(user_id=user_id)
         self.request.flash('Good bye.')
 
