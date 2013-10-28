@@ -403,6 +403,9 @@ section {
   color: white;
 }
 
+.user-list li {
+  margin-bottom: 2em;
+}
 .user-list li:hover .hidden {
   display: inline-block;
 }

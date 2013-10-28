@@ -50,8 +50,13 @@ section {
         color: white;
     }
 }
-.user-list li:hover .hidden {
-    display: inline-block;
+.user-list {
+    li {
+        margin-bottom: 2em;
+    }
+    li:hover .hidden {
+        display: inline-block;
+    }
 }
 
 nav {
