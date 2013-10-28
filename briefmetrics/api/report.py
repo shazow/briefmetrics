@@ -144,7 +144,7 @@ def send_weekly(request, report, since_time=None, pretend=False):
 
     report.time_last = now()
     if not report.time_next:
-        report.time_next = datetime.datetime(*date_start.timetuple()[:3]) + datetime.timedelta(days=7)
+        report.time_next = datetime.datetime(*date_start.timetuple()[:3]) + datetime.timedelta(days=8)
 
     report.time_next += datetime.timedelta(days=7)
 
