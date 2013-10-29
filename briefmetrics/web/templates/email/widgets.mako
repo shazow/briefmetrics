@@ -49,7 +49,9 @@
         else:
             formatted_val = h.human_int(cur_val)
 
-        delta = (cur_val / last_val) - 1
+        delta = 0
+        if last_val:
+            delta = (cur_val / last_val) - 1
     %>
     <td ${h.text_if(is_optional, 'class="optional"')}>
         <strong>${formatted_val}</strong>
