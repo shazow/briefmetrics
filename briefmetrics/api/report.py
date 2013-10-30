@@ -139,7 +139,7 @@ def send_weekly(request, report, since_time=None, pretend=False):
     if pretend:
         return
 
-    if owner.num_remaining:
+    if context.has_data and owner.num_remaining:
         owner.num_remaining -= 1
 
     report.time_last = now()

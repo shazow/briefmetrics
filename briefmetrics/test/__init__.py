@@ -27,10 +27,6 @@ class TestApp(TestCase):
         self.config = web.environment.setup_testing(**self.settings)
         self.wsgi_app = self.config.make_wsgi_app()
 
-    def tearDown(self):
-        super(TestCase, self).tearDown()
-        #testing.tearDown()
-
 
 class TestModel(TestApp):
     def setUp(self):
@@ -69,5 +65,3 @@ class TestWeb(TestModel):
         r = self.app.post('/api', params=p, status=_status)
 
         return json.loads(r.body)
-
-
