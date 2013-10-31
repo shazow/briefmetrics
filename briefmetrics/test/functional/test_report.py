@@ -2,6 +2,7 @@ from briefmetrics import test
 from briefmetrics import api
 from briefmetrics import model
 from briefmetrics import tasks
+from briefmetrics.lib.report import Report, WeeklyReport
 
 from briefmetrics.test.fixtures.api_google import FakeQuery
 
@@ -123,7 +124,7 @@ class TestReportModel(test.TestCase):
         self.assertEqual(r.next_preferred(now), datetime.datetime(2013, 1, 7, 12, 0, 0))
 
 
-class TestReportClass(test.TestCase):
+class TestReportLib(test.TestCase):
     def _create_report_model(self, type='day'):
         return model.Report(
             remote_id=1,
@@ -136,7 +137,7 @@ class TestReportClass(test.TestCase):
         report = self._create_report_model('day')
         date_start = datetime.date(2013, 1, 1)
 
-        r = api.report.Report(report, date_start)
+        r = Report(report, date_start)
 
         self.assertEqual(r.date_end, datetime.date(2013, 1, 1))
         self.assertEqual(r.date_next, datetime.date(2013, 1, 2))
@@ -146,7 +147,7 @@ class TestReportClass(test.TestCase):
         report = self._create_report_model('week')
 
         date_start = datetime.date(2013, 1, 6) # First Sunday
-        r = api.report.WeeklyReport(report, date_start)
+        r = WeeklyReport(report, date_start)
 
         self.assertEqual(r.date_end, datetime.date(2013, 1, 12)) # Next Saturday
         self.assertEqual(r.date_next, datetime.date(2013, 1, 14)) # Following Monday
@@ -154,7 +155,7 @@ class TestReportClass(test.TestCase):
         self.assertEqual(r.get_subject(), u"Report for Jan 6-12: example.com")
 
         date_start = datetime.date(2013, 1, 27) # Last Sunday
-        r = api.report.WeeklyReport(report, date_start)
+        r = WeeklyReport(report, date_start)
 
         self.assertEqual(r.date_end, datetime.date(2013, 2, 2)) # Next Saturday
         self.assertEqual(r.date_next, datetime.date(2013, 2, 4)) # Following Monday
