@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 from unstdlib import random_string, now
@@ -99,8 +100,43 @@ class Report(meta.Model): # Property within an account (such as a website)
 
     users = orm.relationship(User, innerjoin=True, secondary='subscription', backref='reports')
 
-    # TODO: Add type (daily, weekly, monthly)
+    # FIXME: Use croniter?
+    time_preferred = Column(types.DateTime) # Granularity relative to type
     type = Column(_types.Enum(TYPES), nullable=False, default='week')
+
+    def next_preferred(self, now):
+        # Add preferred time offset
+        # TODO: Use combine?
+        # TODO: Use delorean/arrow? :/
+        datetime_tuple = now.timetuple()[:3] + self.time_preferred.timetuple()[3:6]
+        now = datetime.datetime(*datetime_tuple)
+        days_offset = 1
+
+        if self.type == 'week':
+            days_offset = self.time_preferred.weekday() - now.weekday()
+            if days_offset < 0:
+                days_offset += 7
+
+        if self.type == 'month':
+            next_month = now + datetime.timedelta(days=32-now.day)
+            next_month = next_month.replace(day=1)
+
+            if self.time_preferred.day != 1:
+                next_month += self.time_preferred.weekday()
+
+            days_offset = (next_month - now).days
+
+        return now + datetime.timedelta(days=days_offset)
+
+    @staticmethod
+    def encode_preferred_time(hour=13, minute=0, second=0, weekday=None, min_year=1900):
+        d = datetime.datetime(min_year, 1, 1).replace(hour=hour, minute=minute, second=second)
+        if weekday is not None:
+            d += datetime.timedelta(days=7 - d.weekday() + weekday)
+        return d
+
+    def set_time_preferred(self, **kw):
+        self.time_preferred = self.encode_preferred_time(**kw)
 
 
 class ReportLog(meta.Model):
