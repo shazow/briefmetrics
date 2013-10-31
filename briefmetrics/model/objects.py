@@ -108,12 +108,14 @@ class Report(meta.Model): # Property within an account (such as a website)
         # Add preferred time offset
         # TODO: Use combine?
         # TODO: Use delorean/arrow? :/
-        datetime_tuple = now.timetuple()[:3] + self.time_preferred.timetuple()[3:6]
+        time_preferred = self.time_preferred or self.encode_preferred_time()
+        datetime_tuple = now.timetuple()[:3] + time_preferred.timetuple()[3:6]
         now = datetime.datetime(*datetime_tuple)
         days_offset = 1
 
         if self.type == 'week':
-            days_offset = self.time_preferred.weekday() - now.weekday()
+            preferred_weekday = time_preferred.weekday() if time_preferred.day > 1 else 0
+            days_offset = preferred_weekday - now.weekday()
             if days_offset < 0:
                 days_offset += 7
 
@@ -121,8 +123,8 @@ class Report(meta.Model): # Property within an account (such as a website)
             next_month = now + datetime.timedelta(days=32-now.day)
             next_month = next_month.replace(day=1)
 
-            if self.time_preferred.day != 1:
-                next_month += self.time_preferred.weekday()
+            if time_preferred.day != 1:
+                next_month += time_preferred.weekday()
 
             days_offset = (next_month - now).days
 
