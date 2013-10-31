@@ -11,6 +11,7 @@ __all__ = [
     'User',
     'Account',
     'Report',
+    'ReportLog',
     'Subscription',
 ]
 
@@ -72,6 +73,15 @@ class Report(meta.Model): # Property within an account (such as a website)
     __tablename__ = 'report'
     __json_whitelist__ = ['id', 'time_next', 'account_id', 'display_name']
 
+    TYPES = [
+        'day',
+        'week',
+        'month',
+       #'quarter',
+       #'combine',
+       #'alert',
+    ]
+
     id = Column(types.Integer, primary_key=True)
     time_created = Column(types.DateTime, default=now, nullable=False)
     time_updated = Column(types.DateTime, onupdate=now)
@@ -90,6 +100,46 @@ class Report(meta.Model): # Property within an account (such as a website)
     users = orm.relationship(User, innerjoin=True, secondary='subscription', backref='reports')
 
     # TODO: Add type (daily, weekly, monthly)
+    type = Column(_types.Enum(TYPES), nullable=False, default='week')
+
+
+class ReportLog(meta.Model):
+    __tablename__ = 'report_log'
+
+    id = Column(types.Integer, primary_key=True)
+    time_created = Column(types.DateTime, default=now, nullable=False)
+
+    seconds_elapsed = Column(types.Float)
+    num_recipients = Column(types.Integer)
+    # TODO: num_google_queries
+    # TODO: num_db_queries
+
+    # Owner
+    account_id = Column(types.Integer, ForeignKey(Account.id, ondelete='CASCADE'), index=True)
+    account = orm.relationship(Account, innerjoin=True, backref='report_logs')
+
+    display_name = Column(types.Unicode)
+    report_id = Column(types.Integer) # Unbounded
+    type = Column(_types.Enum(Report.TYPES))
+
+    remote_id = Column(types.String)
+    subject = Column(types.Unicode)
+    body = Column(types.UnicodeText)
+
+    @classmethod
+    def create_from_report(cls, report, body, subject, seconds_elapsed=None):
+        report_log = cls.create(
+            seconds_elapsed=seconds_elapsed,
+            account_id=report.account_id,
+            display_name=report.display_name,
+            report_id=report.id,
+            type=report.type,
+            remote_id=report.remote_id,
+            subject=subject,
+            body=body,
+        )
+
+        return report_log
 
 
 class Subscription(meta.Model): # Subscription to a report

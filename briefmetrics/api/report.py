@@ -1,3 +1,4 @@
+import time
 import logging
 import datetime
 from itertools import groupby
@@ -92,6 +93,8 @@ def render_weekly(request, user, context):
 
 
 def send_weekly(request, report, since_time=None, pretend=False):
+    t = time.time()
+
     since_time = since_time or now()
 
     if report.time_next and report.time_next > since_time:
@@ -147,6 +150,12 @@ def send_weekly(request, report, since_time=None, pretend=False):
         report.time_next = datetime.datetime(*date_start.timetuple()[:3]) + datetime.timedelta(days=8)
 
     report.time_next += datetime.timedelta(days=7)
+
+    model.ReportLog.create_from_report(report,
+        body=html,
+        subject=context.subject,
+        seconds_elapsed=time.time()-t,
+    )
 
     # TODO: Preferred time
 

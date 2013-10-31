@@ -50,6 +50,7 @@ def settings_subscribe(request):
 
         report = model.Report.create(account_id=account.id)
         report.remote_data = item
+        report.remote_id = profile_id
         report.display_name = h.human_url(item['websiteUrl']) or item['name']
         model.Subscription.create(user_id=user_id, report=report)
 

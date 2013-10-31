@@ -82,6 +82,7 @@ class TestReport(test.TestWeb):
 
         # Report should be deleted.
         self.assertEqual(model.Report.count(), 0)
+        self.assertEqual(model.ReportLog.count(), 1)
 
         model.Session.refresh(user)
         self.assertEqual(user.num_remaining, 0)
