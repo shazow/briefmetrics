@@ -5,6 +5,8 @@ todo:
 - text: "Referrer lifetime stats."
 - text: "Broken site alerts by detecting browser anamolies."
   notify: "badr"
+- text: "Multiple site support"
+  notif: "eli@industrydive.com"
 
 done:
 - text: "Redesign courtesy of @limedaring."
