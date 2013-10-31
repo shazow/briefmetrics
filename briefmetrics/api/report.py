@@ -16,18 +16,17 @@ log = logging.getLogger(__name__)
 
 
 class Report(object):
-    report = None
-    owner = None
-
-    remote_id = None
-    has_data = None
-
-    date_start = None
-    date_end = None
-    date_next = None
-
-    base_url = None
-    sections = None
+    __slots__ = (
+        'base_url',
+        'date_end',
+        'date_next',
+        'date_start',
+        'has_data',
+        'owner',
+        'remote_id',
+        'report',
+        'sections',
+    )
 
     def __init__(self, report, date_start):
         self.report = report
@@ -38,23 +37,17 @@ class Report(object):
             # TODO: Remove this after backfill
             self.remote_id = report.remote_id = report.remote_data['id']
 
-        self.date_start = date_start
         self.base_url = self.report.remote_data.get('websiteUrl', '')
 
-        self.date_end = self.get_date_end()
-        self.date_next = report.next_preferred(date_start)
+        self.date_start = date_start
+        self.date_end = date_start
+        self.date_next = report.next_preferred(self.date_end).date()
 
     @classmethod
     def create_from_now(cls, report, now):
         # TODO: Take into account preferred time.
         date_start = now.date()
         return cls(report, date_start)
-
-    def get_date_end(self):
-        return self.date_start
-
-    def get_date_next(self):
-        return self.date_start + datetime.timedelta(days=1)
 
     def get_subject(self):
         return u"Report for %s: %s" % (
@@ -72,17 +65,24 @@ class Report(object):
 
 class WeeklyReport(Report):
     def __init__(self, report, date_start):
-        super(WeeklyReport, self).__init__(self, report, date_start)
+        super(WeeklyReport, self).__init__(report, date_start)
 
-        self.date_end = self.get_date_end()
-        self.date_next = self.get_date_next()
+        # FIXME: This gets called twice in this model :(
+        self.date_end = self.date_start + datetime.timedelta(days=6)
+        self.date_next = report.next_preferred(self.date_end).date()
 
-    def get_date_end(self):
-        return self.date_start + datetime.timedelta(days=6)
+    def get_subject(self):
+        if self.date_start.month == self.date_end.month:
+            return u"Report for %s: %s" % (
+                self.date_start.strftime('%b {}-{}').format(self.date_start.day, self.date_end.day),
+                self.report.display_name,
+            )
 
-    def get_date_next(self):
-        return self.date_end + datetime.timedelta(days=9)
-
+        return u"Report for %s-%s: %s" % (
+            self.date_start.strftime('%b {}').format(self.date_start.day),
+            self.date_end.strftime('%b {}').format(self.date_end.day),
+            self.report.display_name,
+        )
 
 
 def _cumulative_by_month(rows, month_idx=1, value_idx=2):
