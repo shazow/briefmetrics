@@ -86,3 +86,59 @@ class TestReport(test.TestWeb):
 
         model.Session.refresh(user)
         self.assertEqual(user.num_remaining, 0)
+
+
+class TestReportModel(test.TestCase):
+
+    def test_encode_preferred(self):
+        self.assertEqual(model.Report.encode_preferred_time(), datetime.datetime(1900, 1, 1, 13, 0, 0)) # Default
+        self.assertEqual(model.Report.encode_preferred_time(hour=8, minute=15), datetime.datetime(1900, 1, 1, 8, 15, 0))
+        self.assertEqual(model.Report.encode_preferred_time(hour=0, minute=0, second=0), datetime.datetime(1900, 1, 1, 0, 0, 0))
+        self.assertEqual(model.Report.encode_preferred_time(weekday=0).date(), datetime.date(1900, 1, 8)) # Monday
+        self.assertEqual(model.Report.encode_preferred_time(weekday=6).date(), datetime.date(1900, 1, 14)) # Sunday
+
+    def test_next_preferred(self):
+        now = datetime.datetime(2013, 1, 1, 7, 35, 15)
+
+        r = model.Report(type='day')
+
+        r.set_time_preferred(hour=12)
+        self.assertEqual(r.next_preferred(now), datetime.datetime(2013, 1, 2, 12, 0, 0))
+
+        r = model.Report(type='week')
+
+        r.set_time_preferred(weekday=2, hour=12) # Wednesday
+        self.assertEqual(r.next_preferred(now), datetime.datetime(2013, 1, 2, 12, 0, 0))
+
+        r.set_time_preferred(weekday=0, hour=12) # Monday
+        self.assertEqual(r.next_preferred(now), datetime.datetime(2013, 1, 7, 12, 0, 0))
+
+
+class TestReportClass(test.TestCase):
+    def _create_report_model(self):
+        return model.Report(
+            remote_id=1,
+            remote_data={},
+            display_name='example.com',
+        )
+
+    def test_base(self):
+        report = self._create_report_model()
+        date_start = datetime.date(2013, 1, 1)
+
+        r = api.report.Report(report, date_start)
+
+        self.assertEqual(r.date_end, datetime.date(2013, 1, 1))
+        self.assertEqual(r.date_next, datetime.date(2013, 1, 2))
+        self.assertEqual(r.get_subject(), u"Report for Jan 1: example.com")
+
+    def test_weekly(self):
+        report = self._create_report_model()
+        date_start = datetime.date(2013, 1, 6) # First Sunday
+
+        r = api.report.Report(report, date_start)
+
+        self.assertEqual(r.date_end, datetime.date(2013, 1, 12)) # Next Saturday
+        self.assertEqual(r.date_next, datetime.date(2013, 1, 21)) # Following Monday
+
+        self.assertEqual(r.get_subject(), u"Report for Jan 6-12: example.com")
