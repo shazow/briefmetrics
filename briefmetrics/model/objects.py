@@ -126,6 +126,8 @@ class ReportLog(meta.Model):
     subject = Column(types.Unicode)
     body = Column(types.UnicodeText)
 
+    access_token = Column(types.String, default=lambda: random_string(16))
+
     @classmethod
     def create_from_report(cls, report, body, subject, seconds_elapsed=None):
         report_log = cls.create(
