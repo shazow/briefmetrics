@@ -15,6 +15,7 @@ logger = get_task_logger(__name__)
 
 @celery.task(ignore_result=True)
 def send_weekly(report_id, since_time=None, pretend=False):
+    """Task to send a specific weekly report (gets created by send_all)."""
     report = model.Session.query(model.Report).options(
         orm.joinedload(model.Report.account),
         orm.joinedload(model.Report.users),
@@ -28,6 +29,7 @@ def send_weekly(report_id, since_time=None, pretend=False):
 
 @periodic_task(ignore_result=True, run_every=crontab(hour=8))
 def send_all(since_time=None, async=True, pretend=False, max_num=None):
+    """Send all outstanding reports."""
     since_time = since_time or now()
 
     q = model.Session.query(model.Report).filter(

@@ -20,7 +20,8 @@ class ReportController(Controller):
         date_start -= datetime.timedelta(days=date_start.weekday()+1) # Sunday of that week
 
         context = api.report.fetch_weekly(self.request, report, date_start)
-        html = api.report.render_weekly(self.request, user, context)
+
+        html = api.report.render(self.request, 'email/report.mako', context)
 
         if self.request.params.get('send'):
             message = api.email.create_message(self.request,
