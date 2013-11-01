@@ -3,7 +3,7 @@
 
 <div class="container">
 
-    % if c.report_ids or c.user.stripe_customer_id:
+    % if c.report_ids or c.user.stripe_customer_id or c.user.num_remaining == 0:
     <section id="plan">
         <h2>Plan</h2>
 
@@ -61,7 +61,13 @@
         <form action="${request.current_route_path()}" method="post">
 
             <p>
+            % if c.user.num_remaining == 0 and not c.user.stripe_customer_id:
+                <select name="id" disabled="disabled">
+                    <option>No reports remaining. Upgrade to resume.</option>
+                </select>
+            % else:
                 <select name="id">
+
                     <option value="">- Select a site</option>
                 % for item in c.result['items']:
                     <%
@@ -81,6 +87,7 @@
                     </option>
                 % endfor
                 </select>
+            % endif
             </p>
 
             <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
