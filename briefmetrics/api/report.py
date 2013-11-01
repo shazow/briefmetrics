@@ -77,17 +77,12 @@ def fetch_weekly(request, report, date_start):
     c.total_last_relative = r[0][len(r[1]) - 1]
     c.changes = changes
     c.owner = report.account.user
+    c.user = c.owner # FIXME: This should be overridden
 
     return c
 
 
-def render_weekly(request, user, context):
-    context.user = user
-
-    template = 'email/report.mako'
-    if not context.has_data:
-        template = 'email/error_empty.mako'
-
+def render(request, template, context=None):
     return Controller(request, context=context)._render_template(template)
 
 
@@ -105,6 +100,16 @@ def send_weekly(request, report, since_time=None, pretend=False):
             log.info('User [%d] expired, deleting report: %s' % (owner.id, report.display_name))
             report.delete()
             model.Session.commit()
+
+            context = Context(subject=u"Your Briefmetrics trial is over")
+            html = render(request, 'email/error_trial_end.mako', context=context)
+            message = api_email.create_message(request,
+                to_email=owner.email,
+                subject=context.subject,
+                html=html,
+            )
+            api_email.send_message(request, message)
+
             return
 
         # Create subscription for customer
@@ -118,13 +123,16 @@ def send_weekly(request, report, since_time=None, pretend=False):
     context = fetch_weekly(request, report, date_start)
 
     send_users = report.users
+    template = 'email/report.mako'
     if not context.has_data:
         send_users = [report.account.user]
+        template = 'email/error_empty.mako'
 
     log.info('Sending report to [%d] users: %s' % (len(send_users), report.display_name))
 
     for user in report.users:
-        html = render_weekly(request, user, context)
+        context.user = user
+        html = render(request, template, context)
 
         if pretend:
             continue

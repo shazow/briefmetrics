@@ -38,7 +38,7 @@ class TestReport(test.TestWeb):
         self.assertEqual(context.date_next, datetime.date(2013, 1, 21))
         self.assertEqual(context.subject, u'Weekly report \u2019til Jan 12: example.com')
 
-        html = api.report.render_weekly(self.request, report.account.user, context)
+        html = api.report.render(self.request, 'email/report.mako', context)
         self.assertTrue(html)
 
     def test_send_weekly(self):
@@ -78,7 +78,11 @@ class TestReport(test.TestWeb):
 
         with mock.patch('briefmetrics.api.email.send_message') as send_message:
             tasks.report.send_all(async=False)
-            self.assertFalse(send_message.called)
+            self.assertTrue(send_message.called)
+
+            call, = send_message.call_args_list
+            message = call[0][1]
+            self.assertEqual(message['subject'], u"Your Briefmetrics trial is over")
 
         # Report should be deleted.
         self.assertEqual(model.Report.count(), 0)
