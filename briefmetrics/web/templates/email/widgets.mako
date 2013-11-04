@@ -17,7 +17,7 @@
     </thead>
     <tbody>
     <%
-        min_value = float(c.report_referrers['rows'][0][1]) * 0.005
+        min_value = float(rows[0][1]) * 0.005
     %>
     % for row in rows:
     <%

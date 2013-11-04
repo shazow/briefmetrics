@@ -1,12 +1,13 @@
 import time
 import logging
 import datetime
-from itertools import groupby
+
 from unstdlib import now
+from itertools import groupby
 
 from briefmetrics.lib.controller import Controller, Context
+from briefmetrics.lib.report import WeeklyReport
 from briefmetrics.lib.gcharts import encode_rows
-from briefmetrics.lib import changes
 from briefmetrics import model
 
 from . import google as api_google, email as api_email, account as api_account
@@ -36,51 +37,34 @@ def _cumulative_by_month(rows, month_idx=1, value_idx=2):
 
 
 def fetch_weekly(request, report, date_start):
-    date_end = date_start + datetime.timedelta(days=6)
-
     oauth = api_google.auth_session(request, report.account.oauth_token)
     q = api_google.Query(oauth)
 
-    c = Context(report=report, date_start=date_start, date_end=date_end)
-    c.base_url = report.remote_data.get('websiteUrl', '')
-    c.date_next = date_end + datetime.timedelta(days=9)
+    r = WeeklyReport(report, date_start)
 
-    c.subject = u"Weekly report \u2019til %s: %s" % (
-        date_end.strftime('%b %d'),
-        report.display_name,
-    )
-    c.report = report
+    params = r.get_query_params()
 
-    params = {
-        'id': report.remote_data['id'],
-        'date_start': date_start,
-        'date_end': date_end,
-    }
+    # Short circuit for no data
+    data = q.report_pages(**params)
+    if not data.get('rows'):
+        return r
 
-    c.has_data = True
-    c.report_pages = q.report_pages(**params)
-    if not c.report_pages.get('rows'):
-        # No data :(
-        c.subject = u"Problem with your Briefmetrics account"
-        c.has_data = False
-        return c
+    r.data.pages = data['rows']
+    r.data.summary = q.report_summary(**params).get('rows')
+    r.data.referrers = q.report_referrers(**params).get('rows')
+    r.data.social = q.report_social(**params).get('rows')
 
-    c.report_summary = q.report_summary(**params)
-    c.report_referrers = q.report_referrers(**params)
-    c.report_social = q.report_social(**params)
+    # Historic chart and intro
+    data = q.report_historic(**params)['rows']
+    monthly_data, max_value = _cumulative_by_month(data)
+    last_month, current_month = monthly_data
 
-    r = q.report_historic(**params)
-    r, max_value = _cumulative_by_month(r.get('rows', []))
+    r.data.historic_data = encode_rows(monthly_data, max_value)
+    r.data.total_current = current_month[-1]
+    r.data.total_last = last_month[-1]
+    r.data.total_last_relative = last_month[len(current_month)-1]
 
-    c.historic_data = encode_rows(r, max_value)
-    c.total_current = r[1][-1]
-    c.total_last = r[0][-1]
-    c.total_last_relative = r[0][len(r[1]) - 1]
-    c.changes = changes
-    c.owner = report.account.user
-    c.user = c.owner # FIXME: This should be overridden
-
-    return c
+    return r
 
 
 def render(request, template, context=None):
@@ -104,11 +88,11 @@ def send_weekly(request, report, since_time=None, pretend=False):
             report.delete()
             model.Session.commit()
 
-            context = Context(subject=u"Your Briefmetrics trial is over")
-            html = render(request, 'email/error_trial_end.mako', context=context)
+            subject = u"Your Briefmetrics trial is over"
+            html = render(request, 'email/error_trial_end.mako')
             message = api_email.create_message(request,
                 to_email=owner.email,
-                subject=context.subject,
+                subject=subject,
                 html=html,
             )
             api_email.send_message(request, message)
@@ -123,26 +107,29 @@ def send_weekly(request, report, since_time=None, pretend=False):
     date_start = since_time.date() - datetime.timedelta(days=6) # Last week
     date_start -= datetime.timedelta(days=date_start.weekday()+1) # Sunday of that week
 
-    context = fetch_weekly(request, report, date_start)
+    report_context = fetch_weekly(request, report, date_start)
 
     send_users = report.users
+    subject= report_context.get_subject()
     template = 'email/report.mako'
-    if not context.has_data:
+    if not report_context.data:
         send_users = [report.account.user]
         template = 'email/error_empty.mako'
 
     log.info('Sending report to [%d] users: %s' % (len(send_users), report.display_name))
 
     for user in report.users:
-        context.user = user
-        html = render(request, template, context)
+        html = render(request, template, Context({
+            'user': user,
+            'report': report_context,
+        }))
 
         if pretend:
             continue
 
         message = api_email.create_message(request,
             to_email=user.email,
-            subject=context.subject, 
+            subject=subject, 
             html=html,
         )
         api_email.send_message(request, message)
@@ -150,7 +137,7 @@ def send_weekly(request, report, since_time=None, pretend=False):
     if pretend:
         return
 
-    if context.has_data and owner.num_remaining:
+    if report_context.data and owner.num_remaining:
         owner.num_remaining -= 1
 
     report.time_last = now()
@@ -161,7 +148,7 @@ def send_weekly(request, report, since_time=None, pretend=False):
 
     model.ReportLog.create_from_report(report,
         body=html,
-        subject=context.subject,
+        subject=subject,
         seconds_elapsed=time.time()-t,
     )
 

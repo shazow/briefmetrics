@@ -1,15 +1,5 @@
 import datetime
-
-class Section(object):
-    __slots__ = (
-        '_data',
-        'title',
-        'rows',
-    )
-
-    def __init__(self, title, data):
-        self.title = title
-        self._data = data
+from .controller import DefaultContext
 
 
 class Report(object):
@@ -18,15 +8,14 @@ class Report(object):
         'date_end',
         'date_next',
         'date_start',
-        'has_data',
         'owner',
         'remote_id',
         'report',
-        'sections',
+        'data',
     )
 
     def __init__(self, report, date_start):
-        self.sections = []
+        self.data = DefaultContext()
         self.report = report
         self.owner = report.account and report.account.user
         self.remote_id = report.remote_id
@@ -48,6 +37,9 @@ class Report(object):
         return cls(report, date_start)
 
     def get_subject(self):
+        if not self.data:
+            return u"Problem with your Briefmetrics account"
+
         return u"Report for %s: %s" % (
             self.date_start.strftime('%b {}').format(self.date_start.day),
             self.report.display_name,
@@ -70,6 +62,9 @@ class WeeklyReport(Report):
         self.date_next = report.next_preferred(self.date_end).date()
 
     def get_subject(self):
+        if not self.data:
+            return u"Problem with your Briefmetrics account"
+
         if self.date_start.month == self.date_end.month:
             return u"Report for %s: %s" % (
                 self.date_start.strftime('%b {}-{}').format(self.date_start.day, self.date_end.day),
