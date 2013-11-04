@@ -32,5 +32,5 @@ RUN pg_dropcluster 9.3 main --stop
 ADD init.sh /init.sh
 
 EXPOSE  5432
-VOLUME  ["/var/lib/postgresql", "/etc/postgresql"]
+VOLUME  ["/var/lib/postgresql", "/etc/postgresql", "/var/run/postgresql"]
 CMD     ["/init.sh"]
