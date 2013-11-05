@@ -3,6 +3,7 @@ from briefmetrics import api
 from briefmetrics import model
 from briefmetrics import tasks
 from briefmetrics.lib.report import Report, WeeklyReport
+from briefmetrics.lib.controller import Context
 
 from briefmetrics.test.fixtures.api_google import FakeQuery
 
@@ -39,8 +40,10 @@ class TestReport(test.TestWeb):
         self.assertEqual(context.date_next, datetime.date(2013, 1, 21))
         self.assertEqual(context.get_subject(), u'Report for Jan 6-12: example.com')
 
-        self.assertTrue(context.owner)
-        html = api.report.render(self.request, 'email/report.mako', context)
+        html = api.report.render(self.request, 'email/report.mako', Context({
+            'report': context,
+            'user': context.owner,
+        }))
         self.assertTrue(html)
 
     def test_send_weekly(self):
