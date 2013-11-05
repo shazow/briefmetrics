@@ -48,12 +48,7 @@ def settings_subscribe(request):
         if profile_id not in profile_ids:
             continue
 
-        report = model.Report.create(account_id=account.id)
-        report.remote_data = item
-        report.remote_id = profile_id
-        report.display_name = h.human_url(item['websiteUrl']) or item['name']
-        model.Subscription.create(user_id=user_id, report=report)
-
+        report = api.report.create(account_id=account.id, remote_data=item, subscribe_user_id=user_id)
         queued_reports.append(report)
 
         profile_ids.discard(profile_id)

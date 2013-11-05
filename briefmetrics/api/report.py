@@ -8,6 +8,7 @@ from itertools import groupby
 from briefmetrics.lib.controller import Controller, Context
 from briefmetrics.lib.report import WeeklyReport
 from briefmetrics.lib.gcharts import encode_rows
+from briefmetrics.lib import helpers as h
 from briefmetrics import model
 
 from . import google as api_google, email as api_email, account as api_account
@@ -15,6 +16,29 @@ from . import google as api_google, email as api_email, account as api_account
 
 log = logging.getLogger(__name__)
 
+
+def create(account_id, remote_data=None, remote_id=None, display_name=None, subscribe_user_id=None):
+    report = model.Report.create(account_id=account_id)
+
+    if remote_data:
+        report.remote_data = remote_data
+        report.remote_id = remote_data['id']
+        report.display_name = h.human_url(remote_data['websiteUrl']) or remote_data['name']
+
+    if remote_id:
+        report.remote_id = remote_id
+
+    if display_name:
+        report.display_name = display_name
+
+    if subscribe_user_id:
+        model.Subscription.create(user_id=subscribe_user_id, report=report)
+
+    model.Session.commit()
+    return report
+
+
+# Reporting tasks:
 
 def _cumulative_by_month(rows, month_idx=1, value_idx=2):
     max_value = 0
