@@ -102,7 +102,7 @@ class Report(meta.Model): # Property within an account (such as a website)
 
     # FIXME: Use croniter?
     time_preferred = Column(types.DateTime) # Granularity relative to type
-    type = Column(_types.Enum(TYPES), nullable=False, default='week')
+    type = Column(_types.Enum(TYPES), default='week')
 
     def next_preferred(self, now):
         # Add preferred time offset

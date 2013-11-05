@@ -37,9 +37,6 @@ class Report(object):
         return cls(report, date_start)
 
     def get_subject(self):
-        if not self.data:
-            return u"Problem with your Briefmetrics account"
-
         return u"Report for %s: %s" % (
             self.date_start.strftime('%b {}').format(self.date_start.day),
             self.report.display_name,
@@ -59,12 +56,9 @@ class WeeklyReport(Report):
 
         # FIXME: This gets called twice in this model :(
         self.date_end = self.date_start + datetime.timedelta(days=6)
-        self.date_next = report.next_preferred(self.date_end).date()
+        self.date_next = report.next_preferred(self.date_end + datetime.timedelta(days=7)).date()
 
     def get_subject(self):
-        if not self.data:
-            return u"Problem with your Briefmetrics account"
-
         if self.date_start.month == self.date_end.month:
             return u"Report for %s: %s" % (
                 self.date_start.strftime('%b {}-{}').format(self.date_start.day, self.date_end.day),
