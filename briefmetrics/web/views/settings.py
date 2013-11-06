@@ -1,8 +1,7 @@
-from unstdlib import get_many, now
+from unstdlib import get_many
 
 from briefmetrics import api, model, tasks
 from briefmetrics.lib.exceptions import APIControllerError, APIError
-from briefmetrics.lib import helpers as h
 
 from .api import expose_api, handle_api
 from briefmetrics.lib.controller import Controller
@@ -21,8 +20,8 @@ def settings_subscribe(request):
     # Delete removed reports
     num_deleted = 0
     for report in account.reports:
-        profile_id = report.remote_data['id']
-        if profile_id in profile_ids:
+        profile_id = report.remote_id or report.remote_data.get('id')
+        if not profile_id or profile_id in profile_ids:
             profile_ids.discard(profile_id)
             continue
         else:
@@ -105,6 +104,6 @@ class SettingsController(Controller):
             self.c.result = []
 
         self.c.user = user
-        self.c.report_ids = set(r.remote_data['id'] for r in account.reports)
+        self.c.report_ids = set((r.remote_id or r.remote_data.get('id')) for r in account.reports)
 
         return self._render('settings.mako')
