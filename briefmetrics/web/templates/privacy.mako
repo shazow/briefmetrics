@@ -20,13 +20,6 @@
             means we might look at your data, but we promise to not share it with
             anybody else without your explicit permission.
         </li>
-        <%doc>
-        <li>
-            If you change your mind after using Briefmetrics, you can always
-            <a href="/account/unsubscribe">delete your account</a> and your
-            data will be deleted from Briefmetrics. (This cannot be reversed.)
-        </li>
-        </%doc>
         <li>
             If you'd like to use Briefmetrics but are unable to give us access
             to your data, then
