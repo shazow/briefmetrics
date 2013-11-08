@@ -1,7 +1,7 @@
 @import "_base";
 
 input[type="submit"] {
-    font-size: 1.5em;
+    font-size: 1em;
     line-height: 2em;
 
     @include background-image(linear-gradient(#fafafa, #ddd));
@@ -155,12 +155,18 @@ nav {
     }
 }
 
-.screenshot {
-    @include border-top-radius(10px);
+.preview, .screenshot {
+    @include border-radius(10px);
     border: 2px solid darken(desaturate($color-background, 20%), 10%);
-    padding: 20px 10px 10px 10px;
     background: #fff;
+    padding: 20px 20px 0px 20px;
+    margin-bottom: 2em;
+
+}
+
+.screenshot {
     text-align: center;
+    padding: 20px 10px 10px 10px;
 
     h3 {
         color: #bbb;
@@ -169,12 +175,19 @@ nav {
 }
 
 .payment {
+    @include border-radius(10px);
+    border: 2px solid darken(desaturate($color-background, 20%), 10%);
+    background: #fff;
+    margin-bottom: 2em;
+    padding: 1em 2em 1em 2em;
+    display: inline-block;
+
     &>div {
         overflow: hidden;
-        margin-bottom: 0.5em;
+        margin-bottom: 1em;
+        margin-left: 0.5em;
     }
 
-    margin-bottom: 2em;
     label {
         float: left;
     }
@@ -182,18 +195,59 @@ nav {
         display: inline-block;
     }
     input[type="submit"] {
-        margin-top: 22px;
-        width: span(5) + 5px;
+        margin-top: 21px;
+        line-height: 34px;
+        width: span(4) + 10px;
     }
     .card-expiry-month {
         margin-right: 0;
     }
     .card-expiry-sep {
-        padding: 0 0.4em;
+        padding: 0 0.2em;
         vertical-align: middle;
-        font-size: 2em;
+        font-size: 1.5em;
     }
     .card-date {
         text-align: center;
     }
+}
+
+.report {
+    .controls {
+        overflow: hidden;
+        text-align: right;
+        h3 {
+            float: left;
+            margin-bottom: 0.5em;
+        }
+
+        input {
+            border: none;
+
+            &[name="delete"] {
+                margin-right: 0;
+                color: #fdfdfd;
+                background: #ccc;
+
+                &:hover {
+                    color: #fcf5f6;
+                    background: #a31f2b;
+                }
+            }
+        }
+    }
+    .details {
+        display: table;
+
+        dl {
+            display: table-cell;
+            padding-right: 2em;
+        }
+        dd {
+            margin-left: 0;
+        }
+
+        margin-bottom: 1em;
+    }
+
 }

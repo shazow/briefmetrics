@@ -40,7 +40,7 @@
         </ul>
     </div>
 
-    <div class="screenshot">
+    <div class="screenshot preview">
         <h3>Sample Report</h3>
         <img src="/static/images/screenshot.png" alt="Sample Report Screenshot" height="875px"/>
         <p>

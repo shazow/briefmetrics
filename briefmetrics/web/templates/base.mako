@@ -31,6 +31,7 @@
 
     if is_logged_in:
         nav += [
+            ('Reports', request.route_path('reports')),
             ('Settings', request.route_path('settings')),
             ('Log out', request.route_path('account_logout')),
         ]

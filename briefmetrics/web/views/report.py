@@ -1,19 +1,42 @@
 import datetime
 
-from briefmetrics import api
-from briefmetrics.web.environment import Response
+from briefmetrics import api, model
+from briefmetrics.web.environment import Response, httpexceptions
 from briefmetrics.lib.controller import Controller, Context
+from briefmetrics.lib.exceptions import APIError
 
 class ReportController(Controller):
 
     def index(self):
         user = api.account.get_user(self.request, required=True, joinedload='account.reports')
 
-        if not user.account.reports:
-            return self._redirect(self.request.route_path('settings'))
+        oauth = api.google.auth_session(self.request, user.account.oauth_token)
+        try:
+            self.c.available_profiles = api.google.Query(oauth).get_profiles(account_id=user.account.id)
+        except APIError as e:
+            r = e.response.json()
+            for msg in r['error']['errors']:
+                self.request.flash('Error: %s' % msg['message'])
 
-        # TODO: Handle arbitrary reports
-        report = user.account.reports[0]
+            self.c.available_profiles = []
+
+        self.c.user = user
+        self.c.reports = user.account.reports
+
+        return self._render('reports.mako')
+
+
+    def view(self):
+        user = api.account.get_user(self.request, required=True, joinedload='account')
+        report_id = self.request.matchdict['id']
+
+        q = model.Session.query(model.Report).filter_by(id=report_id)
+        if not user.is_admin:
+            q = q.filter_by(account_id=user.account.id)
+
+        report = q.first()
+        if not report:
+            raise httpexceptions.HTTPNotFound()
 
         # Last Sunday
         date_start = datetime.date.today() - datetime.timedelta(days=6) # Last week

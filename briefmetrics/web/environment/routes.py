@@ -32,7 +32,8 @@ def add_routes(config):
         route('admin_test_errors', '/admin/test_errors', action='test_errors')
 
     with handler_routes(config, views.report.ReportController) as route:
-        route('report', '/report', action='index')
+        route('reports', '/reports', action='index')
+        route('reports_view', '/reports/{id}', action='view')
 
     with handler_routes(config, views.settings.SettingsController) as route:
         route('settings', '/settings', action='index')
