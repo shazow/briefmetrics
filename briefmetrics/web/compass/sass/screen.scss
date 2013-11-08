@@ -1,5 +1,12 @@
 @import "_base";
 
+@mixin boxed() {
+    @include border-radius(10px);
+    border: 2px solid $color-border;
+    background: #fff;
+}
+
+
 input[type="submit"] {
     font-size: 1em;
     line-height: 2em;
@@ -31,6 +38,15 @@ section {
 
 .flash-messages {
     @include container;
+    overflow: inherit;
+    margin: 1em auto 2em auto;
+
+    ul {
+        @include border-radius(10px);
+        background: $color-border;
+        padding: 0.5em 2em;
+        list-style: none;
+    }
 }
 
 .highlight {
@@ -174,10 +190,8 @@ a.cta {
 
 
 .preview, .screenshot {
-    @include border-radius(10px);
-    border: 2px solid darken(desaturate($color-background, 20%), 10%);
-    background: #fff;
-    padding: 20px 20px 0px 20px;
+    @include boxed;
+    padding: 20px 20px 20px 20px;
     margin-bottom: 2em;
 
 }
@@ -193,9 +207,7 @@ a.cta {
 }
 
 .payment {
-    @include border-radius(10px);
-    border: 2px solid darken(desaturate($color-background, 20%), 10%);
-    background: #fff;
+    @include boxed;
     padding: 1em 2em 1em 2em;
     display: inline-block;
 

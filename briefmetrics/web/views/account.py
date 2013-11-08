@@ -23,7 +23,7 @@ class AccountController(Controller):
     def connect(self):
         error = self.request.params.get('error')
         if error:
-            self.request.flash('Failed to sign in: %s' % error)
+            self.request.session.flash('Failed to sign in: %s' % error)
             return self._redirect(location='/')
 
         oauth = api.google.auth_session(self.request, state=self.session.get('oauth_state'))
@@ -82,6 +82,6 @@ class AccountController(Controller):
 
         api.email.notify_admin(self.request, 'Account deleted: [%s] "%s" <%s>' % (user.id, user.display_name, user.email))
         api.account.delete(user_id=user_id)
-        self.request.flash('Good bye.')
+        self.request.session.flash('Good bye.')
 
         return self._redirect(location=self.request.route_path('index'))

@@ -379,6 +379,18 @@ section {
   margin: 0 auto;
   overflow: hidden;
   *zoom: 1;
+  overflow: inherit;
+  margin: 1em auto 2em auto;
+}
+.flash-messages ul {
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+  border-radius: 10px;
+  background: #dbe8cc;
+  padding: 0.5em 2em;
+  list-style: none;
 }
 
 .highlight {
@@ -533,7 +545,7 @@ a.cta small {
   border-radius: 10px;
   border: 2px solid #dbe8cc;
   background: #fff;
-  padding: 20px 20px 0px 20px;
+  padding: 20px 20px 20px 20px;
   margin-bottom: 2em;
 }
 
