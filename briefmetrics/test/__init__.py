@@ -62,6 +62,6 @@ class TestWeb(TestModel):
         if _extra_params:
             p.update(_extra_params)
 
-        r = self.app.post('/api', params=p, status=_status)
+        r = self.app.post('/api', params=p)
 
         return json.loads(r.body)

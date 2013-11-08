@@ -45,10 +45,6 @@
 </div>
 
 <%block name="tail">
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-
-${h.javascript_link(request, 'briefmetrics.web:static/js/core.js')}
-
 <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
 <script type="text/javascript">
     Stripe.setPublishableKey('${settings["stripe.public_key"]}');

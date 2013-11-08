@@ -96,6 +96,18 @@ class TestReport(test.TestWeb):
         model.Session.refresh(user)
         self.assertEqual(user.num_remaining, 0)
 
+    def test_api(self):
+        u = api.account.get_or_create(email=u'example@example.com', token={}, display_name=u'Example')
+        r = self.call_api('account.login', token=u'%s-%d' % (u.email_token, u.id))
+
+        r = self.call_api('report.create', remote_id=u'111112')
+        report = r['result']['report']
+        self.assertEqual(report['display_name'], u'example.com')
+        self.assertEqual(model.Report.count(), 1)
+
+        r = self.call_api('report.update', report_id=report['id'], delete=u'true')
+        self.assertEqual(model.Report.count(), 0)
+
 
 class TestReportModel(test.TestCase):
 

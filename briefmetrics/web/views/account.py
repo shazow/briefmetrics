@@ -2,23 +2,31 @@ from briefmetrics.lib.controller import Controller
 
 from briefmetrics import api, model
 from briefmetrics.lib.exceptions import LoginRequired
+from briefmetrics.lib.exceptions import APIControllerError, APIError
+
+from .api import expose_api
 
 from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
 
+
+@expose_api('account.login')
+def account_login(request):
+    try:
+        u = api.account.login_user(request)
+    except APIError:
+        raise APIControllerError('Invalid login.')
+
+    return {'user': u}
+
+
 class AccountController(Controller):
 
+    DEFAULT_NEXT = '/reports'
+
     def login(self):
-        user_id = api.account.get_user_id(self.request)
-        force_login = self.request.params.get('force')
-        if user_id and not force_login:
-            return self._redirect(location=self.request.route_path('settings'))
+        account_login(self.request)
 
-        # TODO: Use `next` for state?
-        oauth = api.google.auth_session(self.request)
-        next, state = api.google.auth_url(oauth)
-        self.session['oauth_state'] = state
-
-        return self._redirect(location=next)
+        return self._redirect(self.next)
 
     def connect(self):
         error = self.request.params.get('error')
@@ -47,7 +55,7 @@ class AccountController(Controller):
         )
         api.account.login_user_id(self.request, user.id)
         # TODO: Redirect to dashboard?
-        return self._redirect(location=self.request.route_path('settings'))
+        return self._redirect(self.next or self.request.route_path('reports'))
 
     def logout(self):
         api.account.logout_user(self.request)
@@ -63,8 +71,7 @@ class AccountController(Controller):
 
         user = None
         if token:
-            email_token, id = token.split('-', 2)
-            user = model.User.get_by(id=int(id), email_token=email_token)
+            user = api.account.get(token=token)
 
         if not user and user_id:
             user = model.User.get(user_id)

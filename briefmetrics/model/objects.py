@@ -72,7 +72,7 @@ class Account(meta.Model): # OAuth Service Account (such as Google Analytics)
 
 class Report(meta.Model): # Property within an account (such as a website)
     __tablename__ = 'report'
-    __json_whitelist__ = ['id', 'time_next', 'account_id', 'display_name']
+    __json_whitelist__ = ['id', 'time_next', 'account_id', 'display_name', 'type']
 
     TYPES = [
         'day',

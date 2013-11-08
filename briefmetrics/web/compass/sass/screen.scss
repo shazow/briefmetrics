@@ -23,12 +23,28 @@ input[type="submit"] {
 input.negative {
     border: none;
     margin-right: 0;
-    color: #fdfdfd;
+    color: rgba(0, 0, 0, 0.7);
     background: rgba(0, 0, 0, 0.2);
 
     &:hover {
         color: #fcf5f6;
         background: #a31f2b;
+    }
+}
+
+a.button {
+    display: inline-block;
+    @include border-radius(3px);
+    background: $color-border;
+    color: rgba(0, 0, 0, 0.5);
+    padding: 0 1em;
+    height: 2em;
+    line-height: 2em;
+    vertical-align: middle;
+    margin-right: 0.5em;
+
+    &:hover {
+        background: darken($color-border, 20%);
     }
 }
 
@@ -87,7 +103,7 @@ section {
     }
 }
 
-nav {
+nav.header {
     padding: 1em 0;
     margin-bottom: 1em;
 
@@ -224,8 +240,8 @@ a.cta {
         display: inline-block;
     }
     input[type="submit"] {
-        margin-top: 21px;
-        line-height: 34px;
+        margin-top: 22px;
+        line-height: 33px;
         width: span(4) + 10px;
     }
     .card-expiry-month {
@@ -242,16 +258,25 @@ a.cta {
 }
 
 .report {
-    .controls {
-        overflow: hidden;
-        text-align: right;
+    nav {
+        width: 100%;
+        display: table;
+        margin-bottom: 1em;
+
         h3 {
-            float: left;
             margin-bottom: 0.5em;
         }
 
-        input {
-            border: none;
+        .controls {
+            display: table-cell;
+            text-align: right;
+            font-size: 0.8em;
+            vertical-align: top;
+            white-space: nowrap;
+
+            input {
+                border: none;
+            }
         }
     }
     .details {
@@ -264,8 +289,6 @@ a.cta {
         dd {
             margin-left: 0;
         }
-
-        margin-bottom: 1em;
     }
 
 }

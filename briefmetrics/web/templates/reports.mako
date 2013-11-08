@@ -13,10 +13,9 @@
 
     % if c.available_profiles:
     <form action="${request.current_route_path()}" method="post">
-
         <p>
-            <select name="id">
-                <option value="">- Select a site</option>
+            <select name="remote_id" data-placeholder="Choose a site" id="available-profiles">
+                <option />
             % for item in c.available_profiles['items']:
                 <%
                     subscribe_url = request.route_path(
@@ -38,7 +37,7 @@
         </p>
 
         <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
-        <input type="hidden" name="method" value="settings.subscribe" />
+        <input type="hidden" name="method" value="report.create" />
         <input type="hidden" name="format" value="redirect" />
         <input type="submit" value="Create Report" />
     </form>
@@ -60,11 +59,21 @@
 
     % for report in c.reports:
         <form action="${request.current_route_path()}" method="post" class="preview report">
-            <div class="controls">
-                <h3>${report.display_name}</h3>
+            <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
+            <input type="hidden" name="method" value="report.update" />
+            <input type="hidden" name="format" value="redirect" />
+            <input type="hidden" name="report_id" value="${report.id}" />
 
-                <input type="submit" name="delete" value="Delete" class="negative" />
-            </div>
+            <nav>
+                <h3>
+                    ${report.display_name}
+                </h3>
+                <div class="controls">
+                    <a class="button" target="_blank" href="${h.ga_permalink('report/content-pages', report)}">Google Analytics</a>
+                    <a class="button" target="_blank" href="${request.route_path('reports_view', id=report.id)}">Last report</a>
+                    <input type="submit" name="delete" value="Delete" class="negative" />
+                </div>
+            </nav>
 
             <div class="details">
                 <dl>
@@ -93,3 +102,16 @@
 </section>
 
 </div>
+
+<%block name="tail">
+${h.javascript_link(request, 'briefmetrics.web:static/js/external/chosen/chosen.jquery.min.js')}
+<script type="text/javascript">
+    $(function() {
+         $("#available-profiles").chosen();
+    });
+</script>
+</%block>
+
+<%block name="extra_head">
+${h.stylesheet_link(request, 'briefmetrics.web:static/js/external/chosen/chosen.min.css')}
+</%block>
