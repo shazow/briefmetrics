@@ -63,7 +63,7 @@
             <div class="controls">
                 <h3>${report.display_name}</h3>
 
-                <input type="submit" name="delete" value="Delete" />
+                <input type="submit" name="delete" value="Delete" class="negative" />
             </div>
 
             <div class="details">

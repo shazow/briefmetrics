@@ -359,6 +359,17 @@ input[type="submit"]:hover {
   background: #ddd;
 }
 
+input.negative {
+  border: none;
+  margin-right: 0;
+  color: #fdfdfd;
+  background: rgba(0, 0, 0, 0.2);
+}
+input.negative:hover {
+  color: #fcf5f6;
+  background: #a31f2b;
+}
+
 section {
   margin-bottom: 2em;
 }
@@ -457,6 +468,15 @@ nav h1 {
   line-height: 1em;
   margin-top: 0.5em;
 }
+.intro .cta {
+  font-size: 1.5em;
+  padding: 5px 20px;
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 7px;
+  -ms-border-radius: 7px;
+  -o-border-radius: 7px;
+  border-radius: 7px;
+}
 .intro .signup {
   display: table;
   margin: 3em 0;
@@ -470,12 +490,19 @@ nav h1 {
   text-align: center;
   margin-top: 2em;
 }
-.intro .cta {
-  -webkit-border-radius: 7px;
-  -moz-border-radius: 7px;
-  -ms-border-radius: 7px;
-  -o-border-radius: 7px;
-  border-radius: 7px;
+.intro .details {
+  display: table-cell;
+  font-size: 0.8em;
+  list-style: none;
+  margin: 0;
+}
+
+a.cta {
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f8a915), color-stop(100%, #ea9613));
   background-image: -webkit-linear-gradient(#f8a915, #ea9613);
   background-image: -moz-linear-gradient(#f8a915, #ea9613);
@@ -486,23 +513,16 @@ nav h1 {
   vertical-align: middle;
   text-align: center;
   color: #fff;
-  padding: 5px 20px;
-  font-size: 1.5em;
+  padding: 3px 2em;
   cursor: pointer;
 }
-.intro .cta:hover {
+a.cta:hover {
   background: #f8a915;
 }
-.intro .cta small {
+a.cta small {
   display: block;
   color: #fee8c0;
   font-size: 0.8em;
-}
-.intro .details {
-  display: table-cell;
-  font-size: 0.8em;
-  list-style: none;
-  margin: 0;
 }
 
 .preview, .screenshot {
@@ -534,7 +554,6 @@ nav h1 {
   border-radius: 10px;
   border: 2px solid #dbe8cc;
   background: #fff;
-  margin-bottom: 2em;
   padding: 1em 2em 1em 2em;
   display: inline-block;
 }
@@ -576,15 +595,6 @@ nav h1 {
 }
 .report .controls input {
   border: none;
-}
-.report .controls input[name="delete"] {
-  margin-right: 0;
-  color: #fdfdfd;
-  background: #ccc;
-}
-.report .controls input[name="delete"]:hover {
-  color: #fcf5f6;
-  background: #a31f2b;
 }
 .report .details {
   display: table;

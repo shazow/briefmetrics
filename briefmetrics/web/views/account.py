@@ -73,12 +73,12 @@ class AccountController(Controller):
         self.c.token = token
 
         if not user:
-            return self._render('unsubscribe.mako')
+            return self._render('delete.mako')
 
         confirmed = self.request.params.get('confirmed')
         if not confirmed:
             self.c.token = token
-            return self._render('unsubscribe.mako')
+            return self._render('delete.mako')
 
         api.email.notify_admin(self.request, 'Account deleted: [%s] "%s" <%s>' % (user.id, user.display_name, user.email))
         api.account.delete(user_id=user_id)

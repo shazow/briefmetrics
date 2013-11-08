@@ -7,6 +7,23 @@
     <section id="credit-card">
     % if c.user.stripe_customer_id:
         <h2>Credit Card: ✓</h2>
+
+        <form action="${request.route_path('api')}" method="post" onsubmit="return confirm('Are you sure you want to cancel your subscription? Reports will be suspended until you add another credit card.');">
+            <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
+            <input type="hidden" name="method" value="settings.payments_cancel" />
+            <input type="hidden" name="format" value="redirect" />
+
+            <p>
+                <input type="submit" class="negative" value="Remove Credit Card" />
+            </p>
+        </form>
+
+        % if c.user.num_remaining:
+        <p>
+            You will be charged $8/month only when your free emails run out.
+        </p>
+        % endif
+
     % else:
         <h2>Add a credit card</h2>
 

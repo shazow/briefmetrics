@@ -13,6 +13,18 @@ input[type="submit"] {
     }
 }
 
+input.negative {
+    border: none;
+    margin-right: 0;
+    color: #fdfdfd;
+    background: rgba(0, 0, 0, 0.2);
+
+    &:hover {
+        color: #fcf5f6;
+        background: #a31f2b;
+    }
+}
+
 section {
     margin-bottom: 2em;
 }
@@ -107,6 +119,12 @@ nav {
         margin-top: 0.5em;
     }
 
+    .cta {
+        font-size: 1.5em;
+        padding: 5px 20px;
+        @include border-radius(7px);
+    }
+
     .signup {
         display: table;
         margin: 3em 0;
@@ -123,30 +141,6 @@ nav {
         margin-top: 2em;
     }
 
-    .cta {
-        @include border-radius(7px);
-        @include background-image(linear-gradient(#f8a915, #ea9613));
-        border: 1px solid #d28811;
-        display: inline-block;
-
-        vertical-align: middle;
-        text-align: center;
-        color: #fff;
-        padding: 5px 20px;
-        font-size: 1.5em;
-        cursor: pointer;
-
-        &:hover {
-            background: #f8a915;
-        }
-
-        small {
-            display: block;
-            color: #fee8c0;
-            font-size: 0.8em;
-        }
-    }
-
     .details {
         display: table-cell;
         font-size: 0.8em;
@@ -154,6 +148,30 @@ nav {
         margin: 0;
     }
 }
+
+a.cta {
+    @include border-radius(3px);
+    @include background-image(linear-gradient(#f8a915, #ea9613));
+    border: 1px solid #d28811;
+    display: inline-block;
+
+    vertical-align: middle;
+    text-align: center;
+    color: #fff;
+    padding: 3px 2em;
+    cursor: pointer;
+
+    &:hover {
+        background: #f8a915;
+    }
+
+    small {
+        display: block;
+        color: #fee8c0;
+        font-size: 0.8em;
+    }
+}
+
 
 .preview, .screenshot {
     @include border-radius(10px);
@@ -178,7 +196,6 @@ nav {
     @include border-radius(10px);
     border: 2px solid darken(desaturate($color-background, 20%), 10%);
     background: #fff;
-    margin-bottom: 2em;
     padding: 1em 2em 1em 2em;
     display: inline-block;
 
@@ -223,17 +240,6 @@ nav {
 
         input {
             border: none;
-
-            &[name="delete"] {
-                margin-right: 0;
-                color: #fdfdfd;
-                background: #ccc;
-
-                &:hover {
-                    color: #fcf5f6;
-                    background: #a31f2b;
-                }
-            }
         }
     }
     .details {
