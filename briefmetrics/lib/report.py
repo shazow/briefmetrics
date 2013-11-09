@@ -1,10 +1,10 @@
 import datetime
-from .controller import Context
+from .controller import DefaultContext
 
 
 class Report(object):
     def __init__(self, report, date_start):
-        self.data = Context()
+        self.data = DefaultContext()
         self.report = report
         self.owner = report.account and report.account.user
         self.remote_id = report.remote_id
