@@ -31,6 +31,11 @@ PLANS = [
         'num_sites': 1,
     }, is_hidden=True),
 
+    Plan('free', 'Free', 'Super special free plan', {
+        'num_emails': None,
+        'num_sites': None,
+    }, is_hidden=True),
+
     Plan('personal', 'Early Bird', 'Unlimited emails', {
         'num_emails': None,
         'num_sites': None,

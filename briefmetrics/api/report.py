@@ -1,6 +1,7 @@
 import time
 import logging
 import datetime
+import random
 
 from unstdlib import now
 from itertools import groupby
@@ -148,6 +149,9 @@ def send_weekly(request, report, since_time=None, pretend=False):
 
     log.info('Sending report to [%d] users: %s' % (len(send_users), report.display_name))
 
+    debug_sample = request.registry.settings.get('email.debug_sample', 1)
+    debug_bcc = owner.plan.id != 'trial' or random.random() < debug_sample
+
     for user in report.users:
         html = render(request, template, Context({
             'user': user,
@@ -161,6 +165,7 @@ def send_weekly(request, report, since_time=None, pretend=False):
             to_email=user.email,
             subject=subject, 
             html=html,
+            debug_bcc=debug_bcc,
         )
         api_email.send_message(request, message)
 
@@ -174,6 +179,8 @@ def send_weekly(request, report, since_time=None, pretend=False):
     if not report.time_next:
         report.time_next = datetime.datetime(*date_start.timetuple()[:3]) + datetime.timedelta(days=8)
 
+    # TODO: Preferred time
+    # XXX: Is this done?
     report.time_next += datetime.timedelta(days=7)
 
     model.ReportLog.create_from_report(report,
@@ -181,7 +188,5 @@ def send_weekly(request, report, since_time=None, pretend=False):
         subject=subject,
         seconds_elapsed=time.time()-t,
     )
-
-    # TODO: Preferred time
 
     model.Session.commit()
