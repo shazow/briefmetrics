@@ -13,8 +13,8 @@ class Context(dict):
 
 
 class DefaultContext(defaultdict):
-    __getattr__ = dict.__getitem__
-    __setattr__ = dict.__setitem__
+    __getattr__ = defaultdict.__getitem__
+    __setattr__ = defaultdict.__setitem__
 
 
 class Controller(object):
