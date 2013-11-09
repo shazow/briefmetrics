@@ -58,7 +58,7 @@
 <section id="active-reports">
     <h2>Active reports</h2>
 
-    % for report in c.reports:
+    % for report in sorted(c.reports, key=lambda r: r.display_name):
         <form action="${request.current_route_path()}" method="post" class="preview report">
             <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
             <input type="hidden" name="method" value="report.update" />

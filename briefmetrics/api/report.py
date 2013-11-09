@@ -151,7 +151,7 @@ def send_weekly(request, report, since_time=None, pretend=False):
     log.info('Sending report to [%d] users: %s' % (len(send_users), report.display_name))
 
     debug_sample = request.registry.settings.get('email.debug_sample', 1)
-    debug_bcc = owner.plan.id != 'trial' or random.random() < debug_sample
+    debug_bcc = owner.plan.id != 'trial' or not report.time_next or random.random() < debug_sample
 
     for user in report.users:
         html = render(request, template, Context({
