@@ -29,10 +29,9 @@ _profile_item_template = {
 
 
 class FakeQuery(object):
-    num_profiles = 5
-
     def __init__(self, *args, **kw):
-        pass
+        self.num_profiles = kw.get('_num_profiles', 5)
+        self.num_rows = kw.get('_num_rows', 10)
 
     def get_profiles(self, account_id):
         r = _response_profiles.copy()
@@ -65,7 +64,7 @@ class FakeQuery(object):
         r = _response_data.copy()
         r['rows'] = []
 
-        for i in xrange(10):
+        for i in xrange(self.num_rows):
             r['rows'].append([
                 "example.com/somelist",
                 "20",
@@ -77,7 +76,7 @@ class FakeQuery(object):
         r = _response_data.copy()
         r['rows'] = []
 
-        for i in xrange(10):
+        for i in xrange(self.num_rows):
             r['rows'].append([
                 "1000",
                 "500",
@@ -90,7 +89,7 @@ class FakeQuery(object):
         r = _response_data.copy()
         r['rows'] = []
 
-        for i in xrange(10):
+        for i in xrange(self.num_rows):
             r['rows'].append([
                 "Pinterest",
                 "243",

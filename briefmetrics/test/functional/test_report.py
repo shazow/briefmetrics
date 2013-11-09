@@ -46,6 +46,20 @@ class TestReport(test.TestWeb):
         }))
         self.assertTrue(html)
 
+    def test_empty(self):
+        report = self._create_report()
+        google_query = FakeQuery(_num_rows=0)
+        context = api.report.fetch_weekly(self.request, report, datetime.date(2013, 1, 6), google_query=google_query)
+        self.assertFalse(context.data)
+
+        # TODO: Test send_weekly.
+        html = api.report.render(self.request, 'email/error_empty.mako', Context({
+            'report': context,
+            'user': context.owner,
+        }))
+        self.assertIn('no results for your site', html)
+
+
     def test_send_weekly(self):
         report = self._create_report()
         self.assertEqual(report.time_next, None)

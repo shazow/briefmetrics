@@ -67,9 +67,10 @@ def _cumulative_by_month(rows, month_idx=1, value_idx=2):
     return months, max_value
 
 
-def fetch_weekly(request, report, date_start):
-    oauth = api_google.auth_session(request, report.account.oauth_token)
-    q = api_google.Query(oauth)
+def fetch_weekly(request, report, date_start, google_query=None):
+    if not google_query:
+        oauth = api_google.auth_session(request, report.account.oauth_token)
+        google_query = api_google.Query(oauth)
 
     r = WeeklyReport(report, date_start)
 
@@ -77,17 +78,17 @@ def fetch_weekly(request, report, date_start):
 
     # TODO: Use a better hting to short circuit?
     # Short circuit for no data
-    data = q.report_pages(**params)
+    data = google_query.report_pages(**params)
     if not data.get('rows'):
         return r
 
     r.data['pages'] = data['rows']
-    r.data['summary'] = q.report_summary(**params).get('rows')
-    r.data['referrers'] = q.report_referrers(**params).get('rows')
-    r.data['social'] = q.report_social(**params).get('rows')
+    r.data['summary'] = google_query.report_summary(**params).get('rows')
+    r.data['referrers'] = google_query.report_referrers(**params).get('rows')
+    r.data['social'] = google_query.report_social(**params).get('rows')
 
     # Historic chart and intro
-    data = q.report_historic(**params)['rows']
+    data = google_query.report_historic(**params)['rows']
     monthly_data, max_value = _cumulative_by_month(data)
     last_month, current_month = monthly_data
 
