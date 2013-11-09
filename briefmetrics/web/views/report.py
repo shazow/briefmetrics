@@ -64,7 +64,7 @@ def report_update(request):
 
 class ReportController(Controller):
 
-    @handle_api(['report.create', 'report.delete'])
+    @handle_api(['report.create', 'report.update'])
     def index(self):
         user = api.account.get_user(self.request, required=True, joinedload='account.reports')
 

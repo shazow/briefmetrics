@@ -18,6 +18,12 @@ input[type="submit"] {
     &:hover {
         background: #ddd;
     }
+
+    &:disabled {
+        background: #ccc;
+        border-color: #ccc;
+        color: #999;
+    }
 }
 
 input.negative {

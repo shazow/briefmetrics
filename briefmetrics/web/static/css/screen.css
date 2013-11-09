@@ -250,7 +250,7 @@ footer {
   border-top: 5px solid #dae0d4;
   text-align: center;
   margin-bottom: 1em;
-  margin-top: 3em;
+  margin-top: 80px;
   padding-top: 0.5em;
 }
 
@@ -344,6 +344,7 @@ select {
   overflow: hidden;
   *zoom: 1;
   margin: 0 auto 20px auto;
+  overflow: inherit;
 }
 
 input[type="submit"] {
@@ -358,6 +359,11 @@ input[type="submit"] {
 }
 input[type="submit"]:hover {
   background: #ddd;
+}
+input[type="submit"]:disabled {
+  background: #ccc;
+  border-color: #ccc;
+  color: #999;
 }
 
 input.negative {

@@ -51,7 +51,7 @@ footer {
     border-top: 5px solid desaturate(darken($color-background, 10%), 40%);
     text-align: center;
     margin-bottom: 1em;
-    margin-top: 3em;
+    margin-top: 80px;
     padding-top: 0.5em;
 }
 
@@ -144,5 +144,6 @@ select {
 .container {
     @include container;
     margin: 0 auto $margin auto;
+    overflow: inherit;
 }
 

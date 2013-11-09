@@ -54,6 +54,7 @@
     % endif
 </section>
 
+% if c.reports:
 <section id="active-reports">
     <h2>Active reports</h2>
 
@@ -100,6 +101,7 @@
         </form>
     % endfor
 </section>
+% endif
 
 </div>
 
