@@ -81,7 +81,6 @@ def fetch_weekly(request, report, date_start):
     if not data.get('rows'):
         return r
 
-    print "XXX: There is data!"
     r.data.pages = data['rows']
     r.data.summary = q.report_summary(**params).get('rows')
     r.data.referrers = q.report_referrers(**params).get('rows')
@@ -96,6 +95,7 @@ def fetch_weekly(request, report, date_start):
     r.data.total_current = current_month[-1]
     r.data.total_last = last_month[-1]
     r.data.total_last_relative = last_month[len(current_month)-1]
+    print "XXX: There is data!", r.data
 
     return r
 
