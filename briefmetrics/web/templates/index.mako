@@ -30,7 +30,7 @@
     <div class="signup">
         <a class="cta" href="${login_url}">
             Sign in with Google Analytics
-            <small>includes 3 free reports</small>
+            <small>includes 3 free email reports</small>
         </a>
 
         <ul class="details">
@@ -51,7 +51,7 @@
     <div class="closer">
         <a class="cta" href="${login_url}">
             Sign in with Google Analytics
-            <small>get your first report now</small>
+            <small>get your first email report now</small>
         </a>
     </div>
 </div>

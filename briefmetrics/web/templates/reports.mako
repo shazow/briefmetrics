@@ -71,7 +71,9 @@
                 </h3>
                 <div class="controls">
                     <a class="button" target="_blank" href="${h.ga_permalink('report/content-pages', report)}">Google Analytics</a>
-                    <a class="button" target="_blank" href="${request.route_path('reports_view', id=report.id)}">Last email</a>
+                    % if c.user.is_admin:
+                        <a class="button" target="_blank" href="${request.route_path('reports_view', id=report.id)}">Last email</a>
+                    % endif
                     <input type="submit" name="delete" value="Delete" class="negative" />
                 </div>
             </nav>
@@ -91,12 +93,14 @@
                     </dd>
                 % endif
                 </dl>
+                % if c.user.is_admin:
                 <dl>
                     <dt>Preferred Time</dt>
                     <dd>
                         ${"{d:%A}s at {d:%H:%M} UTC".format(d=report.time_preferred or report.encode_preferred_time())}
                     </dd>
                 </dl>
+                % endif
             </div>
         </form>
     % endfor

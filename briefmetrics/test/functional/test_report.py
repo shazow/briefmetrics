@@ -38,7 +38,7 @@ class TestReport(test.TestWeb):
         context = api.report.fetch_weekly(self.request, report, datetime.date(2013, 1, 6))
         self.assertEqual(context.date_end, datetime.date(2013, 1, 12))
         self.assertEqual(context.date_next, datetime.date(2013, 1, 21))
-        self.assertEqual(context.get_subject(), u'Report for Jan 6-12: example.com')
+        self.assertEqual(context.get_subject(), u'Report for example.com (Jan 6-12)')
 
         html = api.report.render(self.request, 'email/report.mako', Context({
             'report': context,
@@ -157,7 +157,7 @@ class TestReportLib(test.TestCase):
 
         self.assertEqual(r.date_end, datetime.date(2013, 1, 1))
         self.assertEqual(r.date_next, datetime.date(2013, 1, 2))
-        self.assertEqual(r.get_subject(), u"Report for Jan 1: example.com")
+        self.assertEqual(r.get_subject(), u"Report for example.com (Jan 1)")
 
     def test_weekly(self):
         report = self._create_report_model('week')
@@ -168,7 +168,7 @@ class TestReportLib(test.TestCase):
         self.assertEqual(r.date_end, datetime.date(2013, 1, 12)) # Next Saturday
         self.assertEqual(r.date_next, datetime.date(2013, 1, 21)) # Week from Monday
 
-        self.assertEqual(r.get_subject(), u"Report for Jan 6-12: example.com")
+        self.assertEqual(r.get_subject(), u"Report for example.com (Jan 6-12)")
 
         date_start = datetime.date(2013, 1, 27) # Last Sunday
         r = WeeklyReport(report, date_start)
@@ -176,4 +176,4 @@ class TestReportLib(test.TestCase):
         self.assertEqual(r.date_end, datetime.date(2013, 2, 2)) # Next Saturday
         self.assertEqual(r.date_next, datetime.date(2013, 2, 11)) # Week from Monday
 
-        self.assertEqual(r.get_subject(), u"Report for Jan 27-Feb 2: example.com")
+        self.assertEqual(r.get_subject(), u"Report for example.com (Jan 27-Feb 2)")

@@ -2,6 +2,7 @@ import requests
 import json
 import logging
 
+from briefmetrics.lib.http import assert_response
 
 log = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ def create_message(request, to_email, subject, html=None, text=None, from_name=N
     if text is not None:
         message['text'] = text
 
-    if debug_bcc is None:
+    if debug_bcc or debug_bcc is None:
         debug_bcc = settings.get('mail.debug_bcc')
 
     if debug_bcc:
@@ -51,7 +52,7 @@ def send_message(request, message):
 
     headers = {'content-type': 'application/json'}
     r = http_session.post(API_URL + 'messages/send.json', data=json.dumps(params), headers=headers)
-    r.raise_for_status()
+    assert_response(r)
 
     return r.json()
 

@@ -37,9 +37,9 @@ class Report(object):
         return cls(report, date_start)
 
     def get_subject(self):
-        return u"Report for %s: %s" % (
-            self.date_start.strftime('%b {}').format(self.date_start.day),
-            self.report.display_name,
+        return u"Report for {site} ({date})".format(
+            date=self.date_start.strftime('%b {}').format(self.date_start.day),
+            site=self.report.display_name,
         )
 
     def get_query_params(self):
@@ -60,15 +60,15 @@ class WeeklyReport(Report):
 
     def get_subject(self):
         if self.date_start.month == self.date_end.month:
-            return u"Report for %s: %s" % (
-                self.date_start.strftime('%b {}-{}').format(self.date_start.day, self.date_end.day),
-                self.report.display_name,
+            return u"Report for {site} ({date})".format(
+                date=self.date_start.strftime('%b {}-{}').format(self.date_start.day, self.date_end.day),
+                site=self.report.display_name,
             )
 
-        return u"Report for %s-%s: %s" % (
-            self.date_start.strftime('%b {}').format(self.date_start.day),
-            self.date_end.strftime('%b {}').format(self.date_end.day),
-            self.report.display_name,
+        return u"Report for {site} ({date_start}-{date_end})".format(
+            date_start=self.date_start.strftime('%b {}').format(self.date_start.day),
+            date_end=self.date_end.strftime('%b {}').format(self.date_end.day),
+            site=self.report.display_name,
         )
 
 

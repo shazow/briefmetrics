@@ -72,7 +72,7 @@ class Account(meta.Model): # OAuth Service Account (such as Google Analytics)
 
     # Owner
     user_id = Column(types.Integer, ForeignKey(User.id, ondelete='CASCADE'), index=True)
-    user = orm.relationship(User, innerjoin=True, backref=orm.backref('account', uselist=False))
+    user = orm.relationship(User, innerjoin=True, backref=orm.backref('account', cascade='all,delete', uselist=False))
 
 
 class Report(meta.Model): # Property within an account (such as a website)
@@ -97,7 +97,7 @@ class Report(meta.Model): # Property within an account (such as a website)
 
     # Owner
     account_id = Column(types.Integer, ForeignKey(Account.id, ondelete='CASCADE'), index=True)
-    account = orm.relationship(Account, innerjoin=True, backref='reports')
+    account = orm.relationship(Account, innerjoin=True, backref=orm.backref('reports', cascade='all,delete'))
 
     display_name = Column(types.Unicode)
     remote_data = Column(_types.MutationDict.as_mutable(_types.JSONEncodedDict), default=dict) # WebPropertyId, ProfileId, etc.
@@ -159,7 +159,7 @@ class ReportLog(meta.Model):
 
     # Owner
     account_id = Column(types.Integer, ForeignKey(Account.id, ondelete='CASCADE'), index=True)
-    account = orm.relationship(Account, innerjoin=True, backref='report_logs')
+    account = orm.relationship(Account, innerjoin=True, backref=orm.backref('report_logs', cascade='all,delete'))
 
     display_name = Column(types.Unicode)
     report_id = Column(types.Integer) # Unbounded
@@ -195,7 +195,7 @@ class Subscription(meta.Model): # Subscription to a report
     time_updated = Column(types.DateTime, onupdate=now)
 
     user_id = Column(types.Integer, ForeignKey(User.id, ondelete='CASCADE')) # TODO: index=true
-    user = orm.relationship(User, innerjoin=True)
+    user = orm.relationship(User, innerjoin=True, backref=orm.backref('subscriptions', cascade='all,delete'))
 
     report_id = Column(types.Integer, ForeignKey(Report.id, ondelete='CASCADE'), index=True)
-    report = orm.relationship(Report, innerjoin=True)
+    report = orm.relationship(Report, innerjoin=True, backref=orm.backref('subscriptions', cascade='all,delete'))
