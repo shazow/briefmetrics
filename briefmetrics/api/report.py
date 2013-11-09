@@ -81,20 +81,20 @@ def fetch_weekly(request, report, date_start):
     if not data.get('rows'):
         return r
 
-    r.data.pages = data['rows']
-    r.data.summary = q.report_summary(**params).get('rows')
-    r.data.referrers = q.report_referrers(**params).get('rows')
-    r.data.social = q.report_social(**params).get('rows')
+    r.data['pages'] = data['rows']
+    r.data['summary'] = q.report_summary(**params).get('rows')
+    r.data['referrers'] = q.report_referrers(**params).get('rows')
+    r.data['social'] = q.report_social(**params).get('rows')
 
     # Historic chart and intro
     data = q.report_historic(**params)['rows']
     monthly_data, max_value = _cumulative_by_month(data)
     last_month, current_month = monthly_data
 
-    r.data.historic_data = encode_rows(monthly_data, max_value)
-    r.data.total_current = current_month[-1]
-    r.data.total_last = last_month[-1]
-    r.data.total_last_relative = last_month[len(current_month)-1]
+    r.data['historic_data'] = encode_rows(monthly_data, max_value)
+    r.data['total_current'] = current_month[-1]
+    r.data['total_last'] = last_month[-1]
+    r.data['total_last_relative'] = last_month[len(current_month)-1]
 
     return r
 

@@ -1,16 +1,9 @@
 import datetime
-from .controller import DefaultContext
-
-class Data(object):
-    def __len__(self):
-        if hasattr(self, 'pages'):
-            return 1
-        return 0
 
 
 class Report(object):
     def __init__(self, report, date_start):
-        self.data = Data() # XXX: WTF??
+        self.data = {}
         self.report = report
         self.owner = report.account and report.account.user
         self.remote_id = report.remote_id

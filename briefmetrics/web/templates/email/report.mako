@@ -11,16 +11,16 @@
 % endif
 
 <p>
-    Your site had <span class="chartTop">${h.human_int(c.report.data.total_current)} views so far this month</span>,
-    % if c.report.data.total_current >= c.report.data.total_last_relative:
-        compared to last month's ${h.human_int(c.report.data.total_last_relative)} views at this time.
-        You're on your way to beat <span class="chartBottom">last months's total of ${h.human_int(c.report.data.total_last)}</span>.
+    Your site had <span class="chartTop">${h.human_int(c.report.data['total_current'])} views so far this month</span>,
+    % if c.report.data['total_current'] >= c.report.data['total_last_relative']:
+        compared to last month's ${h.human_int(c.report.data['total_last_relative'])} views at this time.
+        You're on your way to beat <span class="chartBottom">last months's total of ${h.human_int(c.report.data['total_last'])}</span>.
     % else:
-        compared to <span class="chartBottom">last month's ${h.human_int(c.report.data.total_last_relative)} views</span> at this time.
+        compared to <span class="chartBottom">last month's ${h.human_int(c.report.data['total_last_relative'])} views</span> at this time.
     % endif
 </p>
 
-${h.chart(c.report.data.historic_data, width=560, height=200)}
+${h.chart(c.report.data['historic_data'], width=560, height=200)}
 
 <h2>
     Last week&hellip;
@@ -30,15 +30,15 @@ ${h.chart(c.report.data.historic_data, width=560, height=200)}
     % endif
 </h2>
 
-% if c.report.data.summary:
+% if c.report.data['summary']:
     <table class="overview">
         <tr>
-            ${widgets.overview_cell(c.report.data.summary, 4, 'Bounce Rate', is_percent=True)}
-            ${widgets.overview_cell(c.report.data.summary, 1, 'Pageviews')}
+            ${widgets.overview_cell(c.report.data['summary'], 4, 'Bounce Rate', is_percent=True)}
+            ${widgets.overview_cell(c.report.data['summary'], 1, 'Pageviews')}
         </tr>
     </table>
     <%
-        pageviews, uniques, seconds, bounces = c.report.data.summary[0][1:5]
+        pageviews, uniques, seconds, bounces = c.report.data['summary'][0][1:5]
     %>
 
     % if int(uniques) and float(seconds):
@@ -54,20 +54,20 @@ ${h.chart(c.report.data.historic_data, width=560, height=200)}
 % endif
 
 ${widgets.data_table(
-    c.report.data.pages,
+    c.report.data['pages'],
     'Top Pages',
     h.ga_permalink('report/content-pages', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
     prefix_links='http://%s' % c.report.report.remote_data['websiteUrl'],
 )}
 
 ${widgets.data_table(
-    c.report.data.referrers,
+    c.report.data['referrers'],
     'Referrers',
     h.ga_permalink('report/trafficsources-referrals', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
 )}
 
 ${widgets.data_table(
-    c.report.data.social,
+    c.report.data['social'],
     'Social',
     h.ga_permalink('report/social-sources', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
 )}

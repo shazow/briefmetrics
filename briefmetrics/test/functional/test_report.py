@@ -176,15 +176,3 @@ class TestReportLib(test.TestCase):
         self.assertEqual(r.date_next, datetime.date(2013, 2, 11)) # Week from Monday
 
         self.assertEqual(r.get_subject(), u"Report for example.com (Jan 27-Feb 2)")
-
-    def test_scope_bug(self):
-        report = self._create_report_model('week')
-        date_start = datetime.date(2013, 1, 6) # First Sunday
-
-        def _create_report(*args):
-            r = WeeklyReport(*args)
-            r.data.foo = 42
-            return r
-
-        r = _create_report(report, date_start)
-        self.assertTrue(r.data)
