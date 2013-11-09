@@ -75,6 +75,7 @@ def fetch_weekly(request, report, date_start):
 
     params = r.get_query_params()
 
+    # TODO: Use a better hting to short circuit?
     # Short circuit for no data
     data = q.report_pages(**params)
     if not data.get('rows'):
@@ -141,7 +142,7 @@ def send_weekly(request, report, since_time=None, pretend=False):
     report_context = fetch_weekly(request, report, date_start)
 
     send_users = report.users
-    subject= report_context.get_subject()
+    subject = report_context.get_subject()
     template = 'email/report.mako'
     if not report_context.data:
         send_users = [report.account.user]

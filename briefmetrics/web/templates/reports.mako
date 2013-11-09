@@ -70,7 +70,7 @@
                     ${report.display_name}
                 </h3>
                 <div class="controls">
-                    <a class="button" target="_blank" href="${h.ga_permalink('report/content-pages', report)}">Google Analytics</a>
+                    <a class="button" target="_blank" href="${h.ga_permalink('report/visitors-overview', report)}">Google Analytics</a>
                     % if c.user.is_admin:
                         <a class="button" target="_blank" href="${request.route_path('reports_view', id=report.id)}">Last email</a>
                     % endif
