@@ -3,17 +3,6 @@ from .controller import DefaultContext
 
 
 class Report(object):
-    __slots__ = (
-        'base_url',
-        'date_end',
-        'date_next',
-        'date_start',
-        'owner',
-        'remote_id',
-        'report',
-        'data',
-    )
-
     def __init__(self, report, date_start):
         self.data = DefaultContext()
         self.report = report
@@ -70,5 +59,3 @@ class WeeklyReport(Report):
             date_end=self.date_end.strftime('%b {}').format(self.date_end.day),
             site=self.report.display_name,
         )
-
-
