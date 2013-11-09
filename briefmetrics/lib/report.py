@@ -5,7 +5,10 @@ from .controller import DefaultContext
 class Report(object):
     def __init__(self, report, date_start):
         class Data(object):
-            pass
+            def __len__(self):
+                if hasattr(self, 'pages'):
+                    return 1
+                return 0
 
         self.data = Data # XXX: WTF??
         self.report = report
