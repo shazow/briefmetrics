@@ -29,7 +29,7 @@ def init(settings):
                 'schedule': schedules.crontab(minute=0), # Hourly
             },
             'test-schedule': {
-                'task': 'briefmetrics.tasks.admin.errors',
+                'task': 'briefmetrics.tasks.admin.test_errors',
                 'schedule': schedules.crontab(), # Minutely
                 'args': ('Testing the Celery cron.',),
             }
