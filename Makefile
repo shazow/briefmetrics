@@ -51,7 +51,7 @@ fixtures: setup requirements
 ## Celery:
 
 celery: setup requirements
-	INI_FILE=$(INI_FILE) celery worker -B --app=briefmetrics.tasks.setup
+	INI_FILE=$(INI_FILE) celery worker -B --app=briefmetrics.tasks.setup --loglevel INFO
 
 
 ## Database:

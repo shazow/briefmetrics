@@ -107,7 +107,7 @@ def send_weekly(request, report, since_time=None, pretend=False):
 
     since_time = since_time or now()
 
-    if report.time_next and report.time_next > since_time:
+    if not pretend and report.time_next and report.time_next > since_time:
         log.warn('send_weekly too early, skipping for report: %s' % report.id)
         return
 
@@ -158,15 +158,16 @@ def send_weekly(request, report, since_time=None, pretend=False):
             'report': report_context,
         }))
 
-        if pretend:
-            continue
-
         message = api_email.create_message(request,
             to_email=user.email,
             subject=subject, 
             html=html,
             debug_bcc=debug_bcc,
         )
+
+        if pretend:
+            continue
+
         api_email.send_message(request, message)
 
     if pretend:
