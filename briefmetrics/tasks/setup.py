@@ -26,7 +26,7 @@ def init(settings):
         CELERYBEAT_SCHEDULE = {
             'send-reports': {
                 'task': 'briefmetrics.tasks.report.send_all',
-                'schedule': schedules.crontab(minute=1), # Hourly
+                'schedule': schedules.crontab(minute=0), # Hourly
             }
         }
 
