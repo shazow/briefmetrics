@@ -81,6 +81,7 @@ def fetch_weekly(request, report, date_start):
     if not data.get('rows'):
         return r
 
+    print "XXX: There is data!"
     r.data.pages = data['rows']
     r.data.summary = q.report_summary(**params).get('rows')
     r.data.referrers = q.report_referrers(**params).get('rows')
