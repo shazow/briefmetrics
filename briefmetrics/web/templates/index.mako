@@ -35,7 +35,7 @@
 
         <ul class="details">
             <li>No credit card required.</li>
-            <li>$8/month after if you'd like to continue.</li>
+            <li>${pricing.PLAN_PAID.price_monthly_str}/month after if you'd like to continue.</li>
             <li>Please read our simple <a href="/privacy">Privacy Policy</a>.</li>
         </ul>
     </div>

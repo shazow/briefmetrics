@@ -6,7 +6,17 @@
 
     <section id="credit-card">
     % if c.user.stripe_customer_id:
-        <h2>Credit Card: ✓</h2>
+        <h2>Plan</h2>
+
+        <p>
+            <strong>${c.user.plan.option_str}</strong>
+        </p>
+
+        % if c.user.num_remaining:
+        <p>
+            You have ${c.user.num_remaining} free emails remaining. Your credit card will be charged only when your free emails run out.
+        </p>
+        % endif
 
         <form action="${request.route_path('api')}" method="post" onsubmit="return confirm('Are you sure you want to cancel your subscription? Reports will be suspended until you add another credit card.');">
             <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
@@ -14,21 +24,15 @@
             <input type="hidden" name="format" value="redirect" />
 
             <p>
-                <input type="submit" class="negative" value="Remove Credit Card" />
+                <input type="submit" class="negative" value="Cancel Subscription" />
             </p>
         </form>
-
-        % if c.user.num_remaining:
-        <p>
-            You will be charged $8/month only when your free emails run out.
-        </p>
-        % endif
 
     % else:
         <h2>Add a credit card</h2>
 
         <p>
-            You will be charged $8/month only when your free emails run out.
+            You will be charged only when your free emails run out.
         </p>
 
         ${forms.payment_form()}
@@ -38,9 +42,13 @@
     <section id="delete">
         <h2>Account</h2>
 
-        <ul>
-            <li><a href="${request.route_path('account_delete')}">Cancel subscription &amp; delete account</a> (cannot be undone)
-        </ul>
+        <p>
+            Member of the Briefmetrics family since ${h.human_date(c.user.time_created, max_unit='year')}.
+        </p>
+
+        <form action="${request.route_path('account_delete')}">
+            <input type="submit" class="negative" value="Delete Account" />
+        </form>
     </section>
 </div>
 

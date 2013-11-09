@@ -283,7 +283,6 @@ h1 {
 }
 
 h2 {
-  margin-top: 2em;
   color: #40413e;
 }
 
@@ -392,7 +391,11 @@ a.button:hover {
 }
 
 section {
-  margin-bottom: 2em;
+  margin-bottom: 3em;
+}
+
+dd {
+  margin-left: 0;
 }
 
 .flash-messages {
@@ -642,7 +645,4 @@ a.cta small {
 .report .details dl {
   display: table-cell;
   padding-right: 2em;
-}
-.report .details dd {
-  margin-left: 0;
 }

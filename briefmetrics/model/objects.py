@@ -56,7 +56,7 @@ class User(meta.Model): # Email address / login
 
     @property
     def plan(self):
-        return pricing.PLAN_LOOKUP[self.plan_id or 'trial']
+        return pricing.PLANS_LOOKUP[self.plan_id or 'trial']
 
 
 class Account(meta.Model): # OAuth Service Account (such as Google Analytics)

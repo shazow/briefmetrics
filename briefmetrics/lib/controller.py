@@ -4,6 +4,7 @@ from briefmetrics.web.environment import render_to_response, render
 from briefmetrics.web.environment import httpexceptions
 
 from . import helpers as h
+from . import pricing
 
 
 class Context(dict):
@@ -70,6 +71,9 @@ class Controller(object):
             'current_path': self.current_path,
             'previous_url': self.previous_url,
             'next': self.next,
+
+            # App-specific
+            'pricing': pricing,
         }
 
     def _get_render_values(self, extra_values=None):

@@ -70,7 +70,7 @@
                 </h3>
                 <div class="controls">
                     <a class="button" target="_blank" href="${h.ga_permalink('report/content-pages', report)}">Google Analytics</a>
-                    <a class="button" target="_blank" href="${request.route_path('reports_view', id=report.id)}">Last report</a>
+                    <a class="button" target="_blank" href="${request.route_path('reports_view', id=report.id)}">Last email</a>
                     <input type="submit" name="delete" value="Delete" class="negative" />
                 </div>
             </nav>
@@ -81,7 +81,7 @@
                     <dd>${report.type.title()}ly</dd>
                 </dl>
                 <dl>
-                    <dt>Next report</dt>
+                    <dt>Next Email</dt>
                 % if c.user.num_remaining == 0 and not c.user.stripe_customer_id:
                     <dd>No reports remaining. Upgrade to resume.</dd>
                 % else:
@@ -91,7 +91,7 @@
                 % endif
                 </dl>
                 <dl>
-                    <dt>Preferred time</dt>
+                    <dt>Preferred Time</dt>
                     <dd>
                         ${"{d:%A}s at {d:%H:%M} UTC".format(d=report.time_preferred or report.encode_preferred_time())}
                     </dd>

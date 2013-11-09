@@ -7,11 +7,11 @@
         <input type="hidden" name="confirmed" value="true" />
 
         <p>
-            Are you sure you want to delete your account?
+            Are you sure you want to delete your account? This cannot be undone.
         </p>
         <p>
             <input type="submit" class="negative" value="Yes, delete everything" />
-            <span style="padding: 0 0.5em;">or</span> <a href="${request.route_path('index')}" class="cta" style="width: 160px;">No, take me back</a>
+            <span style="padding: 0 0.5em;">or</span> <a href="${request.route_path('index')}" class="cta" style="width: 200px;">Nevermind, take me back</a>
         </p>
     </form>
     % else:

@@ -49,7 +49,11 @@ a.button {
 }
 
 section {
-    margin-bottom: 2em;
+    margin-bottom: 3em;
+}
+
+dd {
+    margin-left: 0;
 }
 
 .flash-messages {
@@ -285,9 +289,6 @@ a.cta {
         dl {
             display: table-cell;
             padding-right: 2em;
-        }
-        dd {
-            margin-left: 0;
         }
     }
 
