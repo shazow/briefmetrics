@@ -28,11 +28,6 @@ def init(settings):
                 'task': 'briefmetrics.tasks.report.send_all',
                 'schedule': schedules.crontab(minute=0), # Hourly
             },
-            'test-schedule': {
-                'task': 'briefmetrics.tasks.admin.test_errors',
-                'schedule': schedules.crontab(), # Minutely
-                'args': ('Testing the Celery cron.',),
-            }
         }
 
     celery.config_from_object(Config)
