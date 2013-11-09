@@ -26,7 +26,7 @@ def upgrade():
         sa.Column('account_id', sa.Integer(), nullable=True),
         sa.Column('display_name', sa.Unicode(), nullable=True),
         sa.Column('report_id', sa.Integer(), nullable=True),
-        sa.Column('type', sa.Enum(), nullable=True),
+        sa.Column('type', sa.Integer(), nullable=True),
         sa.Column('remote_id', sa.String(), nullable=True),
         sa.Column('subject', sa.Unicode(), nullable=True),
         sa.Column('body', sa.UnicodeText(), nullable=True),
