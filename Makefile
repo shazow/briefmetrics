@@ -45,12 +45,13 @@ shell: setup requirements
 
 fixtures: setup requirements
 	echo "model.drop_all(); model.create_all(); fixtures.populate_dev()" | pshell $(INI_FILE) -p python
+	alembic -c $(INI_FILE) stamp head 2>&1 | tee -a $(ALEMBIC_OUT)
 
 
 ## Celery:
 
 celery: setup requirements
-	INI_FILE=$(INI_FILE) celery worker -B --app=briefmetrics.tasks.setup
+	INI_FILE=$(INI_FILE) celery worker -B --app=briefmetrics.tasks.setup --loglevel INFO
 
 
 ## Database:

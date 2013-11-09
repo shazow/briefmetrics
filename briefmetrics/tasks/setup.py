@@ -1,5 +1,5 @@
 # TODO: Move into __init__.py ala model?
-from celery import Celery, signals
+from celery import Celery, signals, schedules
 
 import os
 import paste.deploy
@@ -22,6 +22,13 @@ def init(settings):
             EMAIL_PORT = settings.get('mail.port')
             ADMINS = [('Briefmetrics Celery', 'errors@briefmetrics.com')]
             SERVER_EMAIL = 'service+celery@briefmetrics.com'
+
+        CELERYBEAT_SCHEDULE = {
+            'send-reports': {
+                'task': 'briefmetrics.tasks.report.send_all',
+                'schedule': schedules.crontab(minute=0), # Hourly
+            }
+        }
 
     celery.config_from_object(Config)
 

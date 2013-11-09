@@ -31,13 +31,14 @@
 
     if is_logged_in:
         nav += [
+            ('Reports', request.route_path('reports')),
             ('Settings', request.route_path('settings')),
             ('Log out', request.route_path('account_logout')),
         ]
 
     current_route = request.current_route_path()
 %>
-<nav>
+<nav class="header">
     <ul>
         <li class="logo">
             <h1><a href="/">Briefmetrics</a></h1>
@@ -64,7 +65,7 @@ ${next.body()}
 
 <%block name="footer">
 <footer>
-Questions? Send an email to <a href="mailto:join@briefmetrics.com">support@briefmetrics.com</a>
+Questions? Send an email to <a href="mailto:support@briefmetrics.com">support@briefmetrics.com</a>
 </footer>
 </%block>
 
@@ -77,6 +78,11 @@ Questions? Send an email to <a href="mailto:join@briefmetrics.com">support@brief
   ga('create', 'UA-407051-16', 'briefmetrics.com');
   ga('send', 'pageview');
 </script>
+% endif
+
+% if is_logged_in:
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+${h.javascript_link(request, 'briefmetrics.web:static/js/core.js')}
 % endif
 
 <%block name="tail"></%block>

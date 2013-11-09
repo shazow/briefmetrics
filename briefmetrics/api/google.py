@@ -2,11 +2,10 @@ import time
 from datetime import timedelta
 
 from requests_oauthlib import OAuth2Session
-from requests.exceptions import HTTPError
 
 from briefmetrics.model.meta import Session
-from briefmetrics.lib.exceptions import APIError
 from briefmetrics.lib.cache import ReportRegion
+from briefmetrics.lib.http import assert_response
 
 
 oauth_config = {
@@ -80,12 +79,6 @@ def auth_token(oauth, response_url):
 
 DATE_GA_FORMAT = '%Y-%m-%d'
 
-def _assert_response(r):
-    try:
-        r.raise_for_status()
-    except HTTPError as e:
-        raise APIError("Google API call failed.", e.response.status_code, response=e.response)
-
 
 class Query(object):
     def __init__(self, oauth):
@@ -97,7 +90,7 @@ class Query(object):
     def get_profiles(self, account_id):
         # account_id used for caching, not in query.
         r = self.api.get('https://www.googleapis.com/analytics/v3/management/accounts/~all/webproperties/~all/profiles')
-        _assert_response(r)
+        assert_response(r)
         return r.json()
 
     @ReportRegion.cache_on_arguments() 
@@ -113,7 +106,7 @@ class Query(object):
             'sort': '-ga:week',
         }
         r = self.api.get('https://www.googleapis.com/analytics/v3/data/ga', params=params)
-        _assert_response(r)
+        assert_response(r)
         return r.json()
 
     @ReportRegion.cache_on_arguments()
@@ -129,7 +122,7 @@ class Query(object):
             'max-results': '10',
         }
         r = self.api.get('https://www.googleapis.com/analytics/v3/data/ga', params=params)
-        _assert_response(r)
+        assert_response(r)
         return r.json()
 
     @ReportRegion.cache_on_arguments()
@@ -144,7 +137,7 @@ class Query(object):
             'max-results': '10',
         }
         r = self.api.get('https://www.googleapis.com/analytics/v3/data/ga', params=params)
-        _assert_response(r)
+        assert_response(r)
         return r.json()
 
     @ReportRegion.cache_on_arguments()
@@ -159,7 +152,7 @@ class Query(object):
             'max-results': '5',
         }
         r = self.api.get('https://www.googleapis.com/analytics/v3/data/ga', params=params)
-        _assert_response(r)
+        assert_response(r)
         return r.json()
 
     @ReportRegion.cache_on_arguments()
@@ -176,5 +169,5 @@ class Query(object):
             'dimensions': 'ga:date,ga:month',
         }
         r = self.api.get('https://www.googleapis.com/analytics/v3/data/ga', params=params)
-        _assert_response(r)
+        assert_response(r)
         return r.json()

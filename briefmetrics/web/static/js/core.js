@@ -1,7 +1,8 @@
 function stripeResponseHandler(status, response) {
     if (response.error) {
         $('.payment-errors', this).show().text(response.error.message);
-        $('.submit-button', this).prop('disabled', false);
+        $('input[type="submit"]', this).prop('disabled', false);
+        $(this).get(0).disabled = false;
     } else {
         var stripeToken = $('<input type="hidden" name="stripe_token" />').val(response['id']);
         $(this).append(stripeToken);
@@ -12,11 +13,13 @@ function stripeResponseHandler(status, response) {
 
 $(document).ready(function() {
     $('form.payment').submit(function(event) {
-        // Is it actually a payment form?
-        if (!$('.card-number', this).get(0)) {
-            return true;
+        if($(this).get(0).disabled) {
+            return false;
+        } else {
+            $(this).get(0).disabled = true;
         }
-        $('.submit-button', this).prop('disabled', true);
+
+        $('input[type="submit"]', this).prop('disabled', true);
 
         var form = $(this);
         var callback = function(status, response) {

@@ -250,7 +250,7 @@ footer {
   border-top: 5px solid #dae0d4;
   text-align: center;
   margin-bottom: 1em;
-  margin-top: 3em;
+  margin-top: 80px;
   padding-top: 0.5em;
 }
 
@@ -318,7 +318,7 @@ input {
   border: 1px solid rgba(0, 0, 0, 0.5);
   padding: 0 7px;
   margin: 0 0.5em 0 0;
-  font-size: 2em;
+  font-size: 1.5em;
   line-height: 1.5em;
   vertical-align: middle;
   -webkit-border-radius: 3px;
@@ -329,14 +329,13 @@ input {
 }
 input[type="submit"] {
   border-color: rgba(0, 0, 0, 0.25);
-  font-size: 1em;
   padding: 0 2em;
-  line-height: 3em;
   cursor: pointer;
 }
 
 select {
   font-size: 2em;
+  width: 100%;
 }
 
 .container {
@@ -345,10 +344,11 @@ select {
   overflow: hidden;
   *zoom: 1;
   margin: 0 auto 20px auto;
+  overflow: inherit;
 }
 
 input[type="submit"] {
-  font-size: 1.5em;
+  font-size: 1em;
   line-height: 2em;
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #fafafa), color-stop(100%, #dddddd));
   background-image: -webkit-linear-gradient(#fafafa, #dddddd);
@@ -360,9 +360,48 @@ input[type="submit"] {
 input[type="submit"]:hover {
   background: #ddd;
 }
+input[type="submit"]:disabled {
+  background: #ccc;
+  border-color: #ccc;
+  color: #999;
+}
+
+input.negative {
+  border: none;
+  margin-right: 0;
+  color: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.2);
+}
+input.negative:hover {
+  color: #fcf5f6;
+  background: #a31f2b;
+}
+
+a.button {
+  display: inline-block;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
+  background: #dbe8cc;
+  color: rgba(0, 0, 0, 0.5);
+  padding: 0 1em;
+  height: 2em;
+  line-height: 2em;
+  vertical-align: middle;
+  margin-right: 0.5em;
+}
+a.button:hover {
+  background: #a9c787;
+}
 
 section {
-  margin-bottom: 2em;
+  margin-bottom: 3em;
+}
+
+dd {
+  margin-left: 0;
 }
 
 .flash-messages {
@@ -370,6 +409,18 @@ section {
   margin: 0 auto;
   overflow: hidden;
   *zoom: 1;
+  overflow: inherit;
+  margin: 1em auto 2em auto;
+}
+.flash-messages ul {
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+  border-radius: 10px;
+  background: #dbe8cc;
+  padding: 0.5em 2em;
+  list-style: none;
 }
 
 .highlight {
@@ -410,11 +461,11 @@ section {
   display: inline-block;
 }
 
-nav {
+nav.header {
   padding: 1em 0;
   margin-bottom: 1em;
 }
-nav ul {
+nav.header ul {
   margin: 0;
   padding: 0;
   width: 630px;
@@ -422,23 +473,23 @@ nav ul {
   overflow: hidden;
   *zoom: 1;
 }
-nav li {
+nav.header li {
   margin: 0 0.5em 0 0.5em;
   padding: 0.5em 1em;
   display: inline-block;
   list-style: none;
 }
-nav li.logo {
+nav.header li.logo {
   padding: 0;
   margin-left: 0;
   margin-right: 1.5em;
 }
-nav .menu {
+nav.header .menu {
   font-size: 0.9em;
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
-nav .menu.active, nav .menu:hover {
+nav.header .menu.active, nav.header .menu:hover {
   -webkit-border-radius: 1em;
   -moz-border-radius: 1em;
   -ms-border-radius: 1em;
@@ -446,10 +497,10 @@ nav .menu.active, nav .menu:hover {
   border-radius: 1em;
   background: white;
 }
-nav a, nav a:visited {
+nav.header a, nav.header a:visited {
   color: #37b89a;
 }
-nav h1 {
+nav.header h1 {
   font-size: 1.8em;
   line-height: 1.5em;
 }
@@ -458,6 +509,15 @@ nav h1 {
   font-size: 4em;
   line-height: 1em;
   margin-top: 0.5em;
+}
+.intro .cta {
+  font-size: 1.5em;
+  padding: 5px 20px;
+  -webkit-border-radius: 7px;
+  -moz-border-radius: 7px;
+  -ms-border-radius: 7px;
+  -o-border-radius: 7px;
+  border-radius: 7px;
 }
 .intro .signup {
   display: table;
@@ -472,12 +532,19 @@ nav h1 {
   text-align: center;
   margin-top: 2em;
 }
-.intro .cta {
-  -webkit-border-radius: 7px;
-  -moz-border-radius: 7px;
-  -ms-border-radius: 7px;
-  -o-border-radius: 7px;
-  border-radius: 7px;
+.intro .details {
+  display: table-cell;
+  font-size: 0.8em;
+  list-style: none;
+  margin: 0;
+}
+
+a.cta {
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f8a915), color-stop(100%, #ea9613));
   background-image: -webkit-linear-gradient(#f8a915, #ea9613);
   background-image: -moz-linear-gradient(#f8a915, #ea9613);
@@ -488,36 +555,33 @@ nav h1 {
   vertical-align: middle;
   text-align: center;
   color: #fff;
-  padding: 5px 20px;
-  font-size: 1.5em;
+  padding: 3px 2em;
   cursor: pointer;
 }
-.intro .cta:hover {
+a.cta:hover {
   background: #f8a915;
 }
-.intro .cta small {
+a.cta small {
   display: block;
   color: #fee8c0;
   font-size: 0.8em;
 }
-.intro .details {
-  display: table-cell;
-  font-size: 0.8em;
-  list-style: none;
-  margin: 0;
+
+.preview, .screenshot {
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+  border-radius: 10px;
+  border: 2px solid #dbe8cc;
+  background: #fff;
+  padding: 20px 20px 20px 20px;
+  margin-bottom: 2em;
 }
 
 .screenshot {
-  -moz-border-radius-topleft: 10px;
-  -webkit-border-top-left-radius: 10px;
-  border-top-left-radius: 10px;
-  -moz-border-radius-topright: 10px;
-  -webkit-border-top-right-radius: 10px;
-  border-top-right-radius: 10px;
-  border: 2px solid #dbe8cc;
-  padding: 20px 10px 10px 10px;
-  background: #fff;
   text-align: center;
+  padding: 20px 10px 10px 10px;
 }
 .screenshot h3 {
   color: #bbb;
@@ -525,11 +589,20 @@ nav h1 {
 }
 
 .payment {
-  margin-bottom: 2em;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+  border-radius: 10px;
+  border: 2px solid #dbe8cc;
+  background: #fff;
+  padding: 1em 2em 1em 2em;
+  display: inline-block;
 }
 .payment > div {
   overflow: hidden;
-  margin-bottom: 0.5em;
+  margin-bottom: 1em;
+  margin-left: 0.5em;
 }
 .payment label {
   float: left;
@@ -539,16 +612,43 @@ nav h1 {
 }
 .payment input[type="submit"] {
   margin-top: 22px;
-  width: 195px;
+  line-height: 33px;
+  width: 160px;
 }
 .payment .card-expiry-month {
   margin-right: 0;
 }
 .payment .card-expiry-sep {
-  padding: 0 0.4em;
+  padding: 0 0.2em;
   vertical-align: middle;
-  font-size: 2em;
+  font-size: 1.5em;
 }
 .payment .card-date {
   text-align: center;
+}
+
+.report nav {
+  width: 100%;
+  display: table;
+  margin-bottom: 1em;
+}
+.report nav h3 {
+  margin-bottom: 0.5em;
+}
+.report nav .controls {
+  display: table-cell;
+  text-align: right;
+  font-size: 0.8em;
+  vertical-align: top;
+  white-space: nowrap;
+}
+.report nav .controls input {
+  border: none;
+}
+.report .details {
+  display: table;
+}
+.report .details dl {
+  display: table-cell;
+  padding-right: 2em;
 }

@@ -9,3 +9,41 @@
     </div>
 % endif
 </%def>
+
+
+<%def name="plan_summary(has_card, num_remaining)">
+% if has_card:
+    % if num_remaining:
+        <p>
+            Free emails until subscription starts: <strong>${c.user.num_remaining}</strong>
+        </p>
+    % else:
+        <p>
+            $8 per month.
+        </p>
+    % endif
+% elif num_remaining:
+    <p>
+        Free emails remaining: <strong>${num_remaining}</strong>
+    </p>
+
+    <ul>
+        <li>
+            <a class="highlight" href="/settings#credit-card">Add a credit card</a>
+            to upgrade your account.
+        </li>
+        <li>
+            When you upgrade, your remaining free emails are doubled!
+        </li>
+    </ul>
+% elif num_remaining is not None:
+    <p>
+        <a class="highlight" href="/settings#credit-card">Add a credit card</a>
+        to upgrade your account and resume your reports.
+    </p>
+% else:
+    <p>
+        You are the proud owner of a free Briefmetrics account. Please enjoy responsibly. :)
+    </p>
+% endif
+</%def>

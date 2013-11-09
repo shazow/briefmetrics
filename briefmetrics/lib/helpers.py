@@ -66,10 +66,15 @@ def human_link(href, label=None, attrs=None, max_length=None):
 def num_ordinal(n): # lol
     return 'th' if 11 <= n <=13 else {1:'st', 2:'nd', 3:'rd'}.get(n % 10, 'th')
 
-def human_date(d):
+def human_date(d, max_unit='month'):
     if not d:
         return
-    return d.strftime('%A %b ') + str(d.day) + num_ordinal(d.day)
+
+    f = '{:%A %b {day}}'
+    if max_unit == 'year':
+        f = '{:%A, %b {day} %Y}'
+
+    return f.format(d, day=str(d.day) + num_ordinal(d.day))
 
 def human_time(seconds=None):
     r = []

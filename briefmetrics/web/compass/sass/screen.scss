@@ -1,7 +1,14 @@
 @import "_base";
 
+@mixin boxed() {
+    @include border-radius(10px);
+    border: 2px solid $color-border;
+    background: #fff;
+}
+
+
 input[type="submit"] {
-    font-size: 1.5em;
+    font-size: 1em;
     line-height: 2em;
 
     @include background-image(linear-gradient(#fafafa, #ddd));
@@ -11,14 +18,61 @@ input[type="submit"] {
     &:hover {
         background: #ddd;
     }
+
+    &:disabled {
+        background: #ccc;
+        border-color: #ccc;
+        color: #999;
+    }
+}
+
+input.negative {
+    border: none;
+    margin-right: 0;
+    color: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.2);
+
+    &:hover {
+        color: #fcf5f6;
+        background: #a31f2b;
+    }
+}
+
+a.button {
+    display: inline-block;
+    @include border-radius(3px);
+    background: $color-border;
+    color: rgba(0, 0, 0, 0.5);
+    padding: 0 1em;
+    height: 2em;
+    line-height: 2em;
+    vertical-align: middle;
+    margin-right: 0.5em;
+
+    &:hover {
+        background: darken($color-border, 20%);
+    }
 }
 
 section {
-    margin-bottom: 2em;
+    margin-bottom: 3em;
+}
+
+dd {
+    margin-left: 0;
 }
 
 .flash-messages {
     @include container;
+    overflow: inherit;
+    margin: 1em auto 2em auto;
+
+    ul {
+        @include border-radius(10px);
+        background: $color-border;
+        padding: 0.5em 2em;
+        list-style: none;
+    }
 }
 
 .highlight {
@@ -59,7 +113,7 @@ section {
     }
 }
 
-nav {
+nav.header {
     padding: 1em 0;
     margin-bottom: 1em;
 
@@ -107,6 +161,12 @@ nav {
         margin-top: 0.5em;
     }
 
+    .cta {
+        font-size: 1.5em;
+        padding: 5px 20px;
+        @include border-radius(7px);
+    }
+
     .signup {
         display: table;
         margin: 3em 0;
@@ -123,30 +183,6 @@ nav {
         margin-top: 2em;
     }
 
-    .cta {
-        @include border-radius(7px);
-        @include background-image(linear-gradient(#f8a915, #ea9613));
-        border: 1px solid #d28811;
-        display: inline-block;
-
-        vertical-align: middle;
-        text-align: center;
-        color: #fff;
-        padding: 5px 20px;
-        font-size: 1.5em;
-        cursor: pointer;
-
-        &:hover {
-            background: #f8a915;
-        }
-
-        small {
-            display: block;
-            color: #fee8c0;
-            font-size: 0.8em;
-        }
-    }
-
     .details {
         display: table-cell;
         font-size: 0.8em;
@@ -155,12 +191,40 @@ nav {
     }
 }
 
-.screenshot {
-    @include border-top-radius(10px);
-    border: 2px solid darken(desaturate($color-background, 20%), 10%);
-    padding: 20px 10px 10px 10px;
-    background: #fff;
+a.cta {
+    @include border-radius(3px);
+    @include background-image(linear-gradient(#f8a915, #ea9613));
+    border: 1px solid #d28811;
+    display: inline-block;
+
+    vertical-align: middle;
     text-align: center;
+    color: #fff;
+    padding: 3px 2em;
+    cursor: pointer;
+
+    &:hover {
+        background: #f8a915;
+    }
+
+    small {
+        display: block;
+        color: #fee8c0;
+        font-size: 0.8em;
+    }
+}
+
+
+.preview, .screenshot {
+    @include boxed;
+    padding: 20px 20px 20px 20px;
+    margin-bottom: 2em;
+
+}
+
+.screenshot {
+    text-align: center;
+    padding: 20px 10px 10px 10px;
 
     h3 {
         color: #bbb;
@@ -169,12 +233,16 @@ nav {
 }
 
 .payment {
+    @include boxed;
+    padding: 1em 2em 1em 2em;
+    display: inline-block;
+
     &>div {
         overflow: hidden;
-        margin-bottom: 0.5em;
+        margin-bottom: 1em;
+        margin-left: 0.5em;
     }
 
-    margin-bottom: 2em;
     label {
         float: left;
     }
@@ -183,17 +251,51 @@ nav {
     }
     input[type="submit"] {
         margin-top: 22px;
-        width: span(5) + 5px;
+        line-height: 33px;
+        width: span(4) + 10px;
     }
     .card-expiry-month {
         margin-right: 0;
     }
     .card-expiry-sep {
-        padding: 0 0.4em;
+        padding: 0 0.2em;
         vertical-align: middle;
-        font-size: 2em;
+        font-size: 1.5em;
     }
     .card-date {
         text-align: center;
     }
+}
+
+.report {
+    nav {
+        width: 100%;
+        display: table;
+        margin-bottom: 1em;
+
+        h3 {
+            margin-bottom: 0.5em;
+        }
+
+        .controls {
+            display: table-cell;
+            text-align: right;
+            font-size: 0.8em;
+            vertical-align: top;
+            white-space: nowrap;
+
+            input {
+                border: none;
+            }
+        }
+    }
+    .details {
+        display: table;
+
+        dl {
+            display: table-cell;
+            padding-right: 2em;
+        }
+    }
+
 }

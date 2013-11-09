@@ -1,9 +1,11 @@
+import datetime
 import logging
 
 from unstdlib import random_string, now
 from sqlalchemy import orm, types
 from sqlalchemy import Column, ForeignKey
 
+from briefmetrics.lib import pricing
 from . import meta, _types
 
 
@@ -11,6 +13,7 @@ __all__ = [
     'User',
     'Account',
     'Report',
+    'ReportLog',
     'Subscription',
 ]
 
@@ -42,7 +45,7 @@ class User(meta.Model): # Email address / login
     is_admin = Column(types.Boolean, default=False, nullable=False)
     invited_by_user_id = Column(types.Integer)
 
-    plan = Column(types.String)
+    plan_id = Column(types.String)
     num_remaining = Column(types.Integer)
 
     stripe_customer_id = Column(types.String)
@@ -50,6 +53,10 @@ class User(meta.Model): # Email address / login
     @property
     def unsubscribe_token(self):
         return '%s-%s' % (self.email_token, self.id)
+
+    @property
+    def plan(self):
+        return pricing.PLANS_LOOKUP[self.plan_id or 'trial']
 
 
 class Account(meta.Model): # OAuth Service Account (such as Google Analytics)
@@ -65,12 +72,21 @@ class Account(meta.Model): # OAuth Service Account (such as Google Analytics)
 
     # Owner
     user_id = Column(types.Integer, ForeignKey(User.id, ondelete='CASCADE'), index=True)
-    user = orm.relationship(User, innerjoin=True, backref=orm.backref('account', uselist=False))
+    user = orm.relationship(User, innerjoin=True, backref=orm.backref('account', cascade='all,delete', uselist=False))
 
 
 class Report(meta.Model): # Property within an account (such as a website)
     __tablename__ = 'report'
-    __json_whitelist__ = ['id', 'time_next', 'account_id', 'display_name']
+    __json_whitelist__ = ['id', 'time_next', 'account_id', 'display_name', 'type']
+
+    TYPES = [
+        'day',
+        'week',
+        'month',
+       #'quarter',
+       #'combine',
+       #'alert',
+    ]
 
     id = Column(types.Integer, primary_key=True)
     time_created = Column(types.DateTime, default=now, nullable=False)
@@ -81,7 +97,7 @@ class Report(meta.Model): # Property within an account (such as a website)
 
     # Owner
     account_id = Column(types.Integer, ForeignKey(Account.id, ondelete='CASCADE'), index=True)
-    account = orm.relationship(Account, innerjoin=True, backref='reports')
+    account = orm.relationship(Account, innerjoin=True, backref=orm.backref('reports', cascade='all,delete'))
 
     display_name = Column(types.Unicode)
     remote_data = Column(_types.MutationDict.as_mutable(_types.JSONEncodedDict), default=dict) # WebPropertyId, ProfileId, etc.
@@ -89,7 +105,86 @@ class Report(meta.Model): # Property within an account (such as a website)
 
     users = orm.relationship(User, innerjoin=True, secondary='subscription', backref='reports')
 
-    # TODO: Add type (daily, weekly, monthly)
+    # FIXME: Use croniter?
+    time_preferred = Column(types.DateTime) # Granularity relative to type
+    type = Column(_types.Enum(TYPES), default='week')
+
+    def next_preferred(self, now):
+        # Add preferred time offset
+        # TODO: Use combine?
+        # TODO: Use delorean/arrow? :/
+        time_preferred = self.time_preferred or self.encode_preferred_time()
+        datetime_tuple = now.timetuple()[:3] + time_preferred.timetuple()[3:6]
+        now = datetime.datetime(*datetime_tuple)
+        days_offset = 1
+
+        if self.type == 'week':
+            preferred_weekday = time_preferred.weekday() if time_preferred.day > 1 else 0
+            days_offset = preferred_weekday - now.weekday()
+            if days_offset < 0:
+                days_offset += 7
+
+        if self.type == 'month':
+            next_month = now + datetime.timedelta(days=32-now.day)
+            next_month = next_month.replace(day=1)
+
+            if time_preferred.day != 1:
+                next_month += time_preferred.weekday()
+
+            days_offset = (next_month - now).days
+
+        return now + datetime.timedelta(days=days_offset)
+
+    @staticmethod
+    def encode_preferred_time(hour=13, minute=0, second=0, weekday=None, min_year=1900):
+        d = datetime.datetime(min_year, 1, 1).replace(hour=hour, minute=minute, second=second)
+        if weekday is not None:
+            d += datetime.timedelta(days=7 - d.weekday() + weekday)
+        return d
+
+    def set_time_preferred(self, **kw):
+        self.time_preferred = self.encode_preferred_time(**kw)
+
+
+class ReportLog(meta.Model):
+    __tablename__ = 'report_log'
+
+    id = Column(types.Integer, primary_key=True)
+    time_created = Column(types.DateTime, default=now, nullable=False)
+
+    seconds_elapsed = Column(types.Float)
+    num_recipients = Column(types.Integer)
+    # TODO: num_google_queries
+    # TODO: num_db_queries
+
+    # Owner
+    account_id = Column(types.Integer, ForeignKey(Account.id, ondelete='CASCADE'), index=True)
+    account = orm.relationship(Account, innerjoin=True, backref=orm.backref('report_logs', cascade='all,delete'))
+
+    display_name = Column(types.Unicode)
+    report_id = Column(types.Integer) # Unbounded
+    type = Column(_types.Enum(Report.TYPES))
+
+    remote_id = Column(types.String)
+    subject = Column(types.Unicode)
+    body = Column(types.UnicodeText)
+
+    access_token = Column(types.String, default=lambda: random_string(16))
+
+    @classmethod
+    def create_from_report(cls, report, body, subject, seconds_elapsed=None):
+        report_log = cls.create(
+            seconds_elapsed=seconds_elapsed,
+            account_id=report.account_id,
+            display_name=report.display_name,
+            report_id=report.id,
+            type=report.type,
+            remote_id=report.remote_id,
+            subject=subject,
+            body=body,
+        )
+
+        return report_log
 
 
 class Subscription(meta.Model): # Subscription to a report
@@ -100,7 +195,7 @@ class Subscription(meta.Model): # Subscription to a report
     time_updated = Column(types.DateTime, onupdate=now)
 
     user_id = Column(types.Integer, ForeignKey(User.id, ondelete='CASCADE')) # TODO: index=true
-    user = orm.relationship(User, innerjoin=True)
+    user = orm.relationship(User, innerjoin=True, backref=orm.backref('subscriptions', cascade='all,delete'))
 
     report_id = Column(types.Integer, ForeignKey(Report.id, ondelete='CASCADE'), index=True)
-    report = orm.relationship(Report, innerjoin=True)
+    report = orm.relationship(Report, innerjoin=True, backref=orm.backref('subscriptions', cascade='all,delete'))
