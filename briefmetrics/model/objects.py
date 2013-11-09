@@ -5,6 +5,7 @@ from unstdlib import random_string, now
 from sqlalchemy import orm, types
 from sqlalchemy import Column, ForeignKey
 
+from briefmetrics.lib import pricing
 from . import meta, _types
 
 
@@ -44,7 +45,7 @@ class User(meta.Model): # Email address / login
     is_admin = Column(types.Boolean, default=False, nullable=False)
     invited_by_user_id = Column(types.Integer)
 
-    plan = Column(types.String)
+    plan_id = Column(types.String)
     num_remaining = Column(types.Integer)
 
     stripe_customer_id = Column(types.String)
@@ -52,6 +53,10 @@ class User(meta.Model): # Email address / login
     @property
     def unsubscribe_token(self):
         return '%s-%s' % (self.email_token, self.id)
+
+    @property
+    def plan(self):
+        return pricing.PLAN_LOOKUP[self.plan_id or 'trial']
 
 
 class Account(meta.Model): # OAuth Service Account (such as Google Analytics)
