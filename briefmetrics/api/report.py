@@ -95,7 +95,6 @@ def fetch_weekly(request, report, date_start):
     r.data.total_current = current_month[-1]
     r.data.total_last = last_month[-1]
     r.data.total_last_relative = last_month[len(current_month)-1]
-    print "XXX: There is data!", r.data
 
     return r
 

@@ -16,14 +16,17 @@ class Report(object):
         self.base_url = self.report.remote_data.get('websiteUrl', '')
 
         self.date_start = date_start
-        self.date_end = date_start
-        self.date_next = report.next_preferred(self.date_end).date()
+        self._set_date_range()
 
     @classmethod
     def create_from_now(cls, report, now):
         # TODO: Take into account preferred time.
         date_start = now.date()
         return cls(report, date_start)
+
+    def _set_date_range(self):
+        self.date_end = self.date_start
+        self.date_next = self.report.next_preferred(self.date_end).date()
 
     def get_subject(self):
         return u"Report for {site} ({date})".format(
@@ -40,12 +43,9 @@ class Report(object):
 
 
 class WeeklyReport(Report):
-    def __init__(self, report, date_start):
-        super(WeeklyReport, self).__init__(report, date_start)
-
-        # FIXME: This gets called twice in this model :(
+    def _set_date_range(self):
         self.date_end = self.date_start + datetime.timedelta(days=6)
-        self.date_next = report.next_preferred(self.date_end + datetime.timedelta(days=7)).date()
+        self.date_next = self.report.next_preferred(self.date_end + datetime.timedelta(days=7)).date()
 
     def get_subject(self):
         if self.date_start.month == self.date_end.month:
