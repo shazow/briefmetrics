@@ -4,8 +4,6 @@ import datetime
 from sqlalchemy import orm
 from unstdlib import now
 from celery.utils.log import get_task_logger
-from celery.schedules import crontab
-from celery.task import periodic_task
 
 from briefmetrics import model
 from briefmetrics import api
@@ -30,7 +28,7 @@ def send_weekly(report_id, since_time=None, pretend=False):
     api.report.send_weekly(celery.request, report, pretend=pretend)
 
 
-@periodic_task(ignore_result=True, run_every=crontab(hour=8))
+@celery.task(ignore_result=True)
 def send_all(since_time=None, async=True, pretend=False, max_num=None):
     """Send all outstanding reports."""
     since_time = since_time or now()
