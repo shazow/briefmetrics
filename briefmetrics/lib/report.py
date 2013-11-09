@@ -4,7 +4,10 @@ from .controller import DefaultContext
 
 class Report(object):
     def __init__(self, report, date_start):
-        self.data = DefaultContext()
+        class Data(object):
+            pass
+
+        self.data = Data # XXX: WTF??
         self.report = report
         self.owner = report.account and report.account.user
         self.remote_id = report.remote_id
