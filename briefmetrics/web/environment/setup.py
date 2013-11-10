@@ -28,6 +28,11 @@ def _setup_models(settings):
     engine = engine_from_config(settings, 'sqlalchemy.')
     model.init(engine)
 
+    if settings.get('testing'):
+        # Show unicode warnings as errors in testing.
+        import warnings
+        warnings.filterwarnings('error')
+
 def _setup_cache_regions(settings):
     from briefmetrics.lib import cache
     if not hasattr(cache.ReportRegion, 'backend'):

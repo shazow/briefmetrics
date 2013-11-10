@@ -13,7 +13,7 @@ class TestModel(test.TestModel):
         r = model.Report.create(account=a)
         model.Subscription.create(user=u1, report=r)
         model.Subscription.create(user=u2, report=r)
-        model.ReportLog.create_from_report(r, u'', '')
+        model.ReportLog.create_from_report(r, u'', u'')
         Session.commit()
 
         Session.delete(u1)
@@ -32,7 +32,7 @@ class TestModel(test.TestModel):
         r = model.Report.create(account=a)
         model.Subscription.create(user=u1, report=r)
         s2 = model.Subscription.create(user=u2, report=r)
-        model.ReportLog.create_from_report(r, u'', '')
+        model.ReportLog.create_from_report(r, u'', u'')
         Session.commit()
 
         Session.delete(s2)
