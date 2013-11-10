@@ -67,8 +67,8 @@ ${widgets.data_table(
 )}
 
 ${widgets.data_table(
-    c.report.data['social'],
-    'Social',
+sorted(c.report.data['social_search'], key=lambda o: int(o[1]), reverse=True),
+    'Social & Search',
     h.ga_permalink('report/social-sources', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
 )}
 

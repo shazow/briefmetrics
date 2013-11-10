@@ -66,7 +66,6 @@ def _cumulative_by_month(rows, month_idx=1, value_idx=2):
 
     return months, max_value
 
-
 def fetch_weekly(request, report, date_start, google_query=None):
     if not google_query:
         oauth = api_google.auth_session(request, report.account.oauth_token)
@@ -84,8 +83,9 @@ def fetch_weekly(request, report, date_start, google_query=None):
 
     r.data['pages'] = data['rows']
     r.data['summary'] = google_query.report_summary(**params).get('rows')
-    r.data['referrers'] = google_query.report_referrers(**params).get('rows')
-    r.data['social'] = google_query.report_social(**params).get('rows')
+
+    r.add_referrers(google_query.report_referrers(**params).get('rows'))
+    r.add_social(google_query.report_social(**params).get('rows'))
 
     # Historic chart and intro
     data = google_query.report_historic(**params)['rows']
