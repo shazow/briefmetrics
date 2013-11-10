@@ -1,5 +1,8 @@
+from itertools import groupby
 import datetime
+
 from . import helpers as h
+from .gcharts import encode_rows
 
 
 class Report(object):
@@ -86,11 +89,11 @@ class WeeklyReport(Report):
             site=self.report.display_name,
         )
 
-    def add_referrers(self, rows):
+    def add_referrers(self, r):
         social_search = self.data.setdefault('social_search', [])
         data = self.data.setdefault('referrers', [])
 
-        for label, value in rows:
+        for label, value in r['rows']:
             if label.startswith('('):
                 continue
 
@@ -105,11 +108,45 @@ class WeeklyReport(Report):
 
             data.append([label, value])
 
-    def add_social(self, rows):
+    def add_social(self, r):
         data = self.data.setdefault('social_search', [])
 
-        for label, value in rows:
+        for label, value in r['rows']:
             if label.startswith('('):
                 continue
 
             data.append([label, value])
+
+    def _cumulative_by_month(self, rows, month_idx=1, value_idx=2):
+        max_value = 0
+        sum = 0
+
+        months = []
+        for month_num, data in groupby(rows, lambda r: r[month_idx]):
+            rows = []
+            for row in data:
+                rows.append(sum)
+                sum += float(row[value_idx])
+
+            rows.append(sum)
+            max_value = max(max_value, sum)
+            sum = 0
+
+            months.append(rows)
+
+        return months, max_value
+
+    def add_historic(self, r):
+        monthly_data, max_value = self._cumulative_by_month(r['rows'])
+        last_month, current_month = monthly_data
+
+        self.data['historic_data'] = encode_rows(monthly_data, max_value)
+        self.data['total_current'] = current_month[-1]
+        self.data['total_last'] = last_month[-1]
+        self.data['total_last_relative'] = last_month[len(current_month)-1]
+
+    def add_summary(self, r):
+        self.data['summary'] = r['rows']
+
+    def add_pages(self, r):
+        self.data['pages'] = r['rows']

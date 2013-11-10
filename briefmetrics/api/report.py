@@ -4,11 +4,9 @@ import datetime
 import random
 
 from unstdlib import now
-from itertools import groupby
 
 from briefmetrics.lib.controller import Controller, Context
 from briefmetrics.lib.report import WeeklyReport
-from briefmetrics.lib.gcharts import encode_rows
 from briefmetrics.lib.exceptions import APIError
 from briefmetrics.lib import helpers as h
 from briefmetrics import model
@@ -47,25 +45,6 @@ def create(account_id, remote_data=None, remote_id=None, display_name=None, subs
 
 # Reporting tasks:
 
-def _cumulative_by_month(rows, month_idx=1, value_idx=2):
-    max_value = 0
-    sum = 0
-
-    months = []
-    for month_num, data in groupby(rows, lambda r: r[month_idx]):
-        rows = []
-        for row in data:
-            rows.append(sum)
-            sum += float(row[value_idx])
-
-        rows.append(sum)
-        max_value = max(max_value, sum)
-        sum = 0
-
-        months.append(rows)
-
-    return months, max_value
-
 def fetch_weekly(request, report, date_start, google_query=None):
     if not google_query:
         oauth = api_google.auth_session(request, report.account.oauth_token)
@@ -81,21 +60,11 @@ def fetch_weekly(request, report, date_start, google_query=None):
     if not data.get('rows'):
         return r
 
-    r.data['pages'] = data['rows']
-    r.data['summary'] = google_query.report_summary(**params).get('rows')
-
-    r.add_referrers(google_query.report_referrers(**params).get('rows'))
-    r.add_social(google_query.report_social(**params).get('rows'))
-
-    # Historic chart and intro
-    data = google_query.report_historic(**params)['rows']
-    monthly_data, max_value = _cumulative_by_month(data)
-    last_month, current_month = monthly_data
-
-    r.data['historic_data'] = encode_rows(monthly_data, max_value)
-    r.data['total_current'] = current_month[-1]
-    r.data['total_last'] = last_month[-1]
-    r.data['total_last_relative'] = last_month[len(current_month)-1]
+    r.add_pages(data)
+    r.add_summary(google_query.report_summary(**params))
+    r.add_referrers(google_query.report_referrers(**params))
+    r.add_social(google_query.report_social(**params))
+    r.add_historic(google_query.report_historic(**params))
 
     return r
 
