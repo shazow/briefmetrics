@@ -4,7 +4,7 @@
 % if not c.report.owner.stripe_customer_id and c.report.owner.num_remaining is not None and c.report.owner.num_remaining <= 1:
     <p>
         <strong>This is your final report. :(</strong><br />
-        Please <a href="${request.route_url('settings')}">add a credit card now</a> to keep receiving Briefmetrics reports.
+        Please <a href="https://briefmetrics.com/settings">add a credit card now</a> to keep receiving Briefmetrics reports.
     </p>
 
     <h3>Back to your previously scheduled report...</h3>
@@ -77,10 +77,10 @@ sorted(c.report.data['social_search'], key=lambda o: int(o[1]), reverse=True),
         You can look forward to your next report on <span class="highlight">${h.human_date(c.report.date_next)}</span>.
     % elif c.report.owner.num_remaining <= 1:
         <strong>This is your final report. :(</strong><br />
-        Please <a href="${request.route_url('settings')}">add a credit card now</a> to keep receiving Briefmetrics reports.
+        Please <a href="https://briefmetrics.com/settings">add a credit card now</a> to keep receiving Briefmetrics reports.
     % elif c.report.owner.num_remaining > 1:
         <strong>You have <span class="highlight">${c.report.owner.num_remaining-1} free reports</span> remaining.</strong>
-        <a href="${request.route_url('settings')}">Add a credit card now</a> to get ${c.report.owner.num_remaining-1} extra free reports!
+        <a href="https://briefmetrics.com/settings">Add a credit card now</a> to get ${c.report.owner.num_remaining-1} extra free reports!
         Your next report is scheduled for ${h.human_date(c.report.date_next)}.
     % endif
 </p>
