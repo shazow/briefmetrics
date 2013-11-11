@@ -43,6 +43,18 @@ def create(account_id, remote_data=None, remote_id=None, display_name=None, subs
     return report
 
 
+def add_subscriber(report_id, email, display_name):
+    u = model.User.get_or_create(email=email)
+    if not u.id:
+        u.display_name = display_name
+        # FIXME: Start on a different plan? Or no plan == subscriber?
+        u.num_remaining = 2
+
+    model.Subscription.create(user=u, report_id=report_id)
+    model.Session.commit()
+
+    return u
+
 # Reporting tasks:
 
 def fetch_weekly(request, report, date_start, google_query=None):
