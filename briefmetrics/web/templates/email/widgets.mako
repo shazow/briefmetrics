@@ -29,10 +29,15 @@
             link = h.human_link(prefix_links + url, url, max_length=100)
         else:
             link = h.human_link(url, max_length=100)
+
+        tags = ', '.join(row[4]) if len(row) == 5 else ''
     %>
         <tr>
             <td class="number">${h.human_int(row[1])}</td>
-            <td>${link}</td>
+            <td title="${tags}">
+                ${link}
+                ${tags}
+            </td>
         </tr>
     % endfor
     </tbody>

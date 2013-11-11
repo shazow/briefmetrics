@@ -5,6 +5,21 @@ from . import helpers as h
 from .gcharts import encode_rows
 
 
+class Row(object):
+    __slots__ = [
+        'label',
+        'value',
+        'tags',
+        'metadata',
+    ]
+
+    def __init__(self, label, value, metadata=None):
+        self.label = label
+        self.value = value
+        self.tags = []
+        self.metadata = None
+
+
 class Report(object):
     def __init__(self, report, date_start):
         self.data = {}
@@ -89,11 +104,40 @@ class WeeklyReport(Report):
             site=self.report.display_name,
         )
 
+    def _set_row_tags(self, row, state):
+        if not state:
+            state.update({'bounce': row, 'time': row})
+
+        sitetime, bounce = map(float, row[2:4])
+
+        #if sitetime > self.min_sitetime:
+        #    row[-1].append('sitetime')
+
+        #if bounce > self.min_bounce:
+        #    row[-1].append('bounce')
+
+        if sitetime > float(state['time'][2]):
+            state['time'] = row
+
+        if bounce < float(state['bounce'][3]):
+            state['bounce'] = row
+
+    def _set_state_rows(self, state):
+        row = state['bounce']
+        if float(row[3]) < self.tag_threshold['bounce']:
+            row[4].append(u'\u2605 Best Bounce Rate')
+
+        row = state['time']
+        if float(row[2]) > self.tag_threshold['time']:
+            row[4].append(u'\u2605 Best Time on Site')
+
     def add_referrers(self, r):
         social_search = self.data.setdefault('social_search', [])
         data = self.data.setdefault('referrers', [])
 
-        for label, value in r['rows']:
+        state = {}
+        for row in r['rows']:
+            label, value = row[:2]
             if label.startswith('('):
                 continue
 
@@ -106,16 +150,26 @@ class WeeklyReport(Report):
                 social_search.append([domain.title(), value])
                 continue
 
-            data.append([label, value])
+            row.append([]) # Tags
+            self._set_row_tags(row, state)
+            data.append(row)
+
+        self._set_state_rows(state)
 
     def add_social(self, r):
         data = self.data.setdefault('social_search', [])
 
-        for label, value in r['rows']:
+        state = {}
+        for row in r['rows']:
+            label, value = row[:2]
             if label.startswith('('):
                 continue
 
-            data.append([label, value])
+            row.append([]) # Tags
+            self._set_row_tags(row, state)
+            data.append(row)
+
+        self._set_state_rows(state)
 
     def _cumulative_by_month(self, rows, month_idx=1, value_idx=2):
         max_value = 0
@@ -146,7 +200,20 @@ class WeeklyReport(Report):
         self.data['total_last_relative'] = last_month[len(current_month)-1]
 
     def add_summary(self, r):
-        self.data['summary'] = r['rows']
+        self.data['summary'] = summary = r['rows']
+        time_on_site, bounce = map(float, summary[0][2:4])
+        self.tag_threshold = {
+            'bounce': bounce * 0.80,
+            'time': time_on_site * 1.25,
+        }
 
     def add_pages(self, r):
-        self.data['pages'] = r['rows']
+        data = self.data.setdefault('pages', [])
+
+        state = {}
+        for row in r['rows']:
+            row.append([]) # Tags
+            self._set_row_tags(row, state)
+            data.append(row)
+
+        self._set_state_rows(state)

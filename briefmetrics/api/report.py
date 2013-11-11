@@ -60,8 +60,8 @@ def fetch_weekly(request, report, date_start, google_query=None):
     if not data.get('rows'):
         return r
 
-    r.add_pages(data)
     r.add_summary(google_query.report_summary(**params))
+    r.add_pages(data)
     r.add_referrers(google_query.report_referrers(**params))
     r.add_social(google_query.report_social(**params))
     r.add_historic(google_query.report_historic(**params))
