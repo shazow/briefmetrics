@@ -1,23 +1,81 @@
-from itertools import groupby
+from itertools import groupby, izip
 import datetime
 
 from . import helpers as h
 from .gcharts import encode_rows
 
 
+class Column(object):
+    def __init__(self, id, label=None, type_cast=None, average=None, threshold=0.2):
+        self.id = id
+        self.label = label
+        self.type_cast = type_cast
+        self._threshold = threshold
+        self._average = average and float(average)
+
+        self.min = average, None
+        self.max = average, None
+
+    def cast(self, value):
+        return self.type_cast(value) if self.type_cast else value
+
+    def is_interesting(self, value, row=None):
+        if not self._average:
+            return False
+
+        delta = (self._average - value) / self._average
+        if abs(delta) < self._threshold:
+            return False
+
+        min, _ = self.min
+        if min > value:
+            self.min = value, row
+
+        max, _ = self.max
+        if max < value:
+            self.max = value, row
+
+        return True
+
+
+class Table(object):
+    def __init__(self, columns):
+        self.columns = columns
+        self.rows = []
+        self.column_to_index = {s.id: i for i, s in enumerate(columns)}
+
+    def add(self, row):
+        values = []
+        r = Row(self, values)
+        for column, value in izip(self.columns, row):
+            if not column:
+                continue
+
+            value = column.cast(value)
+            values.append(value)
+            column.is_interesting(value, r)
+
+        self.rows.append(r)
+
+    def get(self, id):
+        "Return the column"
+        return self.columns[self.column_to_index[id]]
+
+
 class Row(object):
     __slots__ = [
-        'label',
-        'value',
+        'values',
+        'table',
         'tags',
-        'metadata',
     ]
 
-    def __init__(self, label, value, metadata=None):
-        self.label = label
-        self.value = value
+    def __init__(self, table, values):
+        self.table = table
+        self.values = values
         self.tags = []
-        self.metadata = None
+
+    def get(self, id):
+        return self.values[self.table.column_to_index[id]]
 
 
 class Report(object):
@@ -172,7 +230,7 @@ class WeeklyReport(Report):
         self._set_state_rows(state)
 
     def _cumulative_by_month(self, rows, month_idx=1, value_idx=2):
-        max_value = 0
+        max = 0
         sum = 0
 
         months = []
@@ -183,18 +241,18 @@ class WeeklyReport(Report):
                 sum += float(row[value_idx])
 
             rows.append(sum)
-            max_value = max(max_value, sum)
+            max = max(max, sum)
             sum = 0
 
             months.append(rows)
 
-        return months, max_value
+        return months, max
 
     def add_historic(self, r):
-        monthly_data, max_value = self._cumulative_by_month(r['rows'])
+        monthly_data, max = self._cumulative_by_month(r['rows'])
         last_month, current_month = monthly_data
 
-        self.data['historic_data'] = encode_rows(monthly_data, max_value)
+        self.data['historic_data'] = encode_rows(monthly_data, max)
         self.data['total_current'] = current_month[-1]
         self.data['total_last'] = last_month[-1]
         self.data['total_last_relative'] = last_month[len(current_month)-1]
