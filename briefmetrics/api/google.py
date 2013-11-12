@@ -6,6 +6,7 @@ from requests_oauthlib import OAuth2Session
 from briefmetrics.model.meta import Session
 from briefmetrics.lib.cache import ReportRegion
 from briefmetrics.lib.http import assert_response
+from briefmetrics.lib.report import Column
 
 
 oauth_config = {
@@ -87,13 +88,18 @@ class Query(object):
     # NOTE: Expire by adding expiration_time=...
 
     @ReportRegion.cache_on_arguments()
-    def get_profiles(self, account_id):
-        # account_id used for caching, not in query.
-        r = self.api.get('https://www.googleapis.com/analytics/v3/management/accounts/~all/webproperties/~all/profiles')
+    def _get(self, url, params=None):
+        r = self.api.get(url, params=params)
         assert_response(r)
         return r.json()
 
-    @ReportRegion.cache_on_arguments() 
+    def _get_data(self, params=None):
+        return self._get('https://www.googleapis.com/analytics/v3/data/ga', params=params)
+
+    def get_profiles(self, account_id):
+        # account_id used for caching, not in query.
+        return self._get('https://www.googleapis.com/analytics/v3/management/accounts/~all/webproperties/~all/profiles')
+
     def report_summary(self, id, date_start, date_end):
         # Grab an extra week
         date_start = date_start - timedelta(days=7)
@@ -105,11 +111,8 @@ class Query(object):
             'dimensions': 'ga:week',
             'sort': '-ga:week',
         }
-        r = self.api.get('https://www.googleapis.com/analytics/v3/data/ga', params=params)
-        assert_response(r)
-        return r.json()
+        return self._get_data(params)
 
-    @ReportRegion.cache_on_arguments()
     def report_referrers(self, id, date_start, date_end):
         params = {
             'ids': 'ga:%s' % id,
@@ -121,11 +124,8 @@ class Query(object):
             'sort': '-ga:visits',
             'max-results': '10',
         }
-        r = self.api.get('https://www.googleapis.com/analytics/v3/data/ga', params=params)
-        assert_response(r)
-        return r.json()
+        return self._get_data(params)
 
-    @ReportRegion.cache_on_arguments()
     def report_pages(self, id, date_start, date_end):
         params = {
             'ids': 'ga:%s' % id,
@@ -136,11 +136,8 @@ class Query(object):
             'sort': '-ga:pageviews',
             'max-results': '10',
         }
-        r = self.api.get('https://www.googleapis.com/analytics/v3/data/ga', params=params)
-        assert_response(r)
-        return r.json()
+        return self._get_data(params)
 
-    @ReportRegion.cache_on_arguments()
     def report_social(self, id, date_start, date_end):
         params = {
             'ids': 'ga:%s' % id,
@@ -151,11 +148,8 @@ class Query(object):
             'sort': '-ga:visits',
             'max-results': '5',
         }
-        r = self.api.get('https://www.googleapis.com/analytics/v3/data/ga', params=params)
-        assert_response(r)
-        return r.json()
+        return self._get_data(params)
 
-    @ReportRegion.cache_on_arguments()
     def report_historic(self, id, date_start, date_end):
         # Pull data back from start of the previous month
         date_start = date_end - timedelta(days=date_end.day)
@@ -168,6 +162,4 @@ class Query(object):
             'metrics': 'ga:pageviews',
             'dimensions': 'ga:date,ga:month',
         }
-        r = self.api.get('https://www.googleapis.com/analytics/v3/data/ga', params=params)
-        assert_response(r)
-        return r.json()
+        return self._get_data(params)

@@ -162,38 +162,10 @@ class WeeklyReport(Report):
             site=self.report.display_name,
         )
 
-    def _set_row_tags(self, row, state):
-        if not state:
-            state.update({'bounce': row, 'time': row})
-
-        sitetime, bounce = map(float, row[2:4])
-
-        #if sitetime > self.min_sitetime:
-        #    row[-1].append('sitetime')
-
-        #if bounce > self.min_bounce:
-        #    row[-1].append('bounce')
-
-        if sitetime > float(state['time'][2]):
-            state['time'] = row
-
-        if bounce < float(state['bounce'][3]):
-            state['bounce'] = row
-
-    def _set_state_rows(self, state):
-        row = state['bounce']
-        if float(row[3]) < self.tag_threshold['bounce']:
-            row[4].append(u'\u2605 Best Bounce Rate')
-
-        row = state['time']
-        if float(row[2]) > self.tag_threshold['time']:
-            row[4].append(u'\u2605 Best Time on Site')
-
     def add_referrers(self, r):
         social_search = self.data.setdefault('social_search', [])
         data = self.data.setdefault('referrers', [])
 
-        state = {}
         for row in r['rows']:
             label, value = row[:2]
             if label.startswith('('):
@@ -209,28 +181,21 @@ class WeeklyReport(Report):
                 continue
 
             row.append([]) # Tags
-            self._set_row_tags(row, state)
             data.append(row)
-
-        self._set_state_rows(state)
 
     def add_social(self, r):
         data = self.data.setdefault('social_search', [])
 
-        state = {}
         for row in r['rows']:
             label, value = row[:2]
             if label.startswith('('):
                 continue
 
             row.append([]) # Tags
-            self._set_row_tags(row, state)
             data.append(row)
 
-        self._set_state_rows(state)
-
     def _cumulative_by_month(self, rows, month_idx=1, value_idx=2):
-        max = 0
+        max_value = 0
         sum = 0
 
         months = []
@@ -241,18 +206,18 @@ class WeeklyReport(Report):
                 sum += float(row[value_idx])
 
             rows.append(sum)
-            max = max(max, sum)
+            max_value = max(max_value, sum)
             sum = 0
 
             months.append(rows)
 
-        return months, max
+        return months, max_value
 
     def add_historic(self, r):
-        monthly_data, max = self._cumulative_by_month(r['rows'])
+        monthly_data, max_value = self._cumulative_by_month(r['rows'])
         last_month, current_month = monthly_data
 
-        self.data['historic_data'] = encode_rows(monthly_data, max)
+        self.data['historic_data'] = encode_rows(monthly_data, max_value)
         self.data['total_current'] = current_month[-1]
         self.data['total_last'] = last_month[-1]
         self.data['total_last_relative'] = last_month[len(current_month)-1]
@@ -268,10 +233,6 @@ class WeeklyReport(Report):
     def add_pages(self, r):
         data = self.data.setdefault('pages', [])
 
-        state = {}
         for row in r['rows']:
             row.append([]) # Tags
-            self._set_row_tags(row, state)
             data.append(row)
-
-        self._set_state_rows(state)
