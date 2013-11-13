@@ -96,8 +96,7 @@ class Query(object):
     def _get_data(self, params=None):
         return self._get('https://www.googleapis.com/analytics/v3/data/ga', params=params)
 
-    def get_table(self, params, dimensions=None, metrics=None):
-        params = dict(params)
+    def _columns_to_params(self, params, dimensions=None, metrics=None):
         columns = []
         if dimensions:
             params['dimensions'] = ','.join(col.id for col in dimensions)
@@ -106,6 +105,12 @@ class Query(object):
         if metrics:
             params['metrics'] = ','.join(col.id for col in metrics)
             columns += metrics
+
+        return columns
+
+    def get_table(self, params, dimensions=None, metrics=None):
+        params = dict(params)
+        columns = self._columns_to_params(params, dimensions=dimensions, metrics=metrics)
 
         t = Table(columns)
         for row in self._get_data(params)['rows']:
