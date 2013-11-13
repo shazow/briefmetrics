@@ -6,7 +6,7 @@ from requests_oauthlib import OAuth2Session
 from briefmetrics.model.meta import Session
 from briefmetrics.lib.cache import ReportRegion
 from briefmetrics.lib.http import assert_response
-from briefmetrics.lib.report import Column
+from briefmetrics.lib.report import Table
 
 
 oauth_config = {
@@ -95,6 +95,23 @@ class Query(object):
 
     def _get_data(self, params=None):
         return self._get('https://www.googleapis.com/analytics/v3/data/ga', params=params)
+
+    def get_table(self, params, dimensions=None, metrics=None):
+        params = dict(params)
+        columns = []
+        if dimensions:
+            params['dimensions'] = ','.join(col.id for col in dimensions)
+            columns += dimensions
+
+        if metrics:
+            params['metrics'] = ','.join(col.id for col in metrics)
+            columns += metrics
+
+        t = Table(columns)
+        for row in self._get_data(params)['rows']:
+            t.add(row)
+
+        return t
 
     def get_profiles(self, account_id):
         # account_id used for caching, not in query.
