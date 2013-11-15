@@ -1,3 +1,44 @@
+<%def name="render_table(t, title, report_link, prefix_links=None)">
+<% 
+    if not t.rows:
+        return
+
+    rows = t.iter_visible(max_columns=2) # TODO: Support moar?
+    columns = next(rows)
+%>
+<table>
+    <thead>
+        <tr>
+            <td class="number">
+                ${columns[0].label}
+            </td>
+            <td>
+                ${columns[1].label}
+
+                <a class="permalink" href="${report_link}">Full report</a>
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+    % for views, url in rows:
+    <%
+        if prefix_links and url.startswith('/'):
+            link = h.human_link(prefix_links + url, url, max_length=100)
+        else:
+            link = h.human_link(url, max_length=100)
+    %>
+        <tr>
+            <td class="number">${h.human_int(views)}</td>
+            <td>
+                ${link}
+            </td>
+        </tr>
+    % endfor
+    </tbody>
+</table>
+
+</%def>
+
 <%def name="data_table(rows, title, report_link, prefix_links=None)">
 <% if not rows:
     return
@@ -45,9 +86,10 @@
 </%def>
 
 
-<%def name="overview_cell(rows, column, label, is_percent=False, is_optional=False)">
+<%def name="overview_cell(table, column_id, is_percent=False, is_optional=False)">
     <%
-        last_val, cur_val = float(rows[1][column]), float(rows[0][column])
+        column = table.get(column_id)
+        last_val, cur_val = table.rows[1].get(column_id), table.rows[0].get(column_id)
 
         if is_percent:
             formatted_val = h.human_percent(cur_val / 100.0)
@@ -60,7 +102,7 @@
     %>
     <td ${h.text_if(is_optional, 'class="optional"')}>
         <strong>${formatted_val}</strong>
-        <span>${label}</span>
+        <span>${column.label}</span>
         % if delta > 0:
             <small>+${h.human_percent(delta)}</small>
         % else:

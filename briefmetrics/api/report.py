@@ -55,6 +55,7 @@ def add_subscriber(report_id, email, display_name):
 
     return u
 
+
 # Reporting tasks:
 
 def fetch_weekly(request, report, date_start, google_query=None):
@@ -66,17 +67,19 @@ def fetch_weekly(request, report, date_start, google_query=None):
 
     params = r.get_query_params()
 
-    # TODO: Use a better hting to short circuit?
+    # TODO: Use a better short circuit?
     # Short circuit for no data
-    data = google_query.report_pages(**params)
-    if not data.get('rows'):
+    pages_table = google_query.report_pages(**params)
+    if not pages_table.rows:
         return r
 
-    r.add_summary(google_query.report_summary(**params))
-    r.add_pages(data)
-    r.add_referrers(google_query.report_referrers(**params))
-    r.add_social(google_query.report_social(**params))
-    r.add_historic(google_query.report_historic(**params))
+    r.tables['pages'] = pages_table
+    r.tables['summary'] = google_query.report_summary(**params)
+    r.tables['referrers'] = google_query.report_referrers(**params)
+    r.tables['social'] = google_query.report_social(**params)
+    r.tables['historic'] = google_query.report_historic(**params)
+
+    r.build() # lol
 
     return r
 

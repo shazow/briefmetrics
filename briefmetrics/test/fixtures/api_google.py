@@ -36,7 +36,7 @@ data = {}
 data['ga:pageviews'] = data['ga:uniquePageviews'] = data['ga:visits'] = cycle([0, 123, 123456, 1234567, 123456, 123])
 data['ga:timeOnSite'] = cycle([0.123, 123.0, 0.5])
 data['ga:week'] = cycle([1, 2])
-data['ga:month'] = cycle([1, 2])
+data['ga:month'] = iter([1, 1, 1, 1, 2, 2, 2, 2, 2, 2])
 data['ga:visitBounceRate'] = cycle([0.2, 0.6])
 data['ga:date'] = cycle(['2013-01-01', '2013-01-02'])
 data['ga:socialNetwork'] = cycle(['Facebook', 'Reddit'])
@@ -52,12 +52,16 @@ class FakeQuery(Query):
     def get_table(self, params, dimensions=None, metrics=None):
         columns = self._columns_to_params(params, dimensions=dimensions, metrics=metrics)
 
-        limit = int(params.get('max-results', 10))
+        limit = min(self.num_rows, int(params.get('max-results', 10)))
 
         t = Table(columns)
-        for _ in xrange(limit):
-            row = [next(data[col.id]) for col in columns]
-            t.add(row)
+        try:
+            for _ in xrange(limit):
+                row = [next(data[col.id]) for col in columns]
+                t.add(row)
+
+        except StopIteration:
+            pass
 
         return t
 
@@ -73,74 +77,3 @@ class FakeQuery(Query):
 
         return r
 
-    def report_summary(self, id, date_start, date_end):
-        r = _response_data.copy()
-        r[u'rows'] = []
-
-        for i in xrange(2):
-            r[u'rows'].append([
-                u"42",
-                u"3778",
-                u"3964",
-                u"349384.0",
-                u"22.5"
-            ])
-
-        return r
-
-    def report_referrers(self, id, date_start, date_end):
-        r = _response_data.copy()
-        r[u'rows'] = []
-
-        for i in xrange(self.num_rows):
-            r[u'rows'].append([
-                u"example.com/somelist",
-                u"20",
-            ])
-
-        return r
-
-    def report_pages(self, id, date_start, date_end):
-        r = _response_data.copy()
-        r[u'rows'] = []
-
-        for i in xrange(self.num_rows):
-            r[u'rows'].append([
-                u"1000",
-                u"500",
-                u"345",
-            ])
-
-        return r
-
-    def report_social(self, id, date_start, date_end):
-        r = _response_data.copy()
-        r[u'rows'] = []
-
-        for i in xrange(self.num_rows):
-            r[u'rows'].append([
-                u"Pinterest",
-                u"243",
-            ])
-
-        return r
-
-    def report_historic(self, id, date_start, date_end):
-        r = _response_data.copy()
-        r[u'rows'] = []
-
-        for i in xrange(29):
-            r[u'rows'].append([
-                u"201309%d" % (i + 1),
-                u"09",
-                u"146",
-            ])
-
-        for i in xrange(7):
-            r[u'rows'].append([
-                u"201310%d" % (i + 1),
-                u"10",
-                u"147",
-            ])
-
-        return r

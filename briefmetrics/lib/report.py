@@ -6,15 +6,17 @@ from .gcharts import encode_rows
 
 
 class Column(object):
-    def __init__(self, id, label=None, type_cast=None, average=None, threshold=0.2):
+    def __init__(self, id, label=None, type_cast=None, visible=None, average=None, threshold=0.2):
         self.id = id
-        self.label = label
+        self.label = label or id
         self.type_cast = type_cast
+        self.visible = visible
         self._threshold = threshold
         self._average = average and float(average)
 
-        self.min = average, None
-        self.max = average, None
+        self.min_row = average, None
+        self.max_row = average, None
+        self.sum = 0
 
     def cast(self, value):
         return self.type_cast(value) if self.type_cast else value
@@ -23,43 +25,21 @@ class Column(object):
         if not self._average:
             return False
 
+        self.sum += value
+
         delta = (self._average - value) / self._average
         if abs(delta) < self._threshold:
             return False
 
-        min, _ = self.min
-        if min > value:
-            self.min = value, row
+        min_value, _ = self.min_row
+        if min_value > value:
+            self.min_row = value, row
 
-        max, _ = self.max
-        if max < value:
-            self.max = value, row
+        max_value, _ = self.max_row
+        if max_value < value:
+            self.max_row = value, row
 
         return True
-
-
-class Table(object):
-    def __init__(self, columns):
-        self.columns = columns
-        self.rows = []
-        self.column_to_index = {s.id: i for i, s in enumerate(columns)}
-
-    def add(self, row):
-        values = []
-        r = Row(self, values)
-        for column, value in izip(self.columns, row):
-            if not column:
-                continue
-
-            value = column.cast(value)
-            values.append(value)
-            column.is_interesting(value, r)
-
-        self.rows.append(r)
-
-    def get(self, id):
-        "Return the column"
-        return self.columns[self.column_to_index[id]]
 
 
 class Row(object):
@@ -78,9 +58,56 @@ class Row(object):
         return self.values[self.table.column_to_index[id]]
 
 
+class Table(object):
+    def __init__(self, columns):
+        # Columns must be in the same order as the rows that get added.
+        self.columns = columns
+        self.rows = []
+        self.column_to_index = {s.id: i for i, s in enumerate(columns)}
+
+    def add(self, row):
+        values = []
+        r = Row(self, values)
+        for column, value in izip(self.columns, row):
+            if not column:
+                continue
+
+            value = column.cast(value)
+            if not value and column.visible is not None:
+                # Skip row
+                return
+
+            values.append(value)
+            column.is_interesting(value, r)
+
+        self.rows.append(r)
+
+    def get(self, id):
+        "Return the column"
+        return self.columns[self.column_to_index[id]]
+
+    def get_visible(self):
+        visible_columns = (c for c in self.columns if c.visible is not None)
+        return sorted(visible_columns, key=lambda o: o.visible)
+
+    def iter_rows(self, *column_ids):
+        column_positions = [self.column_to_index[id] for id in column_ids]
+        for row in self.rows:
+            yield (row.values[i] for i in column_positions)
+
+    def iter_visible(self, max_columns=None):
+        ordered_columns = self.get_visible()[:max_columns]
+        column_positions = [self.column_to_index[c.id] for c in ordered_columns]
+        yield ordered_columns
+
+        for row in self.rows:
+            yield (row.values[i] for i in column_positions)
+
+
 class Report(object):
     def __init__(self, report, date_start):
         self.data = {}
+        self.tables = {}
         self.report = report
         self.owner = report.account and report.account.user
         self.remote_id = report.remote_id
@@ -163,7 +190,7 @@ class WeeklyReport(Report):
         )
 
     def add_referrers(self, r):
-        social_search = self.data.setdefault('social_search', [])
+        social_search = self.tables.setdefault('social_search', [])
         data = self.data.setdefault('referrers', [])
 
         for row in r['rows']:
@@ -183,56 +210,29 @@ class WeeklyReport(Report):
             row.append([]) # Tags
             data.append(row)
 
-    def add_social(self, r):
-        data = self.data.setdefault('social_search', [])
-
-        for row in r['rows']:
-            label, value = row[:2]
-            if label.startswith('('):
-                continue
-
-            row.append([]) # Tags
-            data.append(row)
-
-    def _cumulative_by_month(self, rows, month_idx=1, value_idx=2):
-        max_value = 0
+    def _cumulative_by_month(self, table):
         sum = 0
 
         months = []
-        for month_num, data in groupby(rows, lambda r: r[month_idx]):
+        for _, rows in groupby(table.rows, lambda r: r.get('ga:month')):
             rows = []
-            for row in data:
+            for row in rows:
                 rows.append(sum)
-                sum += float(row[value_idx])
+                sum += float(row.get('ga:pageviews'))
 
             rows.append(sum)
-            max_value = max(max_value, sum)
             sum = 0
 
             months.append(rows)
 
-        return months, max_value
+        return months
 
-    def add_historic(self, r):
-        monthly_data, max_value = self._cumulative_by_month(r['rows'])
+    def build(self):
+        max_value, _ = self.tables['historic'].get('ga:pageviews').max_row
+        monthly_data = self._cumulative_by_month(self.tables['historic'])
         last_month, current_month = monthly_data
 
         self.data['historic_data'] = encode_rows(monthly_data, max_value)
         self.data['total_current'] = current_month[-1]
         self.data['total_last'] = last_month[-1]
         self.data['total_last_relative'] = last_month[len(current_month)-1]
-
-    def add_summary(self, r):
-        self.data['summary'] = summary = r['rows']
-        time_on_site, bounce = map(float, summary[0][2:4])
-        self.tag_threshold = {
-            'bounce': bounce * 0.80,
-            'time': time_on_site * 1.25,
-        }
-
-    def add_pages(self, r):
-        data = self.data.setdefault('pages', [])
-
-        for row in r['rows']:
-            row.append([]) # Tags
-            data.append(row)

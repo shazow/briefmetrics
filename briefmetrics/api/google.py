@@ -6,7 +6,7 @@ from requests_oauthlib import OAuth2Session
 from briefmetrics.model.meta import Session
 from briefmetrics.lib.cache import ReportRegion
 from briefmetrics.lib.http import assert_response
-from briefmetrics.lib.report import Table
+from briefmetrics.lib.report import Table, Column
 
 
 oauth_config = {
@@ -35,6 +35,10 @@ def _token_updater(old_token):
 
     return wrapped
 
+def _prune_abstract(label):
+    if label.startswith('('):
+        return
+    return label
 
 def auth_session(request, token=None, state=None):
     if token and 'expires_at' in token:
@@ -130,63 +134,98 @@ class Query(object):
     def report_summary(self, id, date_start, date_end):
         # Grab an extra week
         date_start = date_start - timedelta(days=7)
-        params = {
-            'ids': 'ga:%s' % id,
-            'start-date': date_start,
-            'end-date': date_end,
-            'metrics': 'ga:pageviews,ga:uniquePageviews,ga:timeOnSite,ga:visitBounceRate',
-            'dimensions': 'ga:week',
-            'sort': '-ga:week',
-        }
-        return self._get_data(params)
+        return self.get_table(
+            params={
+                'ids': 'ga:%s' % id,
+                'start-date': date_start,
+                'end-date': date_end,
+                'sort': '-ga:week',
+            },
+            metrics=[
+                Column('ga:pageviews'),
+                Column('ga:uniquePageviews'),
+                Column('ga:timeOnSite'),
+                Column('ga:visitBounceRate', type_cast=float),
+            ],
+            dimensions=[
+                Column('ga:week'),
+            ],
+        )
 
     def report_referrers(self, id, date_start, date_end):
-        params = {
-            'ids': 'ga:%s' % id,
-            'start-date': date_start,
-            'end-date': date_end,
-            'metrics': 'ga:visits,ga:timeOnSite,ga:visitBounceRate',
-            'dimensions': 'ga:fullReferrer',
-            'filter': 'ga:medium==referral',
-            'sort': '-ga:visits',
-            'max-results': '10',
-        }
-        return self._get_data(params)
+        return self.get_table(
+            params={
+                'ids': 'ga:%s' % id,
+                'start-date': date_start,
+                'end-date': date_end,
+                'filter': 'ga:medium==referral',
+                'sort': '-ga:visits',
+                'max-results': '10',
+            },
+            dimensions=[
+                Column('ga:fullReferrer', visible=1, type_cast=_prune_abstract)
+            ],
+            metrics=[
+                Column('ga:visits', visible=0),
+                Column('ga:timeOnSite'),
+                Column('ga:visitBounceRate'),
+            ],
+        )
 
     def report_pages(self, id, date_start, date_end):
-        params = {
-            'ids': 'ga:%s' % id,
-            'start-date': date_start,
-            'end-date': date_end,
-            'metrics': 'ga:pageviews,ga:timeOnSite,ga:visitBounceRate',
-            'dimensions': 'ga:pagePath',
-            'sort': '-ga:pageviews',
-            'max-results': '10',
-        }
-        return self._get_data(params)
+        return self.get_table(
+            params={
+                'ids': 'ga:%s' % id,
+                'start-date': date_start,
+                'end-date': date_end,
+                'sort': '-ga:pageviews',
+                'max-results': '10',
+            },
+            dimensions=[
+                Column('ga:pagePath', visible=1, type_cast=_prune_abstract),
+            ],
+            metrics=[
+                Column('ga:pageviews', visible=0),
+                Column('ga:timeOnSite'),
+                Column('ga:visitBounceRate'),
+            ],
+        )
 
     def report_social(self, id, date_start, date_end):
-        params = {
-            'ids': 'ga:%s' % id,
-            'start-date': date_start,
-            'end-date': date_end,
-            'metrics': 'ga:visits,ga:timeOnSite,ga:visitBounceRate',
-            'dimensions': 'ga:socialNetwork',
-            'sort': '-ga:visits',
-            'max-results': '5',
-        }
-        return self._get_data(params)
+        return self.get_table(
+            params={
+                'ids': 'ga:%s' % id,
+                'start-date': date_start,
+                'end-date': date_end,
+                'sort': '-ga:visits',
+                'max-results': '5',
+            },
+            dimensions=[
+                Column('ga:socialNetwork', visible=1, type_cast=_prune_abstract),
+            ],
+            metrics=[
+                Column('ga:visits', visible=0),
+                Column('ga:timeOnSite'),
+                Column('ga:visitBounceRate'),
+            ],
+        )
 
     def report_historic(self, id, date_start, date_end):
         # Pull data back from start of the previous month
         date_start = date_end - timedelta(days=date_end.day)
         date_start -= timedelta(days=date_start.day - 1)
 
-        params = {
-            'ids': 'ga:%s' % id,
-            'start-date': date_start,
-            'end-date': date_end,
-            'metrics': 'ga:pageviews',
-            'dimensions': 'ga:date,ga:month',
-        }
-        return self._get_data(params)
+        return self.get_table(
+            params={
+                'ids': 'ga:%s' % id,
+                'start-date': date_start,
+                'end-date': date_end,
+            },
+            dimensions=[
+                Column('ga:date'),
+                Column('ga:month'),
+            ],
+            metrics=[
+                Column('ga:pageviews'),
+            ],
+        )

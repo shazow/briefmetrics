@@ -199,28 +199,28 @@ class TestReportLib(test.TestCase):
     def test_table_column(self):
         s = Column('foo', type_cast=int)
         self.assertEqual(s.cast('123'), 123)
-        self.assertEqual(s.min, (None, None))
-        self.assertEqual(s.max, (None, None))
+        self.assertEqual(s.min_row, (None, None))
+        self.assertEqual(s.max_row, (None, None))
 
         s = Column('foo', average=100, threshold=0.25)
-        self.assertEqual(s.min, (100.0, None))
-        self.assertEqual(s.max, (100.0, None))
+        self.assertEqual(s.min_row, (100.0, None))
+        self.assertEqual(s.max_row, (100.0, None))
 
         self.assertFalse(s.is_interesting(90, 'a'))
-        self.assertEqual(s.min, (100.0, None))
-        self.assertEqual(s.max, (100.0, None))
+        self.assertEqual(s.min_row, (100.0, None))
+        self.assertEqual(s.max_row, (100.0, None))
 
         self.assertTrue(s.is_interesting(50, 'b'))
-        self.assertEqual(s.min, (50.0, 'b'))
-        self.assertEqual(s.max, (100.0, None))
+        self.assertEqual(s.min_row, (50.0, 'b'))
+        self.assertEqual(s.max_row, (100.0, None))
 
         self.assertTrue(s.is_interesting(150, 'c'))
-        self.assertEqual(s.min, (50.0, 'b'))
-        self.assertEqual(s.max, (150.0, 'c'))
+        self.assertEqual(s.min_row, (50.0, 'b'))
+        self.assertEqual(s.max_row, (150.0, 'c'))
 
         self.assertTrue(s.is_interesting(200, 'd'))
-        self.assertEqual(s.min, (50.0, 'b'))
-        self.assertEqual(s.max, (200.0, 'd'))
+        self.assertEqual(s.min_row, (50.0, 'b'))
+        self.assertEqual(s.max_row, (200.0, 'd'))
 
     def test_table_rows(self):
         t = Table([
@@ -240,7 +240,7 @@ class TestReportLib(test.TestCase):
             t.add(d)
 
         self.assertEqual(len(t.rows), 4)
-        self.assertEqual(t.get('foo').min, (None, None))
-        self.assertEqual(t.get('bar').max, (None, None))
-        self.assertEqual(t.get('baz').min[0], 23)
-        self.assertEqual(t.get('baz').max[0], 1234)
+        self.assertEqual(t.get('foo').min_row, (None, None))
+        self.assertEqual(t.get('bar').max_row, (None, None))
+        self.assertEqual(t.get('baz').min_row[0], 23)
+        self.assertEqual(t.get('baz').max_row[0], 1234)
