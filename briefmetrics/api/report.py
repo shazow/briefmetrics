@@ -60,7 +60,7 @@ def add_subscriber(report_id, email, display_name):
 def fetch_weekly(request, report, date_start, google_query=None):
     if not google_query:
         oauth = api_google.auth_session(request, report.account.oauth_token)
-        google_query = api_google.Query(oauth)
+        google_query = api_google.create_query(request, oauth)
 
     r = WeeklyReport(report, date_start)
 

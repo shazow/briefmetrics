@@ -18,7 +18,7 @@ oauth_config = {
         'https://www.googleapis.com/auth/analytics.readonly',
     ],
 
-    # Populate these during setup:
+    # Populate these during init:
     # 'client_id': ...,
     # 'client_secret': ...,
 }
@@ -78,7 +78,12 @@ def auth_token(oauth, response_url):
     return _clean_token(token)
 
 
-DATE_GA_FORMAT = '%Y-%m-%d'
+def create_query(request, oauth):
+    if request.features.get('offline'):
+        from briefmetrics.test.fixtures.api_google import FakeQuery
+        return FakeQuery(oauth)
+
+    return Query(oauth)
 
 
 class Query(object):
