@@ -45,6 +45,9 @@ def text_if(cond, text):
 RE_HUMAN_URL = re.compile('^(\w*://)?(www\.)?(.+)/?$')
 
 def human_url(s, max_length=None):
+    if not s:
+        return ''
+
     m = RE_HUMAN_URL.match(s)
     r = m.group(3) if m else s
     return truncate(r, max_length=max_length)
