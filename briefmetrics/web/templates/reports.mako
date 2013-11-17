@@ -22,7 +22,7 @@
                         'settings',
                         _query={'profile_id': item['id'], 'method': 'settings.subscribe'},
                     )
-                    human_url = h.human_url(item['websiteUrl']) or item['name']
+                    human_url = h.human_url(item.get('websiteUrl')) or item['name']
                     name = h.human_url(item['name'])
                 %>
                 <option value="${item['id']}">
