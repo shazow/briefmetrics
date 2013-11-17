@@ -33,15 +33,15 @@ _profile_item_template = {
 }
 
 data = {}
-data['ga:pageviews'] = data['ga:uniquePageviews'] = data['ga:visits'] = cycle([0, 123, 123456, 1234567, 123456, 123])
-data['ga:timeOnSite'] = cycle([0.123, 123.0, 0.5])
-data['ga:week'] = cycle([1, 2])
-data['ga:month'] = iter([1, 1, 1, 1, 2, 2, 2, 2, 2, 2])
-data['ga:visitBounceRate'] = cycle([0.2, 0.6])
-data['ga:date'] = cycle(['2013-01-01', '2013-01-02'])
-data['ga:socialNetwork'] = cycle(['Facebook', 'Reddit'])
-data['ga:fullReferrer'] = cycle(['example.com/foo', 'example.com/bar'])
-data['ga:pagePath'] = cycle(['/foo', '/bar', '/baz'])
+data['ga:pageviews'] = data['ga:uniquePageviews'] = data['ga:visits'] = [0, 123, 123456, 1234567, 123456, 123]
+data['ga:timeOnSite'] = [0.123, 123.0, 0.5]
+data['ga:week'] = [1, 2]
+data['ga:month'] = [1, 1, 1, 1, 1, 1, 2, 2, 2, 2]
+data['ga:visitBounceRate'] = [0.2, 0.6]
+data['ga:date'] = ['2013-01-01', '2013-01-02']
+data['ga:socialNetwork'] = ['Facebook', 'Reddit']
+data['ga:fullReferrer'] = ['example.com/foo', 'example.com/bar']
+data['ga:pagePath'] = ['/foo', '/bar', '/baz']
 
 
 class FakeQuery(Query):
@@ -55,13 +55,9 @@ class FakeQuery(Query):
         limit = min(self.num_rows, int(params.get('max-results', 10)))
 
         t = Table(columns)
-        try:
-            for _ in xrange(limit):
-                row = [next(data[col.id]) for col in columns]
-                t.add(row)
-
-        except StopIteration:
-            pass
+        row_data = [cycle(data[col.id]) for col in columns]
+        for _ in xrange(limit):
+            t.add(next(c) for c in row_data)
 
         return t
 
@@ -76,4 +72,3 @@ class FakeQuery(Query):
         r[u'totalResults'] = len(r[u'items'])
 
         return r
-

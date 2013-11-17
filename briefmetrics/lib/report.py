@@ -1,4 +1,5 @@
-from itertools import groupby, izip
+from itertools import izip
+from collections import OrderedDict
 import datetime
 
 from . import helpers as h
@@ -6,13 +7,16 @@ from .gcharts import encode_rows
 
 
 class Column(object):
-    def __init__(self, id, label=None, type_cast=None, visible=None, average=None, threshold=0.2):
+    def __init__(self, id, label=None, type_cast=None, visible=None, average=None, threshold=None):
         self.id = id
         self.label = label or id
         self.type_cast = type_cast
         self.visible = visible
         self._threshold = threshold
         self._average = average and float(average)
+
+        if threshold is None and average is not None:
+            self._threshold = 0.2
 
         self.min_row = average, None
         self.max_row = average, None
@@ -22,14 +26,15 @@ class Column(object):
         return self.type_cast(value) if self.type_cast else value
 
     def is_interesting(self, value, row=None):
-        if not self._average:
+        if self._threshold is None:
             return False
 
         self.sum += value
 
-        delta = (self._average - value) / self._average
-        if abs(delta) < self._threshold:
-            return False
+        if self._average is not None:
+            delta = (self._average - value) / (self._average or 1)
+            if abs(delta) < self._threshold:
+                return False
 
         min_value, _ = self.min_row
         if min_value > value:
@@ -40,6 +45,9 @@ class Column(object):
             self.max_row = value, row
 
         return True
+
+    def __repr__(self):
+        return '{class_name}(id="{self.id}")'.format(class_name=self.__class__.__name__, self=self)
 
 
 class Row(object):
@@ -91,6 +99,9 @@ class Table(object):
         return sorted(visible_columns, key=lambda o: o.visible)
 
     def iter_rows(self, *column_ids):
+        if not column_ids:
+            column_ids = [col.id for col in self.columns]
+
         column_positions = [self.column_to_index[id] for id in column_ids]
         for row in self.rows:
             yield (row.values[i] for i in column_positions)
@@ -211,25 +222,23 @@ class WeeklyReport(Report):
             data.append(row)
 
     def _cumulative_by_month(self, table):
-        sum = 0
+        months = OrderedDict()
+        max_value = 0
+        for month, pageviews in table.iter_rows('ga:month', 'ga:pageviews'):
+            month_list = months.get(month)
+            if not month_list:
+                month_list = months[month] = []
+                last_val = 0
+            else:
+                last_val = month_list[-1]
+            val = last_val + pageviews
+            month_list.append(val)
+            max_value = max(max_value, val)
 
-        months = []
-        for _, rows in groupby(table.rows, lambda r: r.get('ga:month')):
-            rows = []
-            for row in rows:
-                rows.append(sum)
-                sum += float(row.get('ga:pageviews'))
-
-            rows.append(sum)
-            sum = 0
-
-            months.append(rows)
-
-        return months
+        return months.values(), max_value
 
     def build(self):
-        max_value, _ = self.tables['historic'].get('ga:pageviews').max_row
-        monthly_data = self._cumulative_by_month(self.tables['historic'])
+        monthly_data, max_value = self._cumulative_by_month(self.tables['historic'])
         last_month, current_month = monthly_data
 
         self.data['historic_data'] = encode_rows(monthly_data, max_value)

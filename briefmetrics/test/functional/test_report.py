@@ -32,10 +32,19 @@ class TestReport(test.TestWeb):
         r = q.get_profiles(1)
         self.assertEqual(r[u'username'], u'example@example.com')
 
-        t = q.get_table({'max-results': 5}, dimensions=[Column('ga:pagePath')], metrics=[Column('ga:pageviews', type_cast=int), Column('ga:week')])
+        t = q.get_table({'max-results': 5}, dimensions=[
+            Column('ga:pagePath'),
+        ], metrics=[
+            Column('ga:pageviews', type_cast=int, threshold=0),
+            Column('ga:week'),
+        ])
         self.assertEqual(len(t.rows), 5)
         self.assertEqual(t.rows[1].get('ga:pagePath'), '/bar')
         self.assertEqual(t.rows[1].get('ga:pageviews'), 123)
+        self.assertEqual(t.get('ga:pageviews').max_row[0], 1234567)
+
+        t = q.get_table({'max-results': 7}, dimensions=[Column('ga:month')])
+        self.assertEqual([list(m) for m in t.iter_rows()], [[1], [1], [1], [1], [1], [1], [2]]) 
 
     def test_fetch_weekly(self):
         report = self._create_report()
