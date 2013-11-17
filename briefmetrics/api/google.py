@@ -142,10 +142,10 @@ class Query(object):
                 'sort': '-ga:week',
             },
             metrics=[
-                Column('ga:pageviews'),
+                Column('ga:pageviews', label='Views', type_cast=int, threshold=0),
                 Column('ga:uniquePageviews'),
                 Column('ga:timeOnSite'),
-                Column('ga:visitBounceRate', type_cast=float),
+                Column('ga:visitBounceRate', label='Bounce Rate', type_cast=float),
             ],
             dimensions=[
                 Column('ga:week'),
@@ -159,14 +159,14 @@ class Query(object):
                 'start-date': date_start,
                 'end-date': date_end,
                 'filter': 'ga:medium==referral',
-                'sort': '-ga:visits',
+                'sort': '-ga:pageviews',
                 'max-results': '10',
             },
             dimensions=[
-                Column('ga:fullReferrer', visible=1, type_cast=_prune_abstract)
+                Column('ga:fullReferrer', label='Referrer', visible=1, type_cast=_prune_abstract)
             ],
             metrics=[
-                Column('ga:visits', visible=0),
+                Column('ga:pageviews', label='Views', type_cast=int, visible=0, threshold=0),
                 Column('ga:timeOnSite'),
                 Column('ga:visitBounceRate'),
             ],
@@ -182,10 +182,10 @@ class Query(object):
                 'max-results': '10',
             },
             dimensions=[
-                Column('ga:pagePath', visible=1, type_cast=_prune_abstract),
+                Column('ga:pagePath', label='Pages', visible=1, type_cast=_prune_abstract),
             ],
             metrics=[
-                Column('ga:pageviews', visible=0),
+                Column('ga:pageviews', label='Views', type_cast=int, visible=0, threshold=0),
                 Column('ga:timeOnSite'),
                 Column('ga:visitBounceRate'),
             ],
@@ -197,14 +197,14 @@ class Query(object):
                 'ids': 'ga:%s' % id,
                 'start-date': date_start,
                 'end-date': date_end,
-                'sort': '-ga:visits',
+                'sort': '-ga:pageviews',
                 'max-results': '5',
             },
             dimensions=[
-                Column('ga:socialNetwork', visible=1, type_cast=_prune_abstract),
+                Column('ga:socialNetwork', label='Social', visible=1, type_cast=_prune_abstract),
             ],
             metrics=[
-                Column('ga:visits', visible=0),
+                Column('ga:pageviews', label='Views', type_cast=int, visible=0, threshold=0),
                 Column('ga:timeOnSite'),
                 Column('ga:visitBounceRate'),
             ],
@@ -226,6 +226,6 @@ class Query(object):
                 Column('ga:month'),
             ],
             metrics=[
-                Column('ga:pageviews'),
+                Column('ga:pageviews', type_cast=int),
             ],
         )

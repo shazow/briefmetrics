@@ -46,6 +46,16 @@ class Column(object):
 
         return True
 
+    def is_boring(self, value, threshold=0.005):
+        if value is None:
+            return True
+
+        max_value, _ = self.max_row
+        if not max_value:
+            return False
+
+        return not value or value < max_value * threshold
+
     def __repr__(self):
         return '{class_name}(id="{self.id}")'.format(class_name=self.__class__.__name__, self=self)
 
@@ -81,7 +91,7 @@ class Table(object):
                 continue
 
             value = column.cast(value)
-            if not value and column.visible is not None:
+            if column.visible is not None and column.is_boring(value):
                 # Skip row
                 return
 
