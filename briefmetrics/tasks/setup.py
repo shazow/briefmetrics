@@ -20,7 +20,7 @@ def init(settings):
             CELERY_SEND_TASK_ERROR_EMAILS = True
             EMAIL_HOST = settings.get('mail.host')
             EMAIL_PORT = settings.get('mail.port')
-            ADMINS = [('Briefmetrics Celery', 'errors@briefmetrics.com')]
+            ADMINS = [('Briefmetrics Celery', 'shazow+briefmetrics+errors@gmail.com')]
             SERVER_EMAIL = 'service+celery@briefmetrics.com'
 
         CELERYBEAT_SCHEDULE = {
