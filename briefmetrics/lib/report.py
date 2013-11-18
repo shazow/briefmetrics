@@ -57,7 +57,7 @@ class Column(object):
         return not value or value < max_value * threshold
 
     def __repr__(self):
-        return '{class_name}(id="{self.id}")'.format(class_name=self.__class__.__name__, self=self)
+        return '{class_name}(id={self.id!r})'.format(class_name=self.__class__.__name__, self=self)
 
 
 class Row(object):
@@ -74,6 +74,9 @@ class Row(object):
 
     def get(self, id):
         return self.values[self.table.column_to_index[id]]
+
+    def __repr__(self):
+        return '{class_name}(values={self.values!r})'.format(class_name=self.__class__.__name__, self=self)
 
 
 class Table(object):
@@ -99,6 +102,11 @@ class Table(object):
             column.is_interesting(value, r)
 
         self.rows.append(r)
+
+    def sort(self, reverse=False):
+        visible_columns = next(self.iter_visible())
+        column_pos = sorted((col.visible, self.column_to_index[col.id]) for col in visible_columns if col.visible is not None)
+        self.rows.sort(key=lambda r: [r.values[pos] for _, pos in column_pos], reverse=reverse)
 
     def get(self, id):
         "Return the column"
@@ -167,32 +175,6 @@ class Report(object):
 
 
 class WeeklyReport(Report):
-    REFERRERS_REDUNDANT = set([
-        u'disqus.com',
-        u'facebook.com',
-        u'getpocket.com',
-        u'linkedin',
-        u'm.facebook.com',
-        u'netvibes.com',
-        u't.co',
-        u'twitter',
-    ])
-
-    REFERRERS_SEARCH = set([
-        u'aol',
-        u'ask',
-        u'bing',
-        u'buffer',
-        u'feedburner',
-        u'google',
-        u'hackernewsletter',
-        u'medium',
-        u'pulsenews',
-        u'smallhq',
-        u'yahoo',
-    ])
-    # TODO: Support arbitrary tlds for major domains? (google.ca etc)
-
     def _set_date_range(self):
         self.date_end = self.date_start + datetime.timedelta(days=6)
         self.date_next = self.report.next_preferred(self.date_end + datetime.timedelta(days=7)).date()
@@ -209,27 +191,6 @@ class WeeklyReport(Report):
             date_end=self.date_end.strftime('%b {}').format(self.date_end.day),
             site=self.report.display_name,
         )
-
-    def add_referrers(self, r):
-        social_search = self.tables.setdefault('social_search', [])
-        data = self.data.setdefault('referrers', [])
-
-        for row in r['rows']:
-            label, value = row[:2]
-            if label.startswith('('):
-                continue
-
-            domain = h.human_url(label).split('/', 1)[0]
-
-            if domain in self.REFERRERS_REDUNDANT:
-                continue
-
-            if domain in self.REFERRERS_SEARCH:
-                social_search.append([domain.title(), value])
-                continue
-
-            row.append([]) # Tags
-            data.append(row)
 
     def _cumulative_by_month(self, table):
         months = OrderedDict()
@@ -269,4 +230,6 @@ class WeeklyReport(Report):
         for source, pageviews, tos, bounce in self.tables['organic'].iter_rows():
             t.add([source.title(), pageviews, tos, bounce])
 
+        t.sort(reverse=True)
+        #t.rows = t.rows[:10]
         self.tables['social_search'] = t

@@ -183,7 +183,7 @@ class Query(object):
                 'max-results': '10',
             },
             dimensions=[
-                Column('ga:source'),
+                Column('ga:source', type_cast=_prune_abstract),
             ],
             metrics=[
                 Column('ga:pageviews'),
@@ -221,7 +221,7 @@ class Query(object):
                 'max-results': '10',
             },
             dimensions=[
-                Column('ga:socialNetwork'),
+                Column('ga:socialNetwork', type_cast=_prune_abstract),
             ],
             metrics=[
                 Column('ga:pageviews'),
