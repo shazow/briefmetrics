@@ -255,3 +255,18 @@ class WeeklyReport(Report):
         self.data['total_current'] = current_month[-1]
         self.data['total_last'] = last_month[-1]
         self.data['total_last_relative'] = last_month[len(current_month)-1]
+
+        t = Table(columns=[
+            Column('source', label='Social & Search', visible=1),
+            Column('ga:pageviews', label='Views', type_cast=int, visible=0, threshold=0),
+            Column('ga:timeOnSite'),
+            Column('ga:visitBounceRate'),
+        ])
+
+        for source, pageviews, tos, bounce in self.tables['social'].iter_rows():
+            t.add([source, pageviews, tos, bounce])
+
+        for source, pageviews, tos, bounce in self.tables['organic'].iter_rows():
+            t.add([source.title(), pageviews, tos, bounce])
+
+        self.tables['social_search'] = t

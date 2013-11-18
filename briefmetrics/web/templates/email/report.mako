@@ -67,13 +67,11 @@ ${widgets.render_table(
     h.ga_permalink('report/trafficsources-referrals', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
 )}
 
-<%doc>
 ${widgets.render_table(
-    sorted(c.report.data['social_search'], key=lambda o: int(o[1]), reverse=True),
+    c.report.tables['social_search'],
     'Social & Search',
     h.ga_permalink('report/social-sources', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
 )}
-</%doc>
 
 <p>
     % if c.report.owner.num_remaining is None or c.report.owner.stripe_customer_id:

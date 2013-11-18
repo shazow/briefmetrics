@@ -76,8 +76,10 @@ def fetch_weekly(request, report, date_start, google_query=None):
     r.tables['pages'] = pages_table
     r.tables['summary'] = google_query.report_summary(**params)
     r.tables['referrers'] = google_query.report_referrers(**params)
-    r.tables['social'] = google_query.report_social(**params)
     r.tables['historic'] = google_query.report_historic(**params)
+
+    r.tables['organic'] = google_query.report_organic(**params)
+    r.tables['social'] = google_query.report_social(**params)
 
     r.build() # lol
 

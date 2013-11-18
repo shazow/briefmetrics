@@ -158,7 +158,7 @@ class Query(object):
                 'ids': 'ga:%s' % id,
                 'start-date': date_start,
                 'end-date': date_end,
-                'filter': 'ga:medium==referral',
+                'filters': 'ga:medium==referral',
                 'sort': '-ga:pageviews',
                 'max-results': '10',
             },
@@ -167,6 +167,26 @@ class Query(object):
             ],
             metrics=[
                 Column('ga:pageviews', label='Views', type_cast=int, visible=0, threshold=0),
+                Column('ga:timeOnSite'),
+                Column('ga:visitBounceRate'),
+            ],
+        )
+
+    def report_organic(self, id, date_start, date_end):
+        return self.get_table(
+            params={
+                'ids': 'ga:%s' % id,
+                'start-date': date_start,
+                'end-date': date_end,
+                'filters': 'ga:medium==organic;ga:socialNetwork==(not set)',
+                'sort': '-ga:pageviews',
+                'max-results': '10',
+            },
+            dimensions=[
+                Column('ga:source'),
+            ],
+            metrics=[
+                Column('ga:pageviews'),
                 Column('ga:timeOnSite'),
                 Column('ga:visitBounceRate'),
             ],
@@ -198,13 +218,13 @@ class Query(object):
                 'start-date': date_start,
                 'end-date': date_end,
                 'sort': '-ga:pageviews',
-                'max-results': '5',
+                'max-results': '10',
             },
             dimensions=[
-                Column('ga:socialNetwork', label='Social', visible=1, type_cast=_prune_abstract),
+                Column('ga:socialNetwork'),
             ],
             metrics=[
-                Column('ga:pageviews', label='Views', type_cast=int, visible=0, threshold=0),
+                Column('ga:pageviews'),
                 Column('ga:timeOnSite'),
                 Column('ga:visitBounceRate'),
             ],
