@@ -51,15 +51,23 @@
 
         delta = 0
         if last_val:
-            delta = (cur_val / last_val) - 1
+            delta = (cur_val / float(last_val)) - 1
     %>
     <td ${h.text_if(is_optional, 'class="optional"')}>
         <strong>${formatted_val}</strong>
         <span>${column.label}</span>
-        % if delta > 0:
-            <small>+${h.human_percent(delta)}</small>
+        % if is_percent:
+            % if delta <= 0:
+                <small>${h.human_percent(delta)} decrease</small>
+            % else:
+                <small class="neg">${h.human_percent(delta)} increase</small>
+            % endif
         % else:
-            <small class="neg">${h.human_percent(delta)}</small>
+            % if delta > 0:
+                <small>+${h.human_percent(delta)}</small>
+            % else:
+                <small class="neg">${h.human_percent(delta)}</small>
+            % endif
         % endif
     </td>
 </%def>
