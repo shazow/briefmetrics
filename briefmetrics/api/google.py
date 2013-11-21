@@ -143,9 +143,9 @@ class Query(object):
             },
             metrics=[
                 Column('ga:pageviews', label='Views', type_cast=int, threshold=0),
-                Column('ga:uniquePageviews'),
-                Column('ga:timeOnSite'),
-                Column('ga:visitBounceRate', label='Bounce Rate', type_cast=float),
+                Column('ga:uniquePageviews', label='Uniques', type_cast=int, threshold=0),
+                Column('ga:timeOnSite', label='Time On Site', type_cast=float, threshold=0),
+                Column('ga:visitBounceRate', label='Bounce Rate', type_cast=float, threshold=0),
             ],
             dimensions=[
                 Column('ga:week'),
@@ -167,8 +167,27 @@ class Query(object):
             ],
             metrics=[
                 Column('ga:pageviews', label='Views', type_cast=int, visible=0, threshold=0),
-                Column('ga:timeOnSite'),
-                Column('ga:visitBounceRate'),
+                Column('ga:timeOnSite', type_cast=float, threshold=0),
+                Column('ga:visitBounceRate', type_cast=float, threshold=0),
+            ],
+        )
+
+    def report_pages(self, id, date_start, date_end):
+        return self.get_table(
+            params={
+                'ids': 'ga:%s' % id,
+                'start-date': date_start,
+                'end-date': date_end,
+                'sort': '-ga:pageviews',
+                'max-results': '10',
+            },
+            dimensions=[
+                Column('ga:pagePath', label='Pages', visible=1, type_cast=_prune_abstract),
+            ],
+            metrics=[
+                Column('ga:pageviews', label='Views', type_cast=int, visible=0, threshold=0),
+                Column('ga:timeOnSite', type_cast=float, threshold=0),
+                Column('ga:visitBounceRate', type_cast=float, threshold=0),
             ],
         )
 
@@ -187,25 +206,6 @@ class Query(object):
             ],
             metrics=[
                 Column('ga:pageviews'),
-                Column('ga:timeOnSite'),
-                Column('ga:visitBounceRate'),
-            ],
-        )
-
-    def report_pages(self, id, date_start, date_end):
-        return self.get_table(
-            params={
-                'ids': 'ga:%s' % id,
-                'start-date': date_start,
-                'end-date': date_end,
-                'sort': '-ga:pageviews',
-                'max-results': '10',
-            },
-            dimensions=[
-                Column('ga:pagePath', label='Pages', visible=1, type_cast=_prune_abstract),
-            ],
-            metrics=[
-                Column('ga:pageviews', label='Views', type_cast=int, visible=0, threshold=0),
                 Column('ga:timeOnSite'),
                 Column('ga:visitBounceRate'),
             ],

@@ -3,8 +3,7 @@
     if not t.rows:
         return
 
-    rows = t.iter_visible(max_columns=2) # TODO: Support moar?
-    columns = next(rows)
+    columns = t.get_visible()
 %>
 <table>
     <thead>
@@ -20,8 +19,10 @@
         </tr>
     </thead>
     <tbody>
-    % for views, url in rows:
+    % for row in t.rows:
     <%
+        views, url = row.get(columns[0].id), row.get(columns[1].id)
+
         if prefix_links and url.startswith('/'):
             link = h.human_link(prefix_links + url, url, max_length=100)
         else:
@@ -31,6 +32,12 @@
             <td class="number">${h.human_int(views)}</td>
             <td>
                 ${link}
+
+                % for tag in row.tags:
+                    <strong>
+                    ${tag.column.label}
+                    </strong>
+                % endfor
             </td>
         </tr>
     % endfor

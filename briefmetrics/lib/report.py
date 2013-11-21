@@ -2,16 +2,17 @@ from itertools import izip
 from collections import OrderedDict
 import datetime
 
-from . import helpers as h
 from .gcharts import encode_rows
 
 
 class Column(object):
     def __init__(self, id, label=None, type_cast=None, visible=None, average=None, threshold=None):
+        self.table = None
         self.id = id
         self.label = label or id
         self.type_cast = type_cast
         self.visible = visible
+
         self._threshold = threshold
         self._average = average and float(average)
 
@@ -22,6 +23,13 @@ class Column(object):
         self.max_row = average, None
         self.sum = 0
 
+    @property
+    def average(self):
+        return self.sum / float(len(self.table.rows) or 1)
+
+    def new(self, visible=None):
+        return Column(self.id, label=self.label, type_cast=self.type_cast, visible=visible, average=self.average)
+
     def cast(self, value):
         return self.type_cast(value) if self.type_cast else value
 
@@ -31,11 +39,6 @@ class Column(object):
 
         self.sum += value
 
-        if self._average is not None:
-            delta = (self._average - value) / (self._average or 1)
-            if abs(delta) < self._threshold:
-                return False
-
         min_value, _ = self.min_row
         if min_value > value:
             self.min_row = value, row
@@ -43,6 +46,11 @@ class Column(object):
         max_value, _ = self.max_row
         if max_value < value:
             self.max_row = value, row
+
+        if self._average is not None:
+            delta = (self._average - value) / (self._average or 1)
+            if abs(delta) < self._threshold:
+                return False
 
         return True
 
@@ -58,6 +66,12 @@ class Column(object):
 
     def __repr__(self):
         return '{class_name}(id={self.id!r})'.format(class_name=self.__class__.__name__, self=self)
+
+
+class RowTag(object):
+    def __init__(self, column, value):
+        self.column = column
+        self.value = value
 
 
 class Row(object):
@@ -85,6 +99,9 @@ class Table(object):
         self.columns = columns
         self.rows = []
         self.column_to_index = {s.id: i for i, s in enumerate(columns)}
+
+        for column in columns:
+            column.table = self
 
     def add(self, row):
         values = []
@@ -115,6 +132,20 @@ class Table(object):
     def get_visible(self):
         visible_columns = (c for c in self.columns if c.visible is not None)
         return sorted(visible_columns, key=lambda o: o.visible)
+
+    def tag_rows(self):
+        for column in self.columns:
+            if column.visible is not None:
+                # We only want non-visible columns
+                continue
+
+            value, row = column.min_row
+            if row:
+                row.tags.append(RowTag(column=column, value=value))
+
+            value, row = column.max_row
+            if row:
+                row.tags.append(RowTag(column=column, value=value))
 
     def iter_rows(self, *column_ids):
         if not column_ids:
@@ -173,6 +204,9 @@ class Report(object):
             'date_end': self.date_end,
         }
 
+    def build(self):
+        pass
+
 
 class WeeklyReport(Report):
     def _set_date_range(self):
@@ -220,8 +254,8 @@ class WeeklyReport(Report):
         t = Table(columns=[
             Column('source', label='Social & Search', visible=1),
             Column('ga:pageviews', label='Views', type_cast=int, visible=0, threshold=0),
-            Column('ga:timeOnSite'),
-            Column('ga:visitBounceRate'),
+            Column('ga:timeOnSite', type_cast=float, threshold=0),
+            Column('ga:visitBounceRate', type_cast=float, threshold=0),
         ])
 
         for source, pageviews, tos, bounce in self.tables['social'].iter_rows():
@@ -233,3 +267,7 @@ class WeeklyReport(Report):
         t.sort(reverse=True)
         #t.rows = t.rows[:10]
         self.tables['social_search'] = t
+
+        self.tables['social_search'].tag_rows()
+        self.tables['referrers'].tag_rows()
+        self.tables['pages'].tag_rows()

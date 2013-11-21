@@ -6,7 +6,7 @@ import random
 from unstdlib import now
 
 from briefmetrics.lib.controller import Controller, Context
-from briefmetrics.lib.report import WeeklyReport
+from briefmetrics.lib.report import WeeklyReport, Column
 from briefmetrics.lib.exceptions import APIError
 from briefmetrics.lib import helpers as h
 from briefmetrics import model
@@ -58,6 +58,13 @@ def add_subscriber(report_id, email, display_name):
 
 # Reporting tasks:
 
+def choose_metrics(summary_table):
+    return [
+        summary_table.get('ga:pageviews').new(visible=0),
+        summary_table.get('ga:timeOnSite').new(),
+        summary_table.get('ga:visitBounceRate').new(),
+    ]
+
 def fetch_weekly(request, report, date_start, google_query=None):
     if not google_query:
         oauth = api_google.auth_session(request, report.account.oauth_token)
@@ -69,12 +76,13 @@ def fetch_weekly(request, report, date_start, google_query=None):
 
     # TODO: Use a better short circuit?
     # Short circuit for no data
+    summary_table = google_query.report_summary(**params)
     pages_table = google_query.report_pages(**params)
     if not pages_table.rows:
         return r
 
     r.tables['pages'] = pages_table
-    r.tables['summary'] = google_query.report_summary(**params)
+    r.tables['summary'] = summary_table
     r.tables['referrers'] = google_query.report_referrers(**params)
     r.tables['historic'] = google_query.report_historic(**params)
 
