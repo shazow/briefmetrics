@@ -5,6 +5,12 @@ import datetime
 from .gcharts import encode_rows
 
 
+def _prune_abstract(label):
+    if label.startswith('('):
+        return
+    return label
+
+
 class Column(object):
     def __init__(self, id, label=None, type_cast=None, visible=None, average=None, threshold=None):
         self.table = None
@@ -27,8 +33,8 @@ class Column(object):
     def average(self):
         return self.sum / float(len(self.table.rows) or 1)
 
-    def new(self, visible=None):
-        return Column(self.id, label=self.label, type_cast=self.type_cast, visible=visible, average=self.average)
+    def new(self):
+        return Column(self.id, label=self.label, type_cast=self.type_cast, visible=self.visible, average=self.average)
 
     def cast(self, value):
         return self.type_cast(value) if self.type_cast else value
@@ -69,9 +75,20 @@ class Column(object):
 
 
 class RowTag(object):
-    def __init__(self, column, value):
+    def __init__(self, column, value, type=None):
         self.column = column
         self.value = value
+        self.type = type
+
+    def __str__(self):
+        parts = []
+        if self.type == 'min':
+            parts.append('Lowest')
+        elif self.type == 'max':
+            parts.append('Highest')
+
+        parts.append(self.column.label)
+        return ' '.join(parts)
 
 
 class Row(object):
@@ -134,18 +151,22 @@ class Table(object):
         return sorted(visible_columns, key=lambda o: o.visible)
 
     def tag_rows(self):
-        for column in self.columns:
-            if column.visible is not None:
-                # We only want non-visible columns
-                continue
+        if len(self.rows) < 3:
+            return
 
-            value, row = column.min_row
-            if row:
-                row.tags.append(RowTag(column=column, value=value))
+        for column in self.columns:
+            if column.visible is not None or column._threshold is None:
+                # We only want non-visible thresholded columns
+                continue
 
             value, row = column.max_row
             if row:
-                row.tags.append(RowTag(column=column, value=value))
+                row.tags.append(RowTag(column=column, value=value, type='max'))
+
+            value, row = column.min_row
+            if row:
+                row.tags.append(RowTag(column=column, value=value, type='min'))
+
 
     def iter_rows(self, *column_ids):
         if not column_ids:
@@ -248,23 +269,106 @@ class WeeklyReport(Report):
         return months.values(), max_value
 
     def fetch(self, google_query):
-        params = self.get_query_params()
+        # Summary
+        summary_metrics = [
+            Column('ga:pageviews', label='Views', type_cast=int, threshold=0, visible=0),
+            Column('ga:uniquePageviews', label='Uniques', type_cast=int),
+            Column('ga:timeOnSite', label='Time On Site', type_cast=float, threshold=0),
+            Column('ga:visitBounceRate', label='Bounce Rate', type_cast=float, threshold=0),
+        ]
+        self.tables['summary'] = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': self.date_start - datetime.timedelta(days=7), # Extra week
+                'end-date': self.date_end,
+                'sort': '-ga:week',
+            },
+            dimensions=[
+                Column('ga:week'),
+            ],
+            metrics=summary_metrics,
+        )
 
-        # TODO: Use a better short circuit?
-        # Short circuit for no data
-        summary_table = google_query.report_summary(**params)
-        pages_table = google_query.report_pages(**params)
-        if not pages_table.rows:
+        # Pages
+        self.tables['pages'] = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': self.date_start,
+                'end-date': self.date_end,
+                'sort': '-ga:pageviews',
+                'max-results': '10',
+            },
+            dimensions=[
+                Column('ga:pagePath', label='Pages', visible=1, type_cast=_prune_abstract),
+            ],
+            metrics=[col.new() for col in summary_metrics],
+        )
+
+        if not self.tables['pages'].rows:
+            # TODO: Use a better short circuit?
             raise EmptyReportError()
 
-        self.tables['pages'] = pages_table
-        self.tables['summary'] = summary_table
-        self.tables['referrers'] = google_query.report_referrers(**params)
-        self.tables['historic'] = google_query.report_historic(**params)
+        self.tables['referrers'] = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': self.date_start,
+                'end-date': self.date_end,
+                'filters': 'ga:medium==referral',
+                'sort': '-ga:pageviews',
+                'max-results': '10',
+            },
+            dimensions=[
+                Column('ga:fullReferrer', label='Referrer', visible=1, type_cast=_prune_abstract)
+            ],
+            metrics=[col.new() for col in summary_metrics],
+        )
 
-        self.tables['organic'] = google_query.report_organic(**params)
-        self.tables['social'] = google_query.report_social(**params)
+        date_start_last_month = self.date_end - datetime.timedelta(days=self.date_end.day)
+        date_start_last_month -= datetime.timedelta(days=date_start_last_month.day - 1)
 
+        self.tables['organic'] = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': self.date_start,
+                'end-date': self.date_end,
+                'filters': 'ga:medium==organic;ga:socialNetwork==(not set)',
+                'sort': '-ga:pageviews',
+                'max-results': '10',
+            },
+            dimensions=[
+                Column('ga:source', type_cast=_prune_abstract),
+            ],
+            metrics=[col.new() for col in summary_metrics],
+        )
+
+        self.tables['social'] = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': self.date_start,
+                'end-date': self.date_end,
+                'sort': '-ga:pageviews',
+                'max-results': '10',
+            },
+            dimensions=[
+                Column('ga:socialNetwork', type_cast=_prune_abstract),
+            ],
+            metrics=[col.new() for col in summary_metrics],
+        )
+
+        self.tables['historic'] = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': date_start_last_month,
+                'end-date': self.date_end,
+            },
+            dimensions=[
+                Column('ga:date'),
+                Column('ga:month'),
+            ],
+            metrics=[
+                Column('ga:pageviews', type_cast=int),
+            ],
+        )
         monthly_data, max_value = self._cumulative_by_month(self.tables['historic'])
         last_month, current_month = monthly_data
 
@@ -275,16 +379,13 @@ class WeeklyReport(Report):
 
         t = Table(columns=[
             Column('source', label='Social & Search', visible=1),
-            Column('ga:pageviews', label='Views', type_cast=int, visible=0, threshold=0),
-            Column('ga:timeOnSite', type_cast=float, threshold=0),
-            Column('ga:visitBounceRate', type_cast=float, threshold=0),
-        ])
+        ] + [col.new() for col in summary_metrics])
 
-        for source, pageviews, tos, bounce in self.tables['social'].iter_rows():
-            t.add([source, pageviews, tos, bounce])
+        for cells in self.tables['social'].iter_rows():
+            t.add(cells)
 
-        for source, pageviews, tos, bounce in self.tables['organic'].iter_rows():
-            t.add([source.title(), pageviews, tos, bounce])
+        for cells in self.tables['organic'].iter_rows():
+            t.add(cells)
 
         t.sort(reverse=True)
         #t.rows = t.rows[:10]

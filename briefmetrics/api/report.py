@@ -75,6 +75,7 @@ def fetch_weekly(request, report, date_start, google_query=None):
     try:
         r.fetch(google_query)
     except EmptyReportError:
+        r.tables = {}
         return r
 
     return r

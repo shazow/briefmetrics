@@ -35,8 +35,10 @@
 
                 % for tag in row.tags:
                     <strong>
-                    ${tag.column.label}
+                    ${tag}
                     </strong>
+
+                    [${tag.value}]
                 % endfor
             </td>
         </tr>

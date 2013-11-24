@@ -1,12 +1,11 @@
 import time
-from datetime import timedelta
 
 from requests_oauthlib import OAuth2Session
 
 from briefmetrics.model.meta import Session
 from briefmetrics.lib.cache import ReportRegion
 from briefmetrics.lib.http import assert_response
-from briefmetrics.lib.report import Table, Column
+from briefmetrics.lib.report import Table
 
 
 oauth_config = {
@@ -130,122 +129,3 @@ class Query(object):
     def get_profiles(self, account_id):
         # account_id used for caching, not in query.
         return self._get('https://www.googleapis.com/analytics/v3/management/accounts/~all/webproperties/~all/profiles')
-
-    def report_summary(self, id, date_start, date_end):
-        # Grab an extra week
-        date_start = date_start - timedelta(days=7)
-        return self.get_table(
-            params={
-                'ids': 'ga:%s' % id,
-                'start-date': date_start,
-                'end-date': date_end,
-                'sort': '-ga:week',
-            },
-            metrics=[
-                Column('ga:pageviews', label='Views', type_cast=int, threshold=0),
-                Column('ga:uniquePageviews', label='Uniques', type_cast=int, threshold=0),
-                Column('ga:timeOnSite', label='Time On Site', type_cast=float, threshold=0),
-                Column('ga:visitBounceRate', label='Bounce Rate', type_cast=float, threshold=0),
-            ],
-            dimensions=[
-                Column('ga:week'),
-            ],
-        )
-
-    def report_referrers(self, id, date_start, date_end):
-        return self.get_table(
-            params={
-                'ids': 'ga:%s' % id,
-                'start-date': date_start,
-                'end-date': date_end,
-                'filters': 'ga:medium==referral',
-                'sort': '-ga:pageviews',
-                'max-results': '10',
-            },
-            dimensions=[
-                Column('ga:fullReferrer', label='Referrer', visible=1, type_cast=_prune_abstract)
-            ],
-            metrics=[
-                Column('ga:pageviews', label='Views', type_cast=int, visible=0, threshold=0),
-                Column('ga:timeOnSite', type_cast=float, threshold=0),
-                Column('ga:visitBounceRate', type_cast=float, threshold=0),
-            ],
-        )
-
-    def report_pages(self, id, date_start, date_end):
-        return self.get_table(
-            params={
-                'ids': 'ga:%s' % id,
-                'start-date': date_start,
-                'end-date': date_end,
-                'sort': '-ga:pageviews',
-                'max-results': '10',
-            },
-            dimensions=[
-                Column('ga:pagePath', label='Pages', visible=1, type_cast=_prune_abstract),
-            ],
-            metrics=[
-                Column('ga:pageviews', label='Views', type_cast=int, visible=0, threshold=0),
-                Column('ga:timeOnSite', type_cast=float, threshold=0),
-                Column('ga:visitBounceRate', type_cast=float, threshold=0),
-            ],
-        )
-
-    def report_organic(self, id, date_start, date_end):
-        return self.get_table(
-            params={
-                'ids': 'ga:%s' % id,
-                'start-date': date_start,
-                'end-date': date_end,
-                'filters': 'ga:medium==organic;ga:socialNetwork==(not set)',
-                'sort': '-ga:pageviews',
-                'max-results': '10',
-            },
-            dimensions=[
-                Column('ga:source', type_cast=_prune_abstract),
-            ],
-            metrics=[
-                Column('ga:pageviews'),
-                Column('ga:timeOnSite'),
-                Column('ga:visitBounceRate'),
-            ],
-        )
-
-    def report_social(self, id, date_start, date_end):
-        return self.get_table(
-            params={
-                'ids': 'ga:%s' % id,
-                'start-date': date_start,
-                'end-date': date_end,
-                'sort': '-ga:pageviews',
-                'max-results': '10',
-            },
-            dimensions=[
-                Column('ga:socialNetwork', type_cast=_prune_abstract),
-            ],
-            metrics=[
-                Column('ga:pageviews'),
-                Column('ga:timeOnSite'),
-                Column('ga:visitBounceRate'),
-            ],
-        )
-
-    def report_historic(self, id, date_start, date_end):
-        # Pull data back from start of the previous month
-        date_start = date_end - timedelta(days=date_end.day)
-        date_start -= timedelta(days=date_start.day - 1)
-
-        return self.get_table(
-            params={
-                'ids': 'ga:%s' % id,
-                'start-date': date_start,
-                'end-date': date_end,
-            },
-            dimensions=[
-                Column('ga:date'),
-                Column('ga:month'),
-            ],
-            metrics=[
-                Column('ga:pageviews', type_cast=int),
-            ],
-        )
