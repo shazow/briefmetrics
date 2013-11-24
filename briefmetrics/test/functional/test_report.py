@@ -216,7 +216,7 @@ class TestReportLib(test.TestCase):
         self.assertEqual(s.max_row, (100.0, None))
 
         self.assertFalse(s.is_interesting(90, 'a'))
-        self.assertEqual(s.min_row, (100.0, None))
+        self.assertEqual(s.min_row, (90.0, 'a'))
         self.assertEqual(s.max_row, (100.0, None))
 
         self.assertTrue(s.is_interesting(50, 'b'))

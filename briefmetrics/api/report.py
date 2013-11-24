@@ -6,7 +6,7 @@ import random
 from unstdlib import now
 
 from briefmetrics.lib.controller import Controller, Context
-from briefmetrics.lib.report import WeeklyReport, Column
+from briefmetrics.lib.report import WeeklyReport, EmptyReportError
 from briefmetrics.lib.exceptions import APIError
 from briefmetrics.lib import helpers as h
 from briefmetrics import model
@@ -72,24 +72,10 @@ def fetch_weekly(request, report, date_start, google_query=None):
 
     r = WeeklyReport(report, date_start)
 
-    params = r.get_query_params()
-
-    # TODO: Use a better short circuit?
-    # Short circuit for no data
-    summary_table = google_query.report_summary(**params)
-    pages_table = google_query.report_pages(**params)
-    if not pages_table.rows:
+    try:
+        r.fetch(google_query)
+    except EmptyReportError:
         return r
-
-    r.tables['pages'] = pages_table
-    r.tables['summary'] = summary_table
-    r.tables['referrers'] = google_query.report_referrers(**params)
-    r.tables['historic'] = google_query.report_historic(**params)
-
-    r.tables['organic'] = google_query.report_organic(**params)
-    r.tables['social'] = google_query.report_social(**params)
-
-    r.build() # lol
 
     return r
 

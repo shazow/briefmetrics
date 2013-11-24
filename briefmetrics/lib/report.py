@@ -164,6 +164,11 @@ class Table(object):
             yield (row.values[i] for i in column_positions)
 
 
+
+class EmptyReportError(Exception):
+    pass
+
+
 class Report(object):
     def __init__(self, report, date_start):
         self.data = {}
@@ -242,7 +247,24 @@ class WeeklyReport(Report):
 
         return months.values(), max_value
 
-    def build(self):
+    def fetch(self, google_query):
+        params = self.get_query_params()
+
+        # TODO: Use a better short circuit?
+        # Short circuit for no data
+        summary_table = google_query.report_summary(**params)
+        pages_table = google_query.report_pages(**params)
+        if not pages_table.rows:
+            raise EmptyReportError()
+
+        self.tables['pages'] = pages_table
+        self.tables['summary'] = summary_table
+        self.tables['referrers'] = google_query.report_referrers(**params)
+        self.tables['historic'] = google_query.report_historic(**params)
+
+        self.tables['organic'] = google_query.report_organic(**params)
+        self.tables['social'] = google_query.report_social(**params)
+
         monthly_data, max_value = self._cumulative_by_month(self.tables['historic'])
         last_month, current_month = monthly_data
 
