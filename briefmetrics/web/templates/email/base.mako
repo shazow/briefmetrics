@@ -14,7 +14,6 @@
         background-color: #fff;
         max-width: 560px;
         margin: 0 auto;
-        border-radius: 5px;
     }
 
     body {
@@ -65,8 +64,6 @@
     }
     td {
         padding-right: 1em;
-        overflow: hidden;
-        white-space: nowrap;
         padding-top: 2px;
         padding-bottom: 2px;
     }
@@ -144,6 +141,13 @@
     }
     .optional-inverse {
         display: none;
+    }
+
+    .tag {
+        background: #eee;
+        white-space: nowrap;
+        padding: 1px 3px;
+        margin-right: 0.5em;
     }
     </style>
 </head>

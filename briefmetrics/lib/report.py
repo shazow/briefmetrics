@@ -12,12 +12,14 @@ def _prune_abstract(label):
 
 
 class Column(object):
-    def __init__(self, id, label=None, type_cast=None, visible=None, average=None, threshold=None):
+    def __init__(self, id, label=None, type_cast=None, type_format=None, visible=None, reverse=False, average=None, threshold=None):
         self.table = None
         self.id = id
         self.label = label or id
         self.type_cast = type_cast
+        self.type_format = type_format
         self.visible = visible
+        self.reverse = reverse
 
         self._threshold = threshold
         self._average = average and float(average)
@@ -31,10 +33,12 @@ class Column(object):
 
     @property
     def average(self):
+        if self._threshold is None:
+            return
         return self.sum / float(len(self.table.rows) or 1)
 
     def new(self):
-        return Column(self.id, label=self.label, type_cast=self.type_cast, visible=self.visible, average=self.average)
+        return Column(self.id, label=self.label, type_cast=self.type_cast, visible=self.visible, reverse=self.reverse, average=self.average)
 
     def cast(self, value):
         return self.type_cast(value) if self.type_cast else value
@@ -274,7 +278,7 @@ class WeeklyReport(Report):
             Column('ga:pageviews', label='Views', type_cast=int, threshold=0, visible=0),
             Column('ga:uniquePageviews', label='Uniques', type_cast=int),
             Column('ga:timeOnSite', label='Time On Site', type_cast=float, threshold=0),
-            Column('ga:visitBounceRate', label='Bounce Rate', type_cast=float, threshold=0),
+            Column('ga:visitBounceRate', label='Bounce Rate', type_cast=float, reverse=True, threshold=0),
         ]
         self.tables['summary'] = google_query.get_table(
             params={

@@ -34,11 +34,9 @@
                 ${link}
 
                 % for tag in row.tags:
-                    <strong>
-                    ${tag}
-                    </strong>
-
-                    [${tag.value}]
+                    <span class="tag ${tag.type}" title="${tag.value}">
+                        ${tag}
+                    </span>
                 % endfor
             </td>
         </tr>
