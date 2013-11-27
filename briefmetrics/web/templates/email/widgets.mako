@@ -34,8 +34,8 @@
                 ${link}
 
                 % for tag in row.tags:
-                    <span class="tag ${tag.type}" title="${tag.value}">
-                        ${tag}
+                    <span class="tag ${tag.type}">
+                        ${tag} (${tag.column.format(tag.value)}, ${h.human_delta(tag.delta_value)})
                     </span>
                 % endfor
             </td>
@@ -52,7 +52,7 @@
         last_val, cur_val = table.rows[1].get(column_id), table.rows[0].get(column_id)
 
         if is_percent:
-            formatted_val = h.human_percent(cur_val / 100.0)
+            formatted_val = h.human_percent(cur_val)
         else:
             formatted_val = h.human_int(cur_val)
 

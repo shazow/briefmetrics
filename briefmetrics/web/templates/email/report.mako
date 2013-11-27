@@ -38,7 +38,7 @@ ${h.chart(c.report.data['historic_data'], width=560, height=200)}
         </tr>
     </table>
     <%
-        columns = 'ga:pageviews', 'ga:uniquePageviews', 'ga:timeOnSite', 'ga:visitBounceRate'
+        columns = 'ga:pageviews', 'ga:uniquePageviews', 'ga:avgTimeOnSite', 'ga:visitBounceRate'
         pageviews, uniques, seconds, bounces = next(c.report.tables['summary'].iter_rows(*columns))
     %>
 
@@ -46,7 +46,7 @@ ${h.chart(c.report.data['historic_data'], width=560, height=200)}
     <p style="margin-bottom: 2em;">
         <span class="highlight">${h.human_int(uniques)}</span>
         unique visitors each spent an average of
-        <span class="highlight">${h.human_time(float(seconds) / int(uniques))}</span>
+        <span class="highlight">${h.human_time(seconds)}</span>
         over
         <span class="highlight">${'%0.1f' % (float(pageviews) / float(uniques))}</span>
         pageviews per session.

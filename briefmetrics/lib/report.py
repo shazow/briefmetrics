@@ -3,6 +3,7 @@ from collections import OrderedDict
 import datetime
 
 from .gcharts import encode_rows
+from . import helpers as h
 
 
 def _prune_abstract(label):
@@ -38,10 +39,16 @@ class Column(object):
         return self.sum / float(len(self.table.rows) or 1)
 
     def new(self):
-        return Column(self.id, label=self.label, type_cast=self.type_cast, visible=self.visible, reverse=self.reverse, average=self.average)
+        return Column(self.id, label=self.label, type_cast=self.type_cast, type_format=self.type_format, visible=self.visible, reverse=self.reverse, average=self.average)
 
     def cast(self, value):
         return self.type_cast(value) if self.type_cast else value
+
+    def format(self, value):
+        return self.type_format(value) if self.type_format else value
+
+    def delta_value(self, value):
+        return self._average is not None and (self._average - value) / (self._average or 1)
 
     def is_interesting(self, value, row=None):
         if self._threshold is None:
@@ -57,10 +64,9 @@ class Column(object):
         if max_value < value:
             self.max_row = value, row
 
-        if self._average is not None:
-            delta = (self._average - value) / (self._average or 1)
-            if abs(delta) < self._threshold:
-                return False
+        delta = self.delta_value(value)
+        if delta and abs(delta) < self._threshold:
+            return False
 
         return True
 
@@ -84,12 +90,20 @@ class RowTag(object):
         self.value = value
         self.type = type
 
+    @property
+    def delta_value(self):
+        return self.column.delta_value(self.value)
+
     def __str__(self):
         parts = []
-        if self.type == 'min':
-            parts.append('Lowest')
-        elif self.type == 'max':
-            parts.append('Highest')
+
+        if self.type in ['min', 'max']:
+            pos = int(self.type == 'min')
+            if self.column.reverse:
+                pos = 1 - pos
+
+            adjective = ['Best', 'Worst'][pos]
+            parts.append(adjective)
 
         parts.append(self.column.label)
         return ' '.join(parts)
@@ -275,10 +289,10 @@ class WeeklyReport(Report):
     def fetch(self, google_query):
         # Summary
         summary_metrics = [
-            Column('ga:pageviews', label='Views', type_cast=int, threshold=0, visible=0),
-            Column('ga:uniquePageviews', label='Uniques', type_cast=int),
-            Column('ga:timeOnSite', label='Time On Site', type_cast=float, threshold=0),
-            Column('ga:visitBounceRate', label='Bounce Rate', type_cast=float, reverse=True, threshold=0),
+            Column('ga:pageviews', label='Views', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
+            Column('ga:uniquePageviews', label='Uniques', type_cast=int, type_format=h.human_int),
+            Column('ga:avgTimeOnSite', label='Time On Site', type_cast=float, type_format=h.human_time, threshold=0),
+            Column('ga:visitBounceRate', label='Bounce Rate', type_cast=lambda v: float(v) / 100.0, type_format=h.human_percent, reverse=True, threshold=0),
         ]
         self.tables['summary'] = google_query.get_table(
             params={
