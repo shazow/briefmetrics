@@ -51,7 +51,7 @@ class Column(object):
         return self._average is not None and (self._average - value) / (self._average or 1)
 
     def is_interesting(self, value, row=None):
-        if self._threshold is None:
+        if value is None or self._threshold is None:
             return False
 
         self.sum += value
@@ -94,15 +94,16 @@ class RowTag(object):
     def delta_value(self):
         return self.column.delta_value(self.value)
 
+    @property
+    def is_positive(self):
+        return (self.type == 'max') != self.column.reverse
+
     def __str__(self):
         parts = []
 
         if self.type in ['min', 'max']:
-            pos = int(self.type == 'min')
-            if self.column.reverse:
-                pos = 1 - pos
-
-            adjective = ['Best', 'Worst'][pos]
+            pos = int(self.is_positive)
+            adjective = ['Worst', 'Best'][pos]
             parts.append(adjective)
 
         parts.append(self.column.label)
@@ -291,8 +292,8 @@ class WeeklyReport(Report):
         summary_metrics = [
             Column('ga:pageviews', label='Views', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
             Column('ga:uniquePageviews', label='Uniques', type_cast=int, type_format=h.human_int),
-            Column('ga:avgTimeOnSite', label='Time On Site', type_cast=float, type_format=h.human_time, threshold=0),
-            Column('ga:visitBounceRate', label='Bounce Rate', type_cast=lambda v: float(v) / 100.0, type_format=h.human_percent, reverse=True, threshold=0),
+            Column('ga:avgTimeOnSite', label='Time On Site', type_cast=lambda v: float(v) or None, type_format=h.human_time, threshold=0),
+            Column('ga:visitBounceRate', label='Bounce Rate', type_cast=lambda v: float(v) / 100.0 or None, type_format=h.human_percent, reverse=True, threshold=0),
         ]
         self.tables['summary'] = google_query.get_table(
             params={

@@ -77,6 +77,9 @@ def human_date(d, max_unit='month'):
     return f.format(d, day=str(d.day) + num_ordinal(d.day))
 
 def human_time(seconds=None):
+    if not seconds:
+        return '0s'
+
     r = []
     rem = 0
     for div, unit in [(3600.0, 'hr'), (60.0, 'min'), (1.0, 'sec')]:

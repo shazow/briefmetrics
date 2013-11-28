@@ -149,6 +149,42 @@
         padding: 1px 3px;
         margin-right: 0.5em;
     }
+
+    .bubble {
+        font-size: 10px;
+        position: relative;
+        top: -1px;
+    }
+    .bubble.positive {
+        color: #40961D;
+    }
+    .bubble.negative {
+        color: #ae2e3e;
+    }
+
+    .engagement {
+        cursor: default;
+        border-radius: 3px;
+        background: #eee;
+        color: #888;
+        padding: 1px 4px;
+        white-space: nowrap;
+    }
+    .engagement.positive {
+        background: #ccedc5;
+        color: #63855C;
+    }
+    .engagement.negative {
+        background: #e8d9da;
+        color: #83575B;
+    }
+
+    .label {
+        text-transform: uppercase;
+        font-weight: bold;
+        font-size: 9px;
+        letter-spacing: 0.5px;
+    }
     </style>
 </head>
 <body>

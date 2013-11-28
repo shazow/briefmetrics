@@ -5,7 +5,10 @@ from briefmetrics.lib.controller import Controller
 
 class IndexController(Controller):
     def index(self):
-        self.c.user = api.account.get_user(self.request)
+        user_id = api.account.get_user_id(self.request)
+
+        if user_id:
+            return self._redirect(self.request.route_path('reports'))
 
         return self._render('index.mako')
 

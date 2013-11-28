@@ -1,7 +1,39 @@
+<%def name="render_tags(tags)">
+<%
+    if not tags:
+        return ''
+
+    title_parts = []
+    positive, negative = [], []
+    for tag in tags:
+        if tag.is_positive:
+            positive.append(tag)
+        else:
+            negative.append(tag)
+
+        title_parts.append('{!s} [{}]'.format(tag, tag.column.format(tag.value)))
+
+    css_class = 'neutral'
+    if not positive:
+        css_class = 'negative'
+    elif not negative:
+        css_class = 'positive'
+%>
+<span title="${' | '.join(title_parts)}" class="engagement ${css_class}">
+    % if negative:
+        <span class="bubble negative">${h.literal(' '.join('&#9679;' for tag in negative))}</span>
+    % endif
+    <span class="label">Engagement</span>
+    % if positive:
+        <span class="bubble positive">${h.literal(' '.join('&#9679;' for tag in positive))}</span>
+    % endif
+</span>
+</%def>
+
 <%def name="render_table(t, title, report_link, prefix_links=None)">
 <% 
     if not t.rows:
-        return
+        return ''
 
     columns = t.get_visible()
 %>
@@ -33,11 +65,7 @@
             <td>
                 ${link}
 
-                % for tag in row.tags:
-                    <span class="tag ${tag.type}">
-                        ${tag} (${tag.column.format(tag.value)}, ${h.human_delta(tag.delta_value)})
-                    </span>
-                % endfor
+                ${render_tags(row.tags)}
             </td>
         </tr>
     % endfor

@@ -121,7 +121,9 @@ class Query(object):
         columns = self._columns_to_params(params, dimensions=dimensions, metrics=metrics)
 
         t = Table(columns)
-        for row in self._get_data(params)['rows']:
+        response_data = self._get_data(params)
+
+        for row in response_data['rows']:
             t.add(row)
 
         return t

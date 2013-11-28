@@ -35,6 +35,7 @@ _profile_item_template = {
 data = {}
 data['ga:pageviews'] = data['ga:uniquePageviews'] = data['ga:visits'] = [0, 123, 123456, 1234567, 123456, 123]
 data['ga:timeOnSite'] = [0.123, 123.0, 0.5]
+data['ga:avgTimeOnSite'] = [0.123, 123.0, 0.5]
 data['ga:week'] = [1, 2]
 data['ga:month'] = [1, 1, 1, 1, 1, 1, 2, 2, 2, 2]
 data['ga:visitBounceRate'] = [0.2, 0.6]
