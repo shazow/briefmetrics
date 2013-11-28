@@ -122,6 +122,8 @@ class Query(object):
 
         t = Table(columns)
         response_data = self._get_data(params)
+        if 'rows' not in response_data:
+            return t
 
         for row in response_data['rows']:
             t.add(row)
