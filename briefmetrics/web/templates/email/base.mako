@@ -154,7 +154,7 @@
         font-size: 11px;
     }
     .bubble.positive {
-        color: #40961D;
+        color: #5FA81B;
     }
     .bubble.negative {
         color: #ae2e3e;
@@ -169,8 +169,8 @@
         white-space: nowrap;
     }
     .engagement.positive {
-        background: #e6f6e3;
-        color: #7f9d79;
+        background: #ecfadd;
+        color: #91AD77;
     }
     .engagement.negative {
         background: #e8d9da;
