@@ -293,12 +293,18 @@ class WeeklyReport(Report):
         return months.values(), max_value
 
     def fetch(self, google_query):
+
+        def _cast_bounce(v):
+            if not v:
+                return
+            return float(v) / 100.0
+
         # Summary
         summary_metrics = [
             Column('ga:pageviews', label='Views', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
             Column('ga:uniquePageviews', label='Uniques', type_cast=int, type_format=h.human_int),
             Column('ga:avgTimeOnSite', label='Time On Site', type_cast=lambda v: float(v) or None, type_format=h.human_time, threshold=0),
-            Column('ga:visitBounceRate', label='Bounce Rate', type_cast=lambda v: (float(v) / 100.0) or None, type_format=h.human_percent, reverse=True, threshold=0),
+            Column('ga:visitBounceRate', label='Bounce Rate', type_cast=_cast_bounce, type_format=h.human_percent, reverse=True, threshold=0),
         ]
         self.tables['summary'] = google_query.get_table(
             params={
