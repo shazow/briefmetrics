@@ -6,7 +6,7 @@ import random
 from unstdlib import now
 
 from briefmetrics.lib.controller import Controller, Context
-from briefmetrics.lib.report import WeeklyReport
+from briefmetrics.lib.report import WeeklyReport, EmptyReportError
 from briefmetrics.lib.exceptions import APIError
 from briefmetrics.lib import helpers as h
 from briefmetrics import model
@@ -55,28 +55,21 @@ def add_subscriber(report_id, email, display_name):
 
     return u
 
+
 # Reporting tasks:
 
 def fetch_weekly(request, report, date_start, google_query=None):
     if not google_query:
         oauth = api_google.auth_session(request, report.account.oauth_token)
-        google_query = api_google.Query(oauth)
+        google_query = api_google.create_query(request, oauth)
 
     r = WeeklyReport(report, date_start)
 
-    params = r.get_query_params()
-
-    # TODO: Use a better hting to short circuit?
-    # Short circuit for no data
-    data = google_query.report_pages(**params)
-    if not data.get('rows'):
+    try:
+        r.fetch(google_query)
+    except EmptyReportError:
+        r.tables = {}
         return r
-
-    r.add_pages(data)
-    r.add_summary(google_query.report_summary(**params))
-    r.add_referrers(google_query.report_referrers(**params))
-    r.add_social(google_query.report_social(**params))
-    r.add_historic(google_query.report_historic(**params))
 
     return r
 
@@ -160,12 +153,7 @@ def send_weekly(request, report, since_time=None, pretend=False):
         owner.num_remaining -= 1
 
     report.time_last = now()
-    if not report.time_next:
-        report.time_next = datetime.datetime(*date_start.timetuple()[:3]) + datetime.timedelta(days=8)
-
-    # TODO: Preferred time
-    # XXX: Is this done?
-    report.time_next += datetime.timedelta(days=7)
+    report.time_next = report.next_preferred(since_time)
 
     model.ReportLog.create_from_report(report,
         body=html,

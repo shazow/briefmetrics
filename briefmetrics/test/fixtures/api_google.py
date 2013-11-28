@@ -1,3 +1,8 @@
+from itertools import cycle
+
+from briefmetrics.api.google import Query
+from briefmetrics.lib.report import Table
+
 _response_profiles = {
     u"items": None,
     u"itemsPerPage": 1000,
@@ -27,11 +32,36 @@ _profile_item_template = {
     u"websiteUrl": u"example.com",
 }
 
+data = {}
+data['ga:pageviews'] = data['ga:uniquePageviews'] = data['ga:visits'] = [0, 123, 123456, 1234567, 123456, 123]
+data['ga:timeOnSite'] = [0.123, 123.0, 0.5]
+data['ga:avgTimeOnSite'] = [0.123, 123.0, 0.5]
+data['ga:week'] = [1, 2]
+data['ga:month'] = [1, 1, 1, 1, 1, 1, 2, 2, 2, 2]
+data['ga:visitBounceRate'] = [0.2, 0.6]
+data['ga:date'] = ['2013-01-01', '2013-01-02']
+data['ga:source'] = ['google', 'wordpress']
+data['ga:socialNetwork'] = ['Facebook', 'Reddit']
+data['ga:fullReferrer'] = ['example.com/foo', 'example.com/bar']
+data['ga:pagePath'] = ['/foo', '/bar', '/baz']
 
-class FakeQuery(object):
+
+class FakeQuery(Query):
     def __init__(self, *args, **kw):
         self.num_profiles = kw.get('_num_profiles', 5)
         self.num_rows = kw.get('_num_rows', 10)
+
+    def get_table(self, params, dimensions=None, metrics=None):
+        columns = self._columns_to_params(params, dimensions=dimensions, metrics=metrics)
+
+        limit = min(self.num_rows, int(params.get('max-results', 10)))
+
+        t = Table(columns)
+        row_data = [cycle(data[col.id]) for col in columns]
+        for _ in xrange(limit):
+            t.add(next(c) for c in row_data)
+
+        return t
 
     def get_profiles(self, account_id):
         r = _response_profiles.copy()
@@ -42,77 +72,5 @@ class FakeQuery(object):
             r[u'items'].append(t)
 
         r[u'totalResults'] = len(r[u'items'])
-
-        return r
-
-    def report_summary(self, id, date_start, date_end):
-        r = _response_data.copy()
-        r[u'rows'] = []
-
-        for i in xrange(2):
-            r[u'rows'].append([
-                u"42",
-                u"3778",
-                u"3964",
-                u"349384.0",
-                u"22.5"
-            ])
-
-        return r
-
-    def report_referrers(self, id, date_start, date_end):
-        r = _response_data.copy()
-        r[u'rows'] = []
-
-        for i in xrange(self.num_rows):
-            r[u'rows'].append([
-                u"example.com/somelist",
-                u"20",
-            ])
-
-        return r
-
-    def report_pages(self, id, date_start, date_end):
-        r = _response_data.copy()
-        r[u'rows'] = []
-
-        for i in xrange(self.num_rows):
-            r[u'rows'].append([
-                u"1000",
-                u"500",
-                u"345",
-            ])
-
-        return r
-
-    def report_social(self, id, date_start, date_end):
-        r = _response_data.copy()
-        r[u'rows'] = []
-
-        for i in xrange(self.num_rows):
-            r[u'rows'].append([
-                u"Pinterest",
-                u"243",
-            ])
-
-        return r
-
-    def report_historic(self, id, date_start, date_end):
-        r = _response_data.copy()
-        r[u'rows'] = []
-
-        for i in xrange(29):
-            r[u'rows'].append([
-                u"201309%d" % (i + 1),
-                u"09",
-                u"146",
-            ])
-
-        for i in xrange(7):
-            r[u'rows'].append([
-                u"201310%d" % (i + 1),
-                u"10",
-                u"147",
-            ])
 
         return r

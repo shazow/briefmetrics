@@ -14,7 +14,6 @@
         background-color: #fff;
         max-width: 560px;
         margin: 0 auto;
-        border-radius: 5px;
     }
 
     body {
@@ -65,8 +64,6 @@
     }
     td {
         padding-right: 1em;
-        overflow: hidden;
-        white-space: nowrap;
         padding-top: 2px;
         padding-bottom: 2px;
     }
@@ -144,6 +141,47 @@
     }
     .optional-inverse {
         display: none;
+    }
+
+    .tag {
+        background: #eee;
+        white-space: nowrap;
+        padding: 1px 3px;
+        margin-right: 0.5em;
+    }
+
+    .bubble {
+        font-size: 11px;
+    }
+    .bubble.positive {
+        color: #5FA81B;
+    }
+    .bubble.negative {
+        color: #ae2e3e;
+    }
+
+    .engagement {
+        cursor: default;
+        border-radius: 3px;
+        background: #eee;
+        color: #999;
+        padding: 1px 4px;
+        white-space: nowrap;
+    }
+    .engagement.positive {
+        background: #ecfadd;
+        color: #91AD77;
+    }
+    .engagement.negative {
+        background: #e8d9da;
+        color: #B88D8B;
+    }
+
+    .label {
+        text-transform: uppercase;
+        font-weight: bold;
+        font-size: 9px;
+        letter-spacing: 0.5px;
     }
     </style>
 </head>

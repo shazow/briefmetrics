@@ -70,7 +70,7 @@ class Controller(object):
             'is_logged_in': 'user_id' in self.session,
             'current_path': self.current_path,
             'previous_url': self.previous_url,
-            'next': self.next,
+            'next_url': self.next,
 
             # App-specific
             'pricing': pricing,

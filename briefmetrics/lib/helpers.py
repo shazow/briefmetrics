@@ -80,6 +80,9 @@ def human_date(d, max_unit='month'):
     return f.format(d, day=str(d.day) + num_ordinal(d.day))
 
 def human_time(seconds=None):
+    if not seconds:
+        return '0s'
+
     r = []
     rem = 0
     for div, unit in [(3600.0, 'hr'), (60.0, 'min'), (1.0, 'sec')]:
@@ -99,6 +102,12 @@ def human_percent(f):
     fmt = u'{:0.1%}'
     if f < 0.1:
         fmt = u'{:0.2%}'
+    return fmt.format(float(f))
+
+def human_delta(f):
+    fmt = u'{:+0.1%}'
+    if f < 0.1:
+        fmt = u'{:+0.2%}'
     return fmt.format(float(f))
 
 def truncate(s, max_length=80):

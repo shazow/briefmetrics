@@ -21,7 +21,8 @@ def report_create(request):
         raise APIControllerError("Account does not exist for user: %s" % user_id)
 
     oauth = api.google.auth_session(request, account.oauth_token)
-    r = api.google.Query(oauth).get_profiles(account_id=account.id)
+    q = api.google.create_query(request, oauth)
+    r = q.get_profiles(account_id=account.id)
 
     # Find profile item
     profile = next((item for item in r['items'] if item['id'] == remote_id), None)
@@ -69,8 +70,9 @@ class ReportController(Controller):
         user = api.account.get_user(self.request, required=True, joinedload='account.reports')
 
         oauth = api.google.auth_session(self.request, user.account.oauth_token)
+        q = api.google.create_query(self.request, oauth)
         try:
-            self.c.available_profiles = api.google.Query(oauth).get_profiles(account_id=user.account.id)
+            self.c.available_profiles = q.get_profiles(account_id=user.account.id)
         except APIError as e:
             r = e.response.json()
             for msg in r['error']['errors']:

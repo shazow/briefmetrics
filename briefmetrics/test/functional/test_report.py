@@ -2,7 +2,7 @@ from briefmetrics import test
 from briefmetrics import api
 from briefmetrics import model
 from briefmetrics import tasks
-from briefmetrics.lib.report import Report, WeeklyReport
+from briefmetrics.lib.report import Report, WeeklyReport, Column, Table
 from briefmetrics.lib.controller import Context
 
 from briefmetrics.test.fixtures.api_google import FakeQuery
@@ -31,6 +31,20 @@ class TestReport(test.TestWeb):
         q = api.google.Query(None)
         r = q.get_profiles(1)
         self.assertEqual(r[u'username'], u'example@example.com')
+
+        t = q.get_table({'max-results': 5}, dimensions=[
+            Column('ga:pagePath'),
+        ], metrics=[
+            Column('ga:pageviews', type_cast=int, threshold=0),
+            Column('ga:week'),
+        ])
+        self.assertEqual(len(t.rows), 5)
+        self.assertEqual(t.rows[1].get('ga:pagePath'), '/bar')
+        self.assertEqual(t.rows[1].get('ga:pageviews'), 123)
+        self.assertEqual(t.get('ga:pageviews').max_row[0], 1234567)
+
+        t = q.get_table({'max-results': 7}, dimensions=[Column('ga:month')])
+        self.assertEqual([list(m) for m in t.iter_rows()], [[1], [1], [1], [1], [1], [1], [2]]) 
 
     def test_fetch_weekly(self):
         report = self._create_report()
@@ -190,3 +204,52 @@ class TestReportLib(test.TestCase):
         self.assertEqual(r.date_next, datetime.date(2013, 2, 11)) # Week from Monday
 
         self.assertEqual(r.get_subject(), u"Report for example.com (Jan 27-Feb 2)")
+
+    def test_table_column(self):
+        s = Column('foo', type_cast=int)
+        self.assertEqual(s.cast('123'), 123)
+        self.assertEqual(s.min_row, (None, None))
+        self.assertEqual(s.max_row, (None, None))
+
+        s = Column('foo', average=100, threshold=0.25)
+        self.assertEqual(s.min_row, (100.0, None))
+        self.assertEqual(s.max_row, (100.0, None))
+
+        self.assertFalse(s.is_interesting(90, 'a'))
+        self.assertEqual(s.min_row, (90.0, 'a'))
+        self.assertEqual(s.max_row, (100.0, None))
+
+        self.assertTrue(s.is_interesting(50, 'b'))
+        self.assertEqual(s.min_row, (50.0, 'b'))
+        self.assertEqual(s.max_row, (100.0, None))
+
+        self.assertTrue(s.is_interesting(150, 'c'))
+        self.assertEqual(s.min_row, (50.0, 'b'))
+        self.assertEqual(s.max_row, (150.0, 'c'))
+
+        self.assertTrue(s.is_interesting(200, 'd'))
+        self.assertEqual(s.min_row, (50.0, 'b'))
+        self.assertEqual(s.max_row, (200.0, 'd'))
+
+    def test_table_rows(self):
+        t = Table([
+            Column('foo'),
+            Column('bar'),
+            Column('baz', type_cast=int, average=100),
+        ])
+
+        data = [
+            (9999, '1', 123),
+            (0123, '2', 1234),
+            (0000, '3', 23),
+            (0123, '4', 123),
+        ]
+
+        for d in data:
+            t.add(d)
+
+        self.assertEqual(len(t.rows), 4)
+        self.assertEqual(t.get('foo').min_row, (None, None))
+        self.assertEqual(t.get('bar').max_row, (None, None))
+        self.assertEqual(t.get('baz').min_row[0], 23)
+        self.assertEqual(t.get('baz').max_row[0], 1234)

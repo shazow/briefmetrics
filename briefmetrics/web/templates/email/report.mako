@@ -30,22 +30,23 @@ ${h.chart(c.report.data['historic_data'], width=560, height=200)}
     % endif
 </h2>
 
-% if c.report.data['summary']:
+% if c.report.tables.get('summary'):
     <table class="overview">
         <tr>
-            ${widgets.overview_cell(c.report.data['summary'], 4, 'Bounce Rate', is_percent=True)}
-            ${widgets.overview_cell(c.report.data['summary'], 1, 'Pageviews')}
+            ${widgets.overview_cell(c.report.tables['summary'], 'ga:visitBounceRate', is_percent=True)}
+            ${widgets.overview_cell(c.report.tables['summary'], 'ga:pageviews')}
         </tr>
     </table>
     <%
-        pageviews, uniques, seconds, bounces = c.report.data['summary'][0][1:5]
+        columns = 'ga:pageviews', 'ga:uniquePageviews', 'ga:avgTimeOnSite', 'ga:visitBounceRate'
+        pageviews, uniques, seconds, bounces = next(c.report.tables['summary'].iter_rows(*columns))
     %>
 
     % if int(uniques) and float(seconds):
     <p style="margin-bottom: 2em;">
         <span class="highlight">${h.human_int(uniques)}</span>
         unique visitors each spent an average of
-        <span class="highlight">${h.human_time(float(seconds) / int(uniques))}</span>
+        <span class="highlight">${h.human_time(seconds)}</span>
         over
         <span class="highlight">${'%0.1f' % (float(pageviews) / float(uniques))}</span>
         pageviews per session.
@@ -53,21 +54,21 @@ ${h.chart(c.report.data['historic_data'], width=560, height=200)}
     % endif
 % endif
 
-${widgets.data_table(
-    c.report.data['pages'],
+${widgets.render_table(
+    c.report.tables['pages'],
     'Top Pages',
     h.ga_permalink('report/content-pages', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
     prefix_links='http://%s' % c.report.report.remote_data['websiteUrl'],
 )}
 
-${widgets.data_table(
-    c.report.data['referrers'],
+${widgets.render_table(
+    c.report.tables['referrers'],
     'Referrers',
     h.ga_permalink('report/trafficsources-referrals', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
 )}
 
-${widgets.data_table(
-sorted(c.report.data['social_search'], key=lambda o: int(o[1]), reverse=True),
+${widgets.render_table(
+    c.report.tables['social_search'],
     'Social & Search',
     h.ga_permalink('report/social-sources', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
 )}

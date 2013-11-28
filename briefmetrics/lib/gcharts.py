@@ -26,8 +26,8 @@ def encode_value(n, div, max_value, alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefgh
     if n is None:
         return '__'
 
-    n *= max_value / div
-    return '%s%s' % (alphabet[int(float(n) / 64)], alphabet[int(n % 64)])
+    n *= max_value / float(div)
+    return '%s%s' % (alphabet[int(n / 64.0)], alphabet[int(n % 64)])
 
 def padded(a, num):
     return a + [None] * (num - len(a))
