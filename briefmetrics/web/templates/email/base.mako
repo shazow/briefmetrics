@@ -151,9 +151,7 @@
     }
 
     .bubble {
-        font-size: 10px;
-        position: relative;
-        top: -1px;
+        font-size: 11px;
     }
     .bubble.positive {
         color: #40961D;
@@ -166,17 +164,17 @@
         cursor: default;
         border-radius: 3px;
         background: #eee;
-        color: #888;
+        color: #999;
         padding: 1px 4px;
         white-space: nowrap;
     }
     .engagement.positive {
-        background: #ccedc5;
-        color: #63855C;
+        background: #e6f6e3;
+        color: #7f9d79;
     }
     .engagement.negative {
         background: #e8d9da;
-        color: #83575B;
+        color: #B88D8B;
     }
 
     .label {

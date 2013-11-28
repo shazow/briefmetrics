@@ -19,13 +19,13 @@
     elif not negative:
         css_class = 'positive'
 %>
-<span title="${' | '.join(title_parts)}" class="engagement ${css_class}">
+<span title="${', '.join(title_parts)}" class="engagement ${css_class}">
     % if negative:
-        <span class="bubble negative">${h.literal(' '.join('&#9679;' for tag in negative))}</span>
+        <span class="bubble negative">${h.literal(' '.join('&minus;' for tag in negative))}</span>
     % endif
     <span class="label">Engagement</span>
     % if positive:
-        <span class="bubble positive">${h.literal(' '.join('&#9679;' for tag in positive))}</span>
+        <span class="bubble positive">${' '.join('+' for tag in positive)}</span>
     % endif
 </span>
 </%def>

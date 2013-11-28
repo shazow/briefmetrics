@@ -26,7 +26,7 @@ class Column(object):
         self._average = average and float(average)
 
         if threshold is None and average is not None:
-            self._threshold = 0.2
+            self._threshold = 0.15
 
         self.min_row = average, None
         self.max_row = average, None
@@ -50,7 +50,7 @@ class Column(object):
     def delta_value(self, value):
         return self._average is not None and (self._average - value) / (self._average or 1)
 
-    def is_interesting(self, value, row=None):
+    def measure(self, value, row):
         if value is None or self._threshold is None:
             return False
 
@@ -63,6 +63,10 @@ class Column(object):
         max_value, _ = self.max_row
         if max_value < value:
             self.max_row = value, row
+
+    def is_interesting(self, value):
+        if value is None or self._threshold is None:
+            return False
 
         delta = self.delta_value(value)
         if delta and abs(delta) < self._threshold:
@@ -152,7 +156,7 @@ class Table(object):
                 return
 
             values.append(value)
-            column.is_interesting(value, r)
+            column.measure(value, r)
 
         self.rows.append(r)
 
@@ -179,11 +183,11 @@ class Table(object):
                 continue
 
             value, row = column.max_row
-            if row:
+            if row and column.is_interesting(value):
                 row.tags.append(RowTag(column=column, value=value, type='max'))
 
             value, row = column.min_row
-            if row:
+            if row and column.is_interesting(value):
                 row.tags.append(RowTag(column=column, value=value, type='min'))
 
 
