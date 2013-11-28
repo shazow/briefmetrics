@@ -146,7 +146,15 @@ def send_weekly(request, report, since_time=None, pretend=False):
 
         api_email.send_message(request, message)
 
+    model.ReportLog.create_from_report(report,
+        body=html,
+        subject=subject,
+        seconds_elapsed=time.time()-t,
+        time_sent=pretend and now(),
+    )
+
     if pretend:
+        model.Session.commit()
         return
 
     if report_context.data and owner.num_remaining:
@@ -154,11 +162,5 @@ def send_weekly(request, report, since_time=None, pretend=False):
 
     report.time_last = now()
     report.time_next = report.next_preferred(since_time)
-
-    model.ReportLog.create_from_report(report,
-        body=html,
-        subject=subject,
-        seconds_elapsed=time.time()-t,
-    )
 
     model.Session.commit()

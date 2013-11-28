@@ -151,6 +151,7 @@ class ReportLog(meta.Model):
 
     id = Column(types.Integer, primary_key=True)
     time_created = Column(types.DateTime, default=now, nullable=False)
+    time_sent = Column(types.DateTime)
 
     seconds_elapsed = Column(types.Float)
     num_recipients = Column(types.Integer)
@@ -172,7 +173,7 @@ class ReportLog(meta.Model):
     access_token = Column(types.String, default=lambda: random_string(16))
 
     @classmethod
-    def create_from_report(cls, report, body, subject, seconds_elapsed=None):
+    def create_from_report(cls, report, body, subject, seconds_elapsed=None, time_sent=None):
         report_log = cls.create(
             seconds_elapsed=seconds_elapsed,
             account_id=report.account_id,
@@ -182,6 +183,7 @@ class ReportLog(meta.Model):
             remote_id=report.remote_id,
             subject=subject,
             body=body,
+            time_sent=time_sent,
         )
 
         return report_log
