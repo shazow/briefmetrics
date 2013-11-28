@@ -150,7 +150,7 @@ def send_weekly(request, report, since_time=None, pretend=False):
         body=html,
         subject=subject,
         seconds_elapsed=time.time()-t,
-        time_sent=pretend and now(),
+        time_sent=None if pretend else now(),
     )
 
     if pretend:
