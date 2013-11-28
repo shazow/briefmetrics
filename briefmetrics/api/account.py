@@ -213,7 +213,7 @@ def start_subscription(user, plan_id=None):
         user.plan_id = plan_id
         Session.commit()
 
-    if plan:
+    if not plan:
         raise APIError("Invalid plan: %s" % user.plan_id)
 
     customer = stripe.Customer.retrieve(user.stripe_customer_id)
