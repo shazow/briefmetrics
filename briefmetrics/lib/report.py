@@ -156,7 +156,8 @@ class Table(object):
                 return
 
             values.append(value)
-            column.measure(value, r)
+            if value is not None:
+                column.measure(value, r)
 
         self.rows.append(r)
 
@@ -297,7 +298,7 @@ class WeeklyReport(Report):
             Column('ga:pageviews', label='Views', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
             Column('ga:uniquePageviews', label='Uniques', type_cast=int, type_format=h.human_int),
             Column('ga:avgTimeOnSite', label='Time On Site', type_cast=lambda v: float(v) or None, type_format=h.human_time, threshold=0),
-            Column('ga:visitBounceRate', label='Bounce Rate', type_cast=lambda v: float(v) / 100.0 or None, type_format=h.human_percent, reverse=True, threshold=0),
+            Column('ga:visitBounceRate', label='Bounce Rate', type_cast=lambda v: (float(v) / 100.0) or None, type_format=h.human_percent, reverse=True, threshold=0),
         ]
         self.tables['summary'] = google_query.get_table(
             params={
