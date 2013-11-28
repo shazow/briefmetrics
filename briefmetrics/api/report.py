@@ -88,7 +88,7 @@ def send_weekly(request, report, since_time=None, pretend=False):
         return
 
     owner = report.account.user
-    if owner.num_remaining is not None and owner.num_remaining <= 0:
+    if not pretend and owner.num_remaining is not None and owner.num_remaining <= 0:
         if not owner.stripe_customer_id:
             # TODO: Send final email?
             log.info('User [%d] expired, deleting report: %s' % (owner.id, report.display_name))
