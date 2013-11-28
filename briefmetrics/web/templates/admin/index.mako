@@ -22,6 +22,19 @@
 
 <div class="container">
 
+    <h2>Reports</h2>
+    <ol>
+    % for report_log in c.recent_reports:
+        <li value="${report_log.report_id}">
+            ${report_log.time_sent or '(Not sent)'}
+            <a href="${request.route_path('admin_report_log', id=report_log.id)}">
+                ${report_log.subject}
+            </a>
+            in ${'{:0.2}'.format(report_log.seconds_elapsed)}s
+        </li>
+    % endfor
+    </ol>
+
     <h2>Users</h2>
     <ol class="user-list">
     % for u in c.users:

@@ -1,5 +1,6 @@
 from sqlalchemy import orm
 
+from briefmetrics.web.environment import Response
 from briefmetrics import api, model, tasks
 from briefmetrics.model.meta import Session
 
@@ -18,7 +19,17 @@ class AdminController(Controller):
         q = q.order_by(model.User.id.asc())
         self.c.users = q.all()
 
+        q = Session.query(model.ReportLog).order_by(model.ReportLog.id.desc()).limit(10)
+        self.c.recent_reports = q.all()
+
         return self._render('admin/index.mako')
+
+    def report_log(self):
+        api.account.get_admin(self.request)
+        report_log_id = self.request.matchdict['id']
+
+        report_log = model.ReportLog.get(report_log_id)
+        return Response(report_log.body)
 
     def login_as(self):
         u = api.account.get_admin(self.request)
