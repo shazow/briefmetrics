@@ -96,13 +96,13 @@ class Query(object):
     # NOTE: Expire by adding expiration_time=...
 
     @ReportRegion.cache_on_arguments()
-    def _get(self, url, params=None):
+    def _get(self, url, params=None, _cache_keys=None):
         r = self.api.get(url, params=params)
         assert_response(r)
         return r.json()
 
-    def _get_data(self, params=None):
-        return self._get('https://www.googleapis.com/analytics/v3/data/ga', params=params)
+    def _get_data(self, params=None, _cache_keys=None):
+        return self._get('https://www.googleapis.com/analytics/v3/data/ga', params=params, _cache_keys=_cache_keys)
 
     def _columns_to_params(self, params, dimensions=None, metrics=None):
         columns = []
@@ -132,4 +132,4 @@ class Query(object):
 
     def get_profiles(self, account_id):
         # account_id used for caching, not in query.
-        return self._get('https://www.googleapis.com/analytics/v3/management/accounts/~all/webproperties/~all/profiles')
+        return self._get('https://www.googleapis.com/analytics/v3/management/accounts/~all/webproperties/~all/profiles', _cache_keys=(account_id,))
