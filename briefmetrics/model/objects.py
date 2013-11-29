@@ -102,6 +102,7 @@ class Report(meta.Model): # Property within an account (such as a website)
     display_name = Column(types.Unicode)
     remote_data = Column(_types.MutationDict.as_mutable(_types.JSONEncodedDict), default=dict) # WebPropertyId, ProfileId, etc.
     remote_id = Column(types.String)
+    config = Column(_types.MutationDict.as_mutable(_types.JSONEncodedDict), default=dict) # Display settings
 
     users = orm.relationship(User, innerjoin=True, secondary='subscription', backref='reports')
 

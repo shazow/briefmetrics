@@ -172,9 +172,9 @@ class Table(object):
         self.rows.append(r)
 
     def sort(self, reverse=False):
-        visible_columns = next(self.iter_visible())
-        column_pos = sorted((col.visible, self.column_to_index[col.id]) for col in visible_columns if col.visible is not None)
-        self.rows.sort(key=lambda r: [r.values[pos] for _, pos in column_pos], reverse=reverse)
+        visible_columns = self.get_visible()
+        column_pos = sorted((col.visible, self.column_to_index[col.id]) for col in visible_columns)
+        self.rows.sort(key=lambda r: tuple(r.values[pos] for _, pos in column_pos), reverse=reverse)
 
     def get(self, id):
         "Return the column"
@@ -183,6 +183,12 @@ class Table(object):
     def get_visible(self):
         visible_columns = (c for c in self.columns if c.visible is not None)
         return sorted(visible_columns, key=lambda o: o.visible)
+
+    def set_visible(self, *column_ids):
+        pos_lookup = {id: i for i, id in enumerate(column_ids)}
+
+        for column in self.columns:
+            column.visible = pos_lookup.get(column.id)
 
     def tag_rows(self):
         if len(self.rows) < 3:
@@ -210,14 +216,13 @@ class Table(object):
         for row in self.rows:
             yield (row.values[i] for i in column_positions)
 
-    def iter_visible(self, max_columns=None):
-        ordered_columns = self.get_visible()[:max_columns]
-        column_positions = [self.column_to_index[c.id] for c in ordered_columns]
+    def iter_visible(self):
+        ordered_columns = self.get_visible()
         yield ordered_columns
 
+        column_positions = [self.column_to_index[c.id] for c in ordered_columns]
         for row in self.rows:
             yield (row.values[i] for i in column_positions)
-
 
 
 class EmptyReportError(Exception):
@@ -286,17 +291,17 @@ class WeeklyReport(Report):
             site=self.report.display_name,
         )
 
-    def _cumulative_by_month(self, table):
+    def _cumulative_by_month(self, month_views_iter):
         months = OrderedDict()
         max_value = 0
-        for month, pageviews in table.iter_rows('ga:month', 'ga:pageviews'):
+        for month, views in month_views_iter:
             month_list = months.get(month)
             if not month_list:
                 month_list = months[month] = []
                 last_val = 0
             else:
                 last_val = month_list[-1]
-            val = last_val + pageviews
+            val = last_val + views
             month_list.append(val)
             max_value = max(max_value, val)
 
@@ -390,7 +395,7 @@ class WeeklyReport(Report):
             metrics=[col.new() for col in summary_metrics],
         )
 
-        self.tables['historic'] = google_query.get_table(
+        historic_table = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
                 'start-date': date_start_last_month,
@@ -398,16 +403,26 @@ class WeeklyReport(Report):
             },
             dimensions=[
                 Column('ga:date'),
-                Column('ga:month'),
+                Column('ga:month', visible=0),
             ],
             metrics=[
-                Column('ga:pageviews', type_cast=int),
+                Column('ga:pageviews', label='Views', type_cast=int, visible=1),
+                Column('ga:uniquePageviews', label='Uniques', type_cast=int),
             ],
         )
-        monthly_data, max_value = self._cumulative_by_month(self.tables['historic'])
+
+        intro_config = self.report.config.get('intro')
+        if intro_config:
+            # For John Sheehan
+            historic_table.set_visible('ga:month', intro_config)
+
+        iter_historic = historic_table.iter_visible()
+        _, views_column = next(iter_historic)
+        monthly_data, max_value = self._cumulative_by_month(iter_historic)
         last_month, current_month = monthly_data
 
         self.data['historic_data'] = encode_rows(monthly_data, max_value)
+        self.data['total_units'] = '{:,} %s' % views_column.label.lower().rstrip('s')
         self.data['total_current'] = current_month[-1]
         self.data['total_last'] = last_month[-1]
         self.data['total_last_relative'] = last_month[len(current_month)-1]
@@ -423,7 +438,6 @@ class WeeklyReport(Report):
             t.add(cells)
 
         t.sort(reverse=True)
-        #t.rows = t.rows[:10]
         self.tables['social_search'] = t
 
         self.tables['social_search'].tag_rows()

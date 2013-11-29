@@ -10,13 +10,17 @@
     <h3>Back to your previously scheduled report...</h3>
 % endif
 
+<%
+    total_units = c.report.data['total_units']
+%>
+
 <p>
-    Your site had <span class="chartTop">${h.human_int(c.report.data['total_current'])} views so far this month</span>,
+    Your site had <span class="chartTop">${h.format_int(c.report.data['total_current'], c.report.data['total_units'])} so far this month</span>,
     % if c.report.data['total_current'] >= c.report.data['total_last_relative']:
-        compared to last month's ${h.human_int(c.report.data['total_last_relative'])} views at this time.
+        compared to last month's ${h.format_int(c.report.data['total_last_relative'], c.report.data['total_units'])} at this time.
         You're on your way to beat <span class="chartBottom">last months's total of ${h.human_int(c.report.data['total_last'])}</span>.
     % else:
-        compared to <span class="chartBottom">last month's ${h.human_int(c.report.data['total_last_relative'])} views</span> at this time.
+        compared to <span class="chartBottom">last month's ${h.format_int(c.report.data['total_last_relative'], c.report.data['total_units'])}</span> at this time.
     % endif
 </p>
 
