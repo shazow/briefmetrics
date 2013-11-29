@@ -140,7 +140,7 @@ def get_or_create(user_id=None, email=None, token=None, display_name=None, plan_
         u = model.User.create(email=email, display_name=display_name, num_remaining=num_remaining, **create_kw)
         u.account = model.Account.create(display_name=display_name, user=u)
 
-    if token and not (u.account.oauth_token and u.account.oauth_token.get('refresh_token')):
+    if token and token.get('refresh_token'):
         # Update token if it's a better one (with refresh).
         u.account.oauth_token = token
 

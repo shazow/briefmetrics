@@ -34,11 +34,6 @@ def _token_updater(old_token):
 
     return wrapped
 
-def _prune_abstract(label):
-    if label.startswith('('):
-        return
-    return label
-
 def auth_session(request, token=None, state=None):
     if token and 'expires_at' in token:
         token['expires_in'] = int(token['expires_at'] - time.time())
@@ -56,10 +51,11 @@ def auth_session(request, token=None, state=None):
     )
 
 
-def auth_url(oauth):
+def auth_url(oauth, is_force=True):
     return oauth.authorization_url(
         oauth_config['auth_url'],
-        access_type='offline', approval_prompt='force',
+        access_type='offline',
+        approval_prompt='force' if is_force else 'auto',
     )
 
 
@@ -92,8 +88,6 @@ def create_query(request, oauth):
 class Query(object):
     def __init__(self, oauth):
         self.api = oauth
-
-    # NOTE: Expire by adding expiration_time=...
 
     @ReportRegion.cache_on_arguments()
     def _get(self, url, params=None, _cache_keys=None):
