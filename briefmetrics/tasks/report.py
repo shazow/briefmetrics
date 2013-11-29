@@ -52,6 +52,7 @@ def send_all(since_time=None, async=True, pretend=False, max_num=None):
     log.info('Queued %d reports for sending.' % len(reports))
 
 
+@celery.task(ignore_result=True)
 def dry_run(num_extra=5, async=True):
     all_reports = model.Session.query(model.Report).options(orm.joinedload_all('account.user')).all()
 

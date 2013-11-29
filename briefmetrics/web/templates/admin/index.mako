@@ -1,5 +1,6 @@
 <%inherit file="/base.mako" />
 
+
 <%def name="user_status(label, is_enabled=None, link=None, on_hover=False)">
 <%
     label = label.strip()
@@ -21,6 +22,18 @@
 </%def>
 
 <div class="container">
+    <form action="${request.route_path('api')}" method="post">
+        <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
+        <input type="hidden" name="method" value="admin.dry_run" />
+        <input type="hidden" name="format" value="redirect" />
+
+        <p>
+            <input type="text" size="3" value="10" />
+            <input type="submit" value="Dry Run" />
+        </p>
+    </form>
+
+
 
     <h2>Reports</h2>
     <ol>

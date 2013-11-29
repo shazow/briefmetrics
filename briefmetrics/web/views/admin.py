@@ -6,6 +6,16 @@ from briefmetrics.model.meta import Session
 
 from briefmetrics.lib.controller import Controller
 
+from .api import expose_api
+
+
+@expose_api('admin.dry_run')
+def dry_run(request):
+    api.account.get_admin(request)
+    num_extra = int(request.params.get('num_extra', 10))
+    tasks.report.dry_run.delay(num_extra=num_extra)
+    request.flash('Dry run queued.')
+
 
 class AdminController(Controller):
 
