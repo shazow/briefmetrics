@@ -28,6 +28,10 @@ def init(settings):
                 'task': 'briefmetrics.tasks.report.send_all',
                 'schedule': schedules.crontab(minute=0), # Hourly
             },
+            'dry-run': {
+                'task': 'briefmetrics.tasks.report.dry_run',
+                'schedule': schedules.crontab(minute=0, hour=14), # Daily
+            },
         }
 
     celery.config_from_object(Config)
