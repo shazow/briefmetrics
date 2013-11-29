@@ -59,7 +59,7 @@ class AccountController(Controller):
 
     def logout(self):
         api.account.logout_user(self.request)
-        return self._redirect(location=self.next or '/')
+        return self._redirect(location='/')
 
     def delete(self):
         # TODO: Move to API?
