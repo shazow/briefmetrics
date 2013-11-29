@@ -50,11 +50,11 @@
             <div class="id">
                 "${u.account.display_name}" &lt;${u.email}&gt;
 
-                <ul>
+                <ol>
                 % for r in u.account.reports:
-                    <li>${r.display_name} (next report: ${h.human_date(r.time_next)})
+                    <li value="${r.id}">${r.display_name} (next report: ${h.human_date(r.time_next)})
                 % endfor
-                </ul>
+                </ol>
             </div>
         </li>
     % endfor
