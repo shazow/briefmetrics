@@ -1,7 +1,7 @@
 from itertools import cycle
 
 from briefmetrics.api.google import Query
-from briefmetrics.lib.report import Table
+from briefmetrics.lib.table import Table
 
 _response_profiles = {
     u"items": None,

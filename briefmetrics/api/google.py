@@ -5,7 +5,7 @@ from requests_oauthlib import OAuth2Session
 from briefmetrics.model.meta import Session
 from briefmetrics.lib.cache import ReportRegion
 from briefmetrics.lib.http import assert_response
-from briefmetrics.lib.report import Table
+from briefmetrics.lib.table import Table
 
 
 oauth_config = {
