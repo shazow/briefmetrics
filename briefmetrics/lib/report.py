@@ -188,7 +188,10 @@ class Table(object):
         pos_lookup = {id: i for i, id in enumerate(column_ids)}
 
         for column in self.columns:
-            column.visible = pos_lookup.get(column.id)
+            column.visible = pos_lookup.pop(column.id, None)
+
+        if pos_lookup:
+            raise KeyError('Invalid column ids: %r' % pos_lookup.keys())
 
     def tag_rows(self):
         if len(self.rows) < 3:
