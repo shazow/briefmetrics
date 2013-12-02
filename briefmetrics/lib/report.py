@@ -127,7 +127,7 @@ class WeeklyReport(Report):
             dimensions=[
                 Column('ga:week'),
             ],
-            metrics=summary_metrics,
+            metrics=summary_metrics + [Column('ga:visits', type_cast=int)],
         )
 
         # Pages

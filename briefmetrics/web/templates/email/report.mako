@@ -42,8 +42,8 @@ ${h.chart(c.report.data['historic_data'], width=560, height=200)}
         </tr>
     </table>
     <%
-        columns = 'ga:pageviews', 'ga:visitors', 'ga:avgTimeOnSite', 'ga:visitBounceRate'
-        pageviews, uniques, seconds, bounces = next(c.report.tables['summary'].iter_rows(*columns))
+        columns = 'ga:pageviews', 'ga:visitors', 'ga:avgTimeOnSite', 'ga:visitBounceRate', 'ga:visits'
+        pageviews, uniques, seconds, bounces, visits = next(c.report.tables['summary'].iter_rows(*columns))
     %>
 
     % if int(uniques) and float(seconds):
@@ -52,8 +52,8 @@ ${h.chart(c.report.data['historic_data'], width=560, height=200)}
         unique visitors each spent an average of
         <span class="highlight">${h.human_time(seconds)}</span>
         over
-        <span class="highlight">${'%0.1f' % (float(pageviews) / float(uniques))}</span>
-        pageviews per session.
+        <span class="highlight">${'%0.1f' % (float(pageviews) / float(visits))}</span>
+        pages per session.
     </p>
     % endif
 % endif
