@@ -34,6 +34,10 @@ class Report(object):
         self.owner = report.account and report.account.user
         self.remote_id = report.remote_id
 
+        base_url = self.report.remote_data.get('websiteUrl', '')
+        if base_url and 'http://' not in base_url:
+            base_url = 'http://' + base_url
+
         if not self.remote_id:
             # TODO: Remove this after backfill
             self.remote_id = report.remote_id = report.remote_data['id']

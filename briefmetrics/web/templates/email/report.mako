@@ -62,7 +62,7 @@ ${widgets.render_table(
     c.report.tables['pages'],
     'Top Pages',
     h.ga_permalink('report/content-pages', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
-    prefix_links='http://%s' % c.report.report.remote_data['websiteUrl'],
+    prefix_links=c.report.base_url,
 )}
 
 ${widgets.render_table(
