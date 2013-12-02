@@ -76,6 +76,9 @@
 
 <%def name="overview_cell(table, column_id, is_percent=False, is_optional=False)">
     <%
+        if len(table.rows) < 2:
+            return ''
+
         column = table.get(column_id)
         last_val, cur_val = table.rows[1].get(column_id), table.rows[0].get(column_id)
 
