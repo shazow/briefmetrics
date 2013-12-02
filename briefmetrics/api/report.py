@@ -63,6 +63,13 @@ def fetch_weekly(request, report, date_start, google_query=None):
         oauth = api_google.auth_session(request, report.account.oauth_token)
         google_query = api_google.create_query(request, oauth)
 
+    owner = report.account.user
+    if not owner.stripe_customer_id and owner.num_remaining is not None and owner.num_remaining <= 1:
+        request.flash(h.literal('''
+            <strong>This is your final report. :(</strong><br />
+            Please <a href="https://briefmetrics.com/settings">add a credit card now</a> to keep receiving Briefmetrics reports.
+        '''))
+
     r = WeeklyReport(report, date_start)
 
     try:
