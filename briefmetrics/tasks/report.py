@@ -31,25 +31,17 @@ def send_weekly(report_id, since_time=None, pretend=False):
 @celery.task(ignore_result=True)
 def send_all(since_time=None, async=True, pretend=False, max_num=None):
     """Send all outstanding reports."""
-    since_time = since_time or now()
-
-    q = model.Session.query(model.Report).filter(
-        (model.Report.time_next <= since_time) | (model.Report.time_next == None)
-    )
-    reports = q.all()
-
     send_fn = send_weekly
     if async:
         send_fn = send_weekly.delay
 
-    for i, report in enumerate(reports):
-        if max_num and i >= max_num:
-            log.info('max_num reached, stopping send_all.')
-            break
+    num_reports = 0
+    reports = api.report.get_pending(since_time=since_time, max_num=max_num)
 
+    for num_reports, report in enumerate(reports):
         send_fn(report_id=report.id, since_time=since_time, pretend=pretend)
 
-    log.info('Queued %d reports for sending.' % len(reports))
+    log.info('Queued %d reports for sending.' % num_reports)
 
 
 @celery.task(ignore_result=True)

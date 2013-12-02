@@ -56,6 +56,19 @@ def add_subscriber(report_id, email, display_name):
     return u
 
 
+def get_pending(since_time=None, max_num=None):
+    since_time = since_time or now()
+
+    q = model.Session.query(model.Report).filter(
+        (model.Report.time_next <= since_time) | (model.Report.time_next == None)
+    )
+
+    if max_num:
+        q = q.limit(max_num)
+
+    return q
+
+
 # Reporting tasks:
 
 def fetch_weekly(request, report, date_start, google_query=None):
