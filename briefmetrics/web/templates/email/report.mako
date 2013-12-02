@@ -1,11 +1,10 @@
 <%inherit file="base.mako"/>
 <%namespace file="widgets.mako" name="widgets" />
 
-% if not c.report.owner.stripe_customer_id and c.report.owner.num_remaining is not None and c.report.owner.num_remaining <= 1:
-    <p>
-        <strong>This is your final report. :(</strong><br />
-        Please <a href="https://briefmetrics.com/settings">add a credit card now</a> to keep receiving Briefmetrics reports.
-    </p>
+% if request.messages:
+    % for message in request.pop_flash():
+        <p>${message}</p>
+    % endfor
 
     <h3>Back to your previously scheduled report...</h3>
 % endif
