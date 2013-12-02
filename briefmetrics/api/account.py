@@ -217,4 +217,8 @@ def start_subscription(user, plan_id=None):
         raise APIError("Invalid plan: %s" % user.plan_id)
 
     customer = stripe.Customer.retrieve(user.stripe_customer_id)
-    customer.update_subscription(plan="briefmetrics_%s" % user.plan_id)
+    try:
+        customer.update_subscription(plan="briefmetrics_%s" % user.plan_id)
+    except stripe.CardError as e:
+        delete_payments(user)
+        raise APIError('Failed to start payment plan: %s' % e.message)

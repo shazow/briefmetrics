@@ -33,6 +33,7 @@ class Report(object):
         self.report = report
         self.owner = report.account and report.account.user
         self.remote_id = report.remote_id
+        self.messages = []
 
         base_url = self.report.remote_data.get('websiteUrl', '')
         if base_url and 'http://' not in base_url:

@@ -17,10 +17,6 @@
         <p>
             Free emails until subscription starts: <strong>${c.user.num_remaining}</strong>
         </p>
-    % else:
-        <p>
-            $8 per month.
-        </p>
     % endif
 % elif num_remaining:
     <p>

@@ -76,13 +76,6 @@ def fetch_weekly(request, report, date_start, google_query=None):
         oauth = api_google.auth_session(request, report.account.oauth_token)
         google_query = api_google.create_query(request, oauth)
 
-    owner = report.account.user
-    if not owner.stripe_customer_id and owner.num_remaining is not None and owner.num_remaining <= 1:
-        request.flash(h.literal('''
-            <strong>This is your final report. :(</strong><br />
-            Please <a href="https://briefmetrics.com/settings">add a credit card now</a> to keep receiving Briefmetrics reports.
-        '''))
-
     r = WeeklyReport(report, date_start)
 
     try:
@@ -108,6 +101,8 @@ def send_weekly(request, report, since_time=None, pretend=False):
         return
 
     owner = report.account.user
+    messages = []
+
     if not pretend and owner.num_remaining is not None and owner.num_remaining <= 0:
         if not owner.stripe_customer_id:
             log.info('User [%d] expired, deleting report: %s' % (owner.id, report.display_name))
@@ -125,15 +120,30 @@ def send_weekly(request, report, since_time=None, pretend=False):
 
             return
 
-        # Create subscription for customer
-        api_account.start_subscription(owner)
-        owner.num_remaining = None
+        try:
+            # Create subscription for customer
+            api_account.start_subscription(owner)
+            owner.num_remaining = None
+        except APIError as e:
+            messages.append(h.literal('''
+                <strong>{message}</strong><br />
+                Please visit <a href="https://briefmetrics.com/settings">briefmetrics.com/settings</a> to add a new credit card and resume your reports.
+            '''.strip().format(message=e.message)))
+
+    elif not owner.stripe_customer_id and owner.num_remaining == 1:
+        messages.append(h.literal('''
+            <strong>This is your final report. :(</strong><br />
+            Please <a href="https://briefmetrics.com/settings">add a credit card now</a> to keep receiving Briefmetrics reports.
+        '''.strip()))
+
 
     # Last Sunday
     date_start = since_time.date() - datetime.timedelta(days=6) # Last week
     date_start -= datetime.timedelta(days=date_start.weekday()+1) # Sunday of that week
 
     report_context = fetch_weekly(request, report, date_start)
+
+    report_context.messages += messages
 
     send_users = report.users
     subject = report_context.get_subject()

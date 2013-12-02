@@ -31,9 +31,11 @@
     % else:
         <h2>Add a credit card</h2>
 
+        % if c.user.num_remaining:
         <p>
             You will be charged only when your free emails run out.
         </p>
+        % endif
 
         ${forms.payment_form()}
     % endif

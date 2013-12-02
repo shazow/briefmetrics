@@ -1,8 +1,8 @@
 <%inherit file="base.mako"/>
 <%namespace file="widgets.mako" name="widgets" />
 
-% if request.messages:
-    % for message in request.pop_flash():
+% if c.report.messages:
+    % for message in c.report.messages:
         <p>${message}</p>
     % endfor
 
