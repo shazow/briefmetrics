@@ -149,6 +149,7 @@ class Report(meta.Model): # Property within an account (such as a website)
 
 class ReportLog(meta.Model):
     __tablename__ = 'report_log'
+    __json_whitelist__ = ['id', 'time_sent', 'report_id', 'display_name', 'subject']
 
     id = Column(types.Integer, primary_key=True)
     time_created = Column(types.DateTime, default=now, nullable=False)

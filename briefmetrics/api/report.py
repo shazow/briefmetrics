@@ -160,6 +160,6 @@ def send_weekly(request, report, since_time=None, pretend=False):
         owner.num_remaining -= 1
 
     report.time_last = now()
-    report.time_next = report.next_preferred(since_time)
+    report.time_next = report.next_preferred(report_context.date_end + datetime.timedelta(days=7))
 
     model.Session.commit()

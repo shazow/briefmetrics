@@ -96,7 +96,7 @@ class TestReport(test.TestWeb):
         self.assertNotEqual(report.time_next, None)
         self.assertEqual(report.account.user.num_remaining, 0)
 
-        # Send all too early
+        # Send all again, should skip because too early
         with mock.patch('briefmetrics.api.email.send_message') as send_message:
             tasks.report.send_all(async=False)
             self.assertFalse(send_message.called)
