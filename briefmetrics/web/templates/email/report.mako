@@ -42,7 +42,7 @@ ${h.chart(c.report.data['historic_data'], width=560, height=200)}
         </tr>
     </table>
     <%
-        columns = 'ga:pageviews', 'ga:uniquePageviews', 'ga:avgTimeOnSite', 'ga:visitBounceRate'
+        columns = 'ga:pageviews', 'ga:visitors', 'ga:avgTimeOnSite', 'ga:visitBounceRate'
         pageviews, uniques, seconds, bounces = next(c.report.tables['summary'].iter_rows(*columns))
     %>
 

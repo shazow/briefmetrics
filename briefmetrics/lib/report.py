@@ -113,7 +113,7 @@ class WeeklyReport(Report):
         # Summary
         summary_metrics = [
             Column('ga:pageviews', label='Views', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
-            Column('ga:uniquePageviews', label='Uniques', type_cast=int, type_format=h.human_int),
+            Column('ga:visitors', label='Uniques', type_cast=int, type_format=h.human_int),
             Column('ga:avgTimeOnSite', label='Time On Site', type_cast=_cast_time, type_format=h.human_time, threshold=0),
             Column('ga:visitBounceRate', label='Bounce Rate', type_cast=_cast_bounce, type_format=h.human_percent, reverse=True, threshold=0),
         ]
@@ -208,7 +208,7 @@ class WeeklyReport(Report):
             ],
             metrics=[
                 Column('ga:pageviews', label='Views', type_cast=int, visible=1),
-                Column('ga:uniquePageviews', label='Uniques', type_cast=int),
+                Column('ga:visitors', label='Uniques', type_cast=int),
             ],
         )
 
