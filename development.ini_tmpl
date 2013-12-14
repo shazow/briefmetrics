@@ -10,15 +10,18 @@ pyramid.default_locale_name = en
 pyramid.includes = pyramid_debugtoolbar
 
 # Mail
-mail.mailer_class = DummyMailer
-mail.debug = 1
+mail.enabled = false
+mail.debug_bcc = debug@briefmetrics.com
+mail.debug_sample = 1
+mail.from_name = Briefmetrics
+mail.from_email = support@briefmetrics.com
 
 # Sessions
 session.type = file
 session.data_dir = %(here)s/data/sessions/data
 session.lock_dir = %(here)s/data/sessions/lock
 session.key = briefmetrics
-session.secret = somesecret
+session.secret = somedevsecret
 
 # Database
 sqlalchemy.url = sqlite:///%(here)s/briefmetrics.db
@@ -26,22 +29,36 @@ sqlalchemy.url = sqlite:///%(here)s/briefmetrics.db
 # Alembic migration
 script_location = alembic
 
+# Queue
+celery.broker = sqla+sqlite:///%(here)s/briefmetrics.db
+
+# Cache
+cache.report.backend = dogpile.cache.dbm
+cache.report.arguments.filename = %(here)s/report_cache.dbm
+#cache.report.expiration_time = 1
+
 # Templates
 mako.directories = briefmetrics.web:templates
 mako.strict_undefined = true
 
 # Features
-features.offline = true
+#features.offline = true
+#features.token_login = true
+features.ssl =
 
 # API
 api.google.client_id = XXX
 api.google.client_secret = XXX
 api.mandrill.key = XXX
 
+# Stripe
+stripe.private_key = XXX
+stripe.public_key = XXX
+
 
 [server:main]
 use = egg:waitress#main
-host = 0.0.0.0
+host = 127.0.0.1
 port = 5000
 
 
@@ -54,6 +71,7 @@ setup = briefmetrics.web.environment.setup_shell
 
 api = briefmetrics.api
 model = briefmetrics.model
+tasks = briefmetrics.tasks
 Session = briefmetrics.model.Session
 fixtures = briefmetrics.test.fixtures
 h = briefmetrics.lib.helpers
@@ -80,7 +98,7 @@ handlers =
 qualname = briefmetrics
 
 [logger_sqlalchemy]
-level = WARN
+level = INFO
 handlers =
 qualname = sqlalchemy.engine
 # "level = INFO" logs SQL queries.
