@@ -12,14 +12,14 @@ def _prune_abstract(label):
     return label
 
 def _cast_bounce(v):
-    if not v:
-        return
-    return float(v) / 100.0
+    v = float(v or 0.0) / 100.0
+    if v:
+        return v
 
 def _cast_time(v):
-    if not v:
-        return None
-    return float(v)
+    v = float(v or 0.0)
+    if v:
+        return v
 
 
 class EmptyReportError(Exception):
