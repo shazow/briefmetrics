@@ -63,11 +63,10 @@
         font-size: 0.9em;
     }
     td {
-        padding-right: 1em;
-        padding-top: 2px;
-        padding-bottom: 2px;
+        padding: 2px 0 2px 0;
     }
     td.number {
+        padding-right: 1em;
         text-align: right;
         vertical-align: top;
         width: 4.5em;
@@ -165,7 +164,7 @@
         border-radius: 3px;
         background: #eee;
         color: #999;
-        padding: 1px 4px;
+        padding: 0px 4px;
         white-space: nowrap;
     }
     .engagement.positive {
