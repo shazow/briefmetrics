@@ -45,13 +45,13 @@ ${h.chart(c.report.data['historic_data'], width=560, height=200)}
         pageviews, uniques, seconds, bounces, visits = next(c.report.tables['summary'].iter_rows(*columns))
     %>
 
-    % if int(uniques) and float(seconds):
+    % if uniques and seconds:
     <p style="margin-bottom: 2em;">
         <span class="highlight">${h.human_int(uniques)}</span>
         unique visitors each spent an average of
         <span class="highlight">${h.human_time(seconds)}</span>
         over
-        <span class="highlight">${'%0.1f' % (float(pageviews) / float(visits))}</span>
+        <span class="highlight">${'%0.1f' % (float(pageviews or 0.0) / float(visits or 1.0))}</span>
         pages per session.
     </p>
     % endif

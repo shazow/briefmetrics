@@ -34,23 +34,29 @@ class TestTable(test.TestCase):
         self.assertEqual(s.max_row, (200.0, 'd'))
 
     def test_rows(self):
+        def positive_int(n):
+            if not n or n < 0:
+                return
+            return int(n)
+
         t = Table([
             Column('foo', visible=1),
             Column('bar', visible=0),
-            Column('baz', type_cast=int, average=100),
+            Column('baz', type_cast=positive_int, average=100),
         ])
 
         data = [
             (9999, '1', 123),
-            (0123, '2', 1234),
+            (123, '2', 1234),
             (0000, '3', 23),
-            (0123, '4', 123),
+            (123, '4', 123),
+            (123, '5', 0),
         ]
 
         for d in data:
             t.add(d)
 
-        self.assertEqual(len(t.rows), 4)
+        self.assertEqual(len(t.rows), len(data))
         self.assertEqual(t.get('foo').min_row, (None, None))
         self.assertEqual(t.get('bar').max_row, (None, None))
         self.assertEqual(t.get('baz').min_row[0], 23)
@@ -59,3 +65,6 @@ class TestTable(test.TestCase):
         rows = t.iter_visible()
         self.assertEqual(list(next(rows)), [t.columns[1], t.columns[0]])
         self.assertEqual(list(next(rows)), ['1', 9999])
+
+        t.tag_rows()
+        self.assertFalse(t.rows[-1].tags)
