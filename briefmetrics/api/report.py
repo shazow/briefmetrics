@@ -147,7 +147,8 @@ def send_weekly(request, report, since_time=None, pretend=False):
 
     send_users = report.users
     subject = report_context.get_subject()
-    template = 'email/report.mako'
+    template = report_context.template
+
     if not report_context.data:
         send_users = [report.account.user]
         template = 'email/error_empty.mako'

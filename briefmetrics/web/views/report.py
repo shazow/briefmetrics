@@ -104,7 +104,7 @@ class ReportController(Controller):
 
         report_context = api.report.fetch_weekly(self.request, report, date_start)
 
-        html = api.report.render(self.request, 'email/report.mako', Context({
+        html = api.report.render(self.request, report_context.template, Context({
             'report': report_context,
             'user': user,
         }))

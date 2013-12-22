@@ -27,6 +27,8 @@ class EmptyReportError(Exception):
 
 
 class Report(object):
+    template = 'email/report/daily.mako'
+
     def __init__(self, report, date_start):
         self.data = {}
         self.tables = {}
@@ -75,7 +77,16 @@ class Report(object):
         pass
 
 
+class DailyReport(Report):
+    template = 'email/report/daily.mako'
+
+    def fetch(self, google_query):
+        pass
+
+
 class WeeklyReport(Report):
+    template = 'email/report/weekly.mako'
+
     def _set_date_range(self):
         self.date_end = self.date_start + datetime.timedelta(days=6)
         self.date_next = self.report.next_preferred(self.date_end + datetime.timedelta(days=7)).date()

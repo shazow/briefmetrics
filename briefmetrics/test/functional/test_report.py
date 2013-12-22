@@ -55,7 +55,7 @@ class TestReport(test.TestWeb):
         self.assertEqual(context.date_next, datetime.date(2013, 1, 21))
         self.assertEqual(context.get_subject(), u'Report for example.com (Jan 6-12)')
 
-        html = api.report.render(self.request, 'email/report.mako', Context({
+        html = api.report.render(self.request, context.template, Context({
             'report': context,
             'user': context.owner,
         }))

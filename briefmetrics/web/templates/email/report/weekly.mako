@@ -1,14 +1,6 @@
 <%inherit file="base.mako"/>
 <%namespace file="widgets.mako" name="widgets" />
 
-% if c.report.messages:
-    % for message in c.report.messages:
-        <p>${message}</p>
-    % endfor
-
-    <h3>Back to your previously scheduled report...</h3>
-% endif
-
 <%
     total_units = c.report.data['total_units']
 %>
@@ -88,15 +80,4 @@ ${widgets.render_table(
         <a href="https://briefmetrics.com/settings">Add a credit card now</a> to get ${c.report.owner.num_remaining-1} extra free reports!
         Your next report is scheduled for ${h.human_date(c.report.date_next)}.
     % endif
-</p>
-
-<h2>Please send feedback</h2>
-<p>
-    Reply to this email with comments, suggestions, requests, praise, or selfies.
-</p>
-
-<p class="footer">
-    Looking for something different?
-    <a href="https://briefmetrics.com/reports">Change subscription</a> &middot;
-    <a href="https://briefmetrics.com/account/delete?token=${c.user.unsubscribe_token}">Delete account</a>
 </p>
