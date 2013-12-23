@@ -80,8 +80,9 @@ Questions? Send an email to <a href="mailto:support@briefmetrics.com">support@br
 % endif
 
 % if is_logged_in:
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-${h.javascript_link(request, 'briefmetrics.web:static/js/core.js')}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script>!window.jQuery && document.write(unescape('%3Cscript src="/static/js/external/jquery.min.js"%3E%3C/script%3E'))</script>
+    ${h.javascript_link(request, 'briefmetrics.web:static/js/core.js')}
 % endif
 
 <%block name="tail"></%block>

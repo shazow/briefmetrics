@@ -77,13 +77,6 @@ class Report(object):
         pass
 
 
-class DailyReport(Report):
-    template = 'email/report/daily.mako'
-
-    def fetch(self, google_query):
-        pass
-
-
 class WeeklyReport(Report):
     template = 'email/report/weekly.mako'
 
@@ -256,3 +249,17 @@ class WeeklyReport(Report):
         self.tables['social_search'].tag_rows()
         self.tables['referrers'].tag_rows()
         self.tables['pages'].tag_rows()
+
+
+class DailyReport(Report):
+    template = 'email/report/daily.mako'
+
+    def fetch(self, google_query):
+        pass
+
+
+class MonthlyReport(Report):
+    template = 'email/report/monthly.mako'
+
+    def fetch(self, google_query):
+        pass

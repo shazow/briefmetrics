@@ -12,9 +12,9 @@
     <h2>New report</h2>
 
     % if c.available_profiles:
-    <form action="${request.current_route_path()}" method="post">
-        <p>
-            <select name="remote_id" data-placeholder="Choose a site" id="available-profiles">
+    <form action="${request.current_route_path()}" method="post" id="create-report">
+        <p class="row">
+            <select name="remote_id" data-placeholder="Choose a site" style="width: 80%">
                 <option />
             % for item in c.available_profiles['items']:
                 <%
@@ -33,6 +33,12 @@
                     [${item['webPropertyId']}]
                 </option>
             % endfor
+            </select>
+
+            <select name="type" style="width: 19%; margin-right: 0; margin-left: 0.5em;">
+                <option id="day">Daily</option>
+                <option id="week" selected>Weekly</option>
+                <option id="month">Monthly</option>
             </select>
         </p>
 
@@ -67,7 +73,7 @@
 
             <nav>
                 <h3>
-                    ${report.display_name}
+                    ${report.display_name}:
                 </h3>
                 <div class="controls">
                     <a class="button" target="_blank" href="${h.ga_permalink('report/visitors-overview', report)}">Google Analytics</a>
@@ -86,7 +92,10 @@
                 <dl>
                     <dt>Next Email</dt>
                 % if c.user.num_remaining == 0 and not c.user.stripe_customer_id:
-                    <dd>No reports remaining. Upgrade to resume.</dd>
+                    <dd>
+                        No reports remaining.<br />
+                        <a href="/settings#credit-card">Upgrade to resume.</a>
+                    </dd>
                 % else:
                     <dd>
                         ${h.human_date(report.time_next) or 'Imminently'}
@@ -113,7 +122,11 @@
 ${h.javascript_link(request, 'briefmetrics.web:static/js/external/chosen/chosen.jquery.min.js')}
 <script type="text/javascript">
     $(function() {
-         $("#available-profiles").chosen();
+        $("select[name=\"remote_id\"]").chosen();
+        $("select[name=\"type\"]").chosen({
+            ##disable_search: true,
+            ##display_selected_options: false
+        });
     });
 </script>
 </%block>

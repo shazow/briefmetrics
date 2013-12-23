@@ -35,7 +35,7 @@ def report_create(request):
         raise APIControllerError(e.message)
 
     # Queue new report
-    tasks.report.send_weekly.delay(report.id)
+    tasks.report.send.delay(report.id)
 
     request.flash("First report for %s has been queued. Please check your Spam folder if you don't see it in your Inbox in a few minutes." % report.display_name)
 
@@ -102,7 +102,7 @@ class ReportController(Controller):
         date_start = datetime.date.today() - datetime.timedelta(days=6) # Last week
         date_start -= datetime.timedelta(days=date_start.weekday()+1) # Sunday of that week
 
-        report_context = api.report.fetch_weekly(self.request, report, date_start)
+        report_context = api.report.fetch(self.request, report, date_start)
 
         html = api.report.render(self.request, report_context.template, Context({
             'report': report_context,

@@ -652,3 +652,7 @@ a.cta small {
   display: table-cell;
   padding-right: 2em;
 }
+
+form#create-report p .chosen-container:first {
+  margin-right: 5px;
+}

@@ -15,7 +15,7 @@ log = get_task_logger(__name__)
 
 
 @celery.task(ignore_result=True)
-def send_weekly(report_id, since_time=None, pretend=False):
+def send(report_id, since_time=None, pretend=False):
     """Task to send a specific weekly report (gets created by send_all)."""
     report = model.Session.query(model.Report).options(
         orm.joinedload(model.Report.account),
@@ -25,15 +25,15 @@ def send_weekly(report_id, since_time=None, pretend=False):
         log.warn('Invalid report id, skipping: %s' % report_id)
         return
 
-    api.report.send_weekly(celery.request, report, pretend=pretend)
+    api.report.send(celery.request, report, pretend=pretend)
 
 
 @celery.task(ignore_result=True)
 def send_all(since_time=None, async=True, pretend=False, max_num=None):
     """Send all outstanding reports."""
-    send_fn = send_weekly
+    send_fn = send
     if async:
-        send_fn = send_weekly.delay
+        send_fn = send.delay
 
     num_reports = 0
     reports = api.report.get_pending(since_time=since_time, max_num=max_num)
@@ -66,9 +66,9 @@ def dry_run(num_extra=5, async=True):
 
     since_time = now() - datetime.timedelta(days=14)
 
-    send_fn = send_weekly
+    send_fn = send
     if async:
-        send_fn = send_weekly.delay
+        send_fn = send.delay
 
     log.info('Starting dry run for %d reports.' % len(report_queue))
     for report in report_queue:

@@ -47,10 +47,10 @@ class TestReport(test.TestWeb):
         t = q.get_table({'max-results': 7}, dimensions=[Column('ga:month')])
         self.assertEqual([list(m) for m in t.iter_rows()], [[1], [1], [1], [1], [1], [1], [2]]) 
 
-    def test_fetch_weekly(self):
+    def test_fetch(self):
         report = self._create_report()
 
-        context = api.report.fetch_weekly(self.request, report, datetime.date(2013, 1, 6))
+        context = api.report.fetch(self.request, report, datetime.date(2013, 1, 6))
         self.assertEqual(context.date_end, datetime.date(2013, 1, 12))
         self.assertEqual(context.date_next, datetime.date(2013, 1, 21))
         self.assertEqual(context.get_subject(), u'Report for example.com (Jan 6-12)')
@@ -64,10 +64,10 @@ class TestReport(test.TestWeb):
     def test_empty(self):
         report = self._create_report()
         google_query = FakeQuery(_num_rows=0)
-        context = api.report.fetch_weekly(self.request, report, datetime.date(2013, 1, 6), google_query=google_query)
+        context = api.report.fetch(self.request, report, datetime.date(2013, 1, 6), google_query=google_query)
         self.assertFalse(context.data)
 
-        # TODO: Test send_weekly.
+        # TODO: Test send.
         html = api.report.render(self.request, 'email/error_empty.mako', Context({
             'report': context,
             'user': context.owner,
@@ -75,7 +75,7 @@ class TestReport(test.TestWeb):
         self.assertIn('no results for your site', html)
 
 
-    def test_send_weekly(self):
+    def test_send(self):
         report = self._create_report()
         self.assertEqual(report.time_next, None)
         self.assertEqual(model.Report.count(), 1)

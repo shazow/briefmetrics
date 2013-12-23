@@ -6,7 +6,7 @@ import random
 from unstdlib import now
 
 from briefmetrics.lib.controller import Controller, Context
-from briefmetrics.lib.report import WeeklyReport, EmptyReportError
+from briefmetrics.lib.report import DailyReport, WeeklyReport, MonthlyReport, EmptyReportError
 from briefmetrics.lib.exceptions import APIError
 from briefmetrics.lib import helpers as h
 from briefmetrics import model
@@ -71,12 +71,18 @@ def get_pending(since_time=None, max_num=None):
 
 # Reporting tasks:
 
-def fetch_weekly(request, report, date_start, google_query=None):
+def fetch(request, report, date_start, google_query=None):
     if not google_query:
         oauth = api_google.auth_session(request, report.account.oauth_token)
         google_query = api_google.create_query(request, oauth)
 
-    r = WeeklyReport(report, date_start)
+    ReportCls = {
+        'day': DailyReport,
+        'week': WeeklyReport,
+        'month': MonthlyReport,
+    }[report.type]
+
+    r = ReportCls(report, date_start)
 
     try:
         r.fetch(google_query)
@@ -91,13 +97,13 @@ def render(request, template, context=None):
     return Controller(request, context=context)._render_template(template)
 
 
-def send_weekly(request, report, since_time=None, pretend=False):
+def send(request, report, since_time=None, pretend=False):
     t = time.time()
 
     since_time = since_time or now()
 
     if not pretend and report.time_next and report.time_next > since_time:
-        log.warn('send_weekly too early, skipping for report: %s' % report.id)
+        log.warn('send too early, skipping for report: %s' % report.id)
         return
 
     owner = report.account.user
@@ -137,11 +143,12 @@ def send_weekly(request, report, since_time=None, pretend=False):
         '''.strip()))
 
 
+    # XXX: Generalize
     # Last Sunday
     date_start = since_time.date() - datetime.timedelta(days=6) # Last week
     date_start -= datetime.timedelta(days=date_start.weekday()+1) # Sunday of that week
 
-    report_context = fetch_weekly(request, report, date_start)
+    report_context = fetch(request, report, date_start)
 
     report_context.messages += messages
 
@@ -153,7 +160,7 @@ def send_weekly(request, report, since_time=None, pretend=False):
         send_users = [report.account.user]
         template = 'email/error_empty.mako'
 
-    log.info('Sending report to [%d] users: %s' % (len(send_users), report.display_name))
+    log.info('Sending %s report to [%d] users: %s' % (report.type, len(send_users), report.display_name))
 
     debug_sample = float(request.registry.settings.get('mail.debug_sample', 1))
     debug_bcc = owner.plan.id != 'trial' or not report.time_next or random.random() < debug_sample
@@ -191,6 +198,6 @@ def send_weekly(request, report, since_time=None, pretend=False):
         owner.num_remaining -= 1
 
     report.time_last = now()
-    report.time_next = report.next_preferred(report_context.date_end + datetime.timedelta(days=7))
+    report.time_next = report.next_preferred(report_context.date_end + datetime.timedelta(days=7)) # XXX: Generalize
 
     model.Session.commit()
