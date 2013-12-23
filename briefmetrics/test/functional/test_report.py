@@ -50,7 +50,8 @@ class TestReport(test.TestWeb):
     def test_fetch(self):
         report = self._create_report()
 
-        context = api.report.fetch(self.request, report, datetime.date(2013, 1, 6))
+        since_time = datetime.datetime(2013, 1, 13)
+        context = api.report.fetch(self.request, report, since_time)
         self.assertEqual(context.date_end, datetime.date(2013, 1, 12))
         self.assertEqual(context.date_next, datetime.date(2013, 1, 21))
         self.assertEqual(context.get_subject(), u'Report for example.com (Jan 6-12)')
@@ -64,7 +65,8 @@ class TestReport(test.TestWeb):
     def test_empty(self):
         report = self._create_report()
         google_query = FakeQuery(_num_rows=0)
-        context = api.report.fetch(self.request, report, datetime.date(2013, 1, 6), google_query=google_query)
+        since_time = datetime.datetime(2013, 1, 13)
+        context = api.report.fetch(self.request, report, since_time, google_query=google_query)
         self.assertFalse(context.data)
 
         # TODO: Test send.
@@ -180,9 +182,9 @@ class TestReportLib(test.TestCase):
 
     def test_base(self):
         report = self._create_report_model('day')
-        date_start = datetime.date(2013, 1, 1)
+        since_time = datetime.datetime(2013, 1, 2)
 
-        r = Report(report, date_start)
+        r = Report(report, since_time)
 
         self.assertEqual(r.date_end, datetime.date(2013, 1, 1))
         self.assertEqual(r.date_next, datetime.date(2013, 1, 2))
@@ -190,17 +192,19 @@ class TestReportLib(test.TestCase):
 
     def test_weekly(self):
         report = self._create_report_model('week')
-        date_start = datetime.date(2013, 1, 6) # First Sunday
-        r = WeeklyReport(report, date_start)
+        since_time = datetime.datetime(2013, 1, 14) # Monday after Next Sunday
+        r = WeeklyReport(report, since_time)
 
+        self.assertEqual(r.date_start, datetime.date(2013, 1, 6)) # First Sunday
         self.assertEqual(r.date_end, datetime.date(2013, 1, 12)) # Next Saturday
         self.assertEqual(r.date_next, datetime.date(2013, 1, 21)) # Week from Monday
 
         self.assertEqual(r.get_subject(), u"Report for example.com (Jan 6-12)")
 
-        date_start = datetime.date(2013, 1, 27) # Last Sunday
+        date_start = datetime.datetime(2013, 2, 4) # Monday after Next Saturday
         r = WeeklyReport(report, date_start)
 
+        self.assertEqual(r.date_start, datetime.date(2013, 1, 27)) # Last Sunday
         self.assertEqual(r.date_end, datetime.date(2013, 2, 2)) # Next Saturday
         self.assertEqual(r.date_next, datetime.date(2013, 2, 11)) # Week from Monday
 

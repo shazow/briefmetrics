@@ -71,7 +71,7 @@ def get_pending(since_time=None, max_num=None):
 
 # Reporting tasks:
 
-def fetch(request, report, date_start, google_query=None):
+def fetch(request, report, since_time, google_query=None):
     if not google_query:
         oauth = api_google.auth_session(request, report.account.oauth_token)
         google_query = api_google.create_query(request, oauth)
@@ -82,7 +82,7 @@ def fetch(request, report, date_start, google_query=None):
         'month': MonthlyReport,
     }[report.type]
 
-    r = ReportCls(report, date_start)
+    r = ReportCls(report, since_time)
 
     try:
         r.fetch(google_query)
@@ -143,12 +143,7 @@ def send(request, report, since_time=None, pretend=False):
         '''.strip()))
 
 
-    # XXX: Generalize
-    # Last Sunday
-    date_start = since_time.date() - datetime.timedelta(days=6) # Last week
-    date_start -= datetime.timedelta(days=date_start.weekday()+1) # Sunday of that week
-
-    report_context = fetch(request, report, date_start)
+    report_context = fetch(request, report, since_time)
 
     report_context.messages += messages
 
