@@ -96,13 +96,13 @@ def human_time(seconds=None):
     return ' '.join(r)
 
 def human_int(n):
-    return u'{:,}'.format(int(n))
+    return u'{:,}'.format(int(n or 1))
 
 def human_percent(f):
     fmt = u'{:0.1%}'
     if f < 0.1:
         fmt = u'{:0.2%}'
-    return fmt.format(float(f))
+    return fmt.format(float(f or 0.0))
 
 def human_delta(f):
     fmt = u'{:+0.1%}'
