@@ -88,7 +88,7 @@
             formatted_val = h.human_int(cur_val)
 
         delta = 0
-        if last_val:
+        if last_val and cur_val:
             delta = (cur_val / float(last_val)) - 1
     %>
     <td ${h.text_if(is_optional, 'class="optional"')}>
