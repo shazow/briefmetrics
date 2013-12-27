@@ -1,4 +1,5 @@
 import datetime
+from unstdlib import now
 
 from briefmetrics import api, model, tasks
 from briefmetrics.web.environment import Response, httpexceptions
@@ -99,10 +100,8 @@ class ReportController(Controller):
             raise httpexceptions.HTTPNotFound()
 
         # Last Sunday
-        date_start = datetime.date.today() - datetime.timedelta(days=6) # Last week
-        date_start -= datetime.timedelta(days=date_start.weekday()+1) # Sunday of that week
-
-        report_context = api.report.fetch(self.request, report, date_start)
+        since_time = now()
+        report_context = api.report.fetch(self.request, report, since_time)
 
         html = api.report.render(self.request, report_context.template, Context({
             'report': report_context,
