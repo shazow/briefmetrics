@@ -36,9 +36,9 @@
             </select>
 
             <select name="type" style="width: 19%; margin-right: 0; margin-left: 0.5em;">
-                <option id="day">Daily</option>
-                <option id="week" selected>Weekly</option>
-                <option id="month">Monthly</option>
+                <option value="day">Daily</option>
+                <option value="week" selected>Weekly</option>
+                <option value="month">Monthly</option>
             </select>
         </p>
 
@@ -73,7 +73,7 @@
 
             <nav>
                 <h3>
-                    ${report.display_name}:
+                    ${report.display_name}
                 </h3>
                 <div class="controls">
                     <a class="button" target="_blank" href="${h.ga_permalink('report/visitors-overview', report)}">Google Analytics</a>

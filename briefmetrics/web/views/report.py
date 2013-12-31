@@ -11,6 +11,7 @@ from .api import expose_api, handle_api
 
 @expose_api('report.create')
 def report_create(request):
+    report_type = request.params.get('type', 'day')
     remote_id = request.params['remote_id']
     if not remote_id:
         raise APIControllerError("Select a report to create.")
@@ -31,14 +32,14 @@ def report_create(request):
         raise APIControllerError("Profile does not belong to this account: %s" % remote_id)
 
     try:
-        report = api.report.create(account_id=account.id, remote_data=profile, subscribe_user_id=user_id)
+        report = api.report.create(account_id=account.id, remote_data=profile, subscribe_user_id=user_id, type=report_type)
     except APIError as e:
         raise APIControllerError(e.message)
 
     # Queue new report
     tasks.report.send.delay(report.id)
 
-    request.flash("First report for %s has been queued. Please check your Spam folder if you don't see it in your Inbox in a few minutes." % report.display_name)
+    request.flash("First %s report for %s has been queued. Please check your Spam folder if you don't see it in your Inbox in a few minutes." % (report.type, report.display_name))
 
     return {'report': report}
 
