@@ -1,5 +1,6 @@
 from sqlalchemy import orm
 from unstdlib import get_many
+from datetime import date, timedelta
 
 from briefmetrics.web.environment import Response
 from briefmetrics import api, model, tasks
@@ -31,10 +32,14 @@ def explore_api(request):
 
     oauth = api.google.auth_session(request, u.account.oauth_token)
     google_query = api.google.create_query(request, oauth)
+
+    date_end = date.today()
+    date_start = date_end- timedelta(days=7)
+
     params = {
         'ids': 'ga:%s' % report.remote_id,
-        #'start-date': date_start,
-        #'end-date': date_end,
+        'start-date': date_start,
+        'end-date': date_end,
     }
 
     if metrics:
