@@ -147,6 +147,7 @@ class WeeklyReport(Report):
         )
 
         # Pages
+        # TODO: Add ga:avgPageLoadTime 
         self.tables['pages'] = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
@@ -287,4 +288,99 @@ class MonthlyReport(Report):
         )
 
     def fetch(self, google_query):
-        pass
+        date_start_last_month = (self.date_start - datetime.timedelta(days=self.date_start.day + 1)).replace(day=1)
+
+        # Summary
+        summary_metrics = [
+            Column('ga:pageviews', label='Views', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
+            Column('ga:visitors', label='Uniques', type_cast=int, type_format=h.human_int),
+            Column('ga:avgTimeOnSite', label='Time On Site', type_cast=_cast_time, type_format=h.human_time, threshold=0),
+            Column('ga:visitBounceRate', label='Bounce Rate', type_cast=_cast_bounce, type_format=h.human_percent, reverse=True, threshold=0),
+        ]
+        self.tables['summary'] = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': date_start_last_month, # Extra month
+                'end-date': self.date_end,
+                'sort': '-ga:month',
+            },
+            dimensions=[
+                Column('ga:month'),
+            ],
+            metrics=summary_metrics + [Column('ga:visits', type_cast=int)],
+        )
+
+        self.tables['geo'] = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': self.date_start,
+                'end-date': self.date_end,
+                'sort': '-ga:visitors',
+                'max-results': '10',
+            },
+            dimensions=[
+                Column('ga:country', label='Country', visible=1),
+            ],
+            metrics=[col.new() for col in summary_metrics],
+        )
+
+        self.tables['device'] = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': self.date_start,
+                'end-date': self.date_end,
+                'sort': '-ga:visitors',
+            },
+            dimensions=[
+                Column('ga:deviceCategory', label='Device', visible=1),
+            ],
+            metrics=[col.new() for col in summary_metrics],
+        )
+
+        self.tables['browser'] = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': self.date_start,
+                'end-date': self.date_end,
+                'sort': '-ga:visitors',
+            },
+            dimensions=[
+                Column('ga:browser', label='Device', visible=1),
+            ],
+            metrics=[col.new() for col in summary_metrics] + [Column('ga:avgPageLoadTime', label='Load Time', visible=1)],
+        )
+
+
+        # TODO: Add last year's month
+
+        historic_table = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': date_start_last_month,
+                'end-date': self.date_end,
+            },
+            dimensions=[
+                Column('ga:date'),
+                Column('ga:month', visible=0),
+            ],
+            metrics=[
+                Column('ga:pageviews', label='Views', type_cast=int, visible=1),
+                Column('ga:visitors', label='Uniques', type_cast=int),
+            ],
+        )
+
+        intro_config = self.report.config.get('intro')
+        if intro_config:
+            # For John Sheehan
+            historic_table.set_visible('ga:month', intro_config)
+
+        iter_historic = historic_table.iter_visible()
+        _, views_column = next(iter_historic)
+        monthly_data, max_value = self._cumulative_by_month(iter_historic)
+        last_month, current_month = monthly_data
+
+        self.data['historic_data'] = encode_rows(monthly_data, max_value)
+        self.data['total_units'] = '{:,} %s' % views_column.label.lower().rstrip('s')
+        self.data['total_current'] = current_month[-1]
+        self.data['total_last'] = last_month[-1]
+        self.data['total_last_relative'] = last_month[len(current_month)-1]

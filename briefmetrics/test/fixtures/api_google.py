@@ -44,6 +44,7 @@ data['ga:source'] = ['google', 'wordpress']
 data['ga:socialNetwork'] = ['Facebook', 'Reddit']
 data['ga:fullReferrer'] = ['example.com/foo', 'example.com/bar']
 data['ga:pagePath'] = ['/foo', '/bar', '/baz']
+data['ga:country'] = ['United States', 'Canada', 'Germany']
 
 
 class FakeQuery(Query):
