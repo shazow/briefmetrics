@@ -8,3 +8,5 @@
     * Look up monte carlo walks for predicting charts
     * API explorer thing
     * New dashboard with report type toggles
+    * Yearly plans
+    * Bitcoin integration

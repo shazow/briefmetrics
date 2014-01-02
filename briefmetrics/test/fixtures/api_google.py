@@ -51,7 +51,7 @@ class FakeQuery(Query):
         self.num_profiles = kw.get('_num_profiles', 5)
         self.num_rows = kw.get('_num_rows', 10)
 
-    def get_table(self, params, dimensions=None, metrics=None):
+    def get_table(self, params, dimensions=None, metrics=None, _cache_keys=None):
         columns = self._columns_to_params(params, dimensions=dimensions, metrics=metrics)
 
         limit = min(self.num_rows, int(params.get('max-results', 10)))

@@ -54,9 +54,10 @@ def get_admin(request, required=True):
     u = get_user(request, required=required)
     if u.is_admin:
         return u
-    if required:
-        raise httpexceptions.HTTPForbidden()
-    return
+    if not required:
+        return
+
+    raise httpexceptions.HTTPForbidden()
 
 
 def login_user_id(request, user_id):

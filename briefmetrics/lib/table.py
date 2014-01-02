@@ -123,6 +123,8 @@ class Row(object):
 
 
 class Table(object):
+    _response_data = None
+
     def __init__(self, columns):
         # Columns must be in the same order as the rows that get added.
         self.columns = columns
@@ -206,4 +208,6 @@ class Table(object):
         for row in self.rows:
             yield (row.values[i] for i in column_positions)
 
-
+    def __json__(self):
+        # TODO: ...
+        return {'_response_data': self._response_data}
