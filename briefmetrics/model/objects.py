@@ -130,7 +130,9 @@ class Report(meta.Model): # Property within an account (such as a website)
             next_month = next_month.replace(day=1)
 
             if time_preferred.day != 1:
-                next_month += time_preferred.weekday()
+                weekday_offset = time_preferred.weekday() - next_month.weekday()
+                if weekday_offset:
+                    next_month += datetime.timedelta(days=7 + weekday_offset)
 
             days_offset = (next_month - now).days
 
@@ -138,6 +140,12 @@ class Report(meta.Model): # Property within an account (such as a website)
 
     @staticmethod
     def encode_preferred_time(hour=13, minute=0, second=0, weekday=None, min_year=1900):
+        """
+        ...
+
+        :param weekday:
+            Monday == 0 ... Sunday == 6
+        """
         d = datetime.datetime(min_year, 1, 1).replace(hour=hour, minute=minute, second=second)
         if weekday is not None:
             d += datetime.timedelta(days=7 - d.weekday() + weekday)

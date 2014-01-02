@@ -48,7 +48,7 @@ class Report(object):
         self.base_url = self.report.remote_data.get('websiteUrl', '')
 
         self.since_time = since_time
-        self._set_date_range()
+        self.date_start, self.date_end, self.date_next = self.get_date_range(since_time)
 
     @classmethod
     def create_from_now(cls, report, now):
@@ -56,10 +56,15 @@ class Report(object):
         date_start = now.date()
         return cls(report, date_start)
 
-    def _set_date_range(self):
-        self.date_start = (self.since_time - datetime.timedelta(days=1)).date()
-        self.date_end = self.date_start
-        self.date_next = self.report.next_preferred(self.date_end).date()
+    def get_date_range(self, since_time):
+        """
+        Returns a (start, end, next) date tuple.
+        """
+        date_start = (since_time - datetime.timedelta(days=1)).date()
+        date_end = date_start
+        date_next = self.report.next_preferred(date_end).date()
+
+        return date_start, date_end, date_next
 
     def get_subject(self):
         return u"Report for {site} ({date})".format(
@@ -81,12 +86,14 @@ class Report(object):
 class WeeklyReport(Report):
     template = 'email/report/weekly.mako'
 
-    def _set_date_range(self):
+    def get_date_range(self, since_time):
         # Last Sunday
-        self.date_start = self.since_time.date() - datetime.timedelta(days=6) # Last week
-        self.date_start -= datetime.timedelta(days=self.date_start.weekday()+1) # Sunday of that week
-        self.date_end = self.date_start + datetime.timedelta(days=6)
-        self.date_next = self.report.next_preferred(self.date_end + datetime.timedelta(days=7)).date()
+        date_start = since_time.date() - datetime.timedelta(days=6) # Last week
+        date_start -= datetime.timedelta(days=date_start.weekday()+1) # Sunday of that week
+        date_end = date_start + datetime.timedelta(days=6)
+        date_next = self.report.next_preferred(date_end + datetime.timedelta(days=7)).date()
+
+        return date_start, date_end, date_next
 
     def get_subject(self):
         if self.date_start.month == self.date_end.month:
@@ -265,9 +272,19 @@ class DailyReport(Report):
 class MonthlyReport(Report):
     template = 'email/report/monthly.mako'
 
-    def _set_date_range(self):
-        # XXX:
-        pass
+    def get_date_range(self, since_time):
+        since_start = since_time.date().replace(day=1)
+        date_end = since_start - datetime.timedelta(days=1) # Last of the previous month
+        date_start = date_end.replace(day=1) # First of the previous month
+        date_next = self.report.next_preferred(since_start).date()
+
+        return date_start, date_end, date_next
+
+    def get_subject(self):
+        return u"Report for {site} ({date})".format(
+            date=self.date_start.strftime('%B'),
+            site=self.report.display_name,
+        )
 
     def fetch(self, google_query):
         pass

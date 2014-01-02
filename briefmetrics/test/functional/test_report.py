@@ -2,7 +2,7 @@ from briefmetrics import test
 from briefmetrics import api
 from briefmetrics import model
 from briefmetrics import tasks
-from briefmetrics.lib.report import Report, WeeklyReport
+from briefmetrics.lib.report import Report, DailyReport, WeeklyReport, MonthlyReport
 from briefmetrics.lib.table import Column
 from briefmetrics.lib.controller import Context
 
@@ -180,11 +180,11 @@ class TestReportLib(test.TestCase):
             type=type,
         )
 
-    def test_base(self):
+    def test_daily(self):
         report = self._create_report_model('day')
         since_time = datetime.datetime(2013, 1, 2)
 
-        r = Report(report, since_time)
+        r = DailyReport(report, since_time)
 
         self.assertEqual(r.date_end, datetime.date(2013, 1, 1))
         self.assertEqual(r.date_next, datetime.date(2013, 1, 2))
@@ -209,3 +209,26 @@ class TestReportLib(test.TestCase):
         self.assertEqual(r.date_next, datetime.date(2013, 2, 11)) # Week from Monday
 
         self.assertEqual(r.get_subject(), u"Report for example.com (Jan 27-Feb 2)")
+
+    def test_monthly(self):
+        report = self._create_report_model('month')
+        report.set_time_preferred(weekday=0) # Preferred time: First Monday
+
+        since_time = datetime.datetime(2014, 1, 6) # First Monday of January 2014
+        r = MonthlyReport(report, since_time)
+
+        self.assertEqual(r.date_start, datetime.date(2013, 12, 1)) # Start of December 2013
+        self.assertEqual(r.date_end, datetime.date(2013, 12, 31)) # End of December 2013
+        self.assertEqual(r.date_next, datetime.date(2014, 2, 3)) # First Monday of February 2014
+
+        self.assertEqual(r.get_subject(), u"Report for example.com (December)")
+
+        since_time = datetime.datetime(2014, 8, 4) # Let's try August (because Sept starts with Monday)
+        r = MonthlyReport(report, since_time)
+
+        self.assertEqual(r.date_start, datetime.date(2014, 7, 1))
+        self.assertEqual(r.date_end, datetime.date(2014, 7, 31))
+        self.assertEqual(r.date_next, datetime.date(2014, 9, 1)) # First Monday of February 2014
+
+        self.assertEqual(r.get_subject(), u"Report for example.com (July)")
+
