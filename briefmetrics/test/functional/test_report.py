@@ -201,6 +201,7 @@ class TestReportLib(test.TestCase):
 
         self.assertEqual(r.get_subject(), u"Report for example.com (Jan 6-12)")
 
+        # Scenario: Overlapping month
         date_start = datetime.datetime(2013, 2, 4) # Monday after Next Saturday
         r = WeeklyReport(report, date_start)
 
@@ -223,12 +224,13 @@ class TestReportLib(test.TestCase):
 
         self.assertEqual(r.get_subject(), u"Report for example.com (December)")
 
-        since_time = datetime.datetime(2014, 8, 4) # Let's try August (because Sept starts with Monday)
+        # Scenario: Month starting with Monday (Sept 1)
+        since_time = datetime.datetime(2014, 8, 4)
         r = MonthlyReport(report, since_time)
 
         self.assertEqual(r.date_start, datetime.date(2014, 7, 1))
         self.assertEqual(r.date_end, datetime.date(2014, 7, 31))
-        self.assertEqual(r.date_next, datetime.date(2014, 9, 1)) # First Monday of February 2014
+        self.assertEqual(r.date_next, datetime.date(2014, 9, 1)) # First Monday of September 2014
 
         self.assertEqual(r.get_subject(), u"Report for example.com (July)")
 
