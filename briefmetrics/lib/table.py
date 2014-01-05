@@ -191,7 +191,6 @@ class Table(object):
             if row and column.is_interesting(value):
                 row.tags.append(RowTag(column=column, value=value, type='min'))
 
-
     def iter_rows(self, *column_ids):
         if not column_ids:
             column_ids = [col.id for col in self.columns]

@@ -147,7 +147,6 @@ class WeeklyReport(Report):
         )
 
         # Pages
-        # TODO: Add ga:avgPageLoadTime 
         self.tables['pages'] = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
@@ -159,7 +158,10 @@ class WeeklyReport(Report):
             dimensions=[
                 Column('ga:pagePath', label='Pages', visible=1, type_cast=_prune_abstract),
             ],
-            metrics=[col.new() for col in summary_metrics],
+            metrics=[col.new() for col in summary_metrics] + [
+                Column('ga:avgPageLoadTime', label='Load Time', type_cast=float),
+            ],
+
         )
 
         if not self.tables['pages'].rows:
@@ -347,7 +349,9 @@ class MonthlyReport(Report):
             dimensions=[
                 Column('ga:browser', label='Device', visible=1),
             ],
-            metrics=[col.new() for col in summary_metrics] + [Column('ga:avgPageLoadTime', label='Load Time', visible=1)],
+            metrics=[col.new() for col in summary_metrics] + [
+                Column('ga:avgPageLoadTime', label='Load Time', type_cast=float),
+            ],
         )
 
 
