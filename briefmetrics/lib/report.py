@@ -6,14 +6,10 @@ from . import helpers as h
 from .table import Table, Column
 
 
-def _prune_abstract(label):
-    if not label or label.startswith('('):
+def _prune_abstract(v):
+    if v.startswith('('):
         return
-
-    if not label[0].isupper():
-        return label.title()
-
-    return label
+    return v
 
 def _cast_bounce(v):
     v = float(v or 0.0) / 100.0
@@ -24,6 +20,17 @@ def _cast_time(v):
     v = float(v or 0.0)
     if v:
         return v
+
+def _cast_title(v):
+    # Also prunes abstract
+    if not v or v.startswith('('):
+        return
+
+    if not v[0].isupper():
+        return v.title()
+
+    return v
+
 
 def cumulative_by_month(month_views_iter):
     months = OrderedDict()
@@ -252,7 +259,7 @@ class WeeklyReport(Report):
         self.data['total_last_relative'] = last_month[len(current_month)-1]
 
         t = Table(columns=[
-            Column('source', label='Social & Search', visible=1),
+            Column('source', label='Social & Search', visible=1, type_cast=_cast_title),
         ] + [col.new() for col in summary_metrics])
 
         for cells in self.tables['social'].iter_rows():
@@ -338,7 +345,7 @@ class MonthlyReport(Report):
                 'sort': '-ga:visitors',
             },
             dimensions=[
-                Column('ga:deviceCategory', label='Device', visible=1, type_cast=_prune_abstract),
+                Column('ga:deviceCategory', label='Device', visible=1, type_cast=_cast_title),
             ],
             metrics=[col.new() for col in summary_metrics],
         )

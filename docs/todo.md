@@ -4,6 +4,7 @@
     * "Dayly"
     * Monthly: Weekend-shifted day delta bar charts
     * Monthly: Percent tables
+    * Goal Conversions
 
 * Big things
     * Look up monte carlo walks for predicting charts
