@@ -88,10 +88,12 @@
         padding: 1px 2px;
     }
     .chartTop {
+        white-space: nowrap;
         background: #beeee1;
         padding: 1px 2px;
     }
     .chartBottom {
+        white-space: nowrap;
         background: #fce09b;
         padding: 1px 2px;
     }
@@ -104,6 +106,7 @@
         color: #9db883;
         line-height: 2em;
         font-size: 0.8em;
+        padding-right: 0.5em;
     }
     .overview {
         font-size: 1em;

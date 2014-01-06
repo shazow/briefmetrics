@@ -24,7 +24,7 @@ def dry_run(request):
 def explore_api(request):
     u = api.account.get_admin(request)
 
-    report_id, dimensions, metrics, extra = get_many(request.params, ['report_id'], optional=['dimensions', 'metrics', 'extra'])
+    report_id, dimensions, metrics, extra, date_start, date_end = get_many(request.params, ['report_id'], optional=['dimensions', 'metrics', 'extra', 'date_start', 'date_end'])
     report = model.Report.get_by(account_id=u.account.id, id=report_id)
 
     if not report:
@@ -33,8 +33,8 @@ def explore_api(request):
     oauth = api.google.auth_session(request, u.account.oauth_token)
     google_query = api.google.create_query(request, oauth)
 
-    date_end = date.today()
-    date_start = date_end- timedelta(days=7)
+    date_end = date_end or date.today()
+    date_start = date_start or date_end - timedelta(days=7)
 
     params = {
         'ids': 'ga:%s' % report.remote_id,
@@ -82,6 +82,9 @@ class AdminController(Controller):
         u = api.account.get_admin(self.request)
         self.c.reports = u.reports
         self.c.user = u
+
+        self.c.date_end = date.today()
+        self.c.date_start = self.c.date_end - timedelta(days=7)
 
         return self._render('admin/explore_api.mako')
 

@@ -7,8 +7,12 @@ from .table import Table, Column
 
 
 def _prune_abstract(label):
-    if label.startswith('('):
+    if not label or label.startswith('('):
         return
+
+    if not label[0].isupper():
+        return label.title()
+
     return label
 
 def _cast_bounce(v):
@@ -20,6 +24,22 @@ def _cast_time(v):
     v = float(v or 0.0)
     if v:
         return v
+
+def cumulative_by_month(month_views_iter):
+    months = OrderedDict()
+    max_value = 0
+    for month, views in month_views_iter:
+        month_list = months.get(month)
+        if not month_list:
+            month_list = months[month] = []
+            last_val = 0
+        else:
+            last_val = month_list[-1]
+        val = last_val + views
+        month_list.append(val)
+        max_value = max(max_value, val)
+
+    return months.values(), max_value
 
 
 class EmptyReportError(Exception):
@@ -107,22 +127,6 @@ class WeeklyReport(Report):
             date_end=self.date_end.strftime('%b {}').format(self.date_end.day),
             site=self.report.display_name,
         )
-
-    def _cumulative_by_month(self, month_views_iter):
-        months = OrderedDict()
-        max_value = 0
-        for month, views in month_views_iter:
-            month_list = months.get(month)
-            if not month_list:
-                month_list = months[month] = []
-                last_val = 0
-            else:
-                last_val = month_list[-1]
-            val = last_val + views
-            month_list.append(val)
-            max_value = max(max_value, val)
-
-        return months.values(), max_value
 
     def fetch(self, google_query):
 
@@ -238,7 +242,7 @@ class WeeklyReport(Report):
 
         iter_historic = historic_table.iter_visible()
         _, views_column = next(iter_historic)
-        monthly_data, max_value = self._cumulative_by_month(iter_historic)
+        monthly_data, max_value = cumulative_by_month(iter_historic)
         last_month, current_month = monthly_data
 
         self.data['historic_data'] = encode_rows(monthly_data, max_value)
@@ -321,7 +325,7 @@ class MonthlyReport(Report):
                 'max-results': '10',
             },
             dimensions=[
-                Column('ga:country', label='Country', visible=1),
+                Column('ga:country', label='Country', visible=1, type_cast=_prune_abstract),
             ],
             metrics=[col.new() for col in summary_metrics],
         )
@@ -334,7 +338,7 @@ class MonthlyReport(Report):
                 'sort': '-ga:visitors',
             },
             dimensions=[
-                Column('ga:deviceCategory', label='Device', visible=1),
+                Column('ga:deviceCategory', label='Device', visible=1, type_cast=_prune_abstract),
             ],
             metrics=[col.new() for col in summary_metrics],
         )
@@ -347,12 +351,16 @@ class MonthlyReport(Report):
                 'sort': '-ga:visitors',
             },
             dimensions=[
-                Column('ga:browser', label='Device', visible=1),
+                Column('ga:browser', label='Browser', visible=1),
             ],
             metrics=[col.new() for col in summary_metrics] + [
                 Column('ga:avgPageLoadTime', label='Load Time', type_cast=float),
             ],
         )
+
+        self.tables['geo'].tag_rows()
+        self.tables['device'].tag_rows()
+        self.tables['browser'].tag_rows()
 
 
         # TODO: Add last year's month
@@ -380,11 +388,14 @@ class MonthlyReport(Report):
 
         iter_historic = historic_table.iter_visible()
         _, views_column = next(iter_historic)
-        monthly_data, max_value = self._cumulative_by_month(iter_historic)
+        monthly_data, max_value = cumulative_by_month(iter_historic)
         last_month, current_month = monthly_data
 
         self.data['historic_data'] = encode_rows(monthly_data, max_value)
         self.data['total_units'] = '{:,} %s' % views_column.label.lower().rstrip('s')
         self.data['total_current'] = current_month[-1]
         self.data['total_last'] = last_month[-1]
-        self.data['total_last_relative'] = last_month[len(current_month)-1]
+        self.data['current_month'] = self.date_start.strftime('%B')
+        self.data['last_month'] = date_start_last_month.strftime('%B')
+        self.data['current_month_days'] = self.date_end.day
+        self.data['last_month_days'] = (self.date_start - datetime.timedelta(days=1)).day

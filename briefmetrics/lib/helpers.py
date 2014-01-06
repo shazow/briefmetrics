@@ -16,7 +16,7 @@ The template globals (``h`` et al) are set in
 import re
 from urllib import urlencode
 
-from unstdlib import html, slugify
+from unstdlib import html, slugify, get_many
 from pyramid.asset import abspath_from_asset_spec  # TODO: Adopt this into unstdlib?
 from .gcharts import chart
 

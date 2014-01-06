@@ -2,10 +2,14 @@
 
 
 <div class="container">
-    <form action="${request.route_path('api')}" method="post">
+    <form action="${request.route_path('api')}" method="get">
         <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
         <input type="hidden" name="method" value="admin.explore_api" />
         <input type="hidden" name="format" value="json" />
+        <input type="hidden" name="pretty" value="2" />
+
+        <input type="text" name="date_start" placeholder="Date Start" value="${c.date_end}" /> -
+        <input type="text" name="date_end" placeholder="Date End" value="${c.date_start}" />
 
         <select name="report_id">
         % for report in c.reports:
