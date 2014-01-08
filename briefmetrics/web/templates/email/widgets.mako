@@ -6,6 +6,10 @@
     title_parts = []
     positive, negative = [], []
     for tag in tags:
+        if not tag.value:
+            # FIXME: Account for 0 only if high enough value in row?
+            continue
+
         if tag.is_positive:
             positive.append(tag)
         else:
