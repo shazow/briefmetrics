@@ -8,9 +8,9 @@
 
 <p>
     Your site had <span class="chartTop">${h.format_int(total_current, total_units)}</span>
-    in ${current_month} (${h.format_int(float(total_current)/current_month_days)} per day),<br />
+    in ${current_month} (average of ${h.format_int(float(total_current)/current_month_days)} per day),<br />
     compared to ${last_month}'s <span class="chartBottom">${h.format_int(total_last, total_units)}</span>
-    (${h.format_int(float(total_last)/last_month_days)} per day).
+    (average of ${h.format_int(float(total_last)/last_month_days)} per day).
 </p>
 
 ${h.chart(c.report.data['historic_data'], width=560, height=200)}
