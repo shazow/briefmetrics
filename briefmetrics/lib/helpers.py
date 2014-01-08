@@ -93,6 +93,9 @@ def human_time(seconds=None):
             continue
         r.append('%d%s' % (v, unit))
 
+    if not r:
+        return '0s'
+
     return ' '.join(r)
 
 def human_int(n):
