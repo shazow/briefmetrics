@@ -192,7 +192,7 @@ class WeeklyReport(Report):
                 'ids': 'ga:%s' % self.remote_id,
                 'start-date': self.date_start,
                 'end-date': self.date_end,
-                'filters': 'ga:medium==referral',
+                'filters': 'ga:medium==referral;ga:socialNetwork==(not set)',
                 'sort': '-ga:pageviews',
                 'max-results': '25',
             },
@@ -209,7 +209,7 @@ class WeeklyReport(Report):
                 'end-date': last_week_date_end,
                 'filters': 'ga:medium==referral',
                 'sort': '-ga:pageviews',
-                'max-results': '10', # XXX: 250?
+                'max-results': '250',
             },
             dimensions=[
                 Column('ga:fullReferrer', label='Referrer', visible=1, type_cast=_prune_abstract)

@@ -145,23 +145,6 @@
         display: none;
     }
 
-    .tag {
-        background: #eee;
-        white-space: nowrap;
-        padding: 1px 3px;
-        margin-right: 0.5em;
-    }
-
-    .bubble {
-        font-size: 11px;
-    }
-    .bubble.positive {
-        color: #5FA81B;
-    }
-    .bubble.negative {
-        color: #ae2e3e;
-    }
-
     .annotation {
         border-radius: 3px;
         background: #eee;
@@ -182,7 +165,7 @@
         color: #91AD77;
     }
     .annotation.negative {
-        background: #e8d9da;
+        background: #F6E8E9;
         color: #B88D8B;
     }
     </style>
