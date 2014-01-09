@@ -178,7 +178,6 @@ class WeeklyReport(Report):
             metrics=[col.new() for col in summary_metrics] + [
                 Column('ga:avgPageLoadTime', label='Page Load', type_cast=float, type_format=h.human_time, reverse=True, threshold=0)
             ],
-
         )
 
         if not self.tables['pages'].rows:
