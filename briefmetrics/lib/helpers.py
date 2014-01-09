@@ -108,13 +108,16 @@ def human_int(n):
     return u'{:,}'.format(int(n or 1))
 
 def human_percent(f):
+    if f is None:
+        return ''
+
     # TODO: Write tests
     fmt = u'{:0.1%}'
     if (f * 100) % 1.0 < 0.05:
         fmt = u'{:0.0%}'
     elif f < 0.1:
         fmt = u'{:0.2%}'
-    return fmt.format(float(f or 0.0))
+    return fmt.format(float(f))
 
 def human_delta(f):
     fmt = u'{:+0.1%}'
