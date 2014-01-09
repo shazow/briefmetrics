@@ -8,6 +8,7 @@
     * Human percent, remove .0 suffix.
 
 * Big things
+    * [New] referrers, and % from last week
     * Look up monte carlo walks for predicting charts, and projected total.
     * API explorer thing
     * New dashboard with report type toggles
