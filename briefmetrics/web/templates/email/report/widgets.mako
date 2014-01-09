@@ -3,35 +3,26 @@
     if not tags:
         return ''
 
-    title_parts = []
-    positive, negative = [], []
-    for tag in tags:
-        if not tag.value:
-            # FIXME: Account for 0 only if high enough value in row?
-            continue
-
-        if tag.is_positive:
-            positive.append(tag)
-        else:
-            negative.append(tag)
-
-        title_parts.append('{!s} [{}]'.format(tag, tag.column.format(tag.value)))
-
-    css_class = 'neutral'
-    if not positive:
-        css_class = 'negative'
-    elif not negative:
-        css_class = 'positive'
+    css_class = {
+        None: 'neutral',
+        True: 'positive',
+        False: 'negative',
+    }
 %>
-<span title="${', '.join(title_parts)}" class="engagement ${css_class}">
-    % if negative:
-        <span class="bubble negative">${h.literal(' '.join('&minus;' for tag in negative))}</span>
-    % endif
-    <span class="label">Engagement</span>
-    % if positive:
-        <span class="bubble positive">${' '.join('+' for tag in positive)}</span>
+% for tag in tags:
+<span class="annotation ${css_class[tag.is_positive]}">
+    <span class="label">
+    % if tag.column:
+        ${tag.column.label}
+    % else:
+        ${tag.type}
+    % endif 
+    </span>
+    % if tag.value:
+        ${tag.column and tag.column.format(tag.value) or tag.value}
     % endif
 </span>
+% endfor
 </%def>
 
 <%def name="render_table(t, title, report_link, prefix_links=None)">

@@ -162,28 +162,28 @@
         color: #ae2e3e;
     }
 
-    .engagement {
-        cursor: default;
+    .annotation {
         border-radius: 3px;
         background: #eee;
         color: #999;
-        padding: 0px 4px;
+        padding: 2px 4px;
         white-space: nowrap;
+        margin-right: 3px;
+        font-size: 10px;
     }
-    .engagement.positive {
-        background: #ecfadd;
-        color: #91AD77;
-    }
-    .engagement.negative {
-        background: #e8d9da;
-        color: #B88D8B;
-    }
-
     .label {
         text-transform: uppercase;
         font-weight: bold;
-        font-size: 9px;
         letter-spacing: 0.5px;
+        margin: 0 2px;
+    }
+    .annotation.positive {
+        background: #ecfadd;
+        color: #91AD77;
+    }
+    .annotation.negative {
+        background: #e8d9da;
+        color: #B88D8B;
     }
     </style>
 </head>

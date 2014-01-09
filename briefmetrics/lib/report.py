@@ -137,6 +137,12 @@ class WeeklyReport(Report):
 
     def fetch(self, google_query):
 
+        last_week_date_start = self.date_start - datetime.timedelta(days=7)
+        last_week_date_end = last_week_date_start + datetime.timedelta(days=6)
+
+        last_month_date_start = self.date_end - datetime.timedelta(days=self.date_end.day)
+        last_month_date_start -= datetime.timedelta(days=last_month_date_start.day - 1)
+
         # Summary
         summary_metrics = [
             Column('ga:pageviews', label='Views', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
@@ -147,7 +153,7 @@ class WeeklyReport(Report):
         self.tables['summary'] = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
-                'start-date': self.date_start - datetime.timedelta(days=7), # Extra week
+                'start-date': last_week_date_start, # Extra week
                 'end-date': self.date_end,
                 'sort': '-ga:week',
             },
@@ -170,7 +176,7 @@ class WeeklyReport(Report):
                 Column('ga:pagePath', label='Pages', visible=1, type_cast=_prune_abstract),
             ],
             metrics=[col.new() for col in summary_metrics] + [
-                Column('ga:avgPageLoadTime', label='Load Time', type_cast=float),
+                Column('ga:avgPageLoadTime', label='Page Load', type_cast=float, type_format=h.human_time, reverse=True, threshold=0)
             ],
 
         )
@@ -179,14 +185,16 @@ class WeeklyReport(Report):
             # TODO: Use a better short circuit?
             raise EmptyReportError()
 
-        self.tables['referrers'] = google_query.get_table(
+        # Referrers
+
+        current_referrers = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
                 'start-date': self.date_start,
                 'end-date': self.date_end,
                 'filters': 'ga:medium==referral',
                 'sort': '-ga:pageviews',
-                'max-results': '10',
+                'max-results': '25',
             },
             dimensions=[
                 Column('ga:fullReferrer', label='Referrer', visible=1, type_cast=_prune_abstract)
@@ -194,8 +202,49 @@ class WeeklyReport(Report):
             metrics=[col.new() for col in summary_metrics],
         )
 
-        date_start_last_month = self.date_end - datetime.timedelta(days=self.date_end.day)
-        date_start_last_month -= datetime.timedelta(days=date_start_last_month.day - 1)
+        last_referrers = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': last_week_date_start,
+                'end-date': last_week_date_end,
+                'filters': 'ga:medium==referral',
+                'sort': '-ga:pageviews',
+                'max-results': '10', # XXX: 250?
+            },
+            dimensions=[
+                Column('ga:fullReferrer', label='Referrer', visible=1, type_cast=_prune_abstract)
+            ],
+            metrics=[
+                Column('ga:pageviews', label='Views', type_cast=int, threshold=0)
+            ],
+        )
+
+        last_referrers_lookup = dict((path, views) for path, views in last_referrers.iter_rows())
+
+        t = Table(columns=[
+            col.new() for col in current_referrers.columns
+        ] + [
+            Column('last_pageviews', label='Last week', type_cast=int),
+        ])
+
+        for i, cells in enumerate(current_referrers.iter_rows()):
+            cells = list(cells)
+            path = cells[0]
+            last_views = last_referrers_lookup.get(path)
+            cells.append(last_views or 0)
+
+            if i > 10 and last_views:
+                # Skip non-new rows after 10 entries
+                continue
+
+            row = t.add(cells)
+
+            if not last_views:
+                row.tag(type='new')
+
+        self.tables['referrers'] = t
+
+        #
 
         self.tables['organic'] = google_query.get_table(
             params={
@@ -229,7 +278,7 @@ class WeeklyReport(Report):
         historic_table = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
-                'start-date': date_start_last_month,
+                'start-date': last_month_date_start,
                 'end-date': self.date_end,
             },
             dimensions=[
@@ -301,7 +350,7 @@ class MonthlyReport(Report):
         )
 
     def fetch(self, google_query):
-        date_start_last_month = (self.date_start - datetime.timedelta(days=self.date_start.day + 1)).replace(day=1)
+        last_month_date_start = (self.date_start - datetime.timedelta(days=self.date_start.day + 1)).replace(day=1)
 
         # Summary
         summary_metrics = [
@@ -313,7 +362,7 @@ class MonthlyReport(Report):
         self.tables['summary'] = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
-                'start-date': date_start_last_month, # Extra month
+                'start-date': last_month_date_start, # Extra month
                 'end-date': self.date_end,
                 'sort': '-ga:month',
             },
@@ -375,7 +424,7 @@ class MonthlyReport(Report):
         historic_table = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
-                'start-date': date_start_last_month,
+                'start-date': last_month_date_start,
                 'end-date': self.date_end,
             },
             dimensions=[
@@ -403,6 +452,6 @@ class MonthlyReport(Report):
         self.data['total_current'] = current_month[-1]
         self.data['total_last'] = last_month[-1]
         self.data['current_month'] = self.date_start.strftime('%B')
-        self.data['last_month'] = date_start_last_month.strftime('%B')
+        self.data['last_month'] = last_month_date_start.strftime('%B')
         self.data['current_month_days'] = self.date_end.day
         self.data['last_month_days'] = (self.date_start - datetime.timedelta(days=1)).day

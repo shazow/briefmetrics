@@ -34,7 +34,7 @@ class Column(object):
         return self.type_cast(value) if self.type_cast else value
 
     def format(self, value):
-        return self.type_format(value) if self.type_format else value
+        return self.type_format(value) if self.type_format else str(value)
 
     def delta_value(self, value):
         return self._average is not None and (self._average - value) / (self._average or 1)
@@ -78,28 +78,31 @@ class Column(object):
 
 
 class RowTag(object):
-    def __init__(self, column, value, type=None):
-        self.column = column
-        self.value = value
+    def __init__(self, type=None, value=None, column=None):
         self.type = type
+        self.value = value
+        self.column = column
 
     @property
     def delta_value(self):
+        if not self.column or self.value is None:
+            return
+
         return self.column.delta_value(self.value)
 
     @property
     def is_positive(self):
-        return (self.type == 'max') != self.column.reverse
+        return self.column and (self.type == 'max') != self.column.reverse
 
     def __str__(self):
         parts = []
 
-        if self.type in ['min', 'max']:
-            pos = int(self.is_positive)
-            adjective = ['Worst', 'Best'][pos]
-            parts.append(adjective)
+        if self.column:
+            parts.append(self.column.format(self.value))
+            parts.append(self.column.label)
+        else:
+            parts.append(self.type.title())
 
-        parts.append(self.column.label)
         return ' '.join(parts)
 
 
@@ -117,6 +120,9 @@ class Row(object):
 
     def get(self, id):
         return self.values[self.table.column_to_index[id]]
+
+    def tag(self, type, value=None, column=None):
+        self.tags.append(RowTag(type, column=column, value=value))
 
     def __repr__(self):
         return '{class_name}(values={self.values!r})'.format(class_name=self.__class__.__name__, self=self)
@@ -151,6 +157,7 @@ class Table(object):
                 column.measure(value, r)
 
         self.rows.append(r)
+        return r
 
     def sort(self, reverse=False):
         visible_columns = self.get_visible()
@@ -185,11 +192,11 @@ class Table(object):
 
             value, row = column.max_row
             if row and column.is_interesting(value):
-                row.tags.append(RowTag(column=column, value=value, type='max'))
+                row.tag(type='max', value=value, column=column)
 
             value, row = column.min_row
             if row and column.is_interesting(value):
-                row.tags.append(RowTag(column=column, value=value, type='min'))
+                row.tag(type='min', value=value, column=column)
 
     def iter_rows(self, *column_ids):
         if not column_ids:
