@@ -85,13 +85,19 @@ def human_time(seconds=None):
 
     r = []
     rem = 0
-    for div, unit in [(3600.0, 'hr'), (60.0, 'min'), (1.0, 'sec')]:
+    for div, unit in [(3600.0, 'hr'), (60.0, 'min')]:
         rem = seconds % div
         v = (seconds - rem) / div
         seconds = rem
         if not v:
             continue
         r.append('%d%s' % (v, unit))
+
+    if seconds:
+        if r or seconds >= 10.0 or seconds % 1.0 == 0:
+            r.append('%dsec' % seconds)
+        else:
+            r.append('{:0.3}sec'.format(seconds))
 
     if not r:
         return '0s'
@@ -102,8 +108,11 @@ def human_int(n):
     return u'{:,}'.format(int(n or 1))
 
 def human_percent(f):
+    # TODO: Write tests
     fmt = u'{:0.1%}'
-    if f < 0.1:
+    if (f * 100) % 1.0 < 0.05:
+        fmt = u'{:0.0%}'
+    elif f < 0.1:
         fmt = u'{:0.2%}'
     return fmt.format(float(f or 0.0))
 

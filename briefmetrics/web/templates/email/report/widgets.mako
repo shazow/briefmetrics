@@ -10,6 +10,12 @@
     }
 %>
 % for tag in tags:
+    <%
+        # TODO: Move this somewhere else
+        if tag.column and tag.column.id == 'ga:avgPageLoadTime' and (not tag.value or tag.is_positive or tag.value < 2.0 or tag.value < tag.column.average * 3):
+            continue
+    %>
+
 <span class="annotation ${css_class[tag.is_positive]}">
     <span class="label">
     % if tag.column:
