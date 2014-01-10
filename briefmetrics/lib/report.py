@@ -155,24 +155,15 @@ class WeeklyReport(Report):
                 'ids': 'ga:%s' % self.remote_id,
                 'start-date': last_week_date_start, # Extra week
                 'end-date': self.date_end,
-                'sort': '-ga:week',
+                'sort': '-ga:nthWeek',
             },
             dimensions=[
-                Column('ga:week'),
+                Column('ga:nthWeek'),
             ],
             metrics=summary_metrics + [Column('ga:visits', type_cast=int)],
         )
 
         summary_rows = self.tables['summary'].rows
-        if len(summary_rows) > 2 and False:
-            # Yearly bug :( Merge last two rows.
-            extra_row = summary_rows.pop()
-            for i, v in enumerate(extra_row.values):
-                if i == 0:
-                    # Skip ga:week
-                    continue
-
-                summary_rows[-1].values[i] = v and v + (summary_rows[-1].values[i] or 0)
 
         # Pages
         self.tables['pages'] = google_query.get_table(
@@ -294,7 +285,6 @@ class WeeklyReport(Report):
                 'ids': 'ga:%s' % self.remote_id,
                 'start-date': last_month_date_start,
                 'end-date': self.date_end,
-                'max-results': '10',
             },
             dimensions=[
                 Column('ga:date'),
