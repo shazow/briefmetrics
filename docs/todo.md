@@ -10,3 +10,4 @@
     * New dashboard with report type toggles
     * Yearly plans
     * Bitcoin integration
+    * Detect private pages: Very few uniques, but high time on site and views

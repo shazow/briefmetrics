@@ -33,12 +33,12 @@ _profile_item_template = {
 }
 
 data = {}
-data['ga:pageviews'] = data['ga:visitors'] = data['ga:visits'] = [1000, 1042, 1884, 2045, 1399, 890, 1011]
+data['ga:pageviews'] = data['ga:visitors'] = data['ga:visits'] = [1000, 1001, 1884, 1999, 1399, 890, 1011]
 data['ga:timeOnSite'] = [0.0, 0.123, 123.0, 0.5]
 data['ga:avgTimeOnSite'] = [0.0, 0.123, 123.0, 0.5]
 data['ga:avgPageLoadTime'] = [0.0, 0.123, 123.0, 0.5]
 data['ga:week'] = [1, 2]
-data['ga:month'] = [1, 1, 1, 1, 1, 1, 2, 2, 2, 2]
+data['ga:month'] = [1] * 6 + [2] * 4
 data['ga:visitBounceRate'] = [0.1234, 0.2, 0.6999]
 data['ga:date'] = ['2013-01-01', '2013-01-02']
 data['ga:source'] = ['google', 'wordpress']
@@ -50,9 +50,13 @@ data['ga:deviceCategory'] = ['mobile', 'tablet', 'desktop']
 data['ga:browser'] = ['Chrome', 'Firefox', 'Internet Explorer']
 
 
+skip_state = set(['ga:month'])
 cycles = {}
 def stateful_cycle(col_id):
-    return cycles.setdefault(col_id, cycle(data[col_id]))
+    r = cycle(data[col_id])
+    if col_id in skip_state:
+        return r
+    return cycles.setdefault(col_id, r)
 
 
 class FakeQuery(Query):

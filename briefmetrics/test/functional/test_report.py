@@ -41,11 +41,11 @@ class TestReport(test.TestWeb):
         ])
         self.assertEqual(len(t.rows), 5)
         self.assertEqual(t.rows[1].get('ga:pagePath'), '/bar')
-        self.assertEqual(t.rows[1].get('ga:pageviews'), 123)
-        self.assertEqual(t.get('ga:pageviews').max_row[0], 1234567)
+        self.assertEqual(t.rows[1].get('ga:pageviews'), 1001)
+        self.assertEqual(t.get('ga:pageviews').max_row[0], 1999)
 
         t = q.get_table({'max-results': 7}, dimensions=[Column('ga:month')])
-        self.assertEqual([list(m) for m in t.iter_rows()], [[1], [1], [1], [1], [1], [1], [2]]) 
+        self.assertEqual([list(m) for m in t.iter_rows()], [[1]]*6 + [[2]]) 
 
     def test_fetch(self):
         report = self._create_report()
@@ -136,7 +136,7 @@ class TestReport(test.TestWeb):
         self.assertEqual(report['display_name'], u'example.com')
         self.assertEqual(model.Report.count(), 1)
 
-        r = self.call_api('report.update', report_id=report['id'], delete=u'true')
+        r = self.call_api('report.delete', report_id=report['id'])
         self.assertEqual(model.Report.count(), 0)
 
 
