@@ -119,52 +119,45 @@
     </form>
 </%def>
 
-<%def name="report_config(report, is_active=True, is_admin=False)">
-    <form action="${request.current_route_path()}" method="post" class="preview report">
-        <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
-        <input type="hidden" name="method" value="report.update" />
-        <input type="hidden" name="format" value="redirect" />
-        <input type="hidden" name="report_id" value="${report.id}" />
-
+<%def name="site_config(site, is_active=True, is_admin=False)">
+    <div class="preview report">
         <nav>
             <h3>
-                ${report.display_name}
+                ${site.display_name}
             </h3>
+
             <div class="controls">
-                <a class="button" target="_blank" href="${h.ga_permalink('report/visitors-overview', report)}">Google Analytics</a>
-                % if is_admin:
-                    <a class="button" target="_blank" href="${request.route_path('reports_view', id=report.id)}">Last email</a>
-                % endif
-                <input type="submit" name="delete" value="Delete" class="negative" />
+                <a class="button" target="_blank" href="${h.ga_permalink('report/visitors-overview', site.report)}">Google Analytics</a>
             </div>
         </nav>
 
-        <div class="details">
-            <dl>
-                <dt>Frequency</dt>
-                <dd>${report.type.title()}ly</dd>
-            </dl>
-            <dl>
-                <dt>Next Email</dt>
-            % if is_active:
-                <dd>
-                    No reports remaining.<br />
-                    <a href="/settings#credit-card">Upgrade to resume.</a>
-                </dd>
-            % else:
-                <dd>
-                    ${h.human_date(report.time_next) or 'Imminently'}
-                </dd>
-            % endif
-            </dl>
-            % if is_admin:
-            <dl>
-                <dt>Preferred Time</dt>
-                <dd>
-                    ${"{d:%A}s at {d:%H:%M} UTC".format(d=report.time_preferred or report.encode_preferred_time())}
-                </dd>
-            </dl>
-            % endif
-        </div>
-    </form>
+        <table class="details">
+        % for type, report in site:
+            <tr>
+                <td>
+                    <a href="${request.current_route_path(
+                        _query=dict(report_id=report.id, method="report.delete", csrf_token=session.get_csrf_token())
+                    )}" class="negative symbol button">&times;</a>
+
+                    ${report.type_label}
+                </td>
+                <td>
+                    % if is_active:
+                        No reports remaining.
+                        <a href="/settings#credit-card">Upgrade to resume.</a>
+                    % elif not report.time_next:
+                        Next report is imminent.
+                    % else:
+                        Next report on
+                        <span class="highlight">${h.human_date(report.time_next)}</span>.
+                        ##at ${"{d:%H:%M} UTC".format(d=report.time_next)}
+                    % endif
+                </td>
+                <td style="text-align: right;">
+                    <a target="_blank" class="button" href="${request.route_path('reports_view', id=report.id)}">Last Report</a>
+                </td>
+            </tr>
+        % endfor
+        </table>
+    </div>
 </%def>

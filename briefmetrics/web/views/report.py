@@ -1,4 +1,5 @@
 import datetime
+from itertools import groupby
 from unstdlib import now
 
 from briefmetrics import api, model, tasks
@@ -44,8 +45,8 @@ def report_create(request):
     return {'report': report}
 
 
-@expose_api('report.update')
-def report_update(request):
+@expose_api('report.delete')
+def report_delete(request):
     report_id = request.params['report_id']
     user_id = api.account.get_user_id(request, required=True)
 
@@ -57,17 +58,43 @@ def report_update(request):
     if not report:
         raise APIControllerError("Invalid report id: %s" % report_id)
 
-    if request.params.get('delete'):
-        display_name = report.display_name
-        model.Session.delete(report)
-        model.Session.commit()
-        request.flash("Report removed: %s" % display_name) 
-        return
+    display_name = report.display_name
+    model.Session.delete(report)
+    model.Session.commit()
+    request.flash("Report removed: %s" % display_name) 
+
+
+# TODO: Move this somewhere else?
+class Site(object):
+    report_types = model.Report.TYPES
+
+    def __init__(self, reports, remote_id=None, display_name=None):
+        self.reports_by_type = {}
+        for report in reports:
+            self.reports_by_type[report.type] = report
+
+        self.display_name = display_name or report.display_name
+        self.remote_id = remote_id or report.remote_id
+        self.report = report
+
+    @classmethod
+    def from_list(cls, reports):
+        sorted_reports = sorted(reports, key=lambda r: r.remote_id)
+        for _, reports in groupby(sorted_reports, key=lambda r: r.remote_id):
+            yield cls(reports)
+
+    def __iter__(self):
+        for t, _ in self.report_types:
+            report = self.reports_by_type.get(t)
+            if not report:
+                continue
+
+            yield t, report
 
 
 class ReportController(Controller):
 
-    @handle_api(['report.create', 'report.update'])
+    @handle_api(['report.create', 'report.delete'])
     def index(self):
         user = api.account.get_user(self.request, required=True, joinedload='account.reports')
 
@@ -84,6 +111,7 @@ class ReportController(Controller):
 
         self.c.user = user
         self.c.reports = user.account.reports
+        self.c.sites = sorted(Site.from_list(self.c.reports), key=lambda s: s.display_name)
 
         return self._render('reports.mako')
 

@@ -80,9 +80,9 @@ class Report(meta.Model): # Property within an account (such as a website)
     __json_whitelist__ = ['id', 'time_next', 'account_id', 'display_name', 'type']
 
     TYPES = [
-        'day',
-        'week',
-        'month',
+        ('day', 'Daily'),
+        ('week', 'Weekly'),
+        ('month', 'Monthly'),
        #'quarter',
        #'combine',
        #'alert',
@@ -109,6 +109,10 @@ class Report(meta.Model): # Property within an account (such as a website)
     # FIXME: Use croniter?
     time_preferred = Column(types.DateTime) # Granularity relative to type
     type = Column(_types.Enum(TYPES), default='week')
+
+    @property
+    def type_label(self):
+        return self.__table__.columns['type'].type.name_labels[self.type]
 
     def next_preferred(self, now):
         # Add preferred time offset

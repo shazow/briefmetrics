@@ -18,8 +18,12 @@
 <section id="active-reports">
     <h2>Active reports</h2>
 
-    % for report in sorted(c.reports, key=lambda r: r.display_name):
-        ${forms.report_config(report, is_active=c.user.num_remaining == 0 and not c.user.stripe_customer_id, is_admin=c.user.is_admin)}
+    % for site in c.sites:
+        ${forms.site_config(
+            site,
+            is_active=c.user.num_remaining == 0 and not c.user.stripe_customer_id,
+            is_admin=c.user.is_admin,
+        )}
     % endfor
 </section>
 % endif
