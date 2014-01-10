@@ -84,7 +84,7 @@
 
     <form action="${request.current_route_path()}" method="post" id="create-report">
         <p class="row">
-            <select name="remote_id" data-placeholder="Choose a site" style="width: 80%">
+            <select name="remote_id" data-placeholder="Choose a site">
                 <option />
             % for item in available_profiles['items']:
                 <%
@@ -105,11 +105,15 @@
             % endfor
             </select>
 
+            <input type="hidden" name="type" value="week" />
+
+            <%doc>TODO:
             <select name="type" style="width: 19%; margin-right: 0; margin-left: 0.5em;">
                 <option value="day">Daily</option>
                 <option value="week" selected>Weekly</option>
                 <option value="month">Monthly</option>
             </select>
+            </%doc>
         </p>
 
         <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
@@ -144,7 +148,7 @@
                 <td>
                     % if is_active:
                         No reports remaining.
-                        <a href="/settings#credit-card">Upgrade to resume.</a>
+                        <a href="/settings#credit-card" class="highlight">Upgrade to resume.</a>
                     % elif not report.time_next:
                         Next report is imminent.
                     % else:

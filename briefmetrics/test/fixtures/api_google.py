@@ -46,6 +46,8 @@ data['ga:socialNetwork'] = ['Facebook', 'Reddit']
 data['ga:fullReferrer'] = ['example.com/foo', 'example.com/bar']
 data['ga:pagePath'] = ['/foo', '/bar', '/baz']
 data['ga:country'] = ['United States', 'Canada', 'Germany']
+data['ga:deviceCategory'] = ['mobile', 'tablet', 'desktop']
+data['ga:browser'] = ['Chrome', 'Firefox', 'Internet Explorer']
 
 
 class FakeQuery(Query):
