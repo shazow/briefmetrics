@@ -92,7 +92,16 @@ class RowTag(object):
 
     @property
     def is_positive(self):
-        return self.column and (self.type == 'max') != self.column.reverse
+        if not self.column:
+            return
+
+        if self.type == 'min':
+            return self.column.reverse
+        elif self.type == 'max':
+            return not self.column.reverse
+
+        if self.value:
+            return self.value > 0 ^ self.column.reverse
 
     def __str__(self):
         parts = []

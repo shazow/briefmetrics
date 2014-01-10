@@ -17,7 +17,7 @@
     %>
 
 <span class="annotation ${css_class[tag.is_positive]}">
-    <span class="label">
+    <span class="label" title="${tag.value}">
     % if tag.column:
         ${tag.column.label}
     % else:

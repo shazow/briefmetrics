@@ -220,26 +220,31 @@ class WeeklyReport(Report):
 
         last_referrers_lookup = dict((path, views) for path, views in last_referrers.iter_rows())
 
+        col_last_pageviews = Column('delta_views', label='Views', type_cast=float, type_format=h.human_delta)
         t = Table(columns=[
             col.new() for col in current_referrers.columns
         ] + [
-            Column('last_pageviews', label='Last week', type_cast=int),
+            col_last_pageviews
         ])
 
         for i, cells in enumerate(current_referrers.iter_rows()):
             cells = list(cells)
-            path = cells[0]
+            path, views = cells[0], cells[1]
             last_views = last_referrers_lookup.get(path)
-            cells.append(last_views or 0)
 
             if i > 10 and last_views:
                 # Skip non-new rows after 10 entries
                 continue
 
+            views_delta = (views - last_views) / float(views)
+            print views, " - ", last_views, " changed ", views_delta
+            cells.append(views_delta)
             row = t.add(cells)
 
             if not last_views:
                 row.tag(type='new')
+            elif abs(views_delta) > 0.20:
+                row.tag(type='delta', value=views_delta, column=col_last_pageviews)
 
         self.tables['referrers'] = t
 

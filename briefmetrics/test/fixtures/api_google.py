@@ -33,13 +33,13 @@ _profile_item_template = {
 }
 
 data = {}
-data['ga:pageviews'] = data['ga:visitors'] = data['ga:visits'] = [0, 123, 123456, 1234567, 123456, 123]
+data['ga:pageviews'] = data['ga:visitors'] = data['ga:visits'] = [1000, 1042, 1884, 2045, 1399, 890, 1011]
 data['ga:timeOnSite'] = [0.0, 0.123, 123.0, 0.5]
 data['ga:avgTimeOnSite'] = [0.0, 0.123, 123.0, 0.5]
 data['ga:avgPageLoadTime'] = [0.0, 0.123, 123.0, 0.5]
 data['ga:week'] = [1, 2]
 data['ga:month'] = [1, 1, 1, 1, 1, 1, 2, 2, 2, 2]
-data['ga:visitBounceRate'] = [0.0, 0.2, 0.6]
+data['ga:visitBounceRate'] = [0.1234, 0.2, 0.6999]
 data['ga:date'] = ['2013-01-01', '2013-01-02']
 data['ga:source'] = ['google', 'wordpress']
 data['ga:socialNetwork'] = ['Facebook', 'Reddit']
@@ -48,6 +48,11 @@ data['ga:pagePath'] = ['/foo', '/bar', '/baz']
 data['ga:country'] = ['United States', 'Canada', 'Germany']
 data['ga:deviceCategory'] = ['mobile', 'tablet', 'desktop']
 data['ga:browser'] = ['Chrome', 'Firefox', 'Internet Explorer']
+
+
+cycles = {}
+def stateful_cycle(col_id):
+    return cycles.setdefault(col_id, cycle(data[col_id]))
 
 
 class FakeQuery(Query):
@@ -61,7 +66,7 @@ class FakeQuery(Query):
         limit = min(self.num_rows, int(params.get('max-results', 10)))
 
         t = Table(columns)
-        row_data = [cycle(data[col.id]) for col in columns]
+        row_data = [stateful_cycle(col.id) for col in columns]
         for _ in xrange(limit):
             t.add(next(c) for c in row_data)
 

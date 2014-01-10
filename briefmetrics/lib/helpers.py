@@ -107,23 +107,26 @@ def human_time(seconds=None):
 def human_int(n):
     return u'{:,}'.format(int(n or 1))
 
-def human_percent(f):
+def human_percent(f, signed=False):
     if f is None:
         return ''
 
     # TODO: Write tests
-    fmt = u'{:0.1%}'
-    if (f * 100) % 1.0 < 0.05:
-        fmt = u'{:0.0%}'
-    elif f < 0.1:
-        fmt = u'{:0.2%}'
+    precision = 1
+    fa = abs(f)
+    if fa > 1.0:
+        precision = 0
+    elif (fa * 100) % 1.0 < 0.05:
+        precision = 0
+    elif fa < 0.1:
+        precision = 2
+
+    fmt = u'{:%s0.%d%%}' % ('+' if signed else '', precision)
+
     return fmt.format(float(f))
 
 def human_delta(f):
-    fmt = u'{:+0.1%}'
-    if f < 0.1:
-        fmt = u'{:+0.2%}'
-    return fmt.format(float(f))
+    return human_percent(f, signed=True)
 
 def truncate(s, max_length=80):
     if not max_length or len(s) <= max_length:
