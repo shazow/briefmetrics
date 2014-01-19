@@ -3,7 +3,7 @@ import logging
 
 from unstdlib import random_string, now
 from sqlalchemy import orm, types
-from sqlalchemy import Column, ForeignKey
+from sqlalchemy import Column, ForeignKey, Index
 
 from briefmetrics.lib import pricing
 from . import meta, _types
@@ -215,3 +215,32 @@ class Subscription(meta.Model): # Subscription to a report
 
     report_id = Column(types.Integer, ForeignKey(Report.id, ondelete='CASCADE'), index=True)
     report = orm.relationship(Report, innerjoin=True, backref=orm.backref('subscriptions', cascade='all,delete'))
+
+
+class Notification(meta.Model):
+    __tablename__ = 'notification'
+
+    id = Column(types.Integer, primary_key=True)
+    time_created = Column(types.DateTime, default=now, nullable=False)
+    time_updated = Column(types.DateTime, onupdate=now)
+
+    time_show = Column(types.DateTime, default=now, nullable=False)
+    time_expire = Column(types.DateTime)
+    time_dismissed = Column(types.DateTime)
+
+    is_private = Column(types.Boolean, default=True, nullable=False)
+
+    user_id = Column(types.Integer, ForeignKey(User.id, ondelete='CASCADE'))
+    user = orm.relationship(User, innerjoin=True, backref=orm.backref('notifications', cascade='all,delete'))
+
+    report_id = Column(types.Integer, ForeignKey(Report.id, ondelete='CASCADE'))
+    report = orm.relationship(Report, backref=orm.backref('notifications', cascade='all,delete'))
+
+    queue = Column(types.String)
+    body = Column(types.Unicode)
+
+Index('ix_notification_time',
+      Notification.user_id,
+      Notification.time_dismissed.desc(),
+      Notification.time_show,
+)
