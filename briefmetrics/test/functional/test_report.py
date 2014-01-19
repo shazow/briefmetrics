@@ -37,7 +37,7 @@ class TestReport(test.TestWeb):
             Column('ga:pagePath'),
         ], metrics=[
             Column('ga:pageviews', type_cast=int, threshold=0),
-            Column('ga:week'),
+            Column('ga:nthWeek'),
         ])
         self.assertEqual(len(t.rows), 5)
         self.assertEqual(t.rows[1].get('ga:pagePath'), '/bar')
