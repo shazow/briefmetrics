@@ -61,13 +61,17 @@
             </p>
 
             <div class="id">
-                "${u.account.display_name}" &lt;${u.email}&gt;
+                "${u.display_name}" &lt;${u.email}&gt;
 
-                <ol>
-                % for r in u.account.reports:
-                    <li value="${r.id}">${r.display_name} (next report: ${h.human_date(r.time_next)})
-                % endfor
-                </ol>
+                % if u.account:
+                    <ol>
+                    % for r in u.account.reports:
+                        <li value="${r.id}">${r.display_name} (next report: ${h.human_date(r.time_next)})
+                    % endfor
+                    </ol>
+                % else:
+                    <br />(No account)
+                % endif
             </div>
         </li>
     % endfor
