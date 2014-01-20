@@ -217,6 +217,7 @@ class Subscription(meta.Model): # Subscription to a report
     report = orm.relationship(Report, innerjoin=True, backref=orm.backref('subscriptions', cascade='all,delete'))
 
 
+'''
 class Notification(meta.Model):
     __tablename__ = 'notification'
 
@@ -244,3 +245,4 @@ Index('ix_notification_time',
       Notification.time_dismissed.desc(),
       Notification.time_show,
 )
+'''
