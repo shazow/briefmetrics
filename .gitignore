@@ -1,6 +1,7 @@
 *.egg-info
 *.pyc
 *.db
+*.bak
 .*
 /data
 /*.log
