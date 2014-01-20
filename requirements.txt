@@ -1,22 +1,20 @@
-Mako==0.9.0
+Mako==0.9.1
 SQLAlchemy==0.9.1
-WebTest==2.0.9
-dogpile.cache==0.5.0
-celery==3.0.24
-pyramid==1.5a2
+WebTest==2.0.12
+alembic==0.6.2
+celery==3.1.8
+dogpile.cache==0.5.3
+mock==1.0.1
+pyramid==1.5a3
 pyramid_beaker==0.8
-pyramid_debugtoolbar==1.0.8
+pyramid_debugtoolbar==1.0.9
 pyramid_exclog==0.7
 pyramid_handlers==0.5
 pyramid_mailer==0.13
-pyramid_mako==0.2
-pytz==2013d
-requests-oauthlib==0.4.0
-requests==2.0.0
-stripe==1.9.8
-unstdlib==1.5.3
+pyramid_mako==0.3.1
+pytz==2013.9
 pyyaml==3.10
-mock==1.0.1
-
-# Release candidate: alembic==0.6.3
--e git+git@bitbucket.org:zzzeek/alembic.git@ec427b4#egg=alembic
+requests-oauthlib==0.4.0
+requests==2.2.0
+stripe==1.11.0
+unstdlib==1.6.1
