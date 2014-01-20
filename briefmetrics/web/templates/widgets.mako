@@ -39,7 +39,7 @@
     </p>
 % else:
     <p>
-        You are the proud owner of a free Briefmetrics account. Please enjoy responsibly. :)
+        You are the proud owner of a free Briefmetrics account. Please enjoy thoroughly. :)
     </p>
 % endif
 </%def>
