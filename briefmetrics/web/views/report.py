@@ -133,7 +133,7 @@ class ReportController(Controller):
         report_context = api.report.fetch(self.request, report, since_time)
 
         template = report_context.template
-        if not report.data:
+        if not report_context.data:
             template = 'email/error_empty.mako'
 
         html = api.report.render(self.request, template, Context({
