@@ -51,7 +51,7 @@ class AccountController(Controller):
         user = api.account.get_or_create(
             email=user_info['email'],
             token=token,
-            display_name=user_info['name'],
+            display_name=user_info.get('name'),
         )
         api.account.login_user_id(self.request, user.id)
         # TODO: Redirect to dashboard?
