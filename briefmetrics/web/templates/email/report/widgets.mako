@@ -64,6 +64,7 @@
         <tr>
             <td class="number">${h.human_int(views)}</td>
             <td>
+                <!-- ${url} -->
                 ${link}
 
                 ${render_tags(row.tags)}
