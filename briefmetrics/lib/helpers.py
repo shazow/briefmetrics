@@ -50,6 +50,7 @@ def human_url(s, max_length=None):
 
     m = RE_HUMAN_URL.match(s)
     r = m.group(3) if m else s
+    r = r.strip('/')
     return truncate(r, max_length=max_length)
 
 def human_link(href, label=None, attrs=None, max_length=None):
