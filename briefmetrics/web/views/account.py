@@ -88,7 +88,7 @@ class AccountController(Controller):
             return self._render('delete.mako')
 
         api.email.notify_admin(self.request, 'Account deleted: [%s] "%s" <%s>' % (user.id, user.display_name, user.email))
-        api.account.delete(user_id=user_id)
+        api.account.delete(user_id=user.id)
         self.request.session.flash('Good bye.')
 
         return self._redirect(location=self.request.route_path('index'))
