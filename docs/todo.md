@@ -11,3 +11,24 @@
     * Yearly plans
     * Bitcoin integration
     * Detect private pages: Very few uniques, but high time on site and views
+    * Pitch the "share analytics with your team" angle.
+
+* Press
+    * http://www.quickblogtips.com/bonus-content/free-ebook-a-beginners-guide-to-google-analytics/
+      Emailed: web@benbarden.com
+    * http://www.cardinalpath.com/
+    * http://www.flyte.biz/resources/newsletters/08/08-google-analytics.php
+      Emailed: rich@flyte.biz
+    * http://www.portent.com/blog/analytics/google_analytics_video_tutoria.htm
+      Emailed: ian@portentinteractive.com
+    * http://www.kaushik.net/avinash/about/ 
+      Emailed: blog@kaushik.net
+    * http://cutroni.com/blog/contact/
+      Emailed: justin@cutroni.com
+    * http://discuss.bootstrapped.fm/
+      Posted: http://discuss.bootstrapped.fm/t/hi-im-andrey-and-im-building-a-google-analytics-email-summary-service/1221
+    * https://productforums.google.com/forum/#!category-topic/analytics/c2I33JxpQns
+    * https://productforums.google.com/forum/#!category-topic/analytics/wqdjgSpB0Uw
+    * Blogging about blogging, problogger, seo
+
+
