@@ -63,6 +63,11 @@ p {
     margin-bottom: 1em;
 }
 
+code {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 1px 2px;
+}
+
 h1, h2 {
     font-size: 1.6em;
     color: $color-header;
@@ -79,6 +84,7 @@ h1, h2 {
     a, a:visited, a:active, a:hover {
         color: $color-header;
     }
+
 }
 
 h1 {
