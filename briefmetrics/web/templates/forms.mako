@@ -131,7 +131,7 @@
             </h3>
 
             <div class="controls">
-                <a class="button" target="_blank" href="${h.ga_permalink('report/visitors-overview', site.report)}">Google Analytics</a>
+                <a class="button external" target="_blank" href="${h.ga_permalink('report/visitors-overview', site.report)}">Google Analytics</a>
             </div>
         </nav>
 
@@ -146,7 +146,7 @@
                     ${report.type_label}
                 </td>
                 <td>
-                    % if is_active:
+                    % if not is_active:
                         No reports remaining.
                         <a href="/settings#credit-card" class="highlight">Upgrade to resume.</a>
                     % elif not report.time_next:
@@ -158,10 +158,42 @@
                     % endif
                 </td>
                 <td style="text-align: right;">
+                % if is_active:
+                    <a class="button" href="${request.route_path('reports_view', id=report.id)}">${h.format_int(len(report.subscriptions), '{} Recipient')}</a>
+
                     <a target="_blank" class="button" href="${request.route_path('reports_view', id=report.id)}">Last Report</a>
+                % endif
                 </td>
             </tr>
+            <tr>
+                <td colspan="3">
+                    <ul class="vertical recipients">
+                        % for sub in report.subscriptions:
+                        <li>
+
+                            <a href="${request.current_route_path(
+                                _query=dict(subscription_id=sub.id, method="subscription.delete", csrf_token=session.get_csrf_token())
+                            )}" class="negative symbol button">&times;</a>
+                            ${sub.user.email_to}
+                        </li>
+                        % endfor
+                        <li>
+                            ${subscription_create(report_id=report.id)}
+                        </li>
+                    </ul>
+                </td>
         % endfor
         </table>
     </div>
+</%def>
+
+<%def name="subscription_create(report_id)">
+    <form action="${request.route_path('api')}" method="post" class="add-recipient">
+        <input type="text" placeholder="Full Name" name="display_name" />
+        <input type="text" placeholder="Email Address" name="email" />
+        <input type="hidden" name="report_id" value="${report_id}" />
+        <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
+        <input type="hidden" name="method" value="subscription.create" />
+        <input type="submit" value="Add" />
+    </form>
 </%def>

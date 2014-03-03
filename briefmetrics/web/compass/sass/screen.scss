@@ -48,7 +48,7 @@ a.button {
     margin-right: 0.5em;
     font-size: 12px;
 
-    &:hover {
+    &:hover, &.active {
         background: darken($color-border, 20%);
     }
 
@@ -62,6 +62,11 @@ a.button {
         margin-right: 0.5em;
         vertical-align: bottom;
         font-size: 14px;
+    }
+
+    &.external {
+        background: #eee;
+        color: #999;
     }
 }
 
@@ -299,11 +304,6 @@ a.cta {
                 border: none;
             }
         }
-
-        .button {
-            background: #eee;
-            color: #999;
-        }
     }
     .details {
         width: 100%;
@@ -319,6 +319,10 @@ a.cta {
             margin-right: 1em;
             display: table-cell;
         }
+
+        .recipients {
+            margin-left: 2em;
+        }
     }
 
 }
@@ -326,5 +330,24 @@ a.cta {
 form#create-report {
     p .chosen-container:first {
         margin-right: 5px;
+    }
+}
+
+form.add-recipient {
+    margin-top: 1em;
+    padding-left: 2em;
+
+    input[name="display_name"] {
+        width: 8em;
+    }
+
+    input[name="email"] {
+        width: 14em;
+    }
+
+    input {
+        line-height: 1.8em;
+        font-size: 1em;
+        line-height: default;
     }
 }

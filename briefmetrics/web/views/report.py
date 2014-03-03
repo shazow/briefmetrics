@@ -1,6 +1,6 @@
 import datetime
 from itertools import groupby
-from unstdlib import now
+from unstdlib import now, get_many
 
 from briefmetrics import api, model, tasks
 from briefmetrics.web.environment import Response, httpexceptions
@@ -64,6 +64,53 @@ def report_delete(request):
     request.flash("Report removed: %s" % display_name) 
 
 
+@expose_api('subscription.create')
+def subscription_create(request):
+    user_id = api.account.get_user_id(request, required=True)
+    report_id, email, display_name = get_many(request.params, required=['report_id', 'email'], optional=['display_name'])
+
+    if '@' not in email:
+        raise APIControllerError('Invalid email address: %s' % email)
+
+    account = model.Account.get_by(user_id=user_id)
+    if not account:
+        raise APIControllerError("Account does not exist for user: %s" % user_id)
+
+    report = model.Report.get_by(account_id=account.id, id=report_id)
+    if not report:
+        raise APIControllerError("Invalid report id: %s" % report_id)
+
+    new_user = api.report.add_subscriber(report_id, email, display_name)
+
+    request.flash("Added subscriber '%s' to report for '%s'." % (new_user.email, report.display_name))
+
+    return {'user': new_user}
+
+
+@expose_api('subscription.delete')
+def subscription_delete(request):
+    # TODO: Remove report if it's the last subscriber?
+    user_id = api.account.get_user_id(request, required=True)
+    subscription_id, = get_many(request.params, required=['subscription_id'])
+
+    account = model.Account.get_by(user_id=user_id)
+    if not account:
+        raise APIControllerError("Account does not exist for user: %s" % user_id)
+
+    sub = model.Session.query(model.Subscription).options(orm.joinedload('report')).get(subscription_id)
+    report = sub.report
+    if not sub:
+        raise APIControllerError("Invalid subscription id: %s" % subscription_id)
+
+    if sub.user_id != user_id and report.user_id != user_id:
+        raise APIControllerError("Subscription does not belong to you: %s" % subscription_id)
+
+    sub.delete()
+    model.Session.commit()
+
+    request.flash("Removed subscriber '%s' to report for '%s'." % (sub.email, report.display_name))
+
+
 # TODO: Move this somewhere else?
 class Site(object):
     report_types = model.Report.TYPES
@@ -96,7 +143,7 @@ class ReportController(Controller):
 
     @handle_api(['report.create', 'report.delete'])
     def index(self):
-        user = api.account.get_user(self.request, required=True, joinedload='account.reports')
+        user = api.account.get_user(self.request, required=True, joinedload='account.reports.subscriptions.user')
 
         oauth = api.google.auth_session(self.request, user.account.oauth_token)
         q = api.google.create_query(self.request, oauth)

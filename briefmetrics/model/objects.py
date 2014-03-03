@@ -54,9 +54,28 @@ class User(meta.Model): # Email address / login
     def unsubscribe_token(self):
         return '%s-%s' % (self.email_token, self.id)
 
+    def set_plan(self, plan_id):
+        plan = pricing.PLANS_LOOKUP[plan_id]
+        num_remaining = plan.features.get('num_emails')
+
+        if not num_remaining and self.num_remaining:
+            self.num_remaining *= 2
+        else:
+            self.num_remaining = num_remaining
+
     @property
     def plan(self):
         return pricing.PLANS_LOOKUP[self.plan_id or 'trial']
+
+    @property
+    def email_to(self):
+        if self.display_name:
+            return u'"{display_name}" <{email}>'.format(
+                display_name=self.display_name.replace('"', '&#34;'),
+                email=self.email,
+            )
+
+        return self.email
 
 
 class Account(meta.Model): # OAuth Service Account (such as Google Analytics)

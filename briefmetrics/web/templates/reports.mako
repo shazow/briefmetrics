@@ -21,7 +21,7 @@
     % for site in c.sites:
         ${forms.site_config(
             site,
-            is_active=c.user.num_remaining == 0 and not c.user.stripe_customer_id,
+            is_active=c.user.num_remaining != 0 or c.user.stripe_customer_id,
             is_admin=c.user.is_admin,
         )}
     % endfor

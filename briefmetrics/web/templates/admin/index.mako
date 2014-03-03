@@ -61,7 +61,7 @@
             </p>
 
             <div class="id">
-                "${u.display_name}" &lt;${u.email}&gt;
+                ${u.email_to}
 
                 % if u.account:
                     <ol>

@@ -26,9 +26,14 @@ class Plan(object):
 
 PLANS = [
 
-    Plan('trial', 'Trial', '3 free emails for one site', {
+    Plan('trial', 'Trial', '3 free email reports', {
         'num_emails': 3,
-        'num_sites': 1,
+        'num_sites': None,
+    }, is_hidden=True),
+
+    Plan('recipient', 'Recipient', '10 free email reports', {
+        'num_emails': 10,
+        'num_sites': None,
     }, is_hidden=True),
 
     Plan('free', 'Free', 'Super special free plan', {

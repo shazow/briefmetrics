@@ -395,7 +395,7 @@ a.button {
   margin-right: 0.5em;
   font-size: 12px;
 }
-a.button:hover {
+a.button:hover, a.button.active {
   background: #a9c787;
 }
 a.button.symbol {
@@ -408,6 +408,10 @@ a.button.symbol {
   margin-right: 0.5em;
   vertical-align: bottom;
   font-size: 14px;
+}
+a.button.external {
+  background: #eee;
+  color: #999;
 }
 
 section {
@@ -659,10 +663,6 @@ a.cta small {
 .report nav .controls input {
   border: none;
 }
-.report nav .button {
-  background: #eee;
-  color: #999;
-}
 .report .details {
   width: 100%;
   display: table;
@@ -676,7 +676,26 @@ a.cta small {
   margin-right: 1em;
   display: table-cell;
 }
+.report .details .recipients {
+  margin-left: 2em;
+}
 
 form#create-report p .chosen-container:first {
   margin-right: 5px;
+}
+
+form.add-recipient {
+  margin-top: 1em;
+  padding-left: 2em;
+}
+form.add-recipient input[name="display_name"] {
+  width: 8em;
+}
+form.add-recipient input[name="email"] {
+  width: 14em;
+}
+form.add-recipient input {
+  line-height: 1.8em;
+  font-size: 1em;
+  line-height: default;
 }
