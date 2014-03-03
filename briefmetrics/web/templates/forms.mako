@@ -124,7 +124,10 @@
 </%def>
 
 <%def name="site_config(site, is_active=True, is_admin=False)">
-    <div class="preview report">
+    <%
+        anchor = 'report-{}'.format(site.report.id)
+    %>
+    <div class="preview report" id="${anchor}">
         <nav>
             <h3>
                 ${site.display_name}
@@ -137,6 +140,9 @@
 
         <table class="details">
         % for type, report in site:
+            <% 
+                is_recipients_active = request.params.get('recipients') == str(report.id)
+            %>
             <tr>
                 <td>
                     <a href="${request.current_route_path(
@@ -159,20 +165,29 @@
                 </td>
                 <td style="text-align: right;">
                 % if is_active:
-                    <a class="button" href="${request.route_path('reports_view', id=report.id)}">${h.format_int(len(report.subscriptions), '{} Recipient')}</a>
+                    <a class="button ${h.text_if(is_recipients_active, 'active')}" href="${request.current_route_path(_query={'recipients': report.id}, _anchor=anchor)}">${h.format_int(len(report.subscriptions), '{} Recipient')}</a>
 
                     <a target="_blank" class="button" href="${request.route_path('reports_view', id=report.id)}">Last Report</a>
                 % endif
                 </td>
             </tr>
+            % if is_recipients_active:
             <tr>
+            % else:
+            <tr style="display: none;">
+            % endif
                 <td colspan="3">
                     <ul class="vertical recipients">
                         % for sub in report.subscriptions:
                         <li>
 
-                            <a href="${request.current_route_path(
-                                _query=dict(subscription_id=sub.id, method="subscription.delete", csrf_token=session.get_csrf_token())
+                            <a href="${request.route_path('api',
+                                _query=dict(
+                                    subscription_id=sub.id,
+                                    method='subscription.delete',
+                                    csrf_token=session.get_csrf_token(),
+                                    format='redirect',
+                                )
                             )}" class="negative symbol button">&times;</a>
                             ${sub.user.email_to}
                         </li>
@@ -182,6 +197,7 @@
                         </li>
                     </ul>
                 </td>
+            </tr>
         % endfor
         </table>
     </div>
@@ -194,6 +210,7 @@
         <input type="hidden" name="report_id" value="${report_id}" />
         <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
         <input type="hidden" name="method" value="subscription.create" />
+        <input type="hidden" name="format" value="redirect" />
         <input type="submit" value="Add" />
     </form>
 </%def>

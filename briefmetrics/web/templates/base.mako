@@ -35,7 +35,7 @@
             ('Log out', request.route_path('account_logout')),
         ]
 
-    current_route = request.current_route_path()
+    current_route = request.current_route_path(_query=None)
 %>
 <nav class="header">
     <ul>

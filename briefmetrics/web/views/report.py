@@ -1,6 +1,7 @@
 import datetime
 from itertools import groupby
 from unstdlib import now, get_many
+from sqlalchemy import orm
 
 from briefmetrics import api, model, tasks
 from briefmetrics.web.environment import Response, httpexceptions
@@ -82,7 +83,7 @@ def subscription_create(request):
 
     new_user = api.report.add_subscriber(report_id, email, display_name)
 
-    request.flash("Added subscriber '%s' to report for '%s'." % (new_user.email, report.display_name))
+    request.flash("Added subscriber [%s] to report for [%s]" % (new_user.email, report.display_name))
 
     return {'user': new_user}
 
@@ -97,18 +98,19 @@ def subscription_delete(request):
     if not account:
         raise APIControllerError("Account does not exist for user: %s" % user_id)
 
-    sub = model.Session.query(model.Subscription).options(orm.joinedload('report')).get(subscription_id)
-    report = sub.report
+    sub = model.Session.query(model.Subscription).options(orm.joinedload('report'), orm.joinedload('user')).get(subscription_id)
     if not sub:
         raise APIControllerError("Invalid subscription id: %s" % subscription_id)
 
-    if sub.user_id != user_id and report.user_id != user_id:
+    report = sub.report
+    if sub.user_id != user_id and report.account_id != account.id:
         raise APIControllerError("Subscription does not belong to you: %s" % subscription_id)
 
+    email = sub.user.email
     sub.delete()
     model.Session.commit()
 
-    request.flash("Removed subscriber '%s' to report for '%s'." % (sub.email, report.display_name))
+    request.flash("Removed subscriber [%s] to report for [%s]" % (email, report.display_name))
 
 
 # TODO: Move this somewhere else?

@@ -56,8 +56,9 @@ class User(meta.Model): # Email address / login
 
     def set_plan(self, plan_id):
         plan = pricing.PLANS_LOOKUP[plan_id]
-        num_remaining = plan.features.get('num_emails')
+        self.plan_id = plan_id
 
+        num_remaining = plan.features.get('num_emails')
         if not num_remaining and self.num_remaining:
             self.num_remaining *= 2
         else:
