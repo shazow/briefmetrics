@@ -12,6 +12,8 @@
     * Bitcoin integration
     * Detect private pages: Very few uniques, but high time on site and views
     * Pitch the "share analytics with your team" angle.
+    * Write article about '*.us3.list-manage*.com/subscribe/confirm' urls
+    * Change weekly chart from month vs month to 4 week vs n-of-4 week.
 
 * Press
     * http://www.quickblogtips.com/bonus-content/free-ebook-a-beginners-guide-to-google-analytics/
@@ -30,5 +32,6 @@
     * https://productforums.google.com/forum/#!category-topic/analytics/c2I33JxpQns
     * https://productforums.google.com/forum/#!category-topic/analytics/wqdjgSpB0Uw
     * Blogging about blogging, problogger, seo
+    * http://mashable.com/the-launchpad/
 
 

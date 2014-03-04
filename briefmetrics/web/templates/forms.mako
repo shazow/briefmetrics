@@ -165,7 +165,7 @@
                 </td>
                 <td style="text-align: right;">
                 % if is_active:
-                    <a class="button ${h.text_if(is_recipients_active, 'active')}" href="${request.current_route_path(_query={'recipients': report.id}, _anchor=anchor)}">${h.format_int(len(report.subscriptions), '{} Recipient')}</a>
+                    <a class="button ${h.text_if(is_recipients_active, 'active')} expand-recipients" href="${request.current_route_path(_query={'recipients': report.id}, _anchor=anchor)}">${h.format_int(len(report.subscriptions), '{} Recipient')}</a>
 
                     <a target="_blank" class="button" href="${request.route_path('reports_view', id=report.id)}">Last Report</a>
                 % endif

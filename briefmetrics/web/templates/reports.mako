@@ -34,10 +34,16 @@
 ${h.javascript_link(request, 'briefmetrics.web:static/js/external/chosen/chosen.jquery.min.js')}
 <script type="text/javascript">
     $(function() {
-        $("select[name=\"remote_id\"]").chosen();
-        $("select[name=\"type\"]").chosen({
+        $('select[name="remote_id"]').chosen();
+        $('select[name="type"]').chosen({
             ##disable_search: true,
             ##display_selected_options: false
+        });
+
+        $('.expand-recipients').click(function() {
+            $(this).toggleClass('active');
+            $(this).parents('tr').next().toggle();
+            return false;
         });
     });
 </script>
