@@ -49,7 +49,7 @@ def add_subscriber(report_id, email, display_name):
         u.display_name = display_name
         u.set_plan(plan_id='recipient')
 
-    model.Subscription.create(user=u, report_id=report_id)
+    model.Subscription.get_or_create(user=u, report_id=report_id)
     model.Session.commit()
 
     return u
