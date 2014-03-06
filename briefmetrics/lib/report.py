@@ -38,7 +38,7 @@ def cumulative_by_month(month_views_iter):
     for month, views in month_views_iter:
         month_list = months.get(month)
         if not month_list:
-            month_list = months[month] = []
+            month_list = months[month] = [0]
             last_val = 0
         else:
             last_val = month_list[-1]
