@@ -83,8 +83,16 @@
     </p>
 
     <code><pre>
-
+        TODO...
     </pre></code>
+
+    <h3>
+        Skip the JavaScript tracking snippet in the template
+    </h3>
+
+    <p>
+        TODO...
+    </p>
 
     <p>
         More discussion about this on this StackOverflow thread:
