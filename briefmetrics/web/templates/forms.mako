@@ -33,7 +33,7 @@
 </%def>
 
 
-<%def name="payment_form()">
+<%def name="payment_form(plan_id=None)">
     <form action="${request.route_path('api')}" method="post" class="payment" autocomplete="on">
         <div>
             <label>
@@ -50,7 +50,7 @@
                     % else:
                         <select name="plan_id">
                         % for plan in plans:
-                            <option value="${plan.id}">
+                            <option value="${plan.id}" ${h.text_if(plan_id==plan.id, 'selected')}>
                                 ${plan.option_str}
                             </option>
                         % endfor

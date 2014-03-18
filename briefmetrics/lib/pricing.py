@@ -46,7 +46,7 @@ PLANS = [
         'num_sites': None,
     }, price_monthly=800),
 
-    Plan('agency', 'Agency', 'Custom branded reports for up to 50 clients', {
+    Plan('agency', 'Agency', 'Custom branded reports', {
         'num_emails': None,
         'num_sites': 50,
     }, price_monthly=15000),

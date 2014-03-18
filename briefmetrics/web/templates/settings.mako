@@ -37,7 +37,7 @@
         </p>
         % endif
 
-        ${forms.payment_form()}
+        ${forms.payment_form(plan_id=c.user.plan_id)}
     % endif
     </section>
 
