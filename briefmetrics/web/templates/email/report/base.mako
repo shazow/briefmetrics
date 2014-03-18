@@ -136,6 +136,10 @@
         color: #666;
         font-size: 0.8em;
     }
+    .footer p {
+        line-height: 1.2em;
+        margin-bottom: 0.5em;
+    }
     .quiet {
         font-size: 0.8em;
         color: #999;
@@ -188,16 +192,16 @@
 
 ${next.body()}
 
-<h2>Please send feedback</h2>
-<p>
-    Reply to this email with comments, suggestions, requests, praise, or selfies.
-</p>
-
-<p class="footer">
-    Looking for something different?
-    <a href="https://briefmetrics.com/reports">Change subscription</a> &middot;
-    <a href="https://briefmetrics.com/account/delete?token=${c.user.unsubscribe_token}">Delete account</a>
-</p>
+<div class="footer">
+    <p>
+        <strong>Please send feedback by replying to this email.</strong>
+    </p>
+    <p>
+        Looking for something different?
+        <a href="https://briefmetrics.com/reports">Change subscription</a> &middot;
+        <a href="https://briefmetrics.com/account/delete?token=${c.user.unsubscribe_token}">Delete account</a>
+    </p>
+</div>
 
 </div>
 
