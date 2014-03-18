@@ -196,11 +196,18 @@ ${next.body()}
     <p>
         <strong>Please send feedback by replying to this email.</strong>
     </p>
-    <p>
-        Looking for something different?
-        <a href="https://briefmetrics.com/reports">Change subscription</a> &middot;
-        <a href="https://briefmetrics.com/account/delete?token=${c.user.unsubscribe_token}">Delete account</a>
-    </p>
+    % if c.report.owner == c.user:
+        <p>
+            Looking for something different?
+            <a href="https://briefmetrics.com/reports">Change subscription</a> &middot;
+            <a href="https://briefmetrics.com/account/delete?token=${c.user.unsubscribe_token}">Delete account</a>
+        </p>
+    % else:
+        <p>
+            You're receiving these emails because ${c.report.owner.display_name} added you as a recipient. 
+            If you're not interested, you can <a href="https://briefmetrics.com/account/delete?token=${c.user.unsubscribe_token}">unsubscribe here</a>.
+        </p>
+    % endif
 </div>
 
 </div>
