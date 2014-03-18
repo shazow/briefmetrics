@@ -60,7 +60,7 @@ class User(meta.Model): # Email address / login
 
         num_remaining = plan.features.get('num_emails')
         if not num_remaining and self.num_remaining:
-            self.num_remaining *= 2
+            pass
         else:
             self.num_remaining = num_remaining
 
