@@ -28,9 +28,6 @@
             <a class="highlight" href="/settings#credit-card">Add a credit card</a>
             to upgrade your account.
         </li>
-        <li>
-            When you upgrade, your remaining free emails are doubled!
-        </li>
     </ul>
 % elif num_remaining is not None:
     <p>
