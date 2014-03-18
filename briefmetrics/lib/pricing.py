@@ -41,11 +41,15 @@ PLANS = [
         'num_sites': None,
     }, is_hidden=True),
 
-    Plan('personal', 'Early Bird', 'Unlimited emails', {
+    Plan('personal', 'Early Bird', 'For startups and hobbyists', {
         'num_emails': None,
         'num_sites': None,
     }, price_monthly=800),
 
+    Plan('agency', 'Agency', 'Custom branded reports for up to 50 clients', {
+        'num_emails': None,
+        'num_sites': 50,
+    }, price_monthly=15000),
 ]
 
 
