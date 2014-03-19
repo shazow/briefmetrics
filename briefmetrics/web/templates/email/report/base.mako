@@ -31,10 +31,17 @@
 
     a {
         text-decoration: none;
-        color: #25ad83;
+        color: ${c.user.config.get('style_a_color', '#25ad83')};
     }
     a.highlight {
         background: #c6eadf;
+    }
+    a.permalink {
+        float: right;
+        color: ${c.user.config.get('style_permalink_color', '#9db883')};
+        line-height: 2em;
+        font-size: 0.8em;
+        padding-right: 0.5em;
     }
     p, ul, table {
         margin-top: 0.5em;
@@ -50,7 +57,7 @@
         font-size: 0.9em;
     }
     thead {
-        background: #ecfadd;
+        background: ${c.user.config.get('style_thead_background', '#ecfadd')};
         color: #000;
         font-weight: bold;
         font-size: 0.8em;
@@ -100,13 +107,6 @@
     .done {
         text-decoration: line-through;
         color: #888;
-    }
-    a.permalink {
-        float: right;
-        color: #9db883;
-        line-height: 2em;
-        font-size: 0.8em;
-        padding-right: 0.5em;
     }
     .overview {
         font-size: 1em;
@@ -177,7 +177,7 @@
 <body>
 
 <h1>
-    <img src="https://briefmetrics.com/static/images/email_logo.png" />
+    <img src="https://briefmetrics.com/static/images/email_headers/${c.user.config.get('email_header_image', 'briefmetrics.png')}" />
 </h1>
 
 <div class="content">
