@@ -50,6 +50,8 @@ class User(meta.Model): # Email address / login
 
     stripe_customer_id = Column(types.String)
 
+    config = Column(_types.MutationDict.as_mutable(_types.JSONEncodedDict), default=dict) # Whitelabel settings
+
     @property
     def unsubscribe_token(self):
         return '%s-%s' % (self.email_token, self.id)
