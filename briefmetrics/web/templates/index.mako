@@ -22,15 +22,15 @@
     </h2>
 
     <ul style="margin: 2em 0;">
-        <li><strong>Save time by having the reports come to you.</strong> It takes on average <em>12 clicks</em> to get to the most valuable reports in Google Analytics.</li>
+        <li><strong>Save time by having the reports come to you.</strong> Get your first report in just 15 seconds.</li>
         <li><strong>Make better decisions with dynamic reports.</strong> Each email is intelligently crafted to show only what's relevant to you.</li>
-        <li><strong>Share professional reports with your colleagues.</strong></li>
+        <li><strong>Share professional reports with your colleagues.</strong> Custom branding plans available for agencies who want to benefit clients with analytics summaries.</li>
     </ul>
 
     <div class="signup">
         <a class="cta" href="${login_url}">
             Sign in with Google Analytics
-            <small>includes 3 free email reports</small>
+            <small>includes 10 free email reports</small>
         </a>
 
         <ul class="details">

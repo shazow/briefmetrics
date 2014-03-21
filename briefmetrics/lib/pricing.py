@@ -26,8 +26,8 @@ class Plan(object):
 
 PLANS = [
 
-    Plan('trial', 'Trial', '3 free email reports', {
-        'num_emails': 3,
+    Plan('trial', 'Trial', '10 free email reports', {
+        'num_emails': 10,
         'num_sites': None,
     }, is_hidden=True),
 
