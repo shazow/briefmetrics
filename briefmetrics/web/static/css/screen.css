@@ -262,9 +262,12 @@ p {
   margin-bottom: 1em;
 }
 
-code {
+code, pre.code {
   background: rgba(0, 0, 0, 0.1);
   padding: 1px 2px;
+}
+code em, pre.code em {
+  color: #3c781e;
 }
 
 h1, h2 {
@@ -289,6 +292,11 @@ h1 {
 
 h2 {
   color: #40413e;
+}
+
+h3 {
+  line-height: 1.3em;
+  margin: 1em 0 0.5em 0;
 }
 
 strong {
@@ -340,6 +348,10 @@ input[type="submit"] {
 select {
   font-size: 2em;
   width: 100%;
+}
+
+pre {
+  overflow-x: auto;
 }
 
 .container {

@@ -63,9 +63,13 @@ p {
     margin-bottom: 1em;
 }
 
-code {
+code, pre.code {
     background: rgba(0, 0, 0, 0.1);
     padding: 1px 2px;
+
+    em {
+        color: rgb(60, 120, 30);
+    }
 }
 
 h1, h2 {
@@ -93,6 +97,11 @@ h1 {
 
 h2 {
     color: #40413e;
+}
+
+h3 {
+    line-height: 1.3em;
+    margin: 1em 0 0.5em 0;
 }
 
 strong {
@@ -144,6 +153,10 @@ input {
 select {
     font-size: 2em;
     width: 100%;
+}
+
+pre {
+    overflow-x: auto;
 }
 
 .container {

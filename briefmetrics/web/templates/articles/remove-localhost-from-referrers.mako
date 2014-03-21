@@ -72,9 +72,10 @@
     </p>
 
     <p>
-        In your Google Analytics tracking snippet, find the part that queues
-        the "pageview" tracking event. If you've upgraded to Universal Analytics,
-        then it looks something like <code>ga('send', 'pageview')</code>.
+        In your Google Analytics tracking snippet, find the part which defines
+        the property ID for which to record analytics. If you've upgraded to
+        Universal Analytics, then it looks something like
+        <code>ga('create', 'UA-XXXXXX', 'example.com');</code>.
     </p>
 
     <p>
@@ -82,20 +83,80 @@
         hostname for this visit. Something like this:
     </p>
 
-    <code><pre>
-        TODO...
-    </pre></code>
+    <pre class="code">
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    <em>// Skip recording GA events to our account if in development.
+    if (document.location.hostname == 'localhost') {
+        ga('create', 'UA-XXXXXXX-XX', 'example.com');
+    }</em>
+
+    ga('send', 'pageview');</pre>
+
+    <p>
+        You'll need to make sure that you used your original UA-code and
+        website, rather than <em>example.com</em>. If your team uses a
+        development hostname other than <em>localhost</em> (such as
+        <em>127.0.0.1</em>, for example), then don't forget to adjust for that.
+    </p>
+
+    <p>
+        One variation of this method is to put the if-statement around the entire
+        Google Analytics block, but the benefit of putting it just around the
+        <code>ga('create', ...)</code> statement is that the rest of your
+        Google Analytics related code will continue without actually recording
+        the data to your account, rather than raise JavaScript errors.
+    </p>
 
     <h3>
         Skip the JavaScript tracking snippet in the template
     </h3>
 
     <p>
-        TODO...
+        If you're using something like PHP (such as with Wordpress), you could
+        do something like this in the PHP footer file which includes the Google
+        Analytics snippet:
+    </p>
+
+    <pre class="code">
+    &lt;? if($_SERVER["REMOTE_ADDR"] != "127.0.0.1") { ?&gt;
+        &lt;script&gt; Google Analytics snippet here ...&lt;/script&gt;
+    &lt;? } ?&gt;</pre>
+
+    <p>
+        Some serves are capable of setting up a global or environment variable which
+        keeps track of whether the application is being run in development or
+        production.
     </p>
 
     <p>
-        More discussion about this on this StackOverflow thread:
+        If you're using Django, then your template snippet might look
+        something like this...
+    </p>
+
+    <pre class="code">
+    {% if not DEBUG %}
+        &lt;script&gt; Google Analytics snippet here ...&lt;/script&gt;
+    {% endif %}</pre>
+
+    <p>
+        Or with Ruby on Rails, it might look like this...
+    </p>
+
+    <pre class="code">
+    &lt;% unless RAILS_ENV == "development" %&gt;
+        &lt;script&gt; Google Analytics snippet here ...&lt;/script&gt;
+    &lt;% end %&gt;</pre>
+
+    <p>
+        ... Hopefully you get the idea. :)
+    </p>
+
+    <p>
+        For more discussion on this topic, check this StackOverflow thread:<br />
         <a href="http://stackoverflow.com/questions/1251922/is-there-a-way-to-stop-google-analytics-counting-development-work-as-hits">
         Is there a way to stop Google Analytics counting development work as hits?
         </a>
