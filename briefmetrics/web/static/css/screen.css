@@ -250,8 +250,13 @@ footer {
   border-top: 5px solid #dae0d4;
   text-align: center;
   margin-bottom: 1em;
-  margin-top: 80px;
+  margin-top: 4em;
   padding-top: 0.5em;
+}
+footer a {
+  background: rgba(60, 30, 10, 0.05);
+  padding: 0 2px;
+  color: #AA6A46;
 }
 
 a {
@@ -710,4 +715,11 @@ form.add-recipient input {
   line-height: 1.8em;
   font-size: 1em;
   line-height: default;
+}
+
+.articles {
+  margin: 4em 0;
+}
+.articles h3 {
+  font-size: 1.4em;
 }

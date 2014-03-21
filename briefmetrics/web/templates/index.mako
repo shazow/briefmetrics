@@ -54,5 +54,20 @@
             <small>get your first email report now</small>
         </a>
     </div>
+
+    <div class="articles">
+        <h3>Recent Articles</h3>
+        <ul>
+            <li>
+                <a href="/articles/remove-localhost-from-referrers">How to remove localhost from your referrer list</a> and avoid skewing your valuable visitor data.
+            </li>
+            <li>
+                <em>Coming soon:</em> Most accurate way to track outgoing clicks, and why every other tutorial gets it wrong.
+            </li>
+        </ul>
+        <p>
+            <a href="${login_url}">Sign up for Briefmetrics</a> to be notified of the latest articles.
+        </p>
+    </div>
 </div>
 

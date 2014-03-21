@@ -64,6 +64,11 @@ ${next.body()}
 
 <%block name="footer">
 <footer>
+% if not is_logged_in:
+    <p><a href="/">Briefmetrics</a> emails you weekly summaries of your Google Analytics.
+        <a href="${request.route_url('account_login')}">Try it now</a> with 10 free emails!
+    </p>
+% endif
 Questions? Send an email to <a href="mailto:support@briefmetrics.com">support@briefmetrics.com</a>
 </footer>
 </%block>
