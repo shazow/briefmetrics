@@ -10,10 +10,11 @@
     </p>
 
     <p>
-        Not only will "localhost" will show up in your Referrers, but your
+        Not only will <em>localhost</em> show up in your Referrers, but your
         aggregate metrics like Bounce Rate, Time On Site, Conversion, and
-        others will be incorrect because the unusual developer's behavior will
-        be mixed in with that of normal users. We don't want that.
+        others will be incorrect because the unusual behavior of a developer's
+        will be mixed in with that of normal users and skew our results. We
+        don't want that.
     </p>
 
     <p>
@@ -26,6 +27,11 @@
     <h3>
         Add a Google Analytics exclusion filter
     </h3>
+
+    <p>
+        Adding a filter to Google Analytics might be the easiest method with
+        the least intervention required from the development team.
+    </p>
 
     <ol>
         <li>
@@ -152,7 +158,20 @@
     &lt;% end %&gt;</pre>
 
     <p>
-        ... Hopefully you get the idea. :)
+        This method probably requires some involvement with your development
+        team but it also allows to have better control over when your Google
+        Analytics snippet shows up or not. This is also a great opportunity to
+        add more production-specific JavaScript services into a wired-off
+        development flag.
+    </p>
+
+    <h3>Moving forward...</h3>
+
+    <p>
+        With your changes in place, you'll want to double-check your Referrers
+        analytics a day or two later. Make sure to select a recent date range
+        that does not include days up to and including when the changes were
+        made.
     </p>
 
     <p>
