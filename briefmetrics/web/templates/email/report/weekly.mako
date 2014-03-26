@@ -76,7 +76,8 @@ ${widgets.render_table(
         Please <a href="https://briefmetrics.com/settings">add a credit card now</a> to keep receiving Briefmetrics reports.
     % elif c.report.owner.num_remaining > 1:
         <strong>You have <span class="highlight">${c.report.owner.num_remaining-1} free reports</span> remaining.</strong>
-        <a href="https://briefmetrics.com/settings">Add a credit card now</a> to get ${c.report.owner.num_remaining-1} extra free reports!
+        <a href="https://briefmetrics.com/settings">Add a credit card now</a> to
+        upgrade your account.
         Your next report is scheduled for ${h.human_date(c.report.date_next)}.
     % endif
 </p>
