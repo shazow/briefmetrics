@@ -49,7 +49,7 @@ PLANS = [
     Plan('agency', 'Agency', 'Custom branded reports', {
         'num_emails': None,
         'num_sites': 50,
-    }, price_monthly=15000),
+    }, price_monthly=15000, is_hidden=True),
 ]
 
 
