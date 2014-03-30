@@ -310,7 +310,7 @@ class WeeklyReport(Report):
         self.data['total_units'] = '{:,} %s' % views_column.label.lower().rstrip('s')
         self.data['total_current'] = current_month[-1]
         self.data['total_last'] = last_month[-1]
-        self.data['total_last_relative'] = last_month[len(current_month)-1]
+        self.data['total_last_relative'] = last_month[min(len(current_month), len(last_month))-1]
 
         t = Table(columns=[
             Column('source', label='Social & Search', visible=1, type_cast=_cast_title),

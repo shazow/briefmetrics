@@ -1,3 +1,11 @@
+* Setup Devon:
+    * New header
+    * New footer: "This report was prepared for Cycle University by [DeLapp Design].
+    * Add $35/mo plan
+    * From field: "DeLapp Design (via Briefmetrics)"
+    * Reply-to: support@delappdesign.com
+
+
 * Small things
     * Another level for 'on your way'?
     * Monthly: Weekend-shifted day delta bar charts
