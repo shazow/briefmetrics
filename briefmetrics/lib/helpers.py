@@ -54,6 +54,9 @@ def human_url(s, max_length=None):
     return truncate(r, max_length=max_length)
 
 def human_link(href, label=None, attrs=None, max_length=None):
+    if not href:
+        return label
+
     if href.startswith('/'):
         return href
     elif '://' not in href:
