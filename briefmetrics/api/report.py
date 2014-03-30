@@ -3,7 +3,7 @@ import logging
 import datetime
 import random
 
-from unstdlib import now
+from unstdlib import now, get_many
 
 from briefmetrics.lib.controller import Controller, Context
 from briefmetrics.lib.report import DailyReport, WeeklyReport, MonthlyReport, EmptyReportError
@@ -159,6 +159,13 @@ def send(request, report, since_time=None, pretend=False):
     debug_sample = float(request.registry.settings.get('mail.debug_sample', 1))
     debug_bcc = owner.plan.id != 'trial' or not report.time_next or random.random() < debug_sample
 
+    email_kw = {}
+    from_name, reply_to = get_many(owner.config, optional=['from_name', 'reply_to'])
+    if from_name:
+        email_kw['from_name'] = from_name
+    if reply_to:
+        email_kw['reply_to'] = reply_to
+
     for user in report.users:
         html = render(request, template, Context({
             'user': user,
@@ -170,6 +177,7 @@ def send(request, report, since_time=None, pretend=False):
             subject=subject, 
             html=html,
             debug_bcc=debug_bcc,
+            **email_kw
         )
 
         if pretend:

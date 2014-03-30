@@ -191,10 +191,19 @@ class ReportController(Controller):
         }))
 
         if self.request.params.get('send'):
+            owner = report_context.owner
+            email_kw = {}
+            from_name, reply_to = get_many(owner.config, optional=['from_name', 'reply_to'])
+            if from_name:
+                email_kw['from_name'] = from_name
+            if reply_to:
+                email_kw['reply_to'] = reply_to
+
             message = api.email.create_message(self.request,
                 to_email=user.email,
                 subject=report_context.get_subject(), 
                 html=html,
+                **email_kw
             )
             api.email.send_message(self.request, message)
 

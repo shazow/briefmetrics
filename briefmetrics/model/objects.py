@@ -53,7 +53,10 @@ class User(meta.Model): # Email address / login
     config = Column(_types.MutationDict.as_mutable(_types.JSONEncodedDict), default=dict) # Whitelabel settings
     ''' Example config:
         {
-            "email_header_image": "briefmetrics.png",
+            "email_header_image": "delappdesign.gif",
+            "reply_to": "support@delappdesign.com",
+            "from_link": "http://www.delappdesign.com/",
+            "from_name": "DeLapp Design",
             "style_a_color": "#7688c9",
             "style_permalink_color": "#7688c9",
             "style_thead_background": "#eeeeee"

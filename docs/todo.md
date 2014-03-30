@@ -1,5 +1,5 @@
 * Setup Devon:
-    * New header
+    * New header (Done)
     * New footer: "This report was prepared for Cycle University by [DeLapp Design].
     * Add $35/mo plan
     * From field: "DeLapp Design (via Briefmetrics)"

@@ -11,7 +11,7 @@ http_session = requests.session()
 API_URL = 'https://mandrillapp.com/api/1.0/'
 
 
-def create_message(request, to_email, subject, html=None, text=None, from_name=None, from_email=None, debug_bcc=None):
+def create_message(request, to_email, subject, html=None, text=None, from_name=None, from_email=None, reply_to=None, debug_bcc=None):
     settings = request.registry.settings
     from_name = from_name or settings['mail.from_name']
     from_email = from_email or settings['mail.from_email']
@@ -28,6 +28,11 @@ def create_message(request, to_email, subject, html=None, text=None, from_name=N
         'auto_text': True,
         'inline_css': True,
     }
+
+    if reply_to:
+        message['headers'] = {
+            'Reply-To': reply_to,
+        }
 
     if html is not None:
         message['html'] = html
