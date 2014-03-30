@@ -368,6 +368,10 @@ pre {
   overflow: inherit;
 }
 
+form {
+  margin-bottom: 1em;
+}
+
 input[type="submit"] {
   font-size: 1em;
   line-height: 2em;

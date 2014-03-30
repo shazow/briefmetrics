@@ -38,6 +38,10 @@
         % endif
 
         ${forms.payment_form(plan_id=c.user.plan_id)}
+
+        <p>
+            Looking for an agency plan with custom-branded emails? <a href="mailto:support@briefmetrics.com">Send us an email</a>.
+        </p>
     % endif
     </section>
 
