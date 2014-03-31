@@ -46,10 +46,15 @@ PLANS = [
         'num_sites': None,
     }, price_monthly=800),
 
-    Plan('agency', 'Agency', 'Custom branded reports', {
+    Plan('agency', 'Agency', '50 branded reports', {
         'num_emails': None,
         'num_sites': 50,
     }, price_monthly=15000, is_hidden=True),
+
+    Plan('agency-small', 'Small Agency', '10 branded reports', {
+        'num_emails': None,
+        'num_sites': 10,
+    }, price_monthly=3500, is_hidden=True),
 ]
 
 

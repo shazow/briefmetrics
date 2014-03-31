@@ -263,6 +263,7 @@ a.cta {
     }
 
     label {
+        padding-left: 1px; // FIXME: ...?
         float: left;
     }
     input[type="text"] {

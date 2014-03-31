@@ -40,7 +40,7 @@
                 Plan
                 <div>
                     <%
-                        plans = [p for p in pricing.PLANS if not p.is_hidden]
+                        plans = [p for p in pricing.PLANS if not p.is_hidden or p.id == plan_id]
                     %>
                     % if len(plans) == 1:
                         <input type="hidden" name="plan_id" value="${plans[0].id}" />

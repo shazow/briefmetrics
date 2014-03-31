@@ -644,6 +644,7 @@ a.cta small {
   margin-left: 0.5em;
 }
 .payment label {
+  padding-left: 1px;
   float: left;
 }
 .payment input[type="text"] {
