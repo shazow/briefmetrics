@@ -199,7 +199,7 @@ ${next.body()}
             prepared_name = c.report.owner.display_name
     %>
     <p style="margin-bottom: 2em;">
-        This report was prepared for <strong>${c.user.display_name or 'you'}</strong> by
+        This report was prepared for ${c.user.display_name or 'you'} by
         % if prepared_name:
         <strong>${
             h.human_link(
