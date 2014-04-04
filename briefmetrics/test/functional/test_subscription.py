@@ -2,7 +2,7 @@ from briefmetrics import test
 from briefmetrics import api
 from briefmetrics import model
 from briefmetrics import tasks
-from briefmetrics.lib.report import Report, DailyReport, ActivityReport, MonthlyReport
+from briefmetrics.lib.report import Report, DailyReport, ActivityReport, TrendsReport
 from briefmetrics.lib.table import Column
 from briefmetrics.lib.controller import Context
 

@@ -6,7 +6,7 @@ import random
 from unstdlib import now, get_many
 
 from briefmetrics.lib.controller import Controller, Context
-from briefmetrics.lib.report import DailyReport, ActivityReport, MonthlyReport, EmptyReportError
+from briefmetrics.lib.report import DailyReport, ActivityReport, TrendsReport, EmptyReportError
 from briefmetrics.lib.exceptions import APIError
 from briefmetrics.lib import helpers as h
 from briefmetrics import model
@@ -78,7 +78,7 @@ def fetch(request, report, since_time, google_query=None):
     ReportCls = {
         'day': DailyReport,
         'week': ActivityReport,
-        'month': MonthlyReport,
+        'month': TrendsReport,
     }[report.type]
 
     r = ReportCls(report, since_time)

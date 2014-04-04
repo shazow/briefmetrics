@@ -338,7 +338,7 @@ class DailyReport(Report):
         pass
 
 
-class MonthlyReport(Report):
+class TrendsReport(Report):
     template = 'email/report/monthly.mako'
 
     def get_date_range(self, since_time):

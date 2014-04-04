@@ -2,7 +2,7 @@ from briefmetrics import test
 from briefmetrics import api
 from briefmetrics import model
 from briefmetrics import tasks
-from briefmetrics.lib.report import Report, DailyReport, ActivityReport, MonthlyReport
+from briefmetrics.lib.report import Report, DailyReport, ActivityReport, TrendsReport
 from briefmetrics.lib.table import Column
 from briefmetrics.lib.controller import Context
 
@@ -216,7 +216,7 @@ class TestReportLib(test.TestCase):
         report.set_time_preferred(weekday=0) # Preferred time: First Monday
 
         since_time = datetime.datetime(2014, 1, 6) # First Monday of January 2014
-        r = MonthlyReport(report, since_time)
+        r = TrendsReport(report, since_time)
 
         self.assertEqual(r.date_start, datetime.date(2013, 12, 1)) # Start of December 2013
         self.assertEqual(r.date_end, datetime.date(2013, 12, 31)) # End of December 2013
@@ -226,7 +226,7 @@ class TestReportLib(test.TestCase):
 
         # Scenario: Month starting with Monday (Sept 1)
         since_time = datetime.datetime(2014, 8, 4)
-        r = MonthlyReport(report, since_time)
+        r = TrendsReport(report, since_time)
 
         self.assertEqual(r.date_start, datetime.date(2014, 7, 1))
         self.assertEqual(r.date_end, datetime.date(2014, 7, 31))
