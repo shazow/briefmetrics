@@ -77,6 +77,11 @@ class Report(object):
         self.since_time = since_time
         self.date_start, self.date_end, self.date_next = self.get_date_range(since_time)
 
+        # TODO: Do this based on the date range?
+        self.previous_period_end = self.date_start - datetime.timedelta(days=1)
+        self.previous_period_start = self.previous_period_end - datetime.timedelta(days=(self.date_end - self.date_start).days)
+
+
     @classmethod
     def create_from_now(cls, report, now):
         # TODO: Take into account preferred time.
@@ -136,10 +141,6 @@ class WeeklyReport(Report):
         )
 
     def fetch(self, google_query):
-
-        last_week_date_start = self.date_start - datetime.timedelta(days=7)
-        last_week_date_end = last_week_date_start + datetime.timedelta(days=6)
-
         last_month_date_start = self.date_end - datetime.timedelta(days=self.date_end.day)
         last_month_date_start -= datetime.timedelta(days=last_month_date_start.day - 1)
 
@@ -153,7 +154,7 @@ class WeeklyReport(Report):
         self.tables['summary'] = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
-                'start-date': last_week_date_start, # Extra week
+                'start-date': self.previous_period_start, # Extra week
                 'end-date': self.date_end,
                 'sort': '-ga:nthWeek',
             },
@@ -206,8 +207,8 @@ class WeeklyReport(Report):
         last_referrers = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
-                'start-date': last_week_date_start,
-                'end-date': last_week_date_end,
+                'start-date': self.previous_period_start,
+                'end-date': self.previous_period_end,
                 'filters': 'ga:medium==referral',
                 'sort': '-ga:pageviews',
                 'max-results': '250',
