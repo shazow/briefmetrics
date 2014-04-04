@@ -2,7 +2,7 @@ from briefmetrics import test
 from briefmetrics import api
 from briefmetrics import model
 from briefmetrics import tasks
-from briefmetrics.lib.report import Report, DailyReport, WeeklyReport, MonthlyReport
+from briefmetrics.lib.report import Report, DailyReport, ActivityReport, MonthlyReport
 from briefmetrics.lib.table import Column
 from briefmetrics.lib.controller import Context
 
@@ -193,7 +193,7 @@ class TestReportLib(test.TestCase):
     def test_weekly(self):
         report = self._create_report_model('week')
         since_time = datetime.datetime(2013, 1, 14) # Monday after Next Sunday
-        r = WeeklyReport(report, since_time)
+        r = ActivityReport(report, since_time)
 
         self.assertEqual(r.date_start, datetime.date(2013, 1, 6)) # First Sunday
         self.assertEqual(r.date_end, datetime.date(2013, 1, 12)) # Next Saturday
@@ -203,7 +203,7 @@ class TestReportLib(test.TestCase):
 
         # Scenario: Overlapping month
         date_start = datetime.datetime(2013, 2, 4) # Monday after Next Saturday
-        r = WeeklyReport(report, date_start)
+        r = ActivityReport(report, date_start)
 
         self.assertEqual(r.date_start, datetime.date(2013, 1, 27)) # Last Sunday
         self.assertEqual(r.date_end, datetime.date(2013, 2, 2)) # Next Saturday

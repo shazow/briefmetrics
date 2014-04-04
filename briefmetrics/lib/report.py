@@ -115,7 +115,7 @@ class Report(object):
         pass
 
 
-class WeeklyReport(Report):
+class ActivityReport(Report):
     template = 'email/report/weekly.mako'
 
     def get_date_range(self, since_time):

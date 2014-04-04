@@ -1,7 +1,7 @@
 import datetime
 
 from briefmetrics.web.environment import get_renderer
-from briefmetrics.lib.report import WeeklyReport
+from briefmetrics.lib.report import ActivityReport
 from briefmetrics.lib import helpers as h
 from briefmetrics import test
 from briefmetrics import model
@@ -17,7 +17,7 @@ class TestReportWidgets(test.TestApp):
         empty_report = model.Report(remote_data=profile_item_template.copy())
         since_time = datetime.datetime(2014, 3, 29)
 
-        r = WeeklyReport(empty_report, since_time)
+        r = ActivityReport(empty_report, since_time)
         context = {'h': h}
 
         week_interval = r.date_start, r.date_end
