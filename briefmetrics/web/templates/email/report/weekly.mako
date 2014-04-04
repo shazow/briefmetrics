@@ -1,27 +1,31 @@
 <%inherit file="base.mako"/>
 <%namespace file="widgets.mako" name="widgets" />
 
-<%
-    total_units = c.report.data['total_units']
-%>
-
 <p>
-    Your site had <span class="chartTop">${h.format_int(c.report.data['total_current'], c.report.data['total_units'])} so far this month</span>,
-    % if c.report.data['total_current'] >= c.report.data['total_last_relative']:
-        compared to last month's ${h.format_int(c.report.data['total_last_relative'], c.report.data['total_units'])} at this time.
-        You're on your way to beat <span class="chartBottom">last months's total of ${h.human_int(c.report.data['total_last'])}</span>.
-    % else:
-        compared to <span class="chartBottom">last month's ${h.format_int(c.report.data['total_last_relative'], c.report.data['total_units'])}</span> at this time.
-    % endif
+    ${widgets.render_intro(
+        current=c.report.data['total_current'],
+        last=c.report.data['total_last'],
+        last_relative=c.report.data['total_last_relative'],
+        units=c.report.data['total_units'],
+        current_interval=(c.report.date_start, c.report.date_end),
+    )}
 </p>
 
 ${h.chart(c.report.data['historic_data'], width=560, height=200)}
 
+<%
+    interval_label = c.report.data.get('interval_label')
+%>
+
 <h2>
-    Last week&hellip;
-    <% overlap_days = 7 - c.report.date_end.day %>
-    % if overlap_days > 0:
-        <span class="quiet">(includes ${h.format_int(overlap_days, '{} day')} from last month)</span>
+    % if interval_label:
+        ${interval_label}
+    % else:
+        Last week&hellip;
+        <% overlap_days = 7 - c.report.date_end.day %>
+        % if overlap_days > 0:
+            <span class="quiet">(includes ${h.format_int(overlap_days, '{} day')} from last month)</span>
+        % endif
     % endif
 </h2>
 
@@ -67,17 +71,3 @@ ${widgets.render_table(
     'Social & Search',
     h.ga_permalink('report/social-sources', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
 )}
-
-<p>
-    % if c.report.owner.num_remaining is None or c.report.owner.stripe_customer_id:
-        You can look forward to your next report on <span class="highlight">${h.human_date(c.report.date_next)}</span>.
-    % elif c.report.owner.num_remaining <= 1:
-        <strong>This is your final report. :(</strong><br />
-        Please <a href="https://briefmetrics.com/settings">add a credit card now</a> to keep receiving Briefmetrics reports.
-    % elif c.report.owner.num_remaining > 1:
-        <strong>You have <span class="highlight">${c.report.owner.num_remaining-1} free reports</span> remaining.</strong>
-        <a href="https://briefmetrics.com/settings">Add a credit card now</a> to
-        upgrade your account.
-        Your next report is scheduled for ${h.human_date(c.report.date_next)}.
-    % endif
-</p>

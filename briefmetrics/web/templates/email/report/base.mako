@@ -192,6 +192,20 @@
 
 ${next.body()}
 
+<p>
+    % if c.report.owner.num_remaining is None or c.report.owner.stripe_customer_id or c.report.owner != c.user:
+        You can look forward to your next report on <span class="highlight">${h.human_date(c.report.date_next)}</span>.
+    % elif c.report.owner.num_remaining <= 1:
+        <strong>This is your final report. :(</strong><br />
+        Please <a href="https://briefmetrics.com/settings">add a credit card now</a> to keep receiving Briefmetrics reports.
+    % elif c.report.owner.num_remaining > 1:
+        <strong>You have <span class="highlight">${c.report.owner.num_remaining-1} free reports</span> remaining.</strong>
+        <a href="https://briefmetrics.com/settings">Add a credit card now</a> to
+        upgrade your account.
+        Your next report is scheduled for ${h.human_date(c.report.date_next)}.
+    % endif
+</p>
+
 <div class="footer">
     <%
         prepared_name = c.user.config.get('from_name')

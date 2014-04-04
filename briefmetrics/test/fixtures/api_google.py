@@ -17,7 +17,7 @@ _response_data = {
     u"totalResults": 0,
 }
 
-_profile_item_template = {
+profile_item_template = {
     u"accountId": u"111111",
     u"created": u"2006-06-11T05:04:23.000Z",
     u"currency": u"USD",
@@ -81,7 +81,7 @@ class FakeQuery(Query):
         r[u'items'] = []
 
         for i in xrange(self.num_profiles):
-            t = _profile_item_template.copy()
+            t = profile_item_template.copy()
             r[u'items'].append(t)
 
         r[u'totalResults'] = len(r[u'items'])

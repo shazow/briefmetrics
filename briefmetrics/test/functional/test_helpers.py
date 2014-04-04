@@ -26,3 +26,8 @@ class TestHelpers(test.TestWeb):
 
         for input, href in data:
             self.assertEqual(str(h.human_link(input)), href)
+
+    def test_format_int(self):
+        self.assertEqual(h.format_int(123, u'{:,} view'), u'123 views')
+        self.assertEqual(h.format_int(1234, u'{:,} view'), u'1,234 views')
+        self.assertEqual(h.format_int(1, u'{:,} view'), u'1 view')

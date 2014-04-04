@@ -14,6 +14,7 @@ The template globals (``h`` et al) are set in
 """
 
 import re
+from datetime import timedelta
 from urllib import urlencode
 
 from unstdlib import html, slugify, get_many
@@ -197,3 +198,14 @@ def format_int(n, singular=_Default, plural=_Default):
 
     return plural.format(n)
 
+
+RE_HTML_TAGS = re.compile('<[^<]+?>')
+RE_TEXT_SPACING = re.compile('\s\s+')
+
+def html_to_text(s, strip_spaces=False):
+    s = RE_HTML_TAGS.sub('', s)
+
+    if strip_spaces:
+        s = RE_TEXT_SPACING.sub(' ', s.replace('\n', ' ')).strip()
+
+    return s

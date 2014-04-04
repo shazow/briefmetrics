@@ -110,3 +110,29 @@
         % endif
     </td>
 </%def>
+
+
+<%def name="render_intro(current, last, last_relative, units, current_interval)">
+    <%
+        start_date, end_date = current_interval
+        is_last_day = (end_date + h.timedelta(days=1)).month != end_date.month
+    %>
+    Your site had <span class="chartTop">${h.format_int(current, units)}
+    % if is_last_day:
+        this month,</span>
+    % else:
+        so far this month</span>,
+    % endif
+    % if is_last_day:
+        compared to <span class="chartBottom">last months's total of ${h.human_int(last)}</span>.
+    % elif current >= last_relative:
+        compared to last month's ${h.format_int(last_relative, units)} at this time.
+        % if current >= last:
+            You're already ahead of <span class="chartBottom">last months's total of ${h.human_int(last)}</span>!
+        % else:
+            You're on your way to beat <span class="chartBottom">last months's total of ${h.human_int(last)}</span>.
+        % endif
+    % else:
+        compared to <span class="chartBottom">last month's ${h.format_int(last_relative, units)}</span> at this time.
+    % endif
+</%def>
