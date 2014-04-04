@@ -23,7 +23,6 @@ class TestReportWidgets(test.TestApp):
         week_interval = r.date_start, r.date_end
         month_interval = datetime.datetime(2014, 1, 1), datetime.datetime(2014, 1, 31)
 
-
         data = [
             # current, last, last_relative, week_interval, expected
             (123, 234, 42, week_interval,
@@ -40,6 +39,9 @@ class TestReportWidgets(test.TestApp):
             ),
             (20, 234, 42, month_interval,
                 u"Your site had 20 views this month, compared to last months's total of 234.",
+            ),
+            (20, 234, 234, week_interval,
+                u"Your site had 20 views so far this month, compared to last month's 234 views at this time.",
             ),
         ]
 

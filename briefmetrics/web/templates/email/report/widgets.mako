@@ -125,9 +125,9 @@
     % endif
     % if is_last_day:
         compared to <span class="chartBottom">last months's total of ${h.human_int(last)}</span>.
-    % elif current >= last_relative:
+    % elif current >= last_relative and last != last_relative:
         compared to last month's ${h.format_int(last_relative, units)} at this time.
-        % if current >= last:
+        % if current > last:
             You're already ahead of <span class="chartBottom">last months's total of ${h.human_int(last)}</span>!
         % else:
             You're on your way to beat <span class="chartBottom">last months's total of ${h.human_int(last)}</span>.
