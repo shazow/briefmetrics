@@ -53,6 +53,21 @@ class EmptyReportError(Exception):
     pass
 
 
+##
+
+REPORTS = {}
+
+def register_report(id):
+    def decorator(cls):
+        REPORTS[id] = cls
+        return cls
+    return decorator
+
+def get_report(id):
+    return REPORTS[id]
+
+
+
 class Report(object):
     template = 'email/report/daily.mako'
 
@@ -115,6 +130,7 @@ class Report(object):
         pass
 
 
+@register_report('week')
 class ActivityReport(Report):
     template = 'email/report/weekly.mako'
 
@@ -331,6 +347,19 @@ class ActivityReport(Report):
         self.tables['pages'].tag_rows()
 
 
+@register_report('activity-month')
+class ActivityMonthlyReport(ActivityReport):
+    "Monthly report"
+    def get_date_range(self, since_time):
+        since_start = since_time.date().replace(day=1)
+        date_end = since_start - datetime.timedelta(days=1) # Last of the previous month
+        date_start = date_end.replace(day=1) # First of the previous month
+        date_next = self.report.next_preferred(since_start).date()
+
+        return date_start, date_end, date_next
+
+
+@register_report('day')
 class DailyReport(Report):
     template = 'email/report/daily.mako'
 
@@ -338,7 +367,9 @@ class DailyReport(Report):
         pass
 
 
+@register_report('month')
 class TrendsReport(Report):
+    "Monthly report"
     template = 'email/report/monthly.mako'
 
     def get_date_range(self, since_time):
