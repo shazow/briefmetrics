@@ -114,7 +114,7 @@ class Report(meta.Model): # Property within an account (such as a website)
 
     TYPES = [
         ('day', 'Alerts (Daily)'),
-        ('week', 'Activity (Weekly)'),
+        ('week', 'Weekly'), # TODO: Activity (Weekly)?
         ('month', 'Trends (Monthly)'),
         ('activity-month', 'Activity (Monthly)'),
        #'quarter',
