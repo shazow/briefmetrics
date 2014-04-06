@@ -90,12 +90,8 @@ class Report(object):
         self.base_url = self.report.remote_data.get('websiteUrl', '')
 
         self.since_time = since_time
-        self.date_start, self.date_end, self.date_next = self.get_date_range(since_time)
-
-        # TODO: Do this based on the date range?
-        self.previous_period_end = self.date_start - datetime.timedelta(days=1)
-        self.previous_period_start = self.previous_period_end - datetime.timedelta(days=(self.date_end - self.date_start).days)
-
+        self.previous_date_start, self.date_start, self.date_end, self.date_next = self.get_date_range(since_time)
+        self.previous_date_end = self.date_start - datetime.timedelta(days=1)
 
     @classmethod
     def create_from_now(cls, report, now):
@@ -110,8 +106,9 @@ class Report(object):
         date_start = (since_time - datetime.timedelta(days=1)).date()
         date_end = date_start
         date_next = self.report.next_preferred(date_end).date()
+        previous_date_start = date_start - datetime.timedelta(days=1)
 
-        return date_start, date_end, date_next
+        return previous_date_start, date_start, date_end, date_next
 
     def get_subject(self):
         return u"Report for {site} ({date})".format(
@@ -140,8 +137,9 @@ class ActivityReport(Report):
         date_start -= datetime.timedelta(days=date_start.weekday()+1) # Sunday of that week
         date_end = date_start + datetime.timedelta(days=6)
         date_next = self.report.next_preferred(date_end + datetime.timedelta(days=7)).date()
+        previous_date_start = date_start - datetime.timedelta(days=6)
 
-        return date_start, date_end, date_next
+        return previous_date_start, date_start, date_end, date_next
 
     def get_subject(self):
         if self.date_start.month == self.date_end.month:
@@ -170,7 +168,7 @@ class ActivityReport(Report):
         self.tables['summary'] = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
-                'start-date': self.previous_period_start, # Extra week
+                'start-date': self.previous_date_start, # Extra week
                 'end-date': self.date_end,
                 'sort': '-ga:nthWeek',
             },
@@ -223,8 +221,8 @@ class ActivityReport(Report):
         last_referrers = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
-                'start-date': self.previous_period_start,
-                'end-date': self.previous_period_end,
+                'start-date': self.previous_date_start,
+                'end-date': self.previous_date_end,
                 'filters': 'ga:medium==referral',
                 'sort': '-ga:pageviews',
                 'max-results': '250',
@@ -347,16 +345,24 @@ class ActivityReport(Report):
         self.tables['pages'].tag_rows()
 
 
+def month_date_range(self, since_time):
+    since_start = since_time.date().replace(day=1)
+    date_end = since_start - datetime.timedelta(days=1) # Last of the previous month
+    date_start = date_end.replace(day=1) # First of the previous month
+    date_next = self.report.next_preferred(since_start).date()
+    previous_date_start = (date_start - datetime.timedelta(days=1)).replace(day=1)
+
+    return previous_date_start, date_start, date_end, date_next
+
+
 @register_report('activity-month')
 class ActivityMonthlyReport(ActivityReport):
     "Monthly report"
-    def get_date_range(self, since_time):
-        since_start = since_time.date().replace(day=1)
-        date_end = since_start - datetime.timedelta(days=1) # Last of the previous month
-        date_start = date_end.replace(day=1) # First of the previous month
-        date_next = self.report.next_preferred(since_start).date()
+    get_date_range = month_date_range
 
-        return date_start, date_end, date_next
+    def build(self):
+        super(ActivityMonthlyReport, self).build()
+        self.data['interval_label'] = 'month'
 
 
 @register_report('day')
@@ -372,13 +378,7 @@ class TrendsReport(Report):
     "Monthly report"
     template = 'email/report/monthly.mako'
 
-    def get_date_range(self, since_time):
-        since_start = since_time.date().replace(day=1)
-        date_end = since_start - datetime.timedelta(days=1) # Last of the previous month
-        date_start = date_end.replace(day=1) # First of the previous month
-        date_next = self.report.next_preferred(since_start).date()
-
-        return date_start, date_end, date_next
+    get_date_range = month_date_range
 
     def get_subject(self):
         return u"Report for {site} ({date})".format(

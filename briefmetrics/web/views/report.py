@@ -158,6 +158,9 @@ class ReportController(Controller):
 
             self.c.available_profiles = []
 
+        enable_reports = set(user.config.get('enable_reports', []) + [model.Report.DEFAULT_TYPE])
+        self.c.report_types = [(id, label, id==model.Report.DEFAULT_TYPE) for id, label in model.Report.TYPES if id in enable_reports]
+
         self.c.user = user
         self.c.reports = user.account.reports
         self.c.sites = sorted(Site.from_list(self.c.reports), key=lambda s: s.display_name)

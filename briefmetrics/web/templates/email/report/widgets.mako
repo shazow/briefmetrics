@@ -112,19 +112,19 @@
 </%def>
 
 
-<%def name="render_intro(current, last, last_relative, units, current_interval)">
+<%def name="render_intro(current, last, last_relative, units, interval)">
     <%
-        start_date, end_date = current_interval
-        is_last_day = (end_date + h.timedelta(days=1)).month != end_date.month
+        previous_date_start, date_start, date_end = interval
+        is_last_day = (date_end + h.timedelta(days=1)).month != date_end.month
     %>
     Your site had <span class="chartTop">${h.format_int(current, units)}
     % if is_last_day:
-        this month,</span>
+        in ${date_start.strftime('%B')},</span>
     % else:
         so far this month</span>,
     % endif
     % if is_last_day:
-        compared to <span class="chartBottom">last months's total of ${h.human_int(last)}</span>.
+        compared to <span class="chartBottom">${previous_date_start.strftime('%B')}'s total of ${h.human_int(last)}</span>.
     % elif current >= last_relative and last != last_relative:
         compared to last month's ${h.format_int(last_relative, units)} at this time.
         % if current > last:

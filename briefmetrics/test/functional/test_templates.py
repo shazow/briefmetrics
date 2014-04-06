@@ -20,8 +20,8 @@ class TestReportWidgets(test.TestApp):
         r = ActivityReport(empty_report, since_time)
         context = {'h': h}
 
-        week_interval = r.date_start, r.date_end
-        month_interval = datetime.datetime(2014, 1, 1), datetime.datetime(2014, 1, 31)
+        week_interval = r.previous_date_start, r.date_start, r.date_end
+        month_interval = datetime.datetime(2013, 12, 1), datetime.datetime(2014, 1, 1), datetime.datetime(2014, 1, 31)
 
         data = [
             # current, last, last_relative, week_interval, expected
@@ -35,23 +35,23 @@ class TestReportWidgets(test.TestApp):
                 u"Your site had 20 views so far this month, compared to last month's 42 views at this time.",
             ),
             (123, 234, 42, month_interval,
-                u"Your site had 123 views this month, compared to last months's total of 234.",
+                u"Your site had 123 views in January, compared to December's total of 234.",
             ),
             (20, 234, 42, month_interval,
-                u"Your site had 20 views this month, compared to last months's total of 234.",
+                u"Your site had 20 views in January, compared to December's total of 234.",
             ),
             (20, 234, 234, week_interval,
                 u"Your site had 20 views so far this month, compared to last month's 234 views at this time.",
             ),
         ]
 
-        for current, last, last_relative, current_interval, _expected in data:
+        for current, last, last_relative, interval, _expected in data:
             s = render_intro(
                 current=current,
                 last=last,
                 last_relative=last_relative,
                 units=u'{:,} view',
-                current_interval=current_interval,
+                interval=interval,
                 **context
             )
 

@@ -11,7 +11,7 @@
 <section id="new-report">
     <h2>New report</h2>
 
-    ${forms.report_new(c.available_profiles)}
+    ${forms.report_new(c.available_profiles, report_types=c.report_types)}
 </section>
 
 % if c.reports:
@@ -35,11 +35,6 @@ ${h.javascript_link(request, 'briefmetrics.web:static/js/external/chosen/chosen.
 <script type="text/javascript">
     $(function() {
         $('select[name="remote_id"]').chosen();
-        $('select[name="type"]').chosen({
-            ##disable_search: true,
-            ##display_selected_options: false
-        });
-
         $('.expand-recipients').click(function() {
             $(this).toggleClass('active');
             $(this).parents('tr').next().toggle();

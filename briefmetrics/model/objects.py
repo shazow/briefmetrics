@@ -113,13 +113,16 @@ class Report(meta.Model): # Property within an account (such as a website)
     __json_whitelist__ = ['id', 'time_next', 'account_id', 'display_name', 'type']
 
     TYPES = [
-        ('day', 'Daily'),
-        ('week', 'Weekly'),
-        ('month', 'Monthly'),
+        ('day', 'Alerts (Daily)'),
+        ('week', 'Activity (Weekly)'),
+        ('month', 'Trends (Monthly)'),
+        ('activity-month', 'Activity (Monthly)'),
        #'quarter',
        #'combine',
        #'alert',
     ]
+
+    DEFAULT_TYPE = 'week'
 
     id = Column(types.Integer, primary_key=True)
     time_created = Column(types.DateTime, default=now, nullable=False)

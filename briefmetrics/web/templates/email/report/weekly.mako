@@ -7,7 +7,7 @@
         last=c.report.data['total_last'],
         last_relative=c.report.data['total_last_relative'],
         units=c.report.data['total_units'],
-        current_interval=(c.report.date_start, c.report.date_end),
+        interval=(c.report.previous_date_start, c.report.date_start, c.report.date_end),
     )}
 </p>
 
@@ -19,7 +19,7 @@ ${h.chart(c.report.data['historic_data'], width=560, height=200)}
 
 <h2>
     % if interval_label:
-        ${interval_label}
+        Last ${interval_label}&hellip;
     % else:
         Last week&hellip;
         <% overlap_days = 7 - c.report.date_end.day %>

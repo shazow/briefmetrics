@@ -68,7 +68,7 @@
     </form>
 </%def>
 
-<%def name="report_new(available_profiles)">
+<%def name="report_new(available_profiles, report_types)">
     % if not available_profiles:
         <p>
             <strong>Briefmetrics was unable to load a list of your Google Analytics properties.</strong> Are you sure you signed in with the correct Google account? 
@@ -104,22 +104,26 @@
                 </option>
             % endfor
             </select>
-
-            <input type="hidden" name="type" value="week" />
-
-            <%doc>TODO:
-            <select name="type" style="width: 19%; margin-right: 0; margin-left: 0.5em;">
-                <option value="day">Daily</option>
-                <option value="week" selected>Weekly</option>
-                <option value="month">Monthly</option>
-            </select>
-            </%doc>
         </p>
 
-        <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
-        <input type="hidden" name="method" value="report.create" />
-        <input type="hidden" name="format" value="redirect" />
-        <input type="submit" value="Create Report" />
+
+        <p class="row">
+
+            <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
+            <input type="hidden" name="method" value="report.create" />
+            <input type="hidden" name="format" value="redirect" />
+            <input type="submit" value="Create Report" />
+
+            % if len(report_types) == 1:
+                <input type="hidden" name="type" value="${report_types[0][0]}" />
+            % else:
+                <select name="type" style="width: auto;">
+                % for id, label, is_active in report_types:
+                    <option value="${id}"${h.text_if(is_active, " selected")}>${label}</option>
+                % endfor
+                </select>
+            % endif
+        </p>
     </form>
 </%def>
 

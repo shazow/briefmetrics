@@ -84,6 +84,8 @@ def fetch(request, report, since_time, google_query=None):
         r.tables = {}
         return r
 
+    r.build()
+
     return r
 
 
