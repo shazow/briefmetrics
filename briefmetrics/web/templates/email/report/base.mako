@@ -208,7 +208,7 @@ ${next.body()}
 
 <div class="footer">
     <%
-        prepared_name = c.user.config.get('from_name')
+        prepared_name = c.user.config.get('prepared_name') or c.user.config.get('from_name')
         if not prepared_name and c.report.owner != c.user:
             prepared_name = c.report.owner.display_name
     %>
