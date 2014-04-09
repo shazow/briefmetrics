@@ -21,10 +21,26 @@
         Simple overviews of your website's Google Analytics, in the comfort of your Inbox.
     </h2>
 
-    <ul style="margin: 2em 0;">
-        <li><strong>Save time by having the reports come to you.</strong> Get your first report in just 15 seconds.</li>
-        <li><strong>Make better decisions with dynamic reports.</strong> Each email is intelligently crafted to show only what's relevant to you.</li>
-        <li><strong>Share professional reports with your colleagues.</strong> Custom branding plans available for agencies who want to benefit clients with analytics summaries.</li>
+    <ul class="features">
+        <li>
+            <strong>Set It and Forget It</strong>
+            <p>
+                Just 15 seconds to start receiving email reports perfect for you, no configuration required.
+            </p>
+        </li>
+        <li>
+            <strong>Actionable Analytics Emails</strong>
+            <p>
+                Charts and valuable data right in your inbox,
+                skip the usual PDF attachments and web dashboards.
+            </p>
+        </li>
+        <li>
+            <strong>Custom Branding</strong>
+            <p>
+                Agency plans allow you to prepare reports for your clients with your own logo and more.
+            </p>
+        </li>
     </ul>
 
     <div class="signup">
@@ -34,7 +50,7 @@
         </a>
 
         <ul class="details">
-            <li>No credit card required.</li>
+            <li>No credit card required to get started.</li>
             <li>${pricing.PLAN_PAID.price_monthly_str}/month after if you'd like to continue.</li>
             <li>Please read our simple <a href="/privacy">Privacy Policy</a>.</li>
         </ul>
@@ -65,9 +81,6 @@
                 <em>Coming soon:</em> Most accurate way to track outgoing clicks, and why every other tutorial gets it wrong.
             </li>
         </ul>
-        <p>
-            <a href="${login_url}">Sign up for Briefmetrics</a> to be notified of the latest articles.
-        </p>
     </div>
 </div>
 

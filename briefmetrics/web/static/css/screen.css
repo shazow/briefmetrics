@@ -729,3 +729,18 @@ form.add-recipient input {
 .articles h3 {
   font-size: 1.4em;
 }
+
+.features {
+  margin: 2em 0;
+  padding: 0;
+  display: table;
+  text-align: center;
+}
+.features li {
+  display: table-cell;
+  width: 33%;
+}
+.features strong {
+  display: block;
+  margin-bottom: 0.2em;
+}

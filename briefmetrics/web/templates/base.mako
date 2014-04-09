@@ -20,7 +20,6 @@
 
 <body>
 
-
 <%block name="header">
 <%
     nav = [
@@ -34,8 +33,6 @@
             ('Settings', request.route_path('settings')),
             ('Log out', request.route_path('account_logout')),
         ]
-
-    current_route = request.current_route_path(_query=None)
 %>
 <nav class="header">
     <ul>
@@ -64,7 +61,7 @@ ${next.body()}
 
 <%block name="footer">
 <footer>
-% if not is_logged_in:
+% if not is_logged_in and not current_route == request.route_path('index'):
     <p><a href="/">Briefmetrics</a> emails you weekly summaries of your Google Analytics.
         <a href="${request.route_url('account_login')}">Try it now</a> with 10 free emails!
     </p>

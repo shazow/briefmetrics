@@ -35,8 +35,9 @@ class Controller(object):
         self.context = self.c = context or Context()
         self.default = DefaultContext(str)
 
-        self.previous_url = self.request.referer
-        self.current_path = self.request.path_qs
+        self.previous_url = request.referer
+        self.current_path = request.path_qs
+        self.current_route = request.current_route_path(_query=None)
         self.next = request.params.get('next')
 
         # Prevent cross-site forwards (possible exploit vector).
@@ -69,6 +70,7 @@ class Controller(object):
             'title': self.title,
             'is_logged_in': 'user_id' in self.session,
             'current_path': self.current_path,
+            'current_route': self.current_route,
             'previous_url': self.previous_url,
             'next_url': self.next,
 

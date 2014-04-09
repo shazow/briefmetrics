@@ -367,3 +367,21 @@ form.add-recipient {
     a {
     }
 }
+
+.features {
+    margin: 2em 0;
+    padding: 0;
+    display: table;
+    text-align: center;
+
+    li {
+        display: table-cell;
+        width: 33%;
+
+    }
+
+    strong {
+        display: block;
+        margin-bottom: 0.2em;
+    }
+}
