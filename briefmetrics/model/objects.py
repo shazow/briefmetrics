@@ -165,7 +165,7 @@ class Report(meta.Model): # Property within an account (such as a website)
             if days_offset < 0:
                 days_offset += 7
 
-        if self.type == 'month':
+        if self.type in ('month', 'activity-month'):
             next_month = now + datetime.timedelta(days=32-now.day)
             next_month = next_month.replace(day=1)
 
