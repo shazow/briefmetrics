@@ -157,8 +157,10 @@ input {
 }
 
 select {
-    font-size: 2em;
+    font-size: 1.5em;
     width: 100%;
+    margin-bottom: 1px;
+    vertical-align: bottom;
 }
 
 pre {
