@@ -67,6 +67,24 @@ def get_report(id):
     return REPORTS[id]
 
 
+# Self helpers
+
+def month_date_range(self, since_time):
+    since_start = since_time.date().replace(day=1)
+    date_end = since_start - datetime.timedelta(days=1) # Last of the previous month
+    date_start = date_end.replace(day=1) # First of the previous month
+    date_next = self.report.next_preferred(since_start).date()
+    previous_date_start = (date_start - datetime.timedelta(days=1)).replace(day=1)
+
+    return previous_date_start, date_start, date_end, date_next
+
+def month_get_subject(self):
+    return u"Report for {site} ({date})".format(
+        date=self.date_start.strftime('%B'),
+        site=self.report.display_name,
+    )
+
+#
 
 class Report(object):
     template = 'email/report/daily.mako'
@@ -345,20 +363,11 @@ class ActivityReport(Report):
         self.tables['pages'].tag_rows()
 
 
-def month_date_range(self, since_time):
-    since_start = since_time.date().replace(day=1)
-    date_end = since_start - datetime.timedelta(days=1) # Last of the previous month
-    date_start = date_end.replace(day=1) # First of the previous month
-    date_next = self.report.next_preferred(since_start).date()
-    previous_date_start = (date_start - datetime.timedelta(days=1)).replace(day=1)
-
-    return previous_date_start, date_start, date_end, date_next
-
-
 @register_report('activity-month')
 class ActivityMonthlyReport(ActivityReport):
     "Monthly report"
     get_date_range = month_date_range
+    get_subject = month_get_subject
 
     def build(self):
         super(ActivityMonthlyReport, self).build()
@@ -379,12 +388,7 @@ class TrendsReport(Report):
     template = 'email/report/monthly.mako'
 
     get_date_range = month_date_range
-
-    def get_subject(self):
-        return u"Report for {site} ({date})".format(
-            date=self.date_start.strftime('%B'),
-            site=self.report.display_name,
-        )
+    get_subject = month_get_subject
 
     def fetch(self, google_query):
         last_month_date_start = (self.date_start - datetime.timedelta(days=self.date_start.day + 1)).replace(day=1)
