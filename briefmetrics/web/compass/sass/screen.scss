@@ -191,7 +191,7 @@ nav.header {
         margin: 3em 0;
 
         .cta {
-            width: 60%;
+            width: 340px;
             display: table-cell;
             margin: 0 20px;
         }
@@ -380,8 +380,26 @@ form.add-recipient {
 
     }
 
+    img {
+        width: 200px;
+        height: 100px;
+        border: 2px solid $color-border;
+    }
+
     strong {
         display: block;
         margin-bottom: 0.2em;
+        font-size: 0.8em;
+
+        &:before {
+            content: "✓";
+            margin-right: 0.5em;
+            color: $color-link;
+        }
+    }
+
+    p {
+        font-size: 0.8em;
+        padding: 0 0.5em;
     }
 }

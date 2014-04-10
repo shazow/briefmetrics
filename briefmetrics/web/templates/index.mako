@@ -24,12 +24,14 @@
     <ul class="features">
         <li>
             <strong>Set It and Forget It</strong>
+            <img src="/static/images/feature-start.png" />
             <p>
-                Just 15 seconds to start receiving email reports perfect for you, no configuration required.
+                Just 15 seconds to start receiving email reports perfect for you, <br />no configuration required.
             </p>
         </li>
         <li>
             <strong>Actionable Analytics Emails</strong>
+            <img src="/static/images/feature-email.png" />
             <p>
                 Charts and valuable data right in your inbox,
                 skip the usual PDF attachments and web dashboards.
@@ -37,8 +39,9 @@
         </li>
         <li>
             <strong>Custom Branding</strong>
+            <img src="/static/images/feature-branding.png" />
             <p>
-                Agency plans allow you to prepare reports for your clients with your own logo and more.
+                Prepare reports for your clients using your own logo and footer<br /> with our Agency plan.
             </p>
         </li>
     </ul>
