@@ -20,6 +20,7 @@ def add_routes(config):
         route('privacy', '/privacy', action='privacy')
         route('security', '/security', action='security')
         route('articles', '/articles/{id}', action='articles')
+        route('features', '/features/{id}', action='features')
 
     with handler_routes(config, views.account.AccountController) as route:
         route('account_login', '/account/login', action='login')

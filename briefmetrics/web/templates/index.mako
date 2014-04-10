@@ -7,13 +7,6 @@
 <%block name="header">
 </%block>
 
-<%
-    if request.features.get('ssl'):
-        login_url = request.route_url('account_login', _scheme='https')
-    else:
-        login_url = request.route_path('account_login')
-%>
-
 <div class="container intro">
 
     <h1>

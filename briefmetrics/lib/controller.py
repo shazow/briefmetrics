@@ -37,7 +37,6 @@ class Controller(object):
 
         self.previous_url = request.referer
         self.current_path = request.path_qs
-        self.current_route = request.current_route_path(_query=None)
         self.next = request.params.get('next')
 
         # Prevent cross-site forwards (possible exploit vector).
@@ -59,23 +58,29 @@ class Controller(object):
         Return a dictionary representing the template's default root variable
         namespace.
         """
+        request = self.request
+        login_url = request.route_path('account_login')
+        if request.features.get('ssl'):
+            login_url = request.route_url('account_login', _scheme='https')
+
         return {
             'h': h, 
             'c': self.context,
             'default': self.default,
-            'features': self.request.features,
-            'request': self.request,
-            'session': self.session,
-            'settings': self.request.registry.settings,
+            'features': request.features,
+            'request': request,
+            'session': request.session,
+            'settings': request.registry.settings,
             'title': self.title,
             'is_logged_in': 'user_id' in self.session,
             'current_path': self.current_path,
-            'current_route': self.current_route,
+            'current_route': request.current_route_path(_query=None),
             'previous_url': self.previous_url,
             'next_url': self.next,
 
             # App-specific
             'pricing': pricing,
+            'login_url': login_url,
         }
 
     def _get_render_values(self, extra_values=None):
