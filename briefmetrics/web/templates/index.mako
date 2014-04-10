@@ -4,7 +4,8 @@
     <meta name="description" content="Quick overviews of your website analytics, directly to your inbox." />
 </%block>
 
-<%block name="header"></%block>
+<%block name="header">
+</%block>
 
 <%
     if request.features.get('ssl'):
@@ -15,18 +16,16 @@
 
 <div class="container intro">
 
-    <h1><a href="/">Briefmetrics</a></h1>
-
-    <h2>
-        Simple overviews of your website's Google Analytics, in the comfort of your Inbox.
-    </h2>
+    <h1>
+        <a href="/">Briefmetrics</a> emails you simple overviews of your website's Google Analytics.
+    </h1>
 
     <ul class="features">
         <li>
             <strong>Set It and Forget It</strong>
             <img src="/static/images/feature-start.png" />
             <p>
-                Just 15 seconds to start receiving email reports perfect for you, <br />no configuration required.
+                Just 15 seconds to start receiving email reports perfect for you, no extra configuration required.
             </p>
         </li>
         <li>
@@ -41,7 +40,7 @@
             <strong>Custom Branding</strong>
             <img src="/static/images/feature-branding.png" />
             <p>
-                Prepare reports for your clients using your own logo and footer<br /> with our Agency plan.
+                Prepare reports for your clients using your own logo and footer with <br />our Agency plan.
             </p>
         </li>
     </ul>
@@ -54,7 +53,7 @@
 
         <ul class="details">
             <li>No credit card required to get started.</li>
-            <li>${pricing.PLAN_PAID.price_monthly_str}/month after if you'd like to continue.</li>
+            <li>Plans start at ${pricing.PLAN_PAID.price_monthly_str}/month.</li>
             <li>Please read our simple <a href="/privacy">Privacy Policy</a>.</li>
         </ul>
     </div>

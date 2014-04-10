@@ -243,7 +243,7 @@ caption {
 }
 
 footer {
-  width: 630px;
+  width: 710px;
   margin: 0 auto;
   overflow: hidden;
   *zoom: 1;
@@ -361,7 +361,7 @@ pre {
 }
 
 .container {
-  width: 630px;
+  width: 710px;
   margin: 0 auto;
   overflow: hidden;
   *zoom: 1;
@@ -445,7 +445,7 @@ dd {
 }
 
 .flash-messages {
-  width: 630px;
+  width: 710px;
   margin: 0 auto;
   overflow: hidden;
   *zoom: 1;
@@ -478,7 +478,7 @@ dd {
   color: white;
   padding: 0px 4px;
   display: inline-block;
-  min-width: 70px;
+  min-width: 80px;
   text-align: center;
 }
 .status.disabled {
@@ -508,7 +508,7 @@ nav.header {
 nav.header ul {
   margin: 0;
   padding: 0;
-  width: 630px;
+  width: 710px;
   margin: 0 auto;
   overflow: hidden;
   *zoom: 1;
@@ -546,9 +546,22 @@ nav.header h1 {
 }
 
 .intro h1 {
-  font-size: 4em;
-  line-height: 1em;
-  margin-top: 0.5em;
+  line-height: 1.25em;
+  margin: 1.5em 0;
+  letter-spacing: 0.05em;
+  font-size: 2em;
+  text-align: center;
+}
+.intro h1 a {
+  color: inherit;
+  background: #cdeee6;
+  padding: 0 0.2em;
+  margin-right: -0.2em;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  -o-border-radius: 3px;
+  border-radius: 3px;
 }
 .intro .cta {
   font-size: 1.5em;
@@ -561,7 +574,7 @@ nav.header h1 {
 }
 .intro .signup {
   display: table;
-  margin: 3em 0;
+  margin: 3em auto;
 }
 .intro .signup .cta {
   width: 340px;
@@ -654,7 +667,7 @@ a.cta small {
 .payment input[type="submit"] {
   margin-top: 22px;
   line-height: 33px;
-  width: 160px;
+  width: 180px;
 }
 .payment .card-expiry-month {
   margin-right: 0;
@@ -745,11 +758,18 @@ form.add-recipient input {
   width: 200px;
   height: 100px;
   border: 2px solid #dbe8cc;
+  overflow: hidden;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+  border-radius: 5px;
 }
 .features strong {
   display: block;
   margin-bottom: 0.2em;
   font-size: 0.8em;
+  line-height: 2em;
 }
 .features strong:before {
   content: "✓";

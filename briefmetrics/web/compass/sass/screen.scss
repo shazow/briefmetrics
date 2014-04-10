@@ -175,9 +175,19 @@ nav.header {
 
 .intro {
     h1 {
-        font-size: 4em;
-        line-height: 1em;
-        margin-top: 0.5em;
+        line-height: 1.25em;
+        margin: 1.5em 0;
+        letter-spacing: 0.05em;
+        font-size: 2em;
+        text-align: center;
+
+        a {
+            color: inherit;
+            background: desaturate(lighten($color-header, 40%), 5%);
+            padding: 0 0.2em;
+            margin-right: -0.2em;
+            @include border-radius(3px);
+        }
     }
 
     .cta {
@@ -188,7 +198,7 @@ nav.header {
 
     .signup {
         display: table;
-        margin: 3em 0;
+        margin: 3em auto;
 
         .cta {
             width: 340px;
@@ -384,12 +394,15 @@ form.add-recipient {
         width: 200px;
         height: 100px;
         border: 2px solid $color-border;
+        overflow: hidden;
+        @include border-radius(5px);
     }
 
     strong {
         display: block;
         margin-bottom: 0.2em;
         font-size: 0.8em;
+        line-height: 2em;
 
         &:before {
             content: "✓";
