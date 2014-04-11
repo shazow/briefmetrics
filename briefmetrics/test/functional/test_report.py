@@ -131,10 +131,17 @@ class TestReport(test.TestWeb):
         u = api.account.get_or_create(email=u'example@example.com', token={}, display_name=u'Example')
         r = self.call_api('account.login', token=u'%s-%d' % (u.email_token, u.id))
 
+        r = self.app.get('/reports')
+        self.assertIn('New report', r)
+        self.assertNotIn('Active reports', r)
+
         r = self.call_api('report.create', remote_id=u'111112')
         report = r['result']['report']
         self.assertEqual(report['display_name'], u'example.com')
         self.assertEqual(model.Report.count(), 1)
+
+        r = self.app.get('/reports')
+        self.assertIn('Active reports', r)
 
         r = self.call_api('report.delete', report_id=report['id'])
         self.assertEqual(model.Report.count(), 0)
