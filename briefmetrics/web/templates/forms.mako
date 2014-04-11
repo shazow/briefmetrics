@@ -63,7 +63,7 @@
         ${payment_form_body()}
 
         <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
-        <input type="hidden" name="method" value="settings.payments" />
+        <input type="hidden" name="method" value="settings.payments_set" />
         <input type="hidden" name="format" value="redirect" />
     </form>
 </%def>

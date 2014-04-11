@@ -170,6 +170,10 @@ class TestReportModel(test.TestCase):
         r.set_time_preferred(weekday=0, hour=12)
         self.assertEqual(r.next_preferred(now), datetime.datetime(2013, 1, 7, 12, 0, 0))
 
+        r = model.Report(type='activity-month')
+        self.assertEqual(r.next_preferred(now), datetime.datetime(2013, 2, 1, 13, 0, 0))
+        self.assertEqual(r.next_preferred(datetime.date(2013, 2, 2)), datetime.datetime(2013, 3, 1, 13))
+
 
 class TestReportLib(test.TestCase):
     def _create_report_model(self, type='day'):

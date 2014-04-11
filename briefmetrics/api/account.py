@@ -1,4 +1,5 @@
 import stripe
+import logging
 
 from briefmetrics import model
 from briefmetrics.model.meta import Session
@@ -10,6 +11,9 @@ from sqlalchemy import orm
 from unstdlib import iterate, get_many
 
 from . import google as api_google
+
+
+log = logging.getLogger(__name__)
 
 
 # Request helpers
@@ -159,11 +163,16 @@ def delete(user_id):
     Session.commit()
 
 
-def set_payments(user, card_token, plan_id='personal'):
+def set_payments(user, plan_id='personal', card_token=None):
     try:
         user.set_plan(plan_id)
     except KeyError:
         raise APIError('Invalid plan: %s' % plan_id)
+
+    if not card_token:  # For testing
+        log.warn('Skipping interfacing set_payments with Stripe for user_id: %s' % user.id)
+        Session.commit()
+        return user
 
     description = 'Briefmetrics User: %s' % user.email
 

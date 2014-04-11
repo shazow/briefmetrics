@@ -7,12 +7,15 @@ from .api import expose_api, handle_api
 from briefmetrics.lib.controller import Controller
 
 
-@expose_api('settings.payments')
+@expose_api('settings.payments_set')
 def settings_payments(request):
     user = api.account.get_user(request, required=True)
-    stripe_token, = get_many(request.params, required=['stripe_token'])
+    stripe_token, plan_id = get_many(request.params, optional=['stripe_token', 'plan_id'])
 
-    api.account.set_payments(user, stripe_token)
+    if not stripe_token and not request.registry.settings.get('testing'):
+        raise APIControllerError('Missing Stripe card token.')
+
+    api.account.set_payments(user, plan_id=plan_id, card_token=stripe_token)
 
     api.email.notify_admin(request, 'Payment added: [%s] %s' % (user.id, user.display_name))
 
@@ -31,7 +34,7 @@ def settings_payments_cancel(request):
 
 class SettingsController(Controller):
 
-    @handle_api(['settings.subscribe', 'settings.payments_cancel'])
+    @handle_api(['settings.payments_set', 'settings.payments_cancel'])
     def index(self):
         user = api.account.get_user(self.request, required=True, joinedload=['account'])
         account = user.account
