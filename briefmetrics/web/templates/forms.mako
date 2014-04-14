@@ -69,7 +69,7 @@
 </%def>
 
 <%def name="report_new(available_profiles, report_types)">
-    % if not available_profiles:
+    % if not available_profiles or not available_profiles.get('items'):
         <p>
             <strong>Briefmetrics was unable to load a list of your Google Analytics properties.</strong> Are you sure you signed in with the correct Google account? 
         </p>

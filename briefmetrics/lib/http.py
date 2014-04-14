@@ -13,4 +13,10 @@ def assert_response(r):
     except HTTPError as e:
         # TODO: Handle case when... {"error":{"errors":[{"domain":"global","reason":"insufficientPermissions","message":"User does not have sufficient permissions for this profile."}],"code":403,"
         log.error("assert_response failure: Request to [%s] returned code [%s]: %s" % (e.response.request.url, e.response.status_code, e.response.text[:200]))
-        raise APIError("API call failed.", e.response.status_code, response=e.response)
+
+        try:
+            errors = r.json()['error']['errors']
+            message = '; '.join(error['message'] for error in errors)
+            raise APIError("API call failed: %s" % message, e.response.status_code, response=e.response)
+        except ValueError, KeyError:
+            raise APIError("API call failed.", e.response.status_code, response=e.response)
