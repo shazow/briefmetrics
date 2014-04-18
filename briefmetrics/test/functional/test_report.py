@@ -2,7 +2,7 @@ from briefmetrics import test
 from briefmetrics import api
 from briefmetrics import model
 from briefmetrics import tasks
-from briefmetrics.lib.report import Report, DailyReport, ActivityReport, TrendsReport
+from briefmetrics.lib.report import Report, get_report, month_date_range
 from briefmetrics.lib.table import Column
 from briefmetrics.lib.controller import Context
 
@@ -180,6 +180,8 @@ class TestReportModel(test.TestCase):
         r = model.Report(type='activity-month')
         self.assertEqual(r.next_preferred(now), datetime.datetime(2013, 2, 1, 13, 0, 0))
         self.assertEqual(r.next_preferred(datetime.date(2013, 2, 2)), datetime.datetime(2013, 3, 1, 13))
+        self.assertEqual(r.next_preferred(datetime.date(2013, 2, 1)), datetime.datetime(2013, 3, 1, 13))
+        self.assertEqual(r.next_preferred(datetime.date(2013, 2, 28)), datetime.datetime(2013, 3, 1, 13))
 
 
 class TestReportLib(test.TestCase):
@@ -195,16 +197,16 @@ class TestReportLib(test.TestCase):
         report = self._create_report_model('day')
         since_time = datetime.datetime(2013, 1, 2)
 
-        r = DailyReport(report, since_time)
+        r = get_report('day')(report, since_time)
 
         self.assertEqual(r.date_end, datetime.date(2013, 1, 1))
         self.assertEqual(r.date_next, datetime.date(2013, 1, 2))
         self.assertEqual(r.get_subject(), u"Report for example.com (Jan 1)")
 
-    def test_weekly(self):
+    def test_activity_report(self):
         report = self._create_report_model('week')
         since_time = datetime.datetime(2013, 1, 14) # Monday after Next Sunday
-        r = ActivityReport(report, since_time)
+        r = get_report('week')(report, since_time)
 
         self.assertEqual(r.date_start, datetime.date(2013, 1, 6)) # First Sunday
         self.assertEqual(r.date_end, datetime.date(2013, 1, 12)) # Next Saturday
@@ -213,8 +215,8 @@ class TestReportLib(test.TestCase):
         self.assertEqual(r.get_subject(), u"Report for example.com (Jan 6-12)")
 
         # Scenario: Overlapping month
-        date_start = datetime.datetime(2013, 2, 4) # Monday after Next Saturday
-        r = ActivityReport(report, date_start)
+        since_time = datetime.datetime(2013, 2, 4) # Monday after Next Saturday
+        r = get_report('week')(report, since_time)
 
         self.assertEqual(r.date_start, datetime.date(2013, 1, 27)) # Last Sunday
         self.assertEqual(r.date_end, datetime.date(2013, 2, 2)) # Next Saturday
@@ -222,13 +224,26 @@ class TestReportLib(test.TestCase):
 
         self.assertEqual(r.get_subject(), u"Report for example.com (Jan 27-Feb 2)")
 
-    def test_monthly(self):
+        # Monthly activity report
+        since_time = datetime.datetime(2013, 2, 5)
+        report = self._create_report_model('activity-month')
+        r = get_report('activity-month')(report, since_time)
+
+        self.assertEqual(r.report.type, 'activity-month')
+        self.assertEqual(r.date_start, datetime.date(2013, 1, 1)) # Start of the month
+        self.assertEqual(r.date_end, datetime.date(2013, 1, 31)) # End of the month
+        self.assertEqual(r.date_next, datetime.date(2013, 3, 1)) # First day of next month
+
+        self.assertEqual(r.get_subject(), u"Report for example.com (January)")
+
+    def test_trends_report(self):
         report = self._create_report_model('month')
         report.set_time_preferred(weekday=0) # Preferred time: First Monday
 
         since_time = datetime.datetime(2014, 1, 6) # First Monday of January 2014
-        r = TrendsReport(report, since_time)
+        r = get_report('month')(report, since_time)
 
+        self.assertEqual(r.report.type, 'month')
         self.assertEqual(r.date_start, datetime.date(2013, 12, 1)) # Start of December 2013
         self.assertEqual(r.date_end, datetime.date(2013, 12, 31)) # End of December 2013
         self.assertEqual(r.date_next, datetime.date(2014, 2, 3)) # First Monday of February 2014
@@ -237,11 +252,21 @@ class TestReportLib(test.TestCase):
 
         # Scenario: Month starting with Monday (Sept 1)
         since_time = datetime.datetime(2014, 8, 4)
-        r = TrendsReport(report, since_time)
+        r = get_report('month')(report, since_time)
 
         self.assertEqual(r.date_start, datetime.date(2014, 7, 1))
         self.assertEqual(r.date_end, datetime.date(2014, 7, 31))
-        self.assertEqual(r.date_next, datetime.date(2014, 9, 1)) # First Monday of September 2014
+        self.assertEqual(r.date_next, datetime.date(2014, 9, 1)) # First day of September 2014
 
         self.assertEqual(r.get_subject(), u"Report for example.com (July)")
 
+    def test_month_range(self):
+        report = self._create_report_model('activity-month')
+        since_time = datetime.datetime(2013, 2, 15)
+        r = get_report('activity-month')(report, since_time)
+
+        previous_date_start, date_start, date_end, date_next = r.get_date_range(since_time)
+        self.assertEqual(previous_date_start, datetime.date(2012, 12, 1))
+        self.assertEqual(date_start, datetime.date(2013, 1, 1))
+        self.assertEqual(date_end, datetime.date(2013, 1, 31))
+        self.assertEqual(date_next, datetime.date(2013, 3, 1))

@@ -1,7 +1,7 @@
 import datetime
 
 from briefmetrics.web.environment import get_renderer
-from briefmetrics.lib.report import ActivityReport
+from briefmetrics.lib.report import get_report
 from briefmetrics.lib import helpers as h
 from briefmetrics import test
 from briefmetrics import model
@@ -14,10 +14,10 @@ class TestReportWidgets(test.TestApp):
         t = get_renderer('email/report/widgets.mako').implementation()
         render_intro = t.get_def('render_intro').render
 
-        empty_report = model.Report(remote_data=profile_item_template.copy())
+        empty_report = model.Report(remote_data=profile_item_template.copy(), type='week')
         since_time = datetime.datetime(2014, 3, 29)
 
-        r = ActivityReport(empty_report, since_time)
+        r = get_report('week')(empty_report, since_time)
         context = {'h': h}
 
         week_interval = r.previous_date_start, r.date_start, r.date_end

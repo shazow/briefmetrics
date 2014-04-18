@@ -70,7 +70,7 @@ def get_report(id):
 # Self helpers
 
 def month_date_range(self, since_time):
-    since_start = since_time.date().replace(day=1)
+    since_start = since_time.date().replace(day=1) 
     date_end = since_start - datetime.timedelta(days=1) # Last of the previous month
     date_start = date_end.replace(day=1) # First of the previous month
     date_next = self.report.next_preferred(since_start).date()
