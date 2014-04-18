@@ -172,15 +172,30 @@
         background: #F6E8E9;
         color: #B88D8B;
     }
+
+    .preview {
+        text-align: center;
+        font-size: 0.8em;
+        color: #999;
+    }
     </style>
 </head>
 <body>
+
+% if c.report.preview_text:
+<p class="preview">${c.report.preview_text}</p>
+% endif
 
 <h1>
     <img src="https://briefmetrics.com/static/images/email_headers/${c.report.owner.config.get('email_header_image', 'briefmetrics.png')}" />
 </h1>
 
 <div class="content">
+
+<% email_intro_text = c.report.owner.config.get('email_intro_text') %>
+% if email_intro_text:
+    <p class="intro">${h.literal(email_intro_text)}</p>
+% endif
 
 % if c.report.messages:
     % for message in c.report.messages:

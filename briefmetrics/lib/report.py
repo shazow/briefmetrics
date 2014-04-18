@@ -96,6 +96,7 @@ class Report(object):
         self.owner = report.account and report.account.user
         self.remote_id = report.remote_id
         self.messages = []
+        self.preview_text = ""
 
         base_url = self.report.remote_data.get('websiteUrl', '')
         if base_url and 'http://' not in base_url:
@@ -195,8 +196,6 @@ class ActivityReport(Report):
             ],
             metrics=summary_metrics + [Column('ga:visits', type_cast=int)],
         )
-
-        summary_rows = self.tables['summary'].rows
 
         # Pages
         self.tables['pages'] = google_query.get_table(
@@ -340,7 +339,7 @@ class ActivityReport(Report):
         last_month, current_month = monthly_data
 
         self.data['historic_data'] = encode_rows(monthly_data, max_value)
-        self.data['total_units'] = '{:,} %s' % views_column.label.lower().rstrip('s')
+        self.data['total_units'] = units = '{:,} %s' % views_column.label.lower().rstrip('s')
         self.data['total_current'] = current_month[-1]
         self.data['total_last'] = last_month[-1]
         self.data['total_last_relative'] = last_month[min(len(current_month), len(last_month))-1]
@@ -361,6 +360,15 @@ class ActivityReport(Report):
         self.tables['social_search'].tag_rows()
         self.tables['referrers'].tag_rows()
         self.tables['pages'].tag_rows()
+
+        this_week, last_week = (r.get(intro_config or 'ga:pageviews') for r in self.tables['summary'].rows[:2])
+        delta = (this_week / float(last_week or 1.0)) - 1
+        self.preview_text = "Your site had {this_week} this {interval} ({delta} over last {interval}).".format(
+            this_week=h.format_int(this_week, units),
+            delta=h.human_percent(delta, signed=True),
+            interval=self.data.get('interval_label', 'week'),
+        )
+
 
 
 @register_report('activity-month')
