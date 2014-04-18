@@ -176,6 +176,9 @@ class ActivityReport(Report):
         )
 
     def get_preview(self):
+        if len(self.tables['summary'].rows) < 2:
+            return u''
+
         primary_metric = self.report.config.get('intro') or 'ga:pageviews'
         this_week, last_week = (r.get(primary_metric) for r in self.tables['summary'].rows[:2])
         delta = (this_week / float(last_week or 1.0)) - 1
