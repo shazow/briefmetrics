@@ -182,17 +182,22 @@
 </head>
 <body>
 
-% if c.report.preview_text:
-<p class="preview">${c.report.preview_text}</p>
+<%
+    preview_text = c.report.get_preview()
+    email_header_image = c.report.owner.config.get('email_header_image', 'briefmetrics.png')
+    email_intro_text = c.report.owner.config.get('email_intro_text')
+%>
+
+% if preview_text:
+<p class="preview">${preview_text}</p>
 % endif
 
 <h1>
-    <img src="https://briefmetrics.com/static/images/email_headers/${c.report.owner.config.get('email_header_image', 'briefmetrics.png')}" />
+    <img src="https://briefmetrics.com/static/images/email_headers/${email_header_image}" />
 </h1>
 
 <div class="content">
 
-<% email_intro_text = c.report.owner.config.get('email_intro_text') %>
 % if email_intro_text:
     <p class="intro">${h.literal(email_intro_text)}</p>
 % endif

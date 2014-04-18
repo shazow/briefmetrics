@@ -96,7 +96,6 @@ class Report(object):
         self.owner = report.account and report.account.user
         self.remote_id = report.remote_id
         self.messages = []
-        self.preview_text = ""
 
         base_url = self.report.remote_data.get('websiteUrl', '')
         if base_url and 'http://' not in base_url:
@@ -142,6 +141,9 @@ class Report(object):
             'date_end': self.date_end,
         }
 
+    def get_preview(self):
+        return u''
+
     def build(self):
         pass
 
@@ -173,9 +175,23 @@ class ActivityReport(Report):
             site=self.report.display_name,
         )
 
+    def get_preview(self):
+        primary_metric = self.report.config.get('intro') or 'ga:pageviews'
+        this_week, last_week = (r.get(primary_metric) for r in self.tables['summary'].rows[:2])
+        delta = (this_week / float(last_week or 1.0)) - 1
+        return u"Your site had {this_week} this {interval} ({delta} over last {interval}).".format(
+            this_week=h.format_int(this_week, self.data['total_units']),
+            delta=h.human_percent(delta, signed=True),
+            interval=self.data.get('interval_label', 'week'),
+        )
+
     def fetch(self, google_query):
         last_month_date_start = self.date_end - datetime.timedelta(days=self.date_end.day)
         last_month_date_start -= datetime.timedelta(days=last_month_date_start.day - 1)
+
+        interval_field = 'ga:nthWeek'
+        if (self.date_end - self.date_start).days > 6:
+            interval_field = 'ga:nthMonth'
 
         # Summary
         summary_metrics = [
@@ -189,10 +205,10 @@ class ActivityReport(Report):
                 'ids': 'ga:%s' % self.remote_id,
                 'start-date': self.previous_date_start, # Extra week
                 'end-date': self.date_end,
-                'sort': '-ga:nthWeek',
+                'sort': '-{}'.format(interval_field),
             },
             dimensions=[
-                Column('ga:nthWeek'),
+                Column(interval_field),
             ],
             metrics=summary_metrics + [Column('ga:visits', type_cast=int)],
         )
@@ -339,7 +355,7 @@ class ActivityReport(Report):
         last_month, current_month = monthly_data
 
         self.data['historic_data'] = encode_rows(monthly_data, max_value)
-        self.data['total_units'] = units = '{:,} %s' % views_column.label.lower().rstrip('s')
+        self.data['total_units'] = '{:,} %s' % views_column.label.lower().rstrip('s')
         self.data['total_current'] = current_month[-1]
         self.data['total_last'] = last_month[-1]
         self.data['total_last_relative'] = last_month[min(len(current_month), len(last_month))-1]
@@ -360,14 +376,6 @@ class ActivityReport(Report):
         self.tables['social_search'].tag_rows()
         self.tables['referrers'].tag_rows()
         self.tables['pages'].tag_rows()
-
-        this_week, last_week = (r.get(intro_config or 'ga:pageviews') for r in self.tables['summary'].rows[:2])
-        delta = (this_week / float(last_week or 1.0)) - 1
-        self.preview_text = "Your site had {this_week} this {interval} ({delta} over last {interval}).".format(
-            this_week=h.format_int(this_week, units),
-            delta=h.human_percent(delta, signed=True),
-            interval=self.data.get('interval_label', 'week'),
-        )
 
 
 
