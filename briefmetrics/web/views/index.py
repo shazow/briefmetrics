@@ -1,10 +1,14 @@
 import os
+import re
 
 from briefmetrics import api
 from briefmetrics.lib.controller import Controller
 from briefmetrics.web.environment import httpexceptions
 
 from mako.exceptions import TopLevelLookupException
+
+
+RE_IS_SLUG = re.compile('^[\w\-_]+$')
 
 
 class IndexController(Controller):
@@ -26,6 +30,9 @@ class IndexController(Controller):
 
     def articles(self):
         template_name = os.path.basename(self.request.matchdict['id'])
+        if not RE_IS_SLUG.match(template_name):
+            raise httpexceptions.HTTPNotFound('Article does not exist: {}'.format(template_name))
+
         try:
             return self._render('articles/{}.mako'.format(template_name))
         except TopLevelLookupException:
