@@ -11,8 +11,11 @@ class TestHelpers(test.TestWeb):
             ('google.com', 'google.com'),
             ('https://google.com/foo/', 'google.com/foo'),
             ('https://google.com/foo', 'google.com/foo'),
+            ('//google.com/foo', 'google.com/foo'),
+            ('://google.com/foo', 'google.com/foo'),
             ('google.com/foo/', 'google.com/foo'),
             ('google.com/foo', 'google.com/foo'),
+            ('/foo', 'foo'),
         ]
 
         for input, expected in data:
@@ -22,6 +25,7 @@ class TestHelpers(test.TestWeb):
         data = [
             ('https://google.com/', '<a href="https://google.com/">google.com</a>'),
             ('https://google.com/foo/', '<a href="https://google.com/foo/">google.com/foo</a>'),
+            ('//google.com/', '<a href="http://google.com/">google.com</a>'),
         ]
 
         for input, href in data:
