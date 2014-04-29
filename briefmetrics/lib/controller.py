@@ -63,6 +63,12 @@ class Controller(object):
         if request.features.get('ssl'):
             login_url = request.route_url('account_login', _scheme='https')
 
+        try:
+            current_route = request.current_route_path(_query=None)
+        except ValueError:
+            # FIXME: This shouldn't happen...
+            current_route = u'/'
+
         return {
             'h': h, 
             'c': self.context,
@@ -74,7 +80,7 @@ class Controller(object):
             'title': self.title,
             'is_logged_in': 'user_id' in self.session,
             'current_path': self.current_path,
-            'current_route': request.current_route_path(_query=None),
+            'current_route': current_route,
             'previous_url': self.previous_url,
             'next_url': self.next,
 
