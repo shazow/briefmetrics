@@ -66,7 +66,7 @@ class Controller(object):
         try:
             current_route = request.current_route_path(_query=None)
         except ValueError:
-            # FIXME: This shouldn't happen...
+            # Tests and tasks have no current route. TODO: Maybe fix this somehow?
             current_route = u'/'
 
         return {

@@ -30,7 +30,7 @@ def init(settings):
             },
             'dry-run': {
                 'task': 'briefmetrics.tasks.report.dry_run',
-                'schedule': schedules.crontab(minute=0, hour=14), # Daily
+                'schedule': schedules.crontab(minute=0, hour=0), # Daily
             },
         }
 
