@@ -74,7 +74,7 @@
             <strong>Briefmetrics was unable to load a list of your Google Analytics properties.</strong> Are you sure you signed in with the correct Google account? 
         </p>
         <p>
-            You can delete this account below and try signing in again with a different account.
+            You can <a href="/account/delete">delete this account</a> and try signing in again with a different account.
         </p>
         <p>
             If you don't have any Google Analytics accounts, then Briefmetrics won't be useful for you yet. :)
