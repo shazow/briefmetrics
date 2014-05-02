@@ -32,6 +32,13 @@ def settings_payments_cancel(request):
     request.flash('Subscription cancelled.')
 
 
+@expose_api('settings.plan')
+def settings_plan(request):
+    user = api.account.get_user(request)
+    # TODO: If not user, set session. If user, change plan.
+    raise NotImplementedError('XXX')
+
+
 class SettingsController(Controller):
 
     @handle_api(['settings.payments_set', 'settings.payments_cancel'])

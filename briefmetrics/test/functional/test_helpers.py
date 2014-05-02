@@ -2,7 +2,7 @@ from briefmetrics import test
 from briefmetrics.lib import helpers as h
 
 
-class TestHelpers(test.TestWeb):
+class TestHelpers(test.TestCase):
 
     def test_human_url(self):
         data = [

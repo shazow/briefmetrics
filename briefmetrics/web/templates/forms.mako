@@ -243,7 +243,7 @@
             <span>Current Plan</span>
         % else:
             <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
-            <input type="hidden" name="method" value="account.plan_set" />
+            <input type="hidden" name="method" value="settings.plan" />
             <input type="hidden" name="format" value="redirect" />
             <input type="submit" value="Choose Plan" />
         % endif
