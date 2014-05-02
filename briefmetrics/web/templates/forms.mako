@@ -214,3 +214,40 @@
         <input type="submit" value="Add" />
     </form>
 </%def>
+
+<%def name="pricing_plan(plan, override_name=None, is_group=False, user=None)">
+    <%
+        is_active = user and user.plan_id == plan.id
+    %>
+    <form action="${request.route_path('api')}" method="post" class="pricing-plan ${h.text_if(is_active, 'active')}">
+        <h3>${override_name or plan.name}</h3>
+
+        <ul class="features">
+            <li><span class="value">&check;</span> Feature</li>
+            <li><span class="value">&check;</span> Feature</li>
+        </ul>
+
+        <p class="price">
+            % if is_group:
+                Starting at
+            % endif
+            ${plan.price_str}
+        </p>
+
+        % if user:
+            <input type="hidden" name="user_id" value="${user.id}" />
+        % endif
+
+        <p class="action">
+        % if is_active:
+            <span>Current Plan</span>
+        % else:
+            <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
+            <input type="hidden" name="method" value="account.plan_set" />
+            <input type="hidden" name="format" value="redirect" />
+            <input type="submit" value="Choose Plan" />
+        % endif
+        </p>
+    </form>
+</%def>
+

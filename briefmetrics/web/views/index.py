@@ -2,6 +2,7 @@ import os
 import re
 
 from briefmetrics import api
+from briefmetrics.lib.pricing import get_plan
 from briefmetrics.lib.controller import Controller
 from briefmetrics.web.environment import httpexceptions
 
@@ -19,6 +20,15 @@ class IndexController(Controller):
             return self._redirect(self.request.route_path('reports'))
 
         return self._render('index.mako')
+
+    def pricing(self):
+        self.c.user = api.account.get_user(self.request)
+
+        self.c.plan_personal = get_plan('personal')
+        self.c.plan_agency = get_plan('agency-10')
+        self.c.plan_enterprise = get_plan('enterprise')
+
+        return self._render('pricing.mako')
 
     def privacy(self):
         self.title = "Privacy Policy"

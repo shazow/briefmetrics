@@ -17,6 +17,7 @@ def add_routes(config):
 
     with handler_routes(config, views.index.IndexController) as route:
         route('index', '/', action='index')
+        route('pricing', '/pricing', action='pricing')
         route('privacy', '/privacy', action='privacy')
         route('security', '/security', action='security')
         route('articles', '/articles/{id}', action='articles')

@@ -19,6 +19,10 @@ class Plan(object):
         return '${0:g}'.format(self.price_monthly / 100.0)
 
     @property
+    def price_str(self):
+        return self.price_monthly_str
+
+    @property
     def option_str(self):
         return '{plan.name} for {plan.price_monthly_str}/month: {plan.summary}'.format(plan=self)
 
@@ -39,7 +43,7 @@ PLANS = [
 
     # Individual plans
 
-    Plan('personal', 'Early Bird', 'For startups and hobbyists', price_monthly=800, features={
+    Plan('personal', 'Starter', 'For startups and hobbyists', price_monthly=800, features={
     }),
 
     # Agency plans
@@ -59,6 +63,13 @@ PLANS = [
         'custom_branding': True,
     }),
 
+    # Enterprise plans (not used yet)
+
+    Plan('enterprise', 'Enterprise', price_monthly=27500, features={
+        'custom_branding': True,
+        'advanced_reports': True,
+    }, is_hidden=True),
+
     # Old:
 
     Plan('agency-small', 'Small Agency', '10 branded properties', price_monthly=3500, features={
@@ -76,3 +87,7 @@ PLANS = [
 PLANS_LOOKUP = dict((p.id, p) for p in PLANS)
 PLAN_FREE = PLANS[0]
 PLAN_PAID = next(p for p in PLANS if p.price_monthly and not p.is_hidden)
+
+
+def get_plan(plan_id):
+    return PLANS_LOOKUP[plan_id]
