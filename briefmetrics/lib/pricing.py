@@ -1,11 +1,11 @@
 class Plan(object):
 
-    def __init__(self, id, name, summary, features, price_monthly=None, is_hidden=False):
+    def __init__(self, id, name, summary=None, price_monthly=None, features=None, is_hidden=False):
         self.id = id
         self.name = name
         self.summary = summary
         self.price_monthly = price_monthly
-        self.features = features
+        self.features = features or {}
         self.is_hidden = is_hidden
 
     def __str__(self):
@@ -26,35 +26,50 @@ class Plan(object):
 
 PLANS = [
 
-    Plan('trial', 'Trial', '10 free email reports', {
+    Plan('trial', 'Trial', '10 free email reports', features={
         'num_emails': 10,
-        'num_sites': None,
     }, is_hidden=True),
 
-    Plan('recipient', 'Recipient', '10 free email reports', {
+    Plan('recipient', 'Recipient', '10 free email reports', features={
         'num_emails': 10,
-        'num_sites': None,
     }, is_hidden=True),
 
-    Plan('free', 'Free', 'Super special free plan', {
-        'num_emails': None,
-        'num_sites': None,
+    Plan('free', 'Free', 'Super special free plan', features={
     }, is_hidden=True),
 
-    Plan('personal', 'Early Bird', 'For startups and hobbyists', {
-        'num_emails': None,
-        'num_sites': None,
-    }, price_monthly=800),
+    # Individual plans
 
-    Plan('agency', 'Agency', '50 branded properties', {
-        'num_emails': None,
-        'num_sites': 50,
-    }, price_monthly=15000, is_hidden=True),
+    Plan('personal', 'Early Bird', 'For startups and hobbyists', price_monthly=800, features={
+    }),
 
-    Plan('agency-small', 'Small Agency', '10 branded properties', {
-        'num_emails': None,
+    # Agency plans
+
+    Plan('agency-10', 'Agency (10 sites)', price_monthly=3500, features={
         'num_sites': 10,
-    }, price_monthly=3500, is_hidden=True),
+        'custom_branding': True,
+    }),
+
+    Plan('agency-25', 'Agency (25 sites)', price_monthly=8500, features={
+        'num_sites': 25,
+        'custom_branding': True,
+    }),
+
+    Plan('agency-50', 'Agency (50 sites)', price_monthly=15000, features={
+        'num_sites': 50,
+        'custom_branding': True,
+    }),
+
+    # Old:
+
+    Plan('agency-small', 'Small Agency', '10 branded properties', price_monthly=3500, features={
+        'num_sites': 10,
+        'custom_branding': True,
+    }, is_hidden=True),
+
+    Plan('agency', 'Agency', '50 branded properties', price_monthly=15000, features={
+        'num_sites': 50,
+        'custom_branding': True,
+    }, is_hidden=True),
 ]
 
 

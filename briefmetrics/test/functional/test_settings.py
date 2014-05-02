@@ -2,10 +2,14 @@ from briefmetrics import test
 from briefmetrics import api
 from briefmetrics import model
 
+from briefmetrics.test.fixtures.api_google import FakeQuery
+import mock
+
 
 Session = model.Session
 
 
+@mock.patch('briefmetrics.api.google.Query', FakeQuery)
 class TestSettings(test.TestWeb):
     def test_payment_set(self):
         u = api.account.get_or_create(email=u'example@example.com', token={}, display_name=u'Example')
