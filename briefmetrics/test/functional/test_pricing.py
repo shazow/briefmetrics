@@ -20,8 +20,8 @@ class TestPricing(test.TestCase):
         })
 
         p2 = TestPlan.new('p2', 'Plan 2', features=[
-            f1.value('bar'),
-            f2.value(True),
+            TestFeature.value('foo', 'bar'),
+            TestFeature.value('baz', True),
         ])
 
         self.assertEqual(p1.features, p2.features)

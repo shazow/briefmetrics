@@ -218,13 +218,21 @@
 <%def name="pricing_plan(plan, override_name=None, is_group=False, user=None)">
     <%
         is_active = user and user.plan_id == plan.id
+        value_map = {
+        True: u'✓',
+        None: u'Unlimited',
+        }
     %>
     <form action="${request.route_path('api')}" method="post" class="pricing-plan ${h.text_if(is_active, 'active')}">
         <h3>${override_name or plan.name}</h3>
 
         <ul class="features">
-            <li><span class="value">&check;</span> Feature</li>
-            <li><span class="value">&check;</span> Feature</li>
+        % for feature, value in plan.iter_features():
+            <li>
+                <span class="value">${value_map.get(value) or value}</span>
+                ${feature.name}
+            </li>
+        % endfor
         </ul>
 
         <p class="price">

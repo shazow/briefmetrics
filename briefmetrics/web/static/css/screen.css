@@ -593,6 +593,42 @@ nav.header h1 {
   list-style: none;
   margin: 0;
 }
+.intro .features {
+  margin: 2em 0;
+  padding: 0;
+  display: table;
+  text-align: center;
+}
+.intro .features li {
+  display: table-cell;
+  width: 33%;
+}
+.intro .features img {
+  width: 200px;
+  height: 100px;
+  border: 2px solid #dbe8cc;
+  overflow: hidden;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+  border-radius: 5px;
+}
+.intro .features strong {
+  display: block;
+  margin-bottom: 0.2em;
+  font-size: 0.8em;
+  line-height: 2em;
+}
+.intro .features strong:before {
+  content: "✓";
+  margin-right: 0.5em;
+  color: #f37934;
+}
+.intro .features p {
+  font-size: 0.8em;
+  padding: 0 0.5em;
+}
 
 a.cta {
   -webkit-border-radius: 3px;
@@ -744,41 +780,4 @@ form.add-recipient input {
 }
 .articles h3 {
   font-size: 1.4em;
-}
-
-.features {
-  margin: 2em 0;
-  padding: 0;
-  display: table;
-  text-align: center;
-}
-.features li {
-  display: table-cell;
-  width: 33%;
-}
-.features img {
-  width: 200px;
-  height: 100px;
-  border: 2px solid #dbe8cc;
-  overflow: hidden;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  -ms-border-radius: 5px;
-  -o-border-radius: 5px;
-  border-radius: 5px;
-}
-.features strong {
-  display: block;
-  margin-bottom: 0.2em;
-  font-size: 0.8em;
-  line-height: 2em;
-}
-.features strong:before {
-  content: "✓";
-  margin-right: 0.5em;
-  color: #f37934;
-}
-.features p {
-  font-size: 0.8em;
-  padding: 0 0.5em;
 }
