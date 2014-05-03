@@ -461,6 +461,13 @@ form.add-recipient {
             }
         }
 
+        .action span {
+            display: block;
+            background: #eee;
+            color: #aaa;
+            text-align: center;
+            line-height: 2em;
+        }
         input[type="submit"] {
             width: 100%;
         }

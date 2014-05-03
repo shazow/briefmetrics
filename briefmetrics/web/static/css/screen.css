@@ -825,6 +825,13 @@ form.add-recipient input {
   color: #432;
   padding: 2px 4px;
 }
+.pricing .pricing-plan .action span {
+  display: block;
+  background: #eee;
+  color: #aaa;
+  text-align: center;
+  line-height: 2em;
+}
 .pricing .pricing-plan input[type="submit"] {
   width: 100%;
 }
