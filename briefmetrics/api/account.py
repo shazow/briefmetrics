@@ -205,16 +205,9 @@ def delete_payments(user):
     Session.commit()
 
 
-def start_subscription(user, plan_id=None):
+def start_subscription(user):
     if not user.stripe_customer_id:
         raise APIError("Cannot start subscription for user without a credit card: %s" % user.id)
-
-    if plan_id:
-        try:
-            user.set_plan(plan_id)
-            Session.commit()
-        except KeyError:
-            raise APIError('Invalid plan: %s' % plan_id)
 
     customer = stripe.Customer.retrieve(user.stripe_customer_id)
     try:
@@ -222,3 +215,18 @@ def start_subscription(user, plan_id=None):
     except stripe.CardError as e:
         delete_payments(user)
         raise APIError('Failed to start payment plan: %s' % e.message)
+
+
+def set_plan(user, plan_id, update_subscription=None):
+    try:
+        user.set_plan(plan_id)
+        Session.commit()
+    except KeyError:
+        raise APIError('Invalid plan: %s' % plan_id)
+
+    if update_subscription is None:
+        # Default behaviour
+        update_subscription = user.num_remaining <= 0
+
+    if update_subscription and user.stripe_customer_id:
+        start_subscription(user)

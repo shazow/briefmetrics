@@ -54,7 +54,6 @@ class AccountController(Controller):
             display_name=user_info.get('name'),
         )
         api.account.login_user_id(self.request, user.id)
-        # TODO: Redirect to dashboard?
         return self._redirect(self.next or self.request.route_path('reports'))
 
     def logout(self):

@@ -64,4 +64,7 @@ class TestWeb(TestModel):
 
         r = self.app.post('/api', params=p)
 
-        return json.loads(r.body)
+        if format == 'json':
+            return json.loads(r.body)
+        
+        return r

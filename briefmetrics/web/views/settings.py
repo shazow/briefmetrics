@@ -1,7 +1,7 @@
 from unstdlib import get_many
 
 from briefmetrics import api
-from briefmetrics.lib.exceptions import APIError
+from briefmetrics.lib.exceptions import APIError, LoginRequired
 
 from .api import expose_api, handle_api
 from briefmetrics.lib.controller import Controller
@@ -34,17 +34,33 @@ def settings_payments_cancel(request):
 
 @expose_api('settings.plan')
 def settings_plan(request):
+    plan_id, format = get_many(request.params, ['plan_id'], optional=['format'])
     user = api.account.get_user(request)
     # TODO: If not user, set session. If user, change plan.
-    raise NotImplementedError('XXX')
+
+    if not user:
+        if format == 'redirect':
+            request.session['plan_id'] = plan_id
+            request.session.save()
+
+        raise LoginRequired(next=request.route_path('settings'))
+
+    api.account.set_plan(user, plan_id=plan_id)
+    request.flash('Plan updated.')
 
 
 class SettingsController(Controller):
 
-    @handle_api(['settings.payments_set', 'settings.payments_cancel'])
+    @handle_api(['settings.payments_set', 'settings.payments_cancel', 'settings.plan'])
     def index(self):
         user = api.account.get_user(self.request, required=True, joinedload=['account'])
         account = user.account
+
+        plan_id = self.request.session.pop('plan_id', None)
+        if plan_id:
+            api.account.set_plan(user, plan_id=plan_id)
+            self.request.flash('Plan updated.')
+
         oauth = api.google.auth_session(self.request, account.oauth_token)
 
         try:
