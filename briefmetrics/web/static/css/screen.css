@@ -781,3 +781,50 @@ form.add-recipient input {
 .articles h3 {
   font-size: 1.4em;
 }
+
+.pricing {
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  overflow: hidden;
+}
+.pricing .pricing-plan {
+  vertical-align: top;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+  border-radius: 5px;
+  border: 2px solid #dbe8cc;
+  background: #fff;
+  padding: 0 1em;
+  display: inline-block;
+  text-align: left;
+  width: 180px;
+  margin: 0 5px;
+}
+.pricing .pricing-plan h3 {
+  text-align: center;
+  margin: 0.5em;
+  line-height: 2em;
+}
+.pricing .pricing-plan .value {
+  font-weight: bold;
+}
+.pricing .pricing-plan ul {
+  padding: 0;
+  list-style: none;
+}
+.pricing .pricing-plan .price {
+  margin-top: 2em;
+  text-align: center;
+}
+.pricing .pricing-plan .price .value {
+  font-weight: bold;
+  background: #fce09b;
+  color: #432;
+  padding: 2px 4px;
+}
+.pricing .pricing-plan input[type="submit"] {
+  width: 100%;
+}

@@ -215,7 +215,7 @@
     </form>
 </%def>
 
-<%def name="pricing_plan(plan, override_name=None, is_group=False, user=None)">
+<%def name="pricing_plan(plan, user=None)">
     <%
         is_active = user and user.plan_id == plan.id
         value_map = {
@@ -224,7 +224,7 @@
         }
     %>
     <form action="${request.route_path('api')}" method="post" class="pricing-plan ${h.text_if(is_active, 'active')}">
-        <h3>${override_name or plan.name}</h3>
+        <h3>${plan.name}</h3>
 
         <ul class="features">
         % for feature, value in plan.iter_features():
@@ -236,10 +236,10 @@
         </ul>
 
         <p class="price">
-            % if is_group:
+            % if plan.is_group:
                 Starting at
             % endif
-            ${plan.price_str}
+            <span class="value">${plan.price_monthly_str}/month</span>
         </p>
 
         % if user:

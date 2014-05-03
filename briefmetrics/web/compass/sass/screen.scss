@@ -417,3 +417,53 @@ form.add-recipient {
     }
 }
 
+.pricing {
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+    overflow: hidden;
+
+    .pricing-plan {
+    vertical-align: top;
+        @include border-radius(5px);
+        border: 2px solid $color-border;
+        background: #fff;
+        padding: 0 1em;
+        display: inline-block;
+        text-align: left;
+        width: 180px;
+        margin: 0 5px;
+
+        h3 {
+            text-align: center;
+            margin: 0.5em;
+            line-height: 2em;
+        }
+
+        .value {
+            font-weight: bold;
+        }
+
+        ul {
+            padding: 0;
+            list-style: none;
+        }
+
+        .price {
+            margin-top: 2em;
+            text-align: center;
+
+            .value {
+                font-weight: bold;
+                background: #fce09b;
+                color: #432;
+                padding: 2px 4px;
+            }
+        }
+
+        input[type="submit"] {
+            width: 100%;
+        }
+
+    }
+}

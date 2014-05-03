@@ -37,21 +37,23 @@ class Feature(Singleton):
 
 
 FEATURES = [
-    Feature.new('num_emails', 'Free email reports'),
+    Feature.new('num_emails', 'Email Reports'),
     Feature.new('num_sites', 'Websites'),
     Feature.new('num_recipients', 'Recipients'),
     Feature.new('custom_branding', 'Custom Branding'),
-    Feature.new('advanced_reports', 'Advanced Reports'),
+    Feature.new('email_domain', 'Your Domain'),
+    Feature.new('support', 'Support'),
 ]
 
 
 class Plan(Singleton):
     _singleton = {}
+    is_group = False
 
     default_features = [
-        Feature.value('num_emails', None),
         Feature.value('num_sites', None),
         Feature.value('num_recipients', None),
+        Feature.value('support', 'Email'),
     ]
 
     def __init__(self, id, name, summary=None, price_monthly=None, features=None, is_hidden=False):
@@ -76,7 +78,10 @@ class Plan(Singleton):
 
     @property
     def price_str(self):
-        return self.price_monthly_str
+        if not self.price_monthly:
+            return 'Free'
+
+        return '${0:g}/month'.format(self.price_monthly / 100.0)
 
     @property
     def option_str(self):
@@ -86,6 +91,27 @@ class Plan(Singleton):
         for key, value in self.features.iteritems():
             yield Feature.get(key), value
 
+
+class PlanGroup(Plan):
+    # Similar to a Plan but with overrides for display purposes
+    _singleton = {}
+    is_group = True
+
+    @property
+    def price_str(self):
+        return 'Starting at ${0:g}/month'.format(self.price_monthly / 100.0)
+    
+
+PlanGroup.new('agency-10', 'Agency', price_monthly=3500, features=[
+    Feature.value('num_sites', '10+'),
+    Feature.value('custom_branding', True),
+])
+
+PlanGroup.new('enterprise', 'Enterprise', price_monthly=27500, features=[
+    Feature.value('custom_branding', True),
+    Feature.value('email_domain', True),
+    Feature.value('support', 'Email & Phone'),
+], is_hidden=True),
 
 PLANS = [
 
@@ -102,7 +128,8 @@ PLANS = [
 
     # Individual plans
 
-    Plan.new('personal', 'Starter', 'For startups and hobbyists', price_monthly=800, features=[
+    Plan.new('starter', 'Starter', price_monthly=800, features=[
+        Feature.value('num_sites', 5),
     ]),
 
     # Agency plans
@@ -122,14 +149,11 @@ PLANS = [
         Feature.value('custom_branding', True),
     ]),
 
-    # Enterprise plans (not used yet)
-
-    Plan.new('enterprise', 'Enterprise', price_monthly=27500, features=[
-        Feature.value('custom_branding', True),
-        Feature.value('advanced_reports', True),
-    ], is_hidden=True),
 
     # Old:
+
+    Plan.new('personal', 'Early Bird', 'For startups and hobbyists', price_monthly=800, features=[
+    ]),
 
     Plan.new('agency-small', 'Small Agency', '10 branded properties', price_monthly=3500, features=[
         Feature.value('num_sites', 10),

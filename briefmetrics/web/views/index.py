@@ -2,7 +2,7 @@ import os
 import re
 
 from briefmetrics import api
-from briefmetrics.lib.pricing import get_plan
+from briefmetrics.lib.pricing import Plan, PlanGroup
 from briefmetrics.lib.controller import Controller
 from briefmetrics.web.environment import httpexceptions
 
@@ -24,9 +24,9 @@ class IndexController(Controller):
     def pricing(self):
         self.c.user = api.account.get_user(self.request)
 
-        self.c.plan_personal = get_plan('personal')
-        self.c.plan_agency = get_plan('agency-10')
-        self.c.plan_enterprise = get_plan('enterprise')
+        self.c.plan_individual = Plan.get('starter')
+        self.c.plan_agency = PlanGroup.get('agency-10')
+        self.c.plan_enterprise = PlanGroup.get('enterprise')
 
         return self._render('pricing.mako')
 
