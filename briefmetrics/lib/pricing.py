@@ -168,8 +168,8 @@ PLANS = [
 
 
 PLANS_LOOKUP = dict((p.id, p) for p in PLANS)
-PLAN_FREE = PLANS[0]
 PLAN_PAID = next(p for p in PLANS if p.price_monthly and not p.is_hidden)
+PLAN_DEFAULT = Plan.get('starter')
 
 
 def get_plan(plan_id):

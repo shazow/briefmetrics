@@ -33,29 +33,18 @@
 </%def>
 
 
-<%def name="payment_form(plan_id=None)">
+<%def name="payment_form(plan=None)">
     <form action="${request.route_path('api')}" method="post" class="payment" autocomplete="on">
         <div>
             <label>
                 Plan
                 <div>
-                    <%
-                        plans = [p for p in pricing.PLANS if not p.is_hidden or p.id == plan_id and p.price_monthly]
-                    %>
-                    % if len(plans) == 1:
-                        <input type="hidden" name="plan_id" value="${plans[0].id}" />
-                        <strong>
-                            ${plans[0].option_str}
-                        </strong>
-                    % else:
-                        <select name="plan_id">
-                        % for plan in plans:
-                            <option value="${plan.id}" ${h.text_if(plan_id==plan.id, 'selected')}>
-                                ${plan.option_str}
-                            </option>
-                        % endfor
-                        </select>
-                    % endif
+                    <input type="hidden" name="plan_id" value="${plan.id}" />
+                    <strong>
+                        ${plan.name}
+                    </strong>
+
+                    <a href="/pricing" class="button">Change Plan</a>
                 </div>
             </label>
         </div>
@@ -223,7 +212,7 @@
         None: u'Unlimited',
         }
     %>
-    <form action="${request.route_path('api')}" method="post" class="pricing-plan ${h.text_if(is_active, 'active')}">
+    <form action="${request.route_path('settings')}" method="post" class="pricing-plan ${h.text_if(is_active, 'active')}">
         <h3>${plan.name}</h3>
 
         <ul class="features">
@@ -250,9 +239,11 @@
         % if is_active:
             <span>Current Plan</span>
         % else:
+            <input type="hidden" name="plan_id" value="${plan.id}" />
             <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
             <input type="hidden" name="method" value="settings.plan" />
             <input type="hidden" name="format" value="redirect" />
+            <input type="hidden" name="next" value="${request.route_path('settings')}" />
             <input type="submit" value="Choose Plan" />
         % endif
         </p>
