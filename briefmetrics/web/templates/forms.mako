@@ -43,6 +43,7 @@
                     <strong>
                         ${plan.name}
                     </strong>
+                    at ${plan.price_str}
 
                     <a href="/pricing" class="button">Change Plan</a>
                 </div>
@@ -250,3 +251,24 @@
     </form>
 </%def>
 
+<%def name="pricing_plan_group(plan_group, selected_plan_id=None)">
+    <div class="pricing-plan-group">
+        <p>
+            We have some variations of the ${c.selected_plan.in_group.name} plan.
+        </p>
+        <ul class="vertical">
+            % for plan in c.selected_plan.in_group.plans:
+                <%
+                    if plan.id == selected_plan_id:
+                        continue
+                %>
+                <li>
+                    <a href="${request.current_route_path(
+                        _query=dict(plan_id=plan.id, method="settings.plan", csrf_token=session.get_csrf_token())
+                        )}" class="button">Choose Plan</a>
+                    <strong>${plan.name}</strong> at ${plan.price_str}
+                </li>
+            % endfor
+        </ul>
+    </div>
+</%def>

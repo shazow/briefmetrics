@@ -71,6 +71,15 @@ a.button {
         background: #eee;
         color: #999;
     }
+
+    &.disabled {
+        &:hover {
+            background: #ddd;
+        }
+
+        background: #ddd;
+        color: #999;
+    }
 }
 
 section {
@@ -424,8 +433,8 @@ form.add-recipient {
     overflow: hidden;
 
     .pricing-plan {
-    vertical-align: top;
         @include border-radius(5px);
+        vertical-align: top;
         border: 2px solid $color-border;
         background: #fff;
         padding: 0 1em;
@@ -472,5 +481,12 @@ form.add-recipient {
             width: 100%;
         }
 
+    }
+}
+
+#credit-card {
+    .pricing-plan-group {
+        margin-left: 3em;
+        line-height: 1.25em;
     }
 }

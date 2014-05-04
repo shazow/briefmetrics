@@ -437,6 +437,13 @@ a.button.external {
   background: #eee;
   color: #999;
 }
+a.button.disabled {
+  background: #ddd;
+  color: #999;
+}
+a.button.disabled:hover {
+  background: #ddd;
+}
 
 section {
   margin-bottom: 3em;
@@ -789,12 +796,12 @@ form.add-recipient input {
   overflow: hidden;
 }
 .pricing .pricing-plan {
-  vertical-align: top;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   -ms-border-radius: 5px;
   -o-border-radius: 5px;
   border-radius: 5px;
+  vertical-align: top;
   border: 2px solid #dbe8cc;
   background: #fff;
   padding: 0 1em;
@@ -834,4 +841,9 @@ form.add-recipient input {
 }
 .pricing .pricing-plan input[type="submit"] {
   width: 100%;
+}
+
+#credit-card .pricing-plan-group {
+  margin-left: 3em;
+  line-height: 1.25em;
 }

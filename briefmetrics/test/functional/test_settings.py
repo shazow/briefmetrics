@@ -48,6 +48,7 @@ class TestSettings(test.TestWeb):
 
         # Visit settings to trigger plan change
         r = self.app.get('/settings')
+        self.assertIn('variations of the Agency plan', r)
 
         u = model.User.get(1)
         self.assertEqual(u.plan_id, u'agency-10')
@@ -55,6 +56,7 @@ class TestSettings(test.TestWeb):
 
         # Change plan now again
         r = self.call_api('settings.plan', plan_id=u'starter')
+        self.assertNotIn('variations of the Agency plan', r)
 
         # Already logged in, so don't need to visit settings to trigger.
         u = model.User.get(1)

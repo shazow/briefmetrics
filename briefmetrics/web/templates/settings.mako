@@ -39,6 +39,9 @@
 
         ${forms.payment_form(plan=c.selected_plan)}
     % endif
+    % if c.selected_plan.in_group:
+        ${forms.pricing_plan_group(c.selected_plan.in_group, c.selected_plan.id)}
+    % endif
     </section>
 
     <section id="delete">

@@ -48,6 +48,7 @@ FEATURES = [
 class Plan(Singleton):
     _singleton = {}
     is_group = False
+    in_group = None
 
     default_features = [
         Feature.value('num_sites', None),
@@ -96,21 +97,26 @@ class PlanGroup(Plan):
     _singleton = {}
     is_group = True
 
+    def __init__(self, id, name, summary=None, price_monthly=None, features=None, is_hidden=False, plans=None):
+        self.id = id
+        self.name = name
+        self.summary = summary
+        self.price_monthly = price_monthly if price_monthly else plans and plans[0].price_monthly
+        self.features = OrderedDict(self.default_features)
+        self.is_hidden = is_hidden
+        self.plans = plans
+
+        if plans:
+            self.features.update(plans[0].features)
+            for p in plans:
+                p.in_group = self
+
+        self.features.update(features)
+
     @property
     def price_str(self):
         return 'Starting at ${0:g}/month'.format(self.price_monthly / 100.0)
-    
 
-PlanGroup.new('agency-10', 'Agency', price_monthly=3500, features=[
-    Feature.value('num_sites', '10+'),
-    Feature.value('custom_branding', True),
-])
-
-PlanGroup.new('enterprise', 'Enterprise', price_monthly=27500, features=[
-    Feature.value('custom_branding', True),
-    Feature.value('email_domain', True),
-    Feature.value('support', 'Email & Phone'),
-], is_hidden=True),
 
 PLANS = [
 
@@ -164,6 +170,22 @@ PLANS = [
         Feature.value('custom_branding', True),
     ], is_hidden=True),
 ]
+
+
+PlanGroup.new('agency-10', 'Agency', features=[
+    Feature.value('num_sites', '10+'),
+], plans=[
+    Plan.get('agency-10'),
+    Plan.get('agency-25'),
+    Plan.get('agency-50'),
+])
+
+PlanGroup.new('enterprise', 'Enterprise', price_monthly=27500, features=[
+    Feature.value('custom_branding', True),
+    Feature.value('email_domain', True),
+    Feature.value('support', 'Email & Phone'),
+], is_hidden=True),
+
 
 
 PLANS_LOOKUP = dict((p.id, p) for p in PLANS)
