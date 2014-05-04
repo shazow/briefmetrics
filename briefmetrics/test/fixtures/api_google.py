@@ -18,11 +18,11 @@ _response_data = {
 }
 
 profile_item_template = {
-    u"accountId": u"111111",
+    u"accountId": u"100001",
     u"created": u"2006-06-11T05:04:23.000Z",
     u"currency": u"USD",
-    u"id": u"111112",
-    u"internalWebPropertyId": u"111113",
+    u"id": u"200000",
+    u"internalWebPropertyId": u"300000",
     u"kind": u"analytics#profile",
     u"name": u"example.com",
     u"timezone": u"America/Toronto",
@@ -80,8 +80,13 @@ class FakeQuery(Query):
         r = _response_profiles.copy()
         r[u'items'] = []
 
+        start_id = int(profile_item_template[u'id'])
+        start_internalId = int(profile_item_template[u'internalWebPropertyId'])
         for i in xrange(self.num_profiles):
             t = profile_item_template.copy()
+            t[u'id'] = unicode(start_id + i)
+            t[u'internalWebPropertyId'] = unicode(start_internalId + i)
+
             r[u'items'].append(t)
 
         r[u'totalResults'] = len(r[u'items'])

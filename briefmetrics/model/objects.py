@@ -50,7 +50,7 @@ class User(meta.Model): # Email address / login
 
     stripe_customer_id = Column(types.String)
 
-    config = Column(_types.MutationDict.as_mutable(_types.JSONEncodedDict), default=dict) # Whitelabel settings
+    config = Column(_types.MutationDict.as_mutable(_types.JSONEncodedDict), default=dict) # Whitelabel settings, features, etc.
     ''' Example config:
         {
             "email_header_image": "delappdesign.gif",

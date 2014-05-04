@@ -13,7 +13,7 @@ from .api import expose_api, handle_api
 
 @expose_api('report.create')
 def report_create(request):
-    report_type = request.params.get('type', 'day')
+    report_type = request.params.get('type', 'week')
     remote_id = request.params['remote_id']
     if not remote_id:
         raise APIControllerError("Select a report to create.")

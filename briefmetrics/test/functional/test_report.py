@@ -84,7 +84,7 @@ class TestReport(test.TestWeb):
 
         user = report.account.user
         user.num_remaining = 1
-        model.Session.commit()
+        Session.commit()
 
         tasks.report.celery.request = self.request
 
@@ -110,7 +110,7 @@ class TestReport(test.TestWeb):
 
         # Reset time and send again
         report.time_next = None
-        model.Session.commit()
+        Session.commit()
 
         with mock.patch('briefmetrics.api.email.send_message') as send_message:
             tasks.report.send_all(async=False)
@@ -124,7 +124,7 @@ class TestReport(test.TestWeb):
         self.assertEqual(model.Report.count(), 0)
         self.assertEqual(model.ReportLog.count(), 1)
 
-        model.Session.refresh(user)
+        Session.refresh(user)
         self.assertEqual(user.num_remaining, 0)
 
     def test_api(self):
@@ -135,7 +135,7 @@ class TestReport(test.TestWeb):
         self.assertIn('New report', r)
         self.assertNotIn('Active reports', r)
 
-        r = self.call_api('report.create', remote_id=u'111112')
+        r = self.call_api('report.create', remote_id=u'200001')
         report = r['result']['report']
         self.assertEqual(report['display_name'], u'example.com')
         self.assertEqual(model.Report.count(), 1)
@@ -145,6 +145,40 @@ class TestReport(test.TestWeb):
 
         r = self.call_api('report.delete', report_id=report['id'])
         self.assertEqual(model.Report.count(), 0)
+
+    def test_limits(self):
+        u = api.account.get_or_create(email=u'example@example.com', token={}, display_name=u'Example')
+        r = self.call_api('account.login', token=u'%s-%d' % (u.email_token, u.id))
+
+        # Limit number of sites & recipients
+        u.config['num_recipients'] = 1
+        u.config['num_sites'] = 1
+        Session.commit()
+
+        r = self.call_api('report.create', remote_id=u'200001', type='week')
+        report_id = r['result']['report']['id']
+
+        # Same site twice is cool
+        r = self.call_api('report.create', remote_id=u'200001', type='month')
+
+        # Different site exceeds site limit
+        r = self.call_api('report.create', _status=400, remote_id=u'200002')
+
+        # Adding a subscriber to the first report also exceeds
+        r = self.call_api('subscription.create', _status=400, report_id=report_id, email='foo@example.com', display_name='Foo')
+
+        self.assertEqual(model.User.count(), 1)
+        self.assertEqual(model.Report.count(), 2)
+
+        u.config['num_recipients'] = 2
+        u.config['num_sites'] = 2
+        Session.commit()
+
+        r = self.call_api('report.create', remote_id=u'200002')
+        r = self.call_api('subscription.create', report_id=report_id, email='foo@example.com', display_name='Foo')
+
+        self.assertEqual(model.User.count(), 2)
+        self.assertEqual(model.Report.count(), 3)
 
 
 class TestReportModel(test.TestCase):

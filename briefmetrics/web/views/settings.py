@@ -5,6 +5,7 @@ from briefmetrics.lib.exceptions import APIError, LoginRequired
 
 from .api import expose_api, handle_api
 from briefmetrics.lib.controller import Controller
+from briefmetrics.lib.pricing import PLAN_DEFAULT
 
 
 @expose_api('settings.payments_set')
@@ -72,7 +73,7 @@ class SettingsController(Controller):
 
             self.c.result = []
 
-        self.c.selected_plan = user.plan if user.plan.id != 'trial' else pricing.PLAN_DEFAULT
+        self.c.selected_plan = user.plan if user.plan.id != 'trial' else PLAN_DEFAULT
         self.c.user = user
         self.c.report_ids = set((r.remote_id or r.remote_data.get('id')) for r in account.reports)
 
