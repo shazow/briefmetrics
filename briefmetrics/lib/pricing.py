@@ -30,10 +30,9 @@ class Singleton(object):
 class Feature(Singleton):
     _singleton = {}
 
-    def __init__(self, id, name=None, expand=None):
+    def __init__(self, id, name=None):
         self.id = id
         self.name = name
-        self.expand = expand
 
 
 FEATURES = [

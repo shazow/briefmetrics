@@ -151,6 +151,7 @@ class TestReport(test.TestWeb):
         r = self.call_api('account.login', token=u'%s-%d' % (u.email_token, u.id))
 
         # Limit number of sites & recipients
+        u = model.User.get(1)
         u.config['num_recipients'] = 1
         u.config['num_sites'] = 1
         Session.commit()
@@ -170,6 +171,7 @@ class TestReport(test.TestWeb):
         self.assertEqual(model.User.count(), 1)
         self.assertEqual(model.Report.count(), 2)
 
+        u = model.User.get(1)
         u.config['num_recipients'] = 2
         u.config['num_sites'] = 2
         Session.commit()

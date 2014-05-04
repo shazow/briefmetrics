@@ -18,11 +18,19 @@ def report_create(request):
     if not remote_id:
         raise APIControllerError("Select a report to create.")
 
-    user_id = api.account.get_user_id(request, required=True, )
-
-    account = model.Account.get_by(user_id=user_id)
+    user = api.account.get_user(request, required=True, joinedload='account')
+    user_id = user.id
+    account = user.account
     if not account:
         raise APIControllerError("Account does not exist for user: %s" % user_id)
+
+    # Check limits
+    num_sites = user.get_feature('num_sites')
+    if num_sites:
+        remote_ids = set(r.remote_id for r in account.reports)
+        remote_ids.add(remote_id)
+        if len(remote_ids) > num_sites:
+            raise APIControllerError("Maximum number of sites limit reached, please consider upgrading your plan.")
 
     oauth = api.google.auth_session(request, account.oauth_token)
     q = api.google.create_query(request, oauth)
@@ -67,19 +75,23 @@ def report_delete(request):
 
 @expose_api('subscription.create')
 def subscription_create(request):
-    user_id = api.account.get_user_id(request, required=True)
     report_id, email, display_name = get_many(request.params, required=['report_id', 'email'], optional=['display_name'])
 
     if '@' not in email:
         raise APIControllerError('Invalid email address: %s' % email)
 
-    account = model.Account.get_by(user_id=user_id)
+    user = api.account.get_user(request, required=True, joinedload='account')
+    account = user.account
     if not account:
-        raise APIControllerError("Account does not exist for user: %s" % user_id)
+        raise APIControllerError("Account does not exist for user: %s" % user.id)
 
     report = model.Report.get_by(account_id=account.id, id=report_id)
     if not report:
         raise APIControllerError("Invalid report id: %s" % report_id)
+
+    num_recipients = user.get_feature('num_recipients')
+    if num_recipients and len(report.subscriptions) >= num_recipients:
+        raise APIControllerError("Maximum number of recipients limit reached, please consider upgrading your plan.")
 
     new_user = api.report.add_subscriber(report_id, email, display_name)
 

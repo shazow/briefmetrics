@@ -81,6 +81,14 @@ class User(meta.Model): # Email address / login
     def plan(self):
         return pricing.PLANS_LOOKUP[self.plan_id or 'trial']
 
+    def get_feature(self, feature_id, default=None):
+        """
+        Get a feature value, cascading from the per-user config to the plan's
+        setting, while validating that the feature exists.
+        """
+        feature = pricing.Feature.get(feature_id)
+        return self.config.get(feature.id, self.plan.features.get(feature.id, default))
+
     @property
     def email_to(self):
         if self.display_name:
