@@ -11,6 +11,7 @@
         <p>
             <strong>${c.user.plan.name}</strong> at ${c.user.plan.price_str}.
             <a href="/pricing" class="button">Change Plan</a>
+            <a class="button" href="#update-payment" onclick="$('#update-payment').show(); return false;">Update Credit Card</a>
         </p>
 
         % if c.selected_plan.in_group:
@@ -23,15 +24,11 @@
         </p>
         % endif
 
-        <form action="${request.route_path('api')}" method="post" onsubmit="return confirm('Are you sure you want to cancel your subscription? Reports will be suspended until you add another credit card.');">
-            <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
-            <input type="hidden" name="method" value="settings.payments_cancel" />
-            <input type="hidden" name="format" value="redirect" />
+        <div id="update-payment" class="hidden">
+            <h3>Update credit card</h3>
 
-            <p>
-                <input type="submit" class="negative" value="Cancel Subscription" />
-            </p>
-        </form>
+            ${forms.payment_form()}
+        </div>
 
     % else:
         <h2>Add a credit card</h2>
@@ -57,8 +54,13 @@
             Member of the Briefmetrics family since ${h.human_date(c.user.time_created, max_unit='year')}.
         </p>
 
+        % if c.user.stripe_customer_id:
+            ${forms.payment_cancel()}
+        % endif
+
         <form action="${request.route_path('account_delete')}">
             <input type="submit" class="negative" value="Delete Account" />
+            <span class="button-note">Remove all of your information from our servers.</span>
         </form>
     </section>
 </div>

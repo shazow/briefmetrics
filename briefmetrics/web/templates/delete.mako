@@ -2,7 +2,7 @@
 
 <div class="container">
     % if c.user:
-    <form action="${request.route_path('account_delete')}" method="post">
+    <form action="${request.route_path('account_delete')}" method="post" class="delete-confirm">
         <input type="hidden" name="token" value="${c.token or ''}" />
         <input type="hidden" name="confirmed" value="true" />
 

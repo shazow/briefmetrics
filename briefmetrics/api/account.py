@@ -163,11 +163,12 @@ def delete(user_id):
     Session.commit()
 
 
-def set_payments(user, plan_id='personal', card_token=None):
-    try:
-        user.set_plan(plan_id)
-    except KeyError:
-        raise APIError('Invalid plan: %s' % plan_id)
+def set_payments(user, plan_id=None, card_token=None):
+    if plan_id:
+        try:
+            user.set_plan(plan_id)
+        except KeyError:
+            raise APIError('Invalid plan: %s' % plan_id)
 
     if not card_token:  # For testing
         log.warn('Skipping interfacing set_payments with Stripe for user_id: %s' % user.id)

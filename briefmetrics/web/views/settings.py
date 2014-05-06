@@ -18,7 +18,7 @@ def settings_payments(request):
 
     api.account.set_payments(user, plan_id=plan_id, card_token=stripe_token)
 
-    api.email.notify_admin(request, 'Payment added: [%s] %s' % (user.id, user.display_name))
+    api.email.notify_admin(request, 'Payment added: [%s] %s' % (user.id, user.display_name), 'plan_id=%s' % plan_id)
 
     request.flash('Payment information is set.')
 

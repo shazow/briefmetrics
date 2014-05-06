@@ -33,7 +33,7 @@
             <strong>Custom Branding</strong>
             <img src="/static/images/feature-branding.png" />
             <p>
-                Prepare reports for your clients using your own logo and footer with <br />our Agency plan.
+                Prepare reports for your clients using your own logo and footer with <br />our <a href="/pricing">Agency plans</a>.
             </p>
         </li>
     </ul>
@@ -46,7 +46,7 @@
 
         <ul class="details">
             <li>No credit card required to get started.</li>
-            <li>Plans start at ${pricing.PLAN_PAID.price_monthly_str}/month.</li>
+            <li><a href="/pricing">Plans</a> start at ${pricing.PLAN_PAID.price_monthly_str}/month.</li>
             <li>Please read our simple <a href="/privacy">Privacy Policy</a>.</li>
         </ul>
     </div>

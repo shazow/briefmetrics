@@ -396,13 +396,12 @@ input[type="submit"]:disabled {
 
 input.negative, .button.negative {
   border: none;
-  margin-right: 0;
-  color: rgba(0, 0, 0, 0.7);
-  background: rgba(0, 0, 0, 0.2);
+  color: rgba(0, 0, 0, 0.5);
+  background: rgba(50, 50, 50, 0.15);
 }
 input.negative:hover, .button.negative:hover {
-  color: #fcf5f6;
-  background: #a31f2b;
+  color: #fff;
+  background: #dd4b58;
 }
 
 a.button {
@@ -412,7 +411,7 @@ a.button {
   -ms-border-radius: 3px;
   -o-border-radius: 3px;
   border-radius: 3px;
-  background: #dbe8cc;
+  background: #c2d7aa;
   color: rgba(0, 0, 0, 0.5);
   padding: 2px 1em;
   vertical-align: middle;
@@ -430,7 +429,7 @@ a.button.symbol {
   line-height: 1.5em;
   text-align: center;
   margin-right: 0.5em;
-  vertical-align: bottom;
+  vertical-align: top;
   font-size: 14px;
 }
 a.button.external {
@@ -443,6 +442,11 @@ a.button.disabled {
 }
 a.button.disabled:hover {
   background: #ddd;
+}
+
+.button-note {
+  font-size: 0.8em;
+  color: #949999;
 }
 
 section {
@@ -782,6 +786,11 @@ form.add-recipient input {
   line-height: default;
 }
 
+.delete-confirm .negative {
+  margin: 0;
+  vertical-align: bottom;
+}
+
 .articles {
   margin: 4em 0;
 }
@@ -795,7 +804,8 @@ form.add-recipient input {
   text-align: center;
   overflow: hidden;
 }
-.pricing .pricing-plan {
+
+.pricing-plan {
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   -ms-border-radius: 5px;
@@ -810,36 +820,36 @@ form.add-recipient input {
   width: 180px;
   margin: 0 5px;
 }
-.pricing .pricing-plan h3 {
+.pricing-plan h3 {
   text-align: center;
   margin: 0.5em;
   line-height: 2em;
 }
-.pricing .pricing-plan .value {
+.pricing-plan .value {
   font-weight: bold;
 }
-.pricing .pricing-plan ul {
+.pricing-plan ul {
   padding: 0;
   list-style: none;
 }
-.pricing .pricing-plan .price {
+.pricing-plan .price {
   margin-top: 2em;
   text-align: center;
 }
-.pricing .pricing-plan .price .value {
+.pricing-plan .price .value {
   font-weight: bold;
   background: #fce09b;
   color: #432;
   padding: 2px 4px;
 }
-.pricing .pricing-plan .action span {
+.pricing-plan .action span {
   display: block;
   background: #eee;
   color: #aaa;
   text-align: center;
   line-height: 2em;
 }
-.pricing .pricing-plan input[type="submit"] {
+.pricing-plan input[type="submit"] {
   width: 100%;
 }
 
@@ -851,4 +861,17 @@ form.add-recipient input {
 }
 #credit-card .pricing-plan-group ul {
   margin: 0;
+}
+#credit-card .pricing-plan {
+  margin-bottom: 2em;
+}
+#credit-card .pricing-plan h3 {
+  font-size: 1.3em;
+}
+
+#update-payment {
+  display: none;
+}
+#update-payment:target {
+  display: block;
 }

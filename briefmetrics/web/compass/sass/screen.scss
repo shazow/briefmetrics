@@ -31,20 +31,19 @@ input[type="submit"] {
 
 input.negative, .button.negative {
     border: none;
-    margin-right: 0;
-    color: rgba(0, 0, 0, 0.7);
-    background: rgba(0, 0, 0, 0.2);
+    color: rgba(0, 0, 0, 0.5);
+    background: rgba(50, 50, 50, 0.15);
 
     &:hover {
-        color: #fcf5f6;
-        background: #a31f2b;
+        color: #fff;
+        background: lighten(#a31f2b, 20);
     }
 }
 
 a.button {
     display: inline-block;
     @include border-radius(3px);
-    background: $color-border;
+    background: darken($color-border, 10%);
     color: rgba(0, 0, 0, 0.5);
     padding: 2px 1em;
     vertical-align: middle;
@@ -63,7 +62,7 @@ a.button {
         line-height: 1.5em;
         text-align: center;
         margin-right: 0.5em;
-        vertical-align: bottom;
+        vertical-align: top;
         font-size: 14px;
     }
 
@@ -80,6 +79,11 @@ a.button {
         background: #ddd;
         color: #999;
     }
+}
+
+.button-note {
+    font-size: 0.8em;
+    color: lighten($color-text, 20);
 }
 
 section {
@@ -415,6 +419,13 @@ form.add-recipient {
     }
 }
 
+.delete-confirm {
+    .negative {
+        margin: 0;
+        vertical-align: bottom;
+    }
+}
+
 .articles {
     margin: 4em 0;
 
@@ -431,57 +442,57 @@ form.add-recipient {
     margin: 0 auto;
     text-align: center;
     overflow: hidden;
+}
 
-    .pricing-plan {
-        @include border-radius(5px);
-        vertical-align: top;
-        border: 2px solid $color-border;
-        background: #fff;
-        padding: 0 1em;
-        display: inline-block;
-        text-align: left;
-        width: 180px;
-        margin: 0 5px;
+.pricing-plan {
+    @include border-radius(5px);
+    vertical-align: top;
+    border: 2px solid $color-border;
+    background: #fff;
+    padding: 0 1em;
+    display: inline-block;
+    text-align: left;
+    width: 180px;
+    margin: 0 5px;
 
-        h3 {
-            text-align: center;
-            margin: 0.5em;
-            line-height: 2em;
-        }
+    h3 {
+        text-align: center;
+        margin: 0.5em;
+        line-height: 2em;
+    }
+
+    .value {
+        font-weight: bold;
+    }
+
+    ul {
+        padding: 0;
+        list-style: none;
+    }
+
+    .price {
+        margin-top: 2em;
+        text-align: center;
 
         .value {
             font-weight: bold;
+            background: #fce09b;
+            color: #432;
+            padding: 2px 4px;
         }
-
-        ul {
-            padding: 0;
-            list-style: none;
-        }
-
-        .price {
-            margin-top: 2em;
-            text-align: center;
-
-            .value {
-                font-weight: bold;
-                background: #fce09b;
-                color: #432;
-                padding: 2px 4px;
-            }
-        }
-
-        .action span {
-            display: block;
-            background: #eee;
-            color: #aaa;
-            text-align: center;
-            line-height: 2em;
-        }
-        input[type="submit"] {
-            width: 100%;
-        }
-
     }
+
+    .action span {
+        display: block;
+        background: #eee;
+        color: #aaa;
+        text-align: center;
+        line-height: 2em;
+    }
+    input[type="submit"] {
+        width: 100%;
+    }
+
 }
 
 #credit-card {
@@ -494,5 +505,21 @@ form.add-recipient {
         ul {
             margin: 0;
         }
+    }
+
+    .pricing-plan {
+        margin-bottom: 2em;
+
+        h3 {
+            font-size: 1.3em;
+        }
+    }
+}
+
+#update-payment {
+    display: none;
+
+    &:target {
+        display: block;
     }
 }

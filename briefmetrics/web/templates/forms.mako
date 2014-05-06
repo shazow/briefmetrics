@@ -1,4 +1,4 @@
-<%def name="payment_form_body()">
+<%def name="payment_form_body(submit_text='Start plan')">
     <div class="payment-errors inline-error"></div>
     <div>
         <label>
@@ -27,7 +27,7 @@
             </div>
         </label>
         <label>
-            <input type="submit" class="submit-button" value="Start Plan" />
+            <input type="submit" class="submit-button" value="${submit_text}" />
         </label>
     </div>
 </%def>
@@ -35,26 +35,43 @@
 
 <%def name="payment_form(plan=None)">
     <form action="${request.route_path('api')}" method="post" class="payment" autocomplete="on">
-        <div>
-            <label>
-                Plan
-                <div>
-                    <input type="hidden" name="plan_id" value="${plan.id}" />
-                    <strong>
-                        ${plan.name}
-                    </strong>
-                    at ${plan.price_str}
+        % if plan:
+            <div>
+                <label>
+                    Plan
+                    <div>
+                        <input type="hidden" name="plan_id" value="${plan.id}" />
+                        <strong>
+                            ${plan.name}
+                        </strong>
+                        at ${plan.price_str}
 
-                    <a href="/pricing" class="button">Change Plan</a>
-                </div>
-            </label>
-        </div>
+                        <a href="/pricing" class="button">Change Plan</a>
+                    </div>
+                </label>
+            </div>
 
-        ${payment_form_body()}
+            ${payment_form_body("Start Plan")}
+        % else:
+            ${payment_form_body("Update Card")}
+        % endif
 
         <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
         <input type="hidden" name="method" value="settings.payments_set" />
         <input type="hidden" name="format" value="redirect" />
+    </form>
+</%def>
+
+<%def name="payment_cancel()">
+    <form action="${request.route_path('api')}" method="post" class="payment-cancel" onsubmit="return confirm('Are you sure you want to cancel your subscription? Reports will be suspended until you add another credit card.');">
+        <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
+        <input type="hidden" name="method" value="settings.payments_cancel" />
+        <input type="hidden" name="format" value="redirect" />
+
+        <p>
+            <input type="submit" class="negative" value="Cancel Subscription" />
+            <span class="button-note">Forget your credit card information and suspend your plan.</span>
+        </p>
     </form>
 </%def>
 
@@ -257,15 +274,25 @@
             We have some variations of the ${c.selected_plan.in_group.name} plan.
         </p>
         <ul class="vertical">
+            <%
+                is_upgrade = False
+            %>
             % for plan in c.selected_plan.in_group.plans:
                 <%
                     if plan.id == selected_plan_id:
+                        is_upgrade = True
                         continue
                 %>
                 <li>
+                    % if is_upgrade:
                     <a href="${request.current_route_path(
                         _query=dict(plan_id=plan.id, method="settings.plan", csrf_token=session.get_csrf_token())
-                        )}" class="button">Choose Plan</a>
+                        )}" class="button">Upgrade</a>
+                    % else:
+                    <a href="${request.current_route_path(
+                        _query=dict(plan_id=plan.id, method="settings.plan", csrf_token=session.get_csrf_token())
+                        )}" class="button negative">Downgrade</a>
+                    % endif
                     <strong>${plan.name}</strong> at ${plan.price_str}
                 </li>
             % endfor
