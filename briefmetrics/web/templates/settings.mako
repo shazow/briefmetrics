@@ -9,8 +9,13 @@
         <h2>Plan</h2>
 
         <p>
-            <strong>${c.user.plan.option_str}</strong>
+            <strong>${c.user.plan.name}</strong> at ${c.user.plan.price_str}.
+            <a href="/pricing" class="button">Change Plan</a>
         </p>
+
+        % if c.selected_plan.in_group:
+            ${forms.pricing_plan_group(c.selected_plan.in_group, c.selected_plan.id)}
+        % endif
 
         % if c.user.num_remaining:
         <p>
@@ -38,9 +43,10 @@
         % endif
 
         ${forms.payment_form(plan=c.selected_plan)}
-    % endif
-    % if c.selected_plan.in_group:
-        ${forms.pricing_plan_group(c.selected_plan.in_group, c.selected_plan.id)}
+
+        % if c.selected_plan.in_group:
+            ${forms.pricing_plan_group(c.selected_plan.in_group, c.selected_plan.id)}
+        % endif
     % endif
     </section>
 

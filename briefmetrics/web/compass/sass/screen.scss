@@ -486,7 +486,13 @@ form.add-recipient {
 
 #credit-card {
     .pricing-plan-group {
-        margin-left: 3em;
+        border-left: 0.5em $color-border solid;
+        padding: 0.5em 1em;
         line-height: 1.25em;
+        margin-bottom: 2em;
+
+        ul {
+            margin: 0;
+        }
     }
 }

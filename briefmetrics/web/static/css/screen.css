@@ -844,6 +844,11 @@ form.add-recipient input {
 }
 
 #credit-card .pricing-plan-group {
-  margin-left: 3em;
+  border-left: 0.5em #dbe8cc solid;
+  padding: 0.5em 1em;
   line-height: 1.25em;
+  margin-bottom: 2em;
+}
+#credit-card .pricing-plan-group ul {
+  margin: 0;
 }
