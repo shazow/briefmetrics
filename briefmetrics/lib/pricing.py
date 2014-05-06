@@ -18,6 +18,10 @@ class Singleton(object):
         return cls._singleton[id]
 
     @classmethod
+    def all(cls):
+        return cls._singleton.items()
+
+    @classmethod
     def value(cls, id, value):
         if id not in cls._singleton:
             raise KeyError('Invalid feature: %s' % id)

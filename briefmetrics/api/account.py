@@ -205,13 +205,17 @@ def delete_payments(user):
     Session.commit()
 
 
+def _plan_to_stripe(plan_id):
+    return 'briefmetrics_%s' % plan_id
+
+
 def start_subscription(user):
     if not user.stripe_customer_id:
         raise APIError("Cannot start subscription for user without a credit card: %s" % user.id)
 
     customer = stripe.Customer.retrieve(user.stripe_customer_id)
     try:
-        customer.update_subscription(plan="briefmetrics_%s" % user.plan_id)
+        customer.update_subscription(plan=_plan_to_stripe(user.plan_id))
     except stripe.CardError as e:
         delete_payments(user)
         raise APIError('Failed to start payment plan: %s' % e.message)
@@ -230,3 +234,44 @@ def set_plan(user, plan_id, update_subscription=None):
 
     if update_subscription and user.stripe_customer_id:
         start_subscription(user)
+
+
+def sync_plans(pretend=True, include_hidden=False):
+    local_plans = set(key for key, plan in pricing.Plan.all() if not plan.is_hidden)
+
+    r = stripe.Plan.all()
+    for plan in r.data:
+        try:
+            local_plan_id = plan.id.split('briefmetrics_', 1)[1]
+        except IndexError, e:
+            print "Invalid plan prefix: %s" % plan.id
+            continue
+
+        if local_plan_id not in local_plans:
+            print "Plan missing locally: {}".format(local_plan_id)
+            continue
+
+        local_plans.remove(local_plan_id)
+        local_plan = pricing.Plan.get(local_plan_id)
+
+        if plan.amount != local_plan.price_monthly:
+            print "Plan discrepency for '{id}': Remote amount {remote_amount}, local amount {local_amount}".format(
+                id=plan.id,
+                remote_amount=plan.amount,
+                local_amount=local_plan.price_monthly,
+            )
+
+    for plan_id in local_plans:
+        print "Plan missing remotely: {}".format(plan_id)
+        if pretend:
+            continue
+
+        plan = pricing.Plan.get(plan_id)
+        stripe.Plan.create(
+            id=_plan_to_stripe(plan_id),
+            amount=plan.price_monthly,
+            interval='month',
+            name='Briefmetrics: %s' % plan.name,
+            currency='usd',
+            statement_description='Briefmetrics',
+        )
