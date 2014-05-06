@@ -11,7 +11,7 @@ from ..fixtures.api_google import profile_item_template
 
 class TestReportWidgets(test.TestApp):
     def test_intro(self):
-        t = get_renderer('email/report/widgets.mako').implementation()
+        t = get_renderer('email/report/widgets.mako').template
         render_intro = t.get_def('render_intro').render
 
         empty_report = model.Report(remote_data=profile_item_template.copy(), type='week')

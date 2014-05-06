@@ -21,6 +21,7 @@ class _Base(object):
     # Only include these attributes when serializing using __json__. If
     # relationships should be serialized, then they need to be whitelisted.
     __json_whitelist__ = None
+    __mapper_args__ = {'confirm_deleted_rows': False} # XXX: Remove this ASAP.
 
     @classmethod
     def get(cls, id):
