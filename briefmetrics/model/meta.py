@@ -79,3 +79,8 @@ class _Base(object):
 
 
 Model = declarative_base(metadata=metadata, cls=_Base)
+
+
+#from sqlalchemy import exc
+#import warnings
+#warnings.filterwarnings('ignore', 'DELETE statement .* expected to delete.*', exc.SAWarning)
