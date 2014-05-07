@@ -81,7 +81,7 @@ a.button {
     }
 }
 
-.button-note {
+.button-note, .note {
     font-size: 0.8em;
     color: lighten($color-text, 20);
 }
@@ -330,6 +330,7 @@ a.cta {
     }
     input[type="text"] {
         display: inline-block;
+        font-size: 23px;
     }
     input[type="submit"] {
         margin-top: 22px;
@@ -521,5 +522,19 @@ form.add-recipient {
 
     &:target {
         display: block;
+    }
+}
+
+#branding {
+    input[type="text"], input[type="email"], textarea {
+        font-size: 14px;
+        padding: 0.2em 0.5em;
+        line-height: 1.5em;
+        width: 28em;
+        margin-bottom: 1em;
+    }
+
+    label {
+        margin-bottom: 1em;
     }
 }

@@ -337,7 +337,7 @@ input {
   border: 1px solid rgba(0, 0, 0, 0.5);
   padding: 0 7px;
   margin: 0 0.5em 0 0;
-  font-size: 1.5em;
+  font-size: 1.2em;
   line-height: 1.5em;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
@@ -350,9 +350,20 @@ input[type="submit"] {
   padding: 0 2em;
   cursor: pointer;
 }
+input[type="file"] {
+  font-size: 1em;
+  line-height: 1em;
+  padding: 0.5em 0;
+  border: 0;
+}
+
+textarea {
+  font-size: 1.2em;
+  padding: 3px 7px;
+}
 
 select {
-  font-size: 1.5em;
+  font-size: 1.2em;
   width: 100%;
   margin-bottom: 1px;
   vertical-align: bottom;
@@ -444,7 +455,7 @@ a.button.disabled:hover {
   background: #ddd;
 }
 
-.button-note {
+.button-note, .note {
   font-size: 0.8em;
   color: #949999;
 }
@@ -712,6 +723,7 @@ a.cta small {
 }
 .payment input[type="text"] {
   display: inline-block;
+  font-size: 23px;
 }
 .payment input[type="submit"] {
   margin-top: 22px;
@@ -874,4 +886,15 @@ form.add-recipient input {
 }
 #update-payment:target {
   display: block;
+}
+
+#branding input[type="text"], #branding input[type="email"], #branding textarea {
+  font-size: 14px;
+  padding: 0.2em 0.5em;
+  line-height: 1.5em;
+  width: 28em;
+  margin-bottom: 1em;
+}
+#branding label {
+  margin-bottom: 1em;
 }

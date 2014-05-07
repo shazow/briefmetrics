@@ -78,3 +78,12 @@ class SettingsController(Controller):
         self.c.report_ids = set((r.remote_id or r.remote_data.get('id')) for r in account.reports)
 
         return self._render('settings.mako')
+
+    def branding(self):
+        user = api.account.get_user(self.request, required=True)
+
+        if not user.get_feature('custom_branding'):
+            self.request.session.flash('Your plan does not include custom branding. Please upgrade your plan.')
+            return self._redirect(self.request.route_path('settings'))
+
+        return self._render('branding.mako')

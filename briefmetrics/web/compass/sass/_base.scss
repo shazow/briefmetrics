@@ -144,7 +144,7 @@ input {
     border: $border-width solid rgba(0, 0, 0, 0.5);
     padding: 0 7px;
     margin: 0 0.5em 0 0;
-    font-size: 1.5em;
+    font-size: 1.2em;
     line-height: 1.5em;
 
     @include border-radius(3px);
@@ -154,10 +154,22 @@ input {
         padding: 0 2em;
         cursor: pointer;
     }
+
+    &[type="file"] {
+        font-size: 1em;
+        line-height: 1em;
+        padding: 0.5em 0;
+        border: 0;
+    }
+}
+
+textarea {
+    font-size: 1.2em;
+    padding: 3px 7px;
 }
 
 select {
-    font-size: 1.5em;
+    font-size: 1.2em;
     width: 100%;
     margin-bottom: 1px;
     vertical-align: bottom;

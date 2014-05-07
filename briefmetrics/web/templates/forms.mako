@@ -299,3 +299,60 @@
         </ul>
     </div>
 </%def>
+
+<%def name="custom_branding()">
+    <form action="${request.route_path('settings')}" method="post" enctype="multipart/form-data">
+
+        <label>
+            Header Logo
+
+            <div>
+                <input type="file" name="header_logo" />
+            </div>
+        </label>
+
+        <label>
+            Header Text
+
+            <p class="note">
+                A good place to add an introduction or phone number for
+                support, but the text will push the charts further below the
+                fold which may affect your recipient's engagement with the
+                stats.
+            </p>
+            <div>
+                <textarea name="header_text" placeholder="(Optional)"></textarea>
+
+            </div>
+        </label>
+
+
+        <label>
+            From Name
+
+            <p class="note">
+                The name of the report email sender. This can be your company's name.
+            </p>
+
+            <div>
+                <input type="text" name="from_name" placeholder="Briefmetrics" />
+            </div>
+        </label>
+
+        <label>
+            Reply-to Email
+
+            <p class="note">
+                All reports are sent from support@briefmetrics.com but you can
+                change the reply-to address so that your recipients will reach
+                out to you with questions or feedback.
+            </p>
+            <div>
+                <input type="email" name="from_name" placeholder="support@briefmetrics.com" />
+            </div>
+        </label>
+
+
+        <input type="submit" value="Save Changes" />
+    </form>
+</%def>

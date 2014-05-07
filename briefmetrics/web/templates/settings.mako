@@ -10,7 +10,7 @@
 
         <p>
             <strong>${c.user.plan.name}</strong> at ${c.user.plan.price_str}.
-            <a href="/pricing" class="button">Change Plan</a>
+            <a href="${request.route_path('pricing')}" class="button">Change Plan</a>
             <a class="button" href="#update-payment" onclick="$('#update-payment').show(); return false;">Update Credit Card</a>
         </p>
 
@@ -45,6 +45,19 @@
             ${forms.pricing_plan_group(c.selected_plan.in_group, c.selected_plan.id)}
         % endif
     % endif
+    </section>
+
+    <section id="branding">
+        <h2>Custom Branding</h2>
+
+        % if not c.user.get_feature('custom_branding'):
+            <p>Configure your emails to look consistent with your company.
+                <a href="${request.route_path('pricing')}">Upgrade your plan</a> to unlock this feature.
+            </p>
+        % else:
+            ${forms.custom_branding()}
+        % endif
+
     </section>
 
     <section id="delete">
