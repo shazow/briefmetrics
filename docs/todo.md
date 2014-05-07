@@ -19,6 +19,10 @@
     * Pitch the "share analytics with your team" angle.
     * Write article about '*.us3.list-manage*.com/subscribe/confirm' urls
     * Change weekly chart from month vs month to 4 week vs n-of-4 week.
+    * Scrape moz.com for a lead list
+
+"Former GA engineer offering free analytics consultation"
+"Get a free analytics report for your top customer"
 
 * Press
     * http://www.quickblogtips.com/bonus-content/free-ebook-a-beginners-guide-to-google-analytics/
