@@ -898,3 +898,14 @@ form.add-recipient input {
 #branding label {
   margin-bottom: 1em;
 }
+#branding textarea {
+  width: 560px;
+}
+#branding blockquote {
+  width: 560px;
+  padding: 1em 0.3em;
+  text-align: center;
+  background: #fff;
+  border: #dbe8cc 2px solid;
+  margin: 0;
+}

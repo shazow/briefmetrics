@@ -301,10 +301,18 @@
 </%def>
 
 <%def name="custom_branding()">
-    <form action="${request.route_path('settings')}" method="post" enctype="multipart/form-data">
+    <form action="${request.route_path('settings')}" method="post" enctype="multipart/form-data" class="custom-branding">
 
-        <label>
+        <label class="upload-drop">
             Header Logo
+
+            <p class="note">
+                Centered image maximum 580px wide. Will be converted to a PNG.
+            </p>
+
+            <blockquote>
+                <img src="/static/images/email_headers/briefmetrics.png" />
+            </blockquote>
 
             <div>
                 <input type="file" name="header_logo" />
