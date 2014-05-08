@@ -1,7 +1,8 @@
 from unstdlib import get_many
 
-from briefmetrics import api
+from briefmetrics import api, model
 from briefmetrics.lib.exceptions import APIError, LoginRequired
+from briefmetrics.lib.image import save_logo
 
 from .api import expose_api, handle_api
 from briefmetrics.lib.controller import Controller
@@ -37,7 +38,6 @@ def settings_payments_cancel(request):
 def settings_plan(request):
     plan_id, format = get_many(request.params, ['plan_id'], optional=['format'])
     user = api.account.get_user(request)
-    # TODO: If not user, set session. If user, change plan.
 
     if not user:
         if format == 'redirect':
@@ -50,9 +50,40 @@ def settings_plan(request):
     request.flash('Plan updated.')
 
 
+@expose_api('settings.branding')
+def settings_branding(request):
+    user = api.account.get_user(request, required=True)
+    header_logo, header_text, from_name, reply_to = get_many(request.params, optional=['header_logo', 'header_text', 'from_name', 'reply_to'])
+
+    if not user.get_feature('custom_branding'):
+        raise APIControllerError('Your plan does not include custom branding. Please upgrade your plan.')
+
+    if reply_to and '@' not in reply_to:
+        raise APIControllerError('"Reply To" field must be a valid email address.')
+
+    base_dir = request.features.get('upload_logo')
+    if base_dir and header_logo and hasattr(header_logo, 'file'):
+        prefix = '%s-' % user.id
+        user.config['email_header_image'] = save_logo(
+            fp=header_logo.file,
+            base_dir=base_dir,
+            replace_path=user.config.get('email_header_image'),
+            prefix=prefix,
+        )
+        header_logo.close()
+
+    user.config['email_intro_text'] = header_text
+    user.config['reply_to'] = reply_to
+    user.config['from_name'] = from_name
+
+    model.Session.commit()
+
+    request.flash('Branding updated.')
+
+
 class SettingsController(Controller):
 
-    @handle_api(['settings.payments_set', 'settings.payments_cancel', 'settings.plan'])
+    @handle_api(['settings.payments_set', 'settings.payments_cancel', 'settings.plan', 'settings.branding'])
     def index(self):
         user = api.account.get_user(self.request, required=True, joinedload=['account'])
         account = user.account
@@ -78,12 +109,3 @@ class SettingsController(Controller):
         self.c.report_ids = set((r.remote_id or r.remote_data.get('id')) for r in account.reports)
 
         return self._render('settings.mako')
-
-    def branding(self):
-        user = api.account.get_user(self.request, required=True)
-
-        if not user.get_feature('custom_branding'):
-            self.request.session.flash('Your plan does not include custom branding. Please upgrade your plan.')
-            return self._redirect(self.request.route_path('settings'))
-
-        return self._render('branding.mako')

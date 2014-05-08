@@ -55,7 +55,7 @@
                 <a href="${request.route_path('pricing')}">Upgrade your plan</a> to unlock this feature.
             </p>
         % else:
-            ${forms.custom_branding()}
+            ${forms.custom_branding(c.user, enable_logo=request.features.get('upload_logo'))}
         % endif
 
     </section>

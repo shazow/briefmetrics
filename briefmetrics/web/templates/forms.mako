@@ -300,9 +300,10 @@
     </div>
 </%def>
 
-<%def name="custom_branding()">
+<%def name="custom_branding(user, enable_logo=True)">
     <form action="${request.route_path('settings')}" method="post" enctype="multipart/form-data" class="custom-branding">
 
+        % if enable_logo:
         <label class="upload-drop">
             Header Logo
 
@@ -311,13 +312,14 @@
             </p>
 
             <blockquote>
-                <img src="/static/images/email_headers/briefmetrics.png" />
+                <img src="/static/images/email_headers/${user.config.get('email_header_image') or u'briefmetrics.png'}" />
             </blockquote>
 
             <div>
                 <input type="file" name="header_logo" />
             </div>
         </label>
+        % endif
 
         <label>
             Header Text
@@ -329,7 +331,7 @@
                 stats.
             </p>
             <div>
-                <textarea name="header_text" placeholder="(Optional)"></textarea>
+                <textarea name="header_text" placeholder="(Optional)">${user.config.get('email_intro_text') or ''}</textarea>
 
             </div>
         </label>
@@ -343,7 +345,7 @@
             </p>
 
             <div>
-                <input type="text" name="from_name" placeholder="Briefmetrics" />
+                <input type="text" name="from_name" placeholder="Briefmetrics" value="${c.user.config.get('from_name') or ''}" />
             </div>
         </label>
 
@@ -356,11 +358,14 @@
                 out to you with questions or feedback.
             </p>
             <div>
-                <input type="email" name="from_name" placeholder="support@briefmetrics.com" />
+                <input type="email" name="reply_to" placeholder="support@briefmetrics.com" value="${c.user.config.get('reply_to') or ''}" />
             </div>
         </label>
 
 
+        <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
+        <input type="hidden" name="method" value="settings.branding" />
+        <input type="hidden" name="format" value="redirect" />
         <input type="submit" value="Save Changes" />
     </form>
 </%def>

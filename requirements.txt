@@ -5,6 +5,7 @@ alembic==0.6.5
 celery==3.1.11
 dogpile.cache==0.5.3
 mock==1.0.1
+pillow==2.4.0
 pyramid==1.5
 pyramid_beaker==0.8
 pyramid_debugtoolbar==2.0.2
