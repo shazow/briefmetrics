@@ -4,7 +4,7 @@
 <div class="container">
     % if c.user and c.user.plan.is_hidden and c.user.plan.price_monthly:
         <p>
-            You are currently on an unlisted plan: 
+            You are currently on an unlisted grandfathered plan: 
             <strong>${c.user.plan.name}</strong> at ${c.user.plan.price_str}.
         </p>
     % endif
