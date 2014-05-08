@@ -162,7 +162,7 @@ PLANS = [
     # Old:
 
     Plan.new('personal', 'Early Bird', 'For startups and hobbyists', price_monthly=800, features=[
-    ]),
+    ], is_hidden=True),
 
     Plan.new('agency-small', 'Small Agency', '10 branded properties', price_monthly=3500, features=[
         Feature.value('num_sites', 10),
