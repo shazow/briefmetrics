@@ -46,6 +46,11 @@ def settings_plan(request):
 
         raise LoginRequired(next=request.route_path('settings'))
 
+    if plan_id == 'enterprise':
+        api.email.notify_admin(request, 'Enterprise plan inquery: [%s] %s' % (user.id, user.display_name), user.email_to)
+        request.flash('The Enterprise plan is only available in limited access at the moment. We will reach out to you when a slot becomes available. You are welcome to choose another plan for now.')
+        return
+
     api.account.set_plan(user, plan_id=plan_id)
     request.flash('Plan updated.')
 
