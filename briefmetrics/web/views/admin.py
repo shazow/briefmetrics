@@ -76,7 +76,7 @@ class AdminController(Controller):
         self.c.active_users = [u for u in users if u.is_active]
         self.c.inactive_users = [u for u in users if not u.is_active]
         self.c.num_users = len(users)
-        self.c.num_credit_cards = len(u for u in users if u.stripe_customer_id)
+        self.c.num_credit_cards = len([u for u in users if u.stripe_customer_id])
 
         self.c.by_plan = groupby_count(users, key=lambda u: u.plan_id)
 
