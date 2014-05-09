@@ -23,7 +23,7 @@
                 <a href="${request.route_path('admin_report_log', id=report_log.id)}">
                     ${report_log.subject}
                 </a>
-                in ${'{:0.2}'.format(report_log.seconds_elapsed)}s
+                in ${'{:0.2f}'.format(report_log.seconds_elapsed)}s
             </li>
         % endfor
         </ol>
