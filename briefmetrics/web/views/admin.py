@@ -1,5 +1,5 @@
 from sqlalchemy import orm
-from unstdlib import get_many
+from unstdlib import get_many, groupby_count
 from datetime import date, timedelta
 
 from briefmetrics.web.environment import Response
@@ -76,6 +76,8 @@ class AdminController(Controller):
         self.c.active_users = [u for u in users if u.is_active]
         self.c.inactive_users = [u for u in users if not u.is_active]
         self.c.num_users = len(users)
+
+        self.c.by_plan = groupby_count(users, key=lambda u: u.plan_id)
 
         q = Session.query(model.ReportLog).order_by(model.ReportLog.id.desc()).limit(10)
         self.c.recent_reports = q.all()

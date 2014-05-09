@@ -15,7 +15,7 @@
 
 
     <section>
-        <h2>Reports</h2>
+        <h2>Recent Reports</h2>
         <ol>
         % for report_log in c.recent_reports:
             <li value="${report_log.report_id}">
@@ -27,6 +27,16 @@
             </li>
         % endfor
         </ol>
+    </section>
+
+    <section>
+        <h2>Plans</h2>
+
+        <ul class="vertical">
+        % for count, plan_id in sorted(c.by_plan, reverse=True):
+            <li><strong style="display: inline-block; min-width: 6em;">${count}</strong> ${plan_id}</li>
+        % endfor
+        </ul>
     </section>
 
     <section>
