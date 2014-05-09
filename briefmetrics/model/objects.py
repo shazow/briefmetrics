@@ -100,6 +100,10 @@ class User(meta.Model): # Email address / login
 
         return self.email
 
+    @property
+    def is_active(self):
+        return self.num_remaining != 0
+
 
 class Account(meta.Model): # OAuth Service Account (such as Google Analytics)
     __tablename__ = 'account'

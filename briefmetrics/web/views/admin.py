@@ -71,7 +71,10 @@ class AdminController(Controller):
         q = Session.query(model.User)
         q = q.options(orm.joinedload_all('account.reports'))
         q = q.order_by(model.User.id.asc())
-        self.c.users = q.all()
+        users = q.all()
+
+        self.c.active_users = [u for u in users if u.is_active]
+        self.c.inactive_users = [u for u in users if not u.is_active]
 
         q = Session.query(model.ReportLog).order_by(model.ReportLog.id.desc()).limit(10)
         self.c.recent_reports = q.all()
