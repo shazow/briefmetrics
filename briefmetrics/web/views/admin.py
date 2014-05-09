@@ -69,12 +69,17 @@ class AdminController(Controller):
     def index(self):
         api.account.get_admin(self.request)
         q = Session.query(model.User)
-        q = q.options(orm.joinedload_all('account.reports'))
+        q = q.options(orm.joinedload_all('account.reports'), orm.joinedload_all('subscriptions'))
         q = q.order_by(model.User.id.asc())
         users = q.all()
 
-        self.c.active_users = [u for u in users if u.is_active]
-        self.c.inactive_users = [u for u in users if not u.is_active]
+        self.c.active_users, self.c.inactive_users = [], []
+        for u in users:
+            if u.is_active and u.subscriptions:
+                self.c.active_users.append(u)
+            else:
+                self.c.inactive_users.append(u)
+
         self.c.num_users = len(users)
         self.c.num_credit_cards = len([u for u in users if u.stripe_customer_id])
 
