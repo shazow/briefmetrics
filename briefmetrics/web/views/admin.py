@@ -75,6 +75,7 @@ class AdminController(Controller):
 
         self.c.active_users = [u for u in users if u.is_active]
         self.c.inactive_users = [u for u in users if not u.is_active]
+        self.c.num_users = len(users)
 
         q = Session.query(model.ReportLog).order_by(model.ReportLog.id.desc()).limit(10)
         self.c.recent_reports = q.all()

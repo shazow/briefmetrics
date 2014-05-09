@@ -14,7 +14,6 @@
     </form>
 
 
-
     <section>
         <h2>Reports</h2>
         <ol>
@@ -31,7 +30,8 @@
     </section>
 
     <section>
-        <h2>Active Users (${len(c.active_users)})</h2>
+        <h2>Active Users (${len(c.active_users)} / ${c.num_users})</h2>
+
         <ol class="user-list" id="active-users">
         % for u in c.active_users:
             <li value="${u.id}">
@@ -58,7 +58,7 @@
     <section>
         <h2 onclick="$('#inactive-users').toggle()">Inactive Users (${len(c.inactive_users)})</h2>
 
-        <ol class="user-list hidden" id="inactive-users">
+        <ol class="user-list" id="inactive-users" style="display: none;">
         % for u in c.inactive_users:
             <li value="${u.id}">
                 ${widgets.user_render(u)}
