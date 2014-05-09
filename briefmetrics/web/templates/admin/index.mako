@@ -34,7 +34,7 @@
 
         <ul class="vertical">
         % for count, plan_id in sorted(c.by_plan, reverse=True):
-            <li><strong style="display: inline-block; min-width: 6em;">${count}</strong> ${plan_id}</li>
+            <li><strong style="display: inline-block; min-width: 8em;">${count}</strong> ${plan_id}</li>
         % endfor
         </ul>
     </section>
