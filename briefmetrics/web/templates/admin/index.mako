@@ -32,6 +32,8 @@
     <section>
         <h2>Plans</h2>
 
+        <p><strong>${c.num_credit_cards}</strong> users with credit cards.</p>
+
         <ul class="vertical">
         % for count, plan_id in sorted(c.by_plan, reverse=True):
             <li><strong style="display: inline-block; min-width: 8em;">${count}</strong> ${plan_id}</li>
