@@ -512,17 +512,28 @@ dd {
   background: #37b89a;
 }
 .status.hidden {
-  display: none;
+  visibility: hidden;
 }
 .status a {
   color: white;
 }
 
-.user-list li {
+.user h4 {
+  display: inline-block;
+}
+
+.user-list > li {
   margin-bottom: 2em;
 }
-.user-list li:hover .hidden {
-  display: inline-block;
+
+.user-status {
+  float: right;
+  margin-left: 0.5em;
+  font-size: 0.8em;
+  white-space: nowrap;
+}
+.user-status:hover .hidden {
+  visibility: visible;
 }
 
 nav.header {

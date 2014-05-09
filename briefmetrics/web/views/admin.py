@@ -78,6 +78,31 @@ class AdminController(Controller):
 
         return self._render('admin/index.mako')
 
+    def user(self):
+        u = api.account.get_admin(self.request)
+
+        user_id = self.request.matchdict['id']
+        q = Session.query(model.User)
+        q = q.options(orm.joinedload_all('account.reports.subscriptions.user'))
+        self.c.user = q.get(user_id)
+
+        q = Session.query(model.User).filter_by(invited_by_user_id=user_id)
+        q = q.options(orm.joinedload_all('subscriptions'))
+        self.c.invited = q.all()
+
+        self.c.invited_by = None
+        if self.c.user.invited_by_user_id:
+            self.c.invited_by = model.User.get(self.c.user.invited_by_user_id)
+
+        self.c.recent_reports = []
+        if self.c.user.account:
+            q = Session.query(model.ReportLog).filter_by(account_id=self.c.user.account.id)
+            q = q.order_by(model.ReportLog.id.desc()).limit(10)
+            self.c.recent_reports = q.all()
+
+        return self._render('admin/user.mako')
+
+
     def explore_api(self):
         u = api.account.get_admin(self.request)
         self.c.reports = u.reports

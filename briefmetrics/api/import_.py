@@ -1,7 +1,12 @@
 import string
+from sqlalchemy import orm
 
 from briefmetrics import model
 from . import account as api_account
+
+
+Session = model.Session
+
 
 def _parse_csv(fp):
     for line in fp:
@@ -52,3 +57,17 @@ def from_appengine(accounts_csv, subscriptions_csv):
         )
 
         model.Subscription.create(user=user, report=report)
+
+
+def backfill_invited_by():
+    q = Session.query(model.User).filter_by(plan_id='recipient')
+    q = q.options(orm.joinedload_all('reports.account'))
+
+    for user in q:
+        if not user.reports:
+            print "No active report for user: [%s] %s" % (user.id, user.display_name)
+            continue
+
+        report = user.reports[0]
+        user.invited_by_user_id = report.account.user_id
+        print "Linking user invite: [%s] %s -> [%s] %s" % (user.id, user.display_name, report.account.user_id, report.account.display_name)

@@ -93,7 +93,7 @@ def subscription_create(request):
     if num_recipients and len(report.subscriptions) >= num_recipients:
         raise APIControllerError("Maximum number of recipients limit reached, please consider upgrading your plan.")
 
-    new_user = api.report.add_subscriber(report_id, email, display_name)
+    new_user = api.report.add_subscriber(report_id, email, display_name, invited_by_user_id=user.id)
 
     request.flash("Added subscriber [%s] to report for [%s]" % (new_user.email, report.display_name))
 

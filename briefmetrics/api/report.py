@@ -43,9 +43,10 @@ def create(account_id, remote_data=None, remote_id=None, display_name=None, subs
     return report
 
 
-def add_subscriber(report_id, email, display_name):
+def add_subscriber(report_id, email, display_name, invited_by_user_id=None):
     u = model.User.get_or_create(email=email)
     if not u.id:
+        u.invited_by_user_id = invited_by_user_id
         u.display_name = display_name
         u.set_plan(plan_id='recipient')
 

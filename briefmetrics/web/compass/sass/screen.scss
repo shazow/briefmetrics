@@ -112,6 +112,7 @@ dd {
     padding: 0px 2px;
 }
 
+// Admin stuff:
 .status {
     @include border-radius(3px);
     background: #999;
@@ -129,21 +130,37 @@ dd {
         background: #37b89a;
     }
     &.hidden {
-        display: none;
+        visibility: hidden;
     }
 
     a {
         color: white;
     }
 }
-.user-list {
-    li {
-        margin-bottom: 2em;
-    }
-    li:hover .hidden {
+
+
+.user {
+    h4 {
         display: inline-block;
     }
 }
+.user-list {
+    &>li {
+        margin-bottom: 2em;
+    }
+}
+.user-status {
+    float: right;
+    margin-left: 0.5em;
+    font-size: 0.8em;
+    white-space: nowrap;
+    &:hover .hidden {
+        visibility: visible;
+    }
+}
+
+//
+
 
 nav.header {
     padding: 1em 0;
