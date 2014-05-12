@@ -16,5 +16,6 @@ class TestLibImage(test.TestCase):
         new_path = image.save_logo(fp=fp, base_dir='/does/not/exist', replace_path=replace_path, prefix='1-', pretend=True)
         self.assertEqual(new_path, expected_name)
 
+        fp.seek(0)
         new_path = image.save_logo(fp=fp, base_dir='/does/not/exist', prefix='1-', pretend=True)
         self.assertEqual(new_path[-11:], expected_name[-11:])

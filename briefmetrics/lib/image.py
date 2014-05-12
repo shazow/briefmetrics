@@ -1,4 +1,4 @@
-import os.path
+import os.path, os
 import uuid
 import logging
 import hashlib
@@ -10,10 +10,9 @@ def get_cache_bust(data):
 
 
 def save_logo(fp, base_dir, replace_path=None, prefix=None, pretend=False):
-    # TODO: Make sure base_dir exists when pretend==True?
-
-    data = fp.read()
-    fp.seek(0) # Reset just in case.
+    if not pretend and not os.path.isdir(base_dir):
+        log.warning('save_logo: Base dir does not exist, making: %s' % base_dir)
+        os.mkdir(base_dir)
 
     if not replace_path:
         replace_path = '%s.png' % uuid.uuid4().hex
@@ -22,6 +21,8 @@ def save_logo(fp, base_dir, replace_path=None, prefix=None, pretend=False):
         replace_path = replace_path.split('?', 1)[0]
 
     full_path = os.path.join(base_dir, replace_path)
+
+    data = fp.read()
 
     # TODO: Resize
 
