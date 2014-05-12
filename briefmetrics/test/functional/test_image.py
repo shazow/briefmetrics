@@ -1,6 +1,6 @@
 # TODO: Put this in a lib test submodule?
 
-from StringIO import StringIO
+from io import BytesIO
 
 from briefmetrics import test
 from briefmetrics.lib import image
@@ -9,7 +9,7 @@ LOGO_BYTES = '\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x0
 
 class TestLibImage(test.TestCase):
     def test_save_logo(self):
-        fp = StringIO(LOGO_BYTES)
+        fp = BytesIO(LOGO_BYTES)
         replace_path = '1-foo.png'
         expected_name = replace_path + '?' + image.get_cache_bust(LOGO_BYTES)
 

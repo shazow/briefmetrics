@@ -1,3 +1,5 @@
+from PIL import Image
+from io import BytesIO
 import os.path, os
 import uuid
 import logging
@@ -24,16 +26,56 @@ def save_logo(fp, base_dir, replace_path=None, prefix=None, pretend=False):
 
     data = fp.read()
 
-    # TODO: Resize
+    # Resize
+    try:
+        image = Image.open(BytesIO(data))
+    except IOError, e:
+        log.error("save_logo: Failed to open image '%s' (%d bytes): %r" % (file.path, len(data), e))
+        raise ValueError("Failed to read image: %s" % fp.filename)
+
+    if image.mode == 'P':
+        # Some people have uploaded jpeg images that are actually PNGs -- deal with this
+        image = image.convert('RGB')
+
+    original_x, original_y = image.size
+    x, y = resize_dimensions(original_x, original_y, max_width=560)
+    image.thumbnail([x, y], Image.ANTIALIAS)
 
     if not pretend:
         log.info('Writing logo (%d bytes): %s' % (len(data), full_path))
         with open(full_path, 'wb') as out_fp:
-            out_fp.write(data)
-
+            image.save(out_fp, format="PNG")
 
     # Append cache busting
     replace_path += '?%s' % get_cache_bust(data)
 
     return replace_path
 
+
+def resize_dimensions(x, y, max_width=None, max_height=None, min_side=None, max_side=None):
+    if not any([max_width, max_height, min_side, max_side]):
+        return x, y
+
+    if max_width and x > max_width:
+        ratio = max_width / float(x)
+        x *= ratio
+        y *= ratio
+
+    if max_height and y > max_height:
+        ratio = max_height / float(y)
+        y *= ratio
+        x *= ratio
+
+    biggest_side = max(x, y)
+    if max_side and biggest_side > max_side:
+        ratio = float(max_side) / biggest_side
+        x *= ratio
+        y *= ratio
+
+    smallest_side = min(x, y)
+    if min_side and smallest_side > min_side:
+        ratio = float(min_side) / smallest_side
+        x *= ratio
+        y *= ratio
+
+    return int(round(x)), int(round(y))
