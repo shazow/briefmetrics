@@ -79,3 +79,12 @@ class TestSettings(test.TestWeb):
         u = model.User.get(1)
         expected_name = '1-foo.png?' + get_cache_bust(LOGO_BYTES)
         self.assertEqual(u.config.get('email_header_image'), expected_name)
+
+        r = self.call_api('settings.branding', plan_id=u'agency-10', _upload_files=[
+            ('header_logo', 'fakefile.png', 'random garbage'),
+        ], _status=400)
+
+        # Make sure nothing changed.
+        u = model.User.get(1)
+        expected_name = '1-foo.png?' + get_cache_bust(LOGO_BYTES)
+        self.assertEqual(u.config.get('email_header_image'), expected_name)

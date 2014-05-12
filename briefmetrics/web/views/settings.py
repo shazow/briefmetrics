@@ -1,7 +1,7 @@
 from unstdlib import get_many
 
 from briefmetrics import api, model
-from briefmetrics.lib.exceptions import APIError, LoginRequired
+from briefmetrics.lib.exceptions import APIError, APIControllerError, LoginRequired
 from briefmetrics.lib.image import save_logo
 
 from .api import expose_api, handle_api
@@ -69,13 +69,17 @@ def settings_branding(request):
     base_dir = request.features.get('upload_logo')
     if base_dir and hasattr(header_logo, 'file'):
         prefix = '%s-' % user.id
-        user.config['email_header_image'] = save_logo(
-            fp=header_logo.file,
-            base_dir=base_dir,
-            replace_path=user.config.get('email_header_image'),
-            prefix=prefix,
-            pretend=request.registry.settings.get('testing'),
-        )
+
+        try:
+            user.config['email_header_image'] = save_logo(
+                fp=header_logo.file,
+                base_dir=base_dir,
+                replace_path=user.config.get('email_header_image'),
+                prefix=prefix,
+                pretend=request.registry.settings.get('testing'),
+            )
+        except ValueError:
+            raise APIControllerError("Failed to read image '%s'. Please re-save the image as a PNG and try again." % header_logo.filename)
 
     user.config['email_intro_text'] = header_text
     user.config['reply_to'] = reply_to
