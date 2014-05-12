@@ -75,7 +75,7 @@ class AdminController(Controller):
 
         self.c.active_users, self.c.inactive_users = [], []
         for u in users:
-            if u.is_active and u.subscriptions:
+            if u.is_active and u.subscriptions or u.account.reports or u.stripe_customer_id:
                 self.c.active_users.append(u)
             else:
                 self.c.inactive_users.append(u)
