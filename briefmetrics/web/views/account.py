@@ -54,7 +54,11 @@ class AccountController(Controller):
             display_name=user_info.get('name'),
         )
         api.account.login_user_id(self.request, user.id)
-        return self._redirect(self.next or self.request.route_path('reports'))
+
+        restored_redirect = self.request.session.pop('next', None)
+        self.request.session.save()
+
+        return self._redirect(restored_redirect or self.next or self.request.route_path('reports'))
 
     def logout(self):
         api.account.logout_user(self.request)

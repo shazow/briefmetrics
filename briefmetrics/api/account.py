@@ -74,7 +74,7 @@ def login_user_id(request, user_id):
 
 
 def login_user(request):
-    is_force, token = get_many(request.params, optional=['force', 'token'])
+    is_force, token, save_redirect = get_many(request.params, optional=['force', 'token', 'next'])
     user_id = get_user_id(request)
 
     if user_id and not is_force:
@@ -86,6 +86,9 @@ def login_user(request):
         if u:
             login_user_id(request, u.id)
             return u.id
+
+    request.session['next'] = save_redirect
+    request.session.save()
 
     oauth = api_google.auth_session(request)
     next, state = api_google.auth_url(oauth)
