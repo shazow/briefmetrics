@@ -7,6 +7,9 @@ all: setup requirements model_upgrade
 
 requirements: $(REQUIREMENTS_OUT)
 
+piprot:
+	piprot -x $(REQUIREMENTS_FILE)
+
 $(REQUIREMENTS_OUT): $(REQUIREMENTS_FILE)
 	pip install -r $(REQUIREMENTS_FILE) | tee -a $(REQUIREMENTS_OUT)
 

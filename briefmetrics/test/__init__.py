@@ -49,7 +49,7 @@ class TestWeb(TestModel):
         self.request = get_current_request()
         self.request.registry = self.config.registry
 
-    def call_api(self, method, format='json', csrf_token=_DEFAULT, _status=None, _extra_params=None, **params):
+    def call_api(self, method, format='json', csrf_token=_DEFAULT, _status=None, _extra_params=None, _upload_files=None, **params):
         if csrf_token is _DEFAULT:
             csrf_token = self.csrf_token
 
@@ -62,7 +62,7 @@ class TestWeb(TestModel):
         if _extra_params:
             p.update(_extra_params)
 
-        r = self.app.post('/api', status=_status, params=p)
+        r = self.app.post('/api', status=_status, upload_files=_upload_files, params=p)
 
         if format == 'json':
             return json.loads(r.body)

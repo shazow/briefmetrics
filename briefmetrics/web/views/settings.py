@@ -67,15 +67,15 @@ def settings_branding(request):
         raise APIControllerError('"Reply To" field must be a valid email address.')
 
     base_dir = request.features.get('upload_logo')
-    if base_dir and header_logo and hasattr(header_logo, 'file'):
+    if base_dir and hasattr(header_logo, 'file'):
         prefix = '%s-' % user.id
         user.config['email_header_image'] = save_logo(
             fp=header_logo.file,
             base_dir=base_dir,
             replace_path=user.config.get('email_header_image'),
             prefix=prefix,
+            pretend=request.registry.settings.get('testing'),
         )
-        header_logo.close()
 
     user.config['email_intro_text'] = header_text
     user.config['reply_to'] = reply_to

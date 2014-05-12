@@ -1,7 +1,9 @@
 from briefmetrics import test
 from briefmetrics import api
 from briefmetrics import model
+from briefmetrics.lib.image import get_cache_bust
 
+from .test_image import LOGO_BYTES
 from briefmetrics.test.fixtures.api_google import FakeQuery
 import mock
 
@@ -62,3 +64,18 @@ class TestSettings(test.TestWeb):
         u = model.User.get(1)
         self.assertEqual(u.plan_id, u'starter')
         self.assertEqual(u.num_remaining, trial_plan.features.get('num_emails'))
+
+    def test_custom_branding(self):
+        u = api.account.get_or_create(email=u'example@example.com', token={}, display_name=u'Example')
+        u.config['email_header_image'] = '1-foo.png?abc'
+        Session.commit()
+
+        r = self.call_api('account.login', token=u'%s-%d' % (u.email_token, u.id))
+        r = self.call_api('settings.plan', plan_id=u'agency-10')
+        r = self.call_api('settings.branding', plan_id=u'agency-10', _upload_files=[
+            ('header_logo', 'fakefile.png', LOGO_BYTES),
+        ])
+
+        u = model.User.get(1)
+        expected_name = '1-foo.png?' + get_cache_bust(LOGO_BYTES)
+        self.assertEqual(u.config.get('email_header_image'), expected_name)
