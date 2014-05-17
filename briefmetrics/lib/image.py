@@ -1,3 +1,4 @@
+from math import ceil
 from PIL import Image
 from io import BytesIO
 import os.path, os
@@ -52,30 +53,56 @@ def save_logo(fp, base_dir, replace_path=None, prefix=None, pretend=False):
     return replace_path
 
 
+
 def resize_dimensions(x, y, max_width=None, max_height=None, min_side=None, max_side=None):
     if not any([max_width, max_height, min_side, max_side]):
         return x, y
 
+    original_x, original_y = x, y
+
+    priority_width = True
     if max_width and x > max_width:
         ratio = max_width / float(x)
         x *= ratio
         y *= ratio
 
     if max_height and y > max_height:
+        priority_width = False
         ratio = max_height / float(y)
         y *= ratio
         x *= ratio
 
     biggest_side = max(x, y)
     if max_side and biggest_side > max_side:
+        priority_width = x == biggest_side
         ratio = float(max_side) / biggest_side
         x *= ratio
         y *= ratio
 
     smallest_side = min(x, y)
     if min_side and smallest_side > min_side:
+        priority_width = x == smallest_side
         ratio = float(min_side) / smallest_side
         x *= ratio
         y *= ratio
 
-    return int(round(x)), int(round(y))
+    if priority_width:
+        x = round(x)
+        y = ceil((x / original_x) * original_y)
+    else:
+        y = round(y)
+        x = ceil((y / original_y) * original_x)
+
+    return int(x), int(y)
+
+
+def crop_center(width, height, target_width, target_height):
+    """
+    Only crops if the image is bigger than targets.
+    """
+    left = max(0, int(round((width - target_width) / 2.0)))
+    top = max(0, int(round((height - target_height) / 2.0)))
+    right = int(round((width + min(width, target_width)) / 2.0))
+    bottom = int(round((height + min(height, target_height)) / 2.0))
+
+    return left, top, right, bottom
