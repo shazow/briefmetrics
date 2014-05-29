@@ -44,3 +44,15 @@
     * http://mashable.com/the-launchpad/
 
 
+* Agencies
+    * http://hop-online.com/contact-us/
+    * http://uptrending.com/
+
+
+>>>
+Hi there. I'm building a service which sends email summaries of your Google Analytics and I was wondering if this could be useful to Hop Online?
+
+I have a few web agencies using Briefmetrics to keep their clients engaged with their analytics through weekly reports. I'd love to get Hop Online to try it out: https://briefmetrics.com/
+
+I hope Briefmetrics can be helpful to your business.
+- Andrey

@@ -20,7 +20,7 @@ RUN echo 'deb http://us.archive.ubuntu.com/ubuntu/ precise universe' >> /etc/apt
 RUN apt-get -y update
 
 # Install required packages
-RUN apt-get -y install wget python-dev python-setuptools python-psycopg2 make
+RUN apt-get -y install wget python-dev python-setuptools python-psycopg2 make libfreetype6-dev libjpeg62-dev libpng12-dev
 RUN easy_install pip
 RUN pip install virtualenv
 
