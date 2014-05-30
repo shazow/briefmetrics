@@ -17,6 +17,9 @@
     %>
 
 <span class="annotation ${css_class[tag.is_positive]}">
+    % if tag.is_prefixed:
+        ${tag.value}
+    % endif
     <span class="label">
     % if tag.column:
         ${tag.column.label}
@@ -24,7 +27,7 @@
         ${tag.type}
     % endif 
     </span>
-    % if tag.value:
+    % if not tag.is_prefixed and tag.value:
         ${tag.column and tag.column.format(tag.value) or tag.value}
     % endif
 </span>

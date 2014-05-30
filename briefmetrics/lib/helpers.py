@@ -112,7 +112,7 @@ def human_time(seconds=None):
     return ' '.join(r)
 
 def human_int(n):
-    return u'{:,}'.format(int(n or 1))
+    return u'{:,}'.format(int(n or 0))
 
 def human_percent(f, signed=False):
     if f is None:

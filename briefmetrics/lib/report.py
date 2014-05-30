@@ -271,6 +271,7 @@ class ActivityReport(Report):
             ],
         )
 
+        current_referrers_lookup = set(path for path, in current_referrers.iter_rows('ga:fullReferrer'))
         last_referrers_lookup = dict((path, views) for path, views in last_referrers.iter_rows())
 
         col_last_pageviews = Column('delta_views', label='Views', type_cast=float, type_format=h.human_delta)
@@ -297,6 +298,19 @@ class ActivityReport(Report):
                 row.tag(type='new')
             elif abs(views_delta) > 0.20:
                 row.tag(type='delta', value=views_delta, column=col_last_pageviews)
+
+        # Add lost referrers
+        num_added = 0
+        for path, views in last_referrers.iter_rows():
+            if path in current_referrers_lookup:
+                continue
+
+            row = t.add([path, 0, 0, None, None, -views], auto_skip=False)
+            row.tag(type='views', value=-views, is_positive=False, is_prefixed=True)
+            num_added += 1
+
+            if num_added >= 3:
+                break
 
         self.tables['referrers'] = t
 

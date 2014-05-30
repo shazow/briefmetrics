@@ -78,10 +78,12 @@ class Column(object):
 
 
 class RowTag(object):
-    def __init__(self, type=None, value=None, column=None):
+    def __init__(self, type=None, value=None, column=None, is_positive=None, is_prefixed=False):
         self.type = type
         self.value = value
         self.column = column
+        self.is_positive_override = is_positive
+        self.is_prefixed = is_prefixed
 
     @property
     def delta_value(self):
@@ -92,6 +94,9 @@ class RowTag(object):
 
     @property
     def is_positive(self):
+        if self.is_positive_override is not None:
+            return self.is_positive_override
+
         if not self.column:
             return
 
@@ -110,6 +115,9 @@ class RowTag(object):
             parts.append(self.column.format(self.value))
             parts.append(self.column.label)
         else:
+            if self.is_prefixed:
+                parts.append(str(self.value))
+
             parts.append(self.type.title())
 
         return ' '.join(parts)
@@ -130,8 +138,8 @@ class Row(object):
     def get(self, id):
         return self.values[self.table.column_to_index[id]]
 
-    def tag(self, type, value=None, column=None):
-        self.tags.append(RowTag(type, column=column, value=value))
+    def tag(self, type, value=None, column=None, **kw):
+        self.tags.append(RowTag(type, column=column, value=value, **kw))
 
     def __repr__(self):
         return '{class_name}(values={self.values!r})'.format(class_name=self.__class__.__name__, self=self)
@@ -149,7 +157,7 @@ class Table(object):
         for column in columns:
             column.table = self
 
-    def add(self, row):
+    def add(self, row, auto_skip=True):
         values = []
         r = Row(self, values)
         for column, value in izip(self.columns, row):
@@ -157,7 +165,7 @@ class Table(object):
                 continue
 
             value = column.cast(value)
-            if column.visible is not None and column.is_boring(value):
+            if auto_skip and column.visible is not None and column.is_boring(value):
                 # Skip row
                 return
 
