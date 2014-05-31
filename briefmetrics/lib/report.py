@@ -188,7 +188,7 @@ class ActivityReport(Report):
             interval=self.data.get('interval_label', 'week'),
         )
 
-    def _get_social_search(self, google_query, date_start, date_end, summary_metrics):
+    def _get_social_search(self, google_query, date_start, date_end, summary_metrics, max_results=10):
         organic_table = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
@@ -196,7 +196,7 @@ class ActivityReport(Report):
                 'end-date': date_end,
                 'filters': 'ga:medium==organic;ga:socialNetwork==(not set)',
                 'sort': '-ga:pageviews',
-                'max-results': '10',
+                'max-results': str(max_results),
             },
             dimensions=[
                 Column('ga:source', type_cast=_prune_abstract),
@@ -210,7 +210,7 @@ class ActivityReport(Report):
                 'start-date': date_start,
                 'end-date': date_end,
                 'sort': '-ga:pageviews',
-                'max-results': '10',
+                'max-results': str(max_results),
             },
             dimensions=[
                 Column('ga:socialNetwork', type_cast=_prune_abstract),
@@ -396,7 +396,42 @@ class ActivityReport(Report):
         self.data['total_last'] = last_month[-1]
         self.data['total_last_relative'] = last_month[min(len(current_month), len(last_month))-1]
 
-        self.tables['social_search'] = self._get_social_search(google_query, self.date_start, self.date_end, summary_metrics)
+        self.tables['social_search'] = social_search_table = self._get_social_search(google_query, self.date_start, self.date_end, summary_metrics)
+
+        # TODO: Streamline this into a common helper with referrers
+        last_social_search = self._get_social_search(google_query, self.previous_date_start, self.previous_date_end, summary_metrics, max_results=100)
+        social_search_lookup = set(source for source, in social_search_table.iter_rows('source'))
+        last_social_search_lookup = dict((source, views) for source, views in last_social_search.iter_rows('source', 'ga:pageviews'))
+
+        col_delta_pageviews = Column('delta_views', label='Views', type_cast=float, type_format=h.human_delta, threshold=0)
+        idx_source, idx_views = social_search_table.column_to_index['source'], social_search_table.column_to_index['ga:pageviews']
+        for row in social_search_table.rows:
+            source, views = row.values[idx_source], row.values[idx_views]
+            last_views = last_social_search_lookup.get(source) or 0
+            views_delta = (views - last_views) / float(views)
+
+            if not last_views:
+                row.tag(type='new')
+            elif abs(views_delta) > 0.20:
+                row.tag(type='delta', value=views_delta, column=col_delta_pageviews)
+                print source, views, last_views, views_delta
+
+        # Add lost social search
+        num_added = 0
+        col_social_search_views = social_search_table.get('ga:pageviews')
+        for source, views in last_social_search.iter_rows('source', 'ga:pageviews'):
+            if source in social_search_lookup:
+                continue
+
+            if col_social_search_views.is_boring(views, threshold=0.01):
+                break # Done early
+
+            row = social_search_table.add([source, 0, 0, None, None, -views], is_measured=False)
+            row.tag(type='views', value=h.human_int(-views), is_positive=False, is_prefixed=True)
+
+            num_added += 1
+            if num_added >= 5:
+                break
 
         self.tables['social_search'].tag_rows()
         self.tables['referrers'].tag_rows()
