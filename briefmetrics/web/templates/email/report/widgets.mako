@@ -10,27 +10,21 @@
     }
 %>
 % for tag in tags:
-    <%
-        # TODO: Move this somewhere else
-        if tag.column and tag.column.id == 'ga:avgPageLoadTime' and (not tag.value or tag.is_positive or tag.value < 2.0 or tag.value < tag.column.average * 3):
-            continue
-    %>
+<%
+    # TODO: Move this somewhere else
+    if tag.column and tag.column.id == 'ga:avgPageLoadTime' and (not tag.value or tag.is_positive or tag.value < 2.0 or tag.value < tag.column.average * 3):
+        continue
 
-<span class="annotation ${css_class[tag.is_positive]}">
-    % if tag.is_prefixed:
-        ${tag.value}
-    % endif
-    <span class="label">
-    % if tag.column:
-        ${tag.column.label}
-    % else:
-        ${tag.type}
-    % endif 
-    </span>
-    % if not tag.is_prefixed and tag.value:
-        ${tag.column and tag.column.format(tag.value) or tag.value}
-    % endif
-</span>
+    label = tag.column and tag.column.label or tag.type
+    prefix = postfix = u''
+
+    if tag.is_prefixed:
+        prefix = tag.value or u''
+    elif tag.value:
+        postfix = tag.column and tag.column.format(tag.value) or tag.value
+%>
+
+<span class="annotation ${css_class[tag.is_positive]}">${prefix}<span class="label">${label}</span>${postfix}</span>
 % endfor
 </%def>
 

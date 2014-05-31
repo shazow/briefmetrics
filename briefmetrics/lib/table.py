@@ -36,8 +36,11 @@ class Column(object):
     def format(self, value):
         return self.type_format(value) if self.type_format else str(value)
 
+    def compute_average(self):
+        self._average = self.average
+
     def delta_value(self, value):
-        return self._average is not None and (self._average - value) / (self._average or 1)
+        return self._average is not None and (self._average - value) / (self._average or 1.0)
 
     def measure(self, value, row):
         if value is None or self._threshold is None:
@@ -157,7 +160,7 @@ class Table(object):
         for column in columns:
             column.table = self
 
-    def add(self, row, auto_skip=True):
+    def add(self, row, is_measured=True):
         values = []
         r = Row(self, values)
         for column, value in izip(self.columns, row):
@@ -165,12 +168,12 @@ class Table(object):
                 continue
 
             value = column.cast(value)
-            if auto_skip and column.visible is not None and column.is_boring(value):
+            if is_measured and column.visible is not None and column.is_boring(value):
                 # Skip row
                 return
 
             values.append(value)
-            if value is not None:
+            if value is not None and is_measured:
                 column.measure(value, r)
 
         self.rows.append(r)

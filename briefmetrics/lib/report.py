@@ -158,7 +158,7 @@ class ActivityReport(Report):
         date_start -= datetime.timedelta(days=date_start.weekday()+1) # Sunday of that week
         date_end = date_start + datetime.timedelta(days=6)
         date_next = self.report.next_preferred(date_end + datetime.timedelta(days=7)).date()
-        previous_date_start = date_start - datetime.timedelta(days=6)
+        previous_date_start = date_start - datetime.timedelta(days=7) # +1 day to account for the no-overlap.
 
         return previous_date_start, date_start, date_end, date_next
 
@@ -203,7 +203,7 @@ class ActivityReport(Report):
             Column('ga:avgTimeOnSite', label='Time On Site', type_cast=_cast_time, type_format=h.human_time, threshold=0),
             Column('ga:visitBounceRate', label='Bounce Rate', type_cast=_cast_bounce, type_format=h.human_percent, reverse=True, threshold=0),
         ]
-        self.tables['summary'] = google_query.get_table(
+        self.tables['summary'] = summary_table = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
                 'start-date': self.previous_date_start, # Extra week
@@ -259,7 +259,7 @@ class ActivityReport(Report):
                 'ids': 'ga:%s' % self.remote_id,
                 'start-date': self.previous_date_start,
                 'end-date': self.previous_date_end,
-                'filters': 'ga:medium==referral',
+                'filters': 'ga:medium==referral;ga:socialNetwork==(not set)',
                 'sort': '-ga:pageviews',
                 'max-results': '250',
             },
@@ -267,14 +267,14 @@ class ActivityReport(Report):
                 Column('ga:fullReferrer', label='Referrer', visible=1, type_cast=_prune_abstract)
             ],
             metrics=[
-                Column('ga:pageviews', label='Views', type_cast=int, threshold=0)
+                summary_table.get('ga:pageviews').new(),
             ],
         )
 
         current_referrers_lookup = set(path for path, in current_referrers.iter_rows('ga:fullReferrer'))
         last_referrers_lookup = dict((path, views) for path, views in last_referrers.iter_rows())
 
-        col_last_pageviews = Column('delta_views', label='Views', type_cast=float, type_format=h.human_delta)
+        col_last_pageviews = Column('delta_views', label='Views', type_cast=float, type_format=h.human_delta, threshold=0)
         t = Table(columns=[
             col.new() for col in current_referrers.columns
         ] + [
@@ -301,15 +301,19 @@ class ActivityReport(Report):
 
         # Add lost referrers
         num_added = 0
+        col_referrer_views = t.get('ga:pageviews')
         for path, views in last_referrers.iter_rows():
             if path in current_referrers_lookup:
                 continue
 
-            row = t.add([path, 0, 0, None, None, -views], auto_skip=False)
-            row.tag(type='views', value=-views, is_positive=False, is_prefixed=True)
+            if col_referrer_views.is_boring(views, threshold=0.01):
+                break # Done
+
+            row = t.add([path, 0, 0, None, None, -views], is_measured=False)
+            row.tag(type='views', value=h.human_int(-views), is_positive=False, is_prefixed=True)
             num_added += 1
 
-            if num_added >= 3:
+            if num_added >= 5:
                 break
 
         self.tables['referrers'] = t
