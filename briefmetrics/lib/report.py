@@ -188,6 +188,50 @@ class ActivityReport(Report):
             interval=self.data.get('interval_label', 'week'),
         )
 
+    def _get_social_search(self, google_query, date_start, date_end, summary_metrics):
+        organic_table = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': date_start,
+                'end-date': date_end,
+                'filters': 'ga:medium==organic;ga:socialNetwork==(not set)',
+                'sort': '-ga:pageviews',
+                'max-results': '10',
+            },
+            dimensions=[
+                Column('ga:source', type_cast=_prune_abstract),
+            ],
+            metrics=[col.new() for col in summary_metrics],
+        )
+
+        social_table = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': date_start,
+                'end-date': date_end,
+                'sort': '-ga:pageviews',
+                'max-results': '10',
+            },
+            dimensions=[
+                Column('ga:socialNetwork', type_cast=_prune_abstract),
+            ],
+            metrics=[col.new() for col in summary_metrics],
+        )
+
+        t = Table(columns=[
+            Column('source', label='Social & Search', visible=1, type_cast=_cast_title),
+        ] + [col.new() for col in summary_metrics])
+
+        for cells in social_table.iter_rows():
+            t.add(cells)
+
+        for cells in organic_table.iter_rows():
+            t.add(cells)
+
+        t.sort(reverse=True)
+        return t
+
+
     def fetch(self, google_query):
         last_month_date_start = self.date_end - datetime.timedelta(days=self.date_end.day)
         last_month_date_start -= datetime.timedelta(days=last_month_date_start.day - 1)
@@ -320,35 +364,6 @@ class ActivityReport(Report):
 
         #
 
-        self.tables['organic'] = google_query.get_table(
-            params={
-                'ids': 'ga:%s' % self.remote_id,
-                'start-date': self.date_start,
-                'end-date': self.date_end,
-                'filters': 'ga:medium==organic;ga:socialNetwork==(not set)',
-                'sort': '-ga:pageviews',
-                'max-results': '10',
-            },
-            dimensions=[
-                Column('ga:source', type_cast=_prune_abstract),
-            ],
-            metrics=[col.new() for col in summary_metrics],
-        )
-
-        self.tables['social'] = google_query.get_table(
-            params={
-                'ids': 'ga:%s' % self.remote_id,
-                'start-date': self.date_start,
-                'end-date': self.date_end,
-                'sort': '-ga:pageviews',
-                'max-results': '10',
-            },
-            dimensions=[
-                Column('ga:socialNetwork', type_cast=_prune_abstract),
-            ],
-            metrics=[col.new() for col in summary_metrics],
-        )
-
         historic_table = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
@@ -381,18 +396,7 @@ class ActivityReport(Report):
         self.data['total_last'] = last_month[-1]
         self.data['total_last_relative'] = last_month[min(len(current_month), len(last_month))-1]
 
-        t = Table(columns=[
-            Column('source', label='Social & Search', visible=1, type_cast=_cast_title),
-        ] + [col.new() for col in summary_metrics])
-
-        for cells in self.tables['social'].iter_rows():
-            t.add(cells)
-
-        for cells in self.tables['organic'].iter_rows():
-            t.add(cells)
-
-        t.sort(reverse=True)
-        self.tables['social_search'] = t
+        self.tables['social_search'] = self._get_social_search(google_query, self.date_start, self.date_end, summary_metrics)
 
         self.tables['social_search'].tag_rows()
         self.tables['referrers'].tag_rows()
