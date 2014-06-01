@@ -395,6 +395,7 @@ class ActivityReport(Report):
         self.data['total_current'] = current_month[-1]
         self.data['total_last'] = last_month[-1]
         self.data['total_last_relative'] = last_month[min(len(current_month), len(last_month))-1]
+        self.data['total_last_date_start'] = last_month_date_start
 
         self.tables['social_search'] = social_search_table = self._get_social_search(google_query, self.date_start, self.date_end, summary_metrics)
 

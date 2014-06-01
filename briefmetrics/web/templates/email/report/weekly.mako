@@ -7,7 +7,7 @@
         last=c.report.data['total_last'],
         last_relative=c.report.data['total_last_relative'],
         units=c.report.data['total_units'],
-        interval=(c.report.previous_date_start, c.report.date_start, c.report.date_end),
+        interval=(c.report.data.get('total_last_date_start', c.report.previous_date_start), c.report.date_start, c.report.date_end),
     )}
 </p>
 
