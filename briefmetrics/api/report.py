@@ -155,7 +155,7 @@ def send(request, report, since_time=None, pretend=False):
     log.info('Sending %s report to [%d] users: %s' % (report.type, len(send_users), report.display_name))
 
     debug_sample = float(request.registry.settings.get('mail.debug_sample', 1))
-    debug_bcc = owner.plan.id != 'trial' or not report.time_next or random.random() < debug_sample
+    debug_bcc = not report.time_next or random.random() < debug_sample
 
     email_kw = {}
     from_name, reply_to = get_many(owner.config, optional=['from_name', 'reply_to'])
