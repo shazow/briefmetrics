@@ -96,7 +96,7 @@
     })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
     <em>// Skip recording GA events to our account if in development.
-    if (document.location.hostname == 'localhost') {
+    if (document.location.hostname != 'localhost') {
         ga('create', 'UA-XXXXXXX-XX', 'example.com');
     }</em>
 
