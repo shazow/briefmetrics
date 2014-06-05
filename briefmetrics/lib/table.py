@@ -27,6 +27,14 @@ class Column(object):
             return
         return self.sum / float(len(self.table.rows) or 1)
 
+    @property
+    def median(self):
+        num_rows = len(self.table.rows)
+        if not num_rows:
+            return 0
+
+        return self.table.rows[num_rows/2].get(self.id)
+
     def new(self):
         return Column(self.id, label=self.label, type_cast=self.type_cast, type_format=self.type_format, visible=self.visible, reverse=self.reverse, average=self.average)
 
@@ -233,6 +241,10 @@ class Table(object):
         column_positions = [self.column_to_index[c.id] for c in ordered_columns]
         for row in self.rows:
             yield (row.values[i] for i in column_positions)
+
+    def limit(self, num):
+        "Truncate rows to `num`."
+        self.rows = self.rows[:num]
 
     def __json__(self):
         # TODO: ...

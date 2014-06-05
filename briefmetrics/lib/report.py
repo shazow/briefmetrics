@@ -12,9 +12,12 @@ def _prune_abstract(v):
     return v
 
 def _cast_bounce(v):
-    v = float(v or 0.0) / 100.0
+    v = float(v or 0.0)
     if v:
         return v
+
+def _human_bounce(f):
+    return h.human_percent(f, denominator=100.0)
 
 def _cast_time(v):
     v = float(v or 0.0)
@@ -47,6 +50,49 @@ def cumulative_by_month(month_views_iter):
         max_value = max(max_value, val)
 
     return months.values(), max_value
+
+
+def inject_table_delta(a, b, join_column, compare_column='ga:pageviews', num_normal=10, num_missing=5):
+    """
+    Annotate rows in table `a` with deltas from table `b`.
+
+    Also add `num_missing` top rows from `b` that are not present in `a`.
+
+    It's basically a left-join with extra sauce.
+    """
+    col_compare = a.get(compare_column)
+    a_lookup = set(source for source, in a.iter_rows(join_column))
+    b_lookup = dict((source, views) for source, views in b.iter_rows(join_column, compare_column))
+
+    # Annotate delta tags
+    col_compare_delta = Column('%s:delta' % col_compare.id, label=col_compare.label, type_cast=float, type_format=h.human_delta, threshold=0)
+    idx_join, idx_compare = a.column_to_index[join_column], a.column_to_index[compare_column]
+    for row in a.rows:
+        j, views = row.values[idx_join], row.values[idx_compare]
+        last_views = b_lookup.get(j) or 0
+        views_delta = (views - last_views) / float(views)
+
+        if not last_views:
+            row.tag(type='new')
+        elif abs(views_delta) > 0.20:
+            row.tag(type='delta', value=views_delta, column=col_compare_delta)
+
+    a.limit(num_normal)
+
+    # Add missing entries
+    for source, views in b.iter_rows(join_column, compare_column):
+        if source in a_lookup:
+            continue
+
+        if col_compare.is_boring(views):
+            break # Done early
+
+        row = a.add([source, 0, 0, None, None, -views], is_measured=False)
+        row.tag(type='views', value=h.human_int(-views), is_positive=False, is_prefixed=True)
+
+        num_missing -= 1
+        if num_missing <= 0:
+            break
 
 
 class EmptyReportError(Exception):
@@ -245,7 +291,7 @@ class ActivityReport(Report):
             Column('ga:pageviews', label='Views', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
             Column('ga:visitors', label='Uniques', type_cast=int, type_format=h.human_int),
             Column('ga:avgTimeOnSite', label='Time On Site', type_cast=_cast_time, type_format=h.human_time, threshold=0),
-            Column('ga:visitBounceRate', label='Bounce Rate', type_cast=_cast_bounce, type_format=h.human_percent, reverse=True, threshold=0),
+            Column('ga:visitBounceRate', label='Bounce Rate', type_cast=_cast_bounce, type_format=_human_bounce, reverse=True, threshold=0),
         ]
         self.tables['summary'] = summary_table = google_query.get_table(
             params={
@@ -315,52 +361,9 @@ class ActivityReport(Report):
             ],
         )
 
-        current_referrers_lookup = set(path for path, in current_referrers.iter_rows('ga:fullReferrer'))
-        last_referrers_lookup = dict((path, views) for path, views in last_referrers.iter_rows())
+        inject_table_delta(current_referrers, last_referrers, join_column='ga:fullReferrer')
 
-        col_last_pageviews = Column('delta_views', label='Views', type_cast=float, type_format=h.human_delta, threshold=0)
-        t = Table(columns=[
-            col.new() for col in current_referrers.columns
-        ] + [
-            col_last_pageviews
-        ])
-
-        for i, cells in enumerate(current_referrers.iter_rows()):
-            cells = list(cells)
-            path, views = cells[0], cells[1]
-            last_views = last_referrers_lookup.get(path) or 0
-
-            if i > 10 and last_views:
-                # Skip non-new rows after 10 entries
-                continue
-
-            views_delta = (views - last_views) / float(views)
-            cells.append(views_delta)
-            row = t.add(cells)
-
-            if not last_views:
-                row.tag(type='new')
-            elif abs(views_delta) > 0.20:
-                row.tag(type='delta', value=views_delta, column=col_last_pageviews)
-
-        # Add lost referrers
-        num_added = 0
-        col_referrer_views = t.get('ga:pageviews')
-        for path, views in last_referrers.iter_rows():
-            if path in current_referrers_lookup:
-                continue
-
-            if col_referrer_views.is_boring(views, threshold=0.01):
-                break # Done
-
-            row = t.add([path, 0, 0, None, None, -views], is_measured=False)
-            row.tag(type='views', value=h.human_int(-views), is_positive=False, is_prefixed=True)
-            num_added += 1
-
-            if num_added >= 5:
-                break
-
-        self.tables['referrers'] = t
+        self.tables['referrers'] = current_referrers
 
         #
 
@@ -397,42 +400,11 @@ class ActivityReport(Report):
         self.data['total_last_relative'] = last_month[min(len(current_month), len(last_month))-1]
         self.data['total_last_date_start'] = last_month_date_start
 
-        self.tables['social_search'] = social_search_table = self._get_social_search(google_query, self.date_start, self.date_end, summary_metrics)
-
-        # TODO: Streamline this into a common helper with referrers
+        social_search_table = self._get_social_search(google_query, self.date_start, self.date_end, summary_metrics, max_results=25)
         last_social_search = self._get_social_search(google_query, self.previous_date_start, self.previous_date_end, summary_metrics, max_results=100)
-        social_search_lookup = set(source for source, in social_search_table.iter_rows('source'))
-        last_social_search_lookup = dict((source, views) for source, views in last_social_search.iter_rows('source', 'ga:pageviews'))
+        inject_table_delta(social_search_table, last_social_search, join_column='source')
 
-        col_delta_pageviews = Column('delta_views', label='Views', type_cast=float, type_format=h.human_delta, threshold=0)
-        idx_source, idx_views = social_search_table.column_to_index['source'], social_search_table.column_to_index['ga:pageviews']
-        for row in social_search_table.rows:
-            source, views = row.values[idx_source], row.values[idx_views]
-            last_views = last_social_search_lookup.get(source) or 0
-            views_delta = (views - last_views) / float(views)
-
-            if not last_views:
-                row.tag(type='new')
-            elif abs(views_delta) > 0.20:
-                row.tag(type='delta', value=views_delta, column=col_delta_pageviews)
-                print source, views, last_views, views_delta
-
-        # Add lost social search
-        num_added = 0
-        col_social_search_views = social_search_table.get('ga:pageviews')
-        for source, views in last_social_search.iter_rows('source', 'ga:pageviews'):
-            if source in social_search_lookup:
-                continue
-
-            if col_social_search_views.is_boring(views, threshold=0.01):
-                break # Done early
-
-            row = social_search_table.add([source, 0, 0, None, None, -views], is_measured=False)
-            row.tag(type='views', value=h.human_int(-views), is_positive=False, is_prefixed=True)
-
-            num_added += 1
-            if num_added >= 5:
-                break
+        self.tables['social_search'] = social_search_table
 
         self.tables['social_search'].tag_rows()
         self.tables['referrers'].tag_rows()
@@ -475,7 +447,7 @@ class TrendsReport(Report):
             Column('ga:pageviews', label='Views', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
             Column('ga:visitors', label='Uniques', type_cast=int, type_format=h.human_int),
             Column('ga:avgTimeOnSite', label='Time On Site', type_cast=_cast_time, type_format=h.human_time, threshold=0),
-            Column('ga:visitBounceRate', label='Bounce Rate', type_cast=_cast_bounce, type_format=h.human_percent, reverse=True, threshold=0),
+            Column('ga:visitBounceRate', label='Bounce Rate', type_cast=_cast_bounce, type_format=_human_bounce, reverse=True, threshold=0),
         ]
         self.tables['summary'] = google_query.get_table(
             params={

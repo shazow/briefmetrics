@@ -114,9 +114,12 @@ def human_time(seconds=None):
 def human_int(n):
     return u'{:,}'.format(int(n or 0))
 
-def human_percent(f, signed=False):
+def human_percent(f, denominator=1.0, signed=False):
     if f is None:
         return ''
+
+    if denominator != 1.0:
+        f /= denominator
 
     # TODO: Write tests
     precision = 1
