@@ -25,12 +25,12 @@ def explore_api(request):
     u = api.account.get_admin(request)
 
     report_id, dimensions, metrics, extra, date_start, date_end = get_many(request.params, ['report_id'], optional=['dimensions', 'metrics', 'extra', 'date_start', 'date_end'])
-    report = model.Report.get_by(account_id=u.account.id, id=report_id)
+    report = model.Report.get_by(account_id=u.account.id, id=report_id) # XXX: accounts
 
     if not report:
         raise APIControllerError("Invalid report id: %s" % report_id)
 
-    oauth = api.google.auth_session(request, u.account.oauth_token)
+    oauth = api.google.auth_session(request, u.account.oauth_token) # XXX: accounts
     google_query = api.google.create_query(request, oauth)
 
     date_end = date_end or date.today()
@@ -69,13 +69,13 @@ class AdminController(Controller):
     def index(self):
         api.account.get_admin(self.request)
         q = Session.query(model.User)
-        q = q.options(orm.joinedload_all('account.reports'), orm.joinedload_all('subscriptions'))
+        q = q.options(orm.joinedload_all('accounts.reports'), orm.joinedload_all('subscriptions'))
         q = q.order_by(model.User.id.asc())
         users = q.all()
 
         self.c.active_users, self.c.inactive_users = [], []
         for u in users:
-            if u.is_active and (u.subscriptions or u.account and u.account.reports or u.stripe_customer_id):
+            if u.is_active and (u.subscriptions or u.account and u.account.reports or u.stripe_customer_id): # XXX: accounts
                 self.c.active_users.append(u)
             else:
                 self.c.inactive_users.append(u)
@@ -95,7 +95,7 @@ class AdminController(Controller):
 
         user_id = self.request.matchdict['id']
         q = Session.query(model.User)
-        q = q.options(orm.joinedload_all('account.reports.subscriptions.user'))
+        q = q.options(orm.joinedload_all('accounts.reports.subscriptions.user'))
         self.c.user = q.get(user_id)
 
         q = Session.query(model.User).filter_by(invited_by_user_id=user_id)
@@ -107,8 +107,8 @@ class AdminController(Controller):
             self.c.invited_by = model.User.get(self.c.user.invited_by_user_id)
 
         self.c.recent_reports = []
-        if self.c.user.account:
-            q = Session.query(model.ReportLog).filter_by(account_id=self.c.user.account.id)
+        if self.c.user.account: # XXX: accounts
+            q = Session.query(model.ReportLog).filter_by(account_id=self.c.user.account.id) # XXX: accounts
             q = q.order_by(model.ReportLog.id.desc()).limit(10)
             self.c.recent_reports = q.all()
 

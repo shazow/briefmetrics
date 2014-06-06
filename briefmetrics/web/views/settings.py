@@ -94,8 +94,8 @@ class SettingsController(Controller):
 
     @handle_api(['settings.payments_set', 'settings.payments_cancel', 'settings.plan', 'settings.branding'])
     def index(self):
-        user = api.account.get_user(self.request, required=True, joinedload=['account'])
-        account = user.account
+        user = api.account.get_user(self.request, required=True, joinedload=['accounts'])
+        account = user.account # XXX: accounts
 
         plan_id = self.request.session.pop('plan_id', None)
         if plan_id:

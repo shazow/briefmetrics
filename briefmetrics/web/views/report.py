@@ -13,14 +13,14 @@ from .api import expose_api, handle_api
 
 @expose_api('report.create')
 def report_create(request):
-    report_type = request.params.get('type', 'week')
-    remote_id = request.params['remote_id']
+    report_id, report_type, account_id = get_many(request.params, required=['report_id'], optional=['report_type', 'account_id'])
+    report_type = report_type or 'week'
     if not remote_id:
         raise APIControllerError("Select a report to create.")
 
-    user = api.account.get_user(request, required=True, joinedload='account')
+    user = api.account.get_user(request, required=True, joinedload='accounts')
     user_id = user.id
-    account = user.account
+    account = user.account # XXX: accounts
     if not account:
         raise APIControllerError("Account does not exist for user: %s" % user_id)
 
@@ -59,13 +59,12 @@ def report_delete(request):
     report_id = request.params['report_id']
     user_id = api.account.get_user_id(request, required=True)
 
-    account = model.Account.get_by(user_id=user_id)
-    if not account:
-        raise APIControllerError("Account does not exist for user: %s" % user_id)
-
-    report = model.Report.get_by(account_id=account.id, id=report_id)
+    report = model.Report.get(report_id)
     if not report:
         raise APIControllerError("Invalid report id: %s" % report_id)
+
+    if report.account.user_id != user_id:
+        raise APIControllerError("Account does not belong to user: %s" % user_id)
 
     display_name = report.display_name
     model.Session.delete(report)
@@ -80,14 +79,14 @@ def subscription_create(request):
     if '@' not in email:
         raise APIControllerError('Invalid email address: %s' % email)
 
-    user = api.account.get_user(request, required=True, joinedload='account')
-    account = user.account
-    if not account:
-        raise APIControllerError("Account does not exist for user: %s" % user.id)
+    user = api.account.get_user(request, required=True)
 
-    report = model.Report.get_by(account_id=account.id, id=report_id)
+    report = model.Report.get(report_id)
     if not report:
         raise APIControllerError("Invalid report id: %s" % report_id)
+
+    if report.account.user_id != user_id:
+        raise APIControllerError("Account does not belong to user: %s" % user_id)
 
     num_recipients = user.get_feature('num_recipients')
     if num_recipients and len(report.subscriptions) >= num_recipients:
@@ -106,16 +105,12 @@ def subscription_delete(request):
     user_id = api.account.get_user_id(request, required=True)
     subscription_id, = get_many(request.params, required=['subscription_id'])
 
-    account = model.Account.get_by(user_id=user_id)
-    if not account:
-        raise APIControllerError("Account does not exist for user: %s" % user_id)
-
-    sub = model.Session.query(model.Subscription).options(orm.joinedload('report'), orm.joinedload('user')).get(subscription_id)
+    sub = model.Session.query(model.Subscription).options(orm.joinedload_all('report.account'), orm.joinedload('user')).get(subscription_id)
     if not sub:
         raise APIControllerError("Invalid subscription id: %s" % subscription_id)
 
     report = sub.report
-    if sub.user_id != user_id and report.account_id != account.id:
+    if sub.user_id != user_id and report.account.user_id != user_id:
         raise APIControllerError("Subscription does not belong to you: %s" % subscription_id)
 
     email = sub.user.email
@@ -157,7 +152,7 @@ class ReportController(Controller):
 
     @handle_api(['report.create', 'report.delete'])
     def index(self):
-        user = api.account.get_user(self.request, required=True, joinedload='account.reports.subscriptions.user')
+        user = api.account.get_user(self.request, required=True, joinedload='accounts.reports.subscriptions.user')
 
         oauth = api.google.auth_session(self.request, user.account.oauth_token)
         q = api.google.create_query(self.request, oauth)
@@ -174,19 +169,19 @@ class ReportController(Controller):
         self.c.report_types = [(id, label, id==model.Report.DEFAULT_TYPE) for id, label in model.Report.TYPES if id in enable_reports]
 
         self.c.user = user
-        self.c.reports = user.account.reports
+        self.c.reports = user.account.reports # XXX: accounts
         self.c.sites = sorted(Site.from_list(self.c.reports), key=lambda s: s.display_name)
 
         return self._render('reports.mako')
 
 
     def view(self):
-        user = api.account.get_user(self.request, required=True, joinedload='account')
+        user = api.account.get_user(self.request, required=True, joinedload='accounts')
         report_id = self.request.matchdict['id']
 
         q = model.Session.query(model.Report).filter_by(id=report_id)
         if not user.is_admin:
-            q = q.filter_by(account_id=user.account.id)
+            q = q.filter_by(account_id=user.account.id) # XXX: accounts
 
         report = q.first()
         if not report:

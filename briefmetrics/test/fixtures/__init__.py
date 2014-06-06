@@ -18,7 +18,7 @@ def populate_dev():
     }
 
     api.report.create(
-        account_id=user.account.id,
+        account_id=user.account.id, # XXX: accounts
         subscribe_user_id=user.id,
         remote_data=remote_data,
     )

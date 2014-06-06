@@ -104,10 +104,17 @@ class User(meta.Model): # Email address / login
     def is_active(self):
         return self.num_remaining != 0
 
+    @property
+    def account(self):
+        print "XXX: Deprecated use of User.account"
+        return next(a for a in self.accounts if a.type == 'google')
+
 
 class Account(meta.Model): # OAuth Service Account (such as Google Analytics)
     __tablename__ = 'account'
     __json_whitelist__ = ['id', 'user_id', 'display_name']
+
+    TYPES = ['google', 'stripe']
 
     id = Column(types.Integer, primary_key=True)
     time_created = Column(types.DateTime, default=now, nullable=False)
@@ -118,7 +125,9 @@ class Account(meta.Model): # OAuth Service Account (such as Google Analytics)
 
     # Owner
     user_id = Column(types.Integer, ForeignKey(User.id, ondelete='CASCADE'), index=True)
-    user = orm.relationship(User, innerjoin=True, backref=orm.backref('account', cascade='all,delete', uselist=False))
+    user = orm.relationship(User, innerjoin=True, backref=orm.backref('accounts', cascade='all,delete'))
+
+    type = Column(_types.Enum(TYPES), default='google')
 
 
 class Report(meta.Model): # Property within an account (such as a website)

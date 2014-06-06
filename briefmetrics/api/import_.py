@@ -51,7 +51,7 @@ def from_appengine(accounts_csv, subscriptions_csv):
          }
 
         report = model.Report.create(
-            account_id=user.account.id,
+            account_id=user.account.id, # XXX: accounts
             remote_data=remote_data,
             remote_id=str(ga_id),
         )
