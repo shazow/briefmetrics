@@ -90,8 +90,8 @@ def login_user(request):
     request.session['next'] = save_redirect
     request.session.save()
 
-    oauth = api_google.auth_session(request)
-    next, state = api_google.auth_url(oauth)
+    api = api_google.GoogleAPI(request)
+    next, state = api.auth_url()
     request.session['oauth_state'] = state
     raise httpexceptions.HTTPSeeOther(next)
 
@@ -247,7 +247,7 @@ def sync_plans(pretend=True, include_hidden=False):
     for plan in r.data:
         try:
             local_plan_id = plan.id.split('briefmetrics_', 1)[1]
-        except IndexError, e:
+        except IndexError, _:
             print "Invalid plan prefix: %s" % plan.id
             continue
 

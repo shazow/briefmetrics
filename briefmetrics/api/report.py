@@ -73,8 +73,8 @@ def get_pending(since_time=None, max_num=None):
 
 def fetch(request, report, since_time, google_query=None):
     if not google_query:
-        oauth = api_google.auth_session(request, report.account.oauth_token)
-        google_query = api_google.create_query(request, oauth)
+        google_oauth = api_google.GoogleAPI(request, token=report.account.oauth_token)
+        google_query = api_google.create_query(request, google_oauth.session)
 
     ReportCls = get_report(report.type)
     r = ReportCls(report, since_time)

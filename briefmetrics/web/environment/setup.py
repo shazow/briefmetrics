@@ -13,8 +13,13 @@ def _setup_features(RequestCls, settings, prefix='features.'):
 
 
 def _setup_api(settings):
-    from briefmetrics.api import google
-    google.oauth_config.update(_dict_view_prefixed(settings, 'api.google.'))
+    from briefmetrics import api
+
+    api.google.GoogleAPI.config.update(_dict_view_prefixed(settings, 'api.google.'))
+    api.stripe.StripeAPI.config.update(_dict_view_prefixed(settings, 'api.stripe.'))
+
+    import stripe
+    stripe.api_key = settings['api.stripe.client_secret']
 
 
 def _setup_models(settings):
@@ -101,10 +106,6 @@ def setup_config(config):
 
     # Setup Celery
     _setup_celery(settings)
-
-    # Setup Stripe
-    import stripe
-    stripe.api_key = settings['stripe.private_key']
 
     # Need more setup? Do it here.
     # ...

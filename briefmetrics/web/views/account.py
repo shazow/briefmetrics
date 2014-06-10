@@ -34,17 +34,17 @@ class AccountController(Controller):
             self.request.session.flash('Failed to sign in: %s' % error)
             return self._redirect(location='/')
 
-        oauth = api.google.auth_session(self.request, state=self.session.get('oauth_state'))
+        oauth = api.google.GoogleAPI(self.request, state=self.session.get('oauth_state'))
 
         url = self.request.current_route_url().replace('http://', 'https://') # We lie, because honeybadger.
 
         try:
-            token = api.google.auth_token(oauth, url)
+            token = oauth.auth_token(url)
         except InvalidGrantError:  # Try again.
             return self._redirect(self.request.route_path('account_login'))
 
         # Identify user
-        r = oauth.get('https://www.googleapis.com/oauth2/v1/userinfo')
+        r = oauth.session.get('https://www.googleapis.com/oauth2/v1/userinfo')
         r.raise_for_status()
 
         user_info = r.json()

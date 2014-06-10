@@ -1,80 +1,24 @@
-import time
-
-from requests_oauthlib import OAuth2Session
-
-from briefmetrics.model.meta import Session
 from briefmetrics.lib.cache import ReportRegion
 from briefmetrics.lib.http import assert_response
 from briefmetrics.lib.table import Table
+from briefmetrics.lib.oauth import OAuth2API
 
 
-oauth_config = {
-    'auth_url': 'https://accounts.google.com/o/oauth2/auth',
-    'token_url': 'https://accounts.google.com/o/oauth2/token',
-    'scope': [
-        'https://www.googleapis.com/auth/userinfo.email',
-        'https://www.googleapis.com/auth/userinfo.profile',
-        'https://www.googleapis.com/auth/analytics.readonly',
-    ],
-
-    # Populate these during init:
-    # 'client_id': ...,
-    # 'client_secret': ...,
-}
-
-def _dict_view(d, keys):
-    return {k: d[k] for k in keys}
-
-def _token_updater(old_token):
-    def wrapped(new_token):
-        token = _clean_token(new_token)
-
-        old_token.update(token)
-        Session.commit()
-
-    return wrapped
-
-def auth_session(request, token=None, state=None):
-    if token and 'expires_at' in token:
-        token['expires_in'] = int(token['expires_at'] - time.time())
-
-    # TODO: Investigate if OAuth2Session reuses connections?
-    return OAuth2Session(
-        oauth_config['client_id'],
-        redirect_uri=request.route_url('account_connect'),
-        scope=oauth_config['scope'],
-        auto_refresh_url=oauth_config['token_url'],
-        auto_refresh_kwargs=_dict_view(oauth_config, ['client_id', 'client_secret']),
-        token_updater=_token_updater(token),
-        token=token,
-        state=state,
-    )
+class GoogleAPI(OAuth2API):
+    config = {
+        'auth_url': 'https://accounts.google.com/o/oauth2/auth',
+        'token_url': 'https://accounts.google.com/o/oauth2/token',
+        'scope': [
+            'https://www.googleapis.com/auth/userinfo.email',
+            'https://www.googleapis.com/auth/userinfo.profile',
+            'https://www.googleapis.com/auth/analytics.readonly',
+        ],
 
 
-def auth_url(oauth, is_force=True):
-    return oauth.authorization_url(
-        oauth_config['auth_url'],
-        access_type='offline',
-        approval_prompt='force' if is_force else 'auto',
-    )
-
-
-def _clean_token(token):
-    return {
-        'access_token': token['access_token'],
-        'token_type': token['token_type'],
-        'refresh_token': token['refresh_token'],
-        'expires_at': int(time.time() + token['expires_in']),
+        # Populate these during init:
+        # 'client_id': ...,
+        # 'client_secret': ...,
     }
-
-
-def auth_token(oauth, response_url):
-    token = oauth.fetch_token(
-        oauth_config['token_url'],
-        authorization_response=response_url,
-        client_secret=oauth_config['client_secret'],
-    )
-    return _clean_token(token)
 
 
 def create_query(request, oauth):
@@ -83,7 +27,6 @@ def create_query(request, oauth):
         return FakeQuery(oauth)
 
     return Query(oauth)
-
 
 
 # Generated with:

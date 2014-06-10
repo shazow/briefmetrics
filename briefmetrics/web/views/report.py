@@ -32,9 +32,9 @@ def report_create(request):
         if len(remote_ids) > num_sites:
             raise APIControllerError("Maximum number of sites limit reached, please consider upgrading your plan.")
 
-    oauth = api.google.auth_session(request, account.oauth_token)
-    q = api.google.create_query(request, oauth)
-    r = q.get_profiles(account_id=account.id)
+    google_session = api.google.GoogleAPI(request, token=account.oauth_token)
+    google_query = api.google.create_query(request, google_session.session)
+    r = google_query.get_profiles(account_id=account.id)
 
     # Find profile item
     profile = next((item for item in r['items'] if item['id'] == remote_id), None)
@@ -154,8 +154,8 @@ class ReportController(Controller):
     def index(self):
         user = api.account.get_user(self.request, required=True, joinedload='accounts.reports.subscriptions.user')
 
-        oauth = api.google.auth_session(self.request, user.account.oauth_token)
-        q = api.google.create_query(self.request, oauth)
+        google_session = api.google.GoogleAPI(self.request, token=user.account.oauth_token)
+        q = api.google.create_query(self.request, google_session.session)
         try:
             self.c.available_profiles = q.get_profiles(account_id=user.account.id)
         except APIError as e:

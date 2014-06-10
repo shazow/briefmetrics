@@ -33,8 +33,12 @@ mako.strict_undefined = true
 # API
 api.google.client_id = XXX
 api.google.client_secret = XXX
+
 api.mandrill.key = XXX
 
+api.stripe.client_id = XXX
+api.stripe.client_secret = XXX
+api.stripe.public_key = XXX
 
 [server:main]
 use = egg:waitress#main
