@@ -32,7 +32,7 @@ ${h.chart(c.report.data['historic_data'], width=560, height=200)}
 % if c.report.tables.get('summary'):
     <table class="overview">
         <tr>
-            ${widgets.overview_cell(c.report.tables['summary'], 'ga:visitBounceRate', is_percent=True)}
+            ${widgets.overview_cell(c.report.tables['summary'], 'ga:visitBounceRate', is_percent=100.0)}
             ${widgets.overview_cell(c.report.tables['summary'], 'ga:pageviews')}
         </tr>
     </table>

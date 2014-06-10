@@ -81,7 +81,8 @@
         last_val, cur_val = table.rows[1].get(column_id), table.rows[0].get(column_id)
 
         if is_percent:
-            formatted_val = h.human_percent(cur_val)
+            denominator = 1.0 if is_percent is True else is_percent
+            formatted_val = h.human_percent(cur_val, denominator=denominator)
         else:
             formatted_val = h.human_int(cur_val)
 
