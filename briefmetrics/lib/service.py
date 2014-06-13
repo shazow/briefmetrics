@@ -4,7 +4,25 @@ from requests_oauthlib import OAuth2Session
 from briefmetrics.model.meta import Session
 
 
-class OAuthAPI(object):
+registry = {}
+
+
+class RegistryMeta(type):
+    def __init__(cls, name, bases, attrs):
+        super(RegistryMeta, cls).__init__(name, bases, attrs)
+
+        id = getattr(cls, 'id', None)
+        if not id:
+            return
+
+        if id in registry:
+            raise KeyError("Service already registered: %s" % name)
+
+        registry[id] = cls
+
+
+class OAuth2API(object):
+    __metaclass__ = RegistryMeta
     config = {}  # Extend and override this.
 
     def __init__(self, request, token=None, state=None):

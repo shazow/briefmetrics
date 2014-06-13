@@ -102,17 +102,6 @@ class SettingsController(Controller):
             api.account.set_plan(user, plan_id=plan_id)
             self.request.flash('Plan updated.')
 
-        oauth = api.google.auth_session(self.request, account.oauth_token)
-
-        try:
-            self.c.result = api.google.Query(oauth).get_profiles(account_id=account.id)
-        except APIError as e:
-            r = e.response.json()
-            for msg in r['error']['errors']:
-                self.request.flash('Error: %s' % msg['message'])
-
-            self.c.result = []
-
         self.c.selected_plan = user.plan if user.plan.id != 'trial' else PLAN_DEFAULT
         self.c.user = user
         self.c.report_ids = set((r.remote_id or r.remote_data.get('id')) for r in account.reports)

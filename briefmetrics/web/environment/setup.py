@@ -13,10 +13,10 @@ def _setup_features(RequestCls, settings, prefix='features.'):
 
 
 def _setup_api(settings):
-    from briefmetrics import api
+    from briefmetrics.lib.service import registry
 
-    api.google.GoogleAPI.config.update(_dict_view_prefixed(settings, 'api.google.'))
-    api.stripe.StripeAPI.config.update(_dict_view_prefixed(settings, 'api.stripe.'))
+    registry['google'].config.update(_dict_view_prefixed(settings, 'api.google.'))
+    registry['stripe'].config.update(_dict_view_prefixed(settings, 'api.stripe.'))
 
     import stripe
     stripe.api_key = settings['api.stripe.client_secret']

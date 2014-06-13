@@ -30,8 +30,8 @@ def explore_api(request):
     if not report:
         raise APIControllerError("Invalid report id: %s" % report_id)
 
-    google_session = api.google.GoogleAPI(request, token=u.account.oauth_token) # XXX: accounts
-    google_query = api.google.create_query(request, google_session.session)
+    google_oauth2 = api.google.OAuth2(request, token=u.account.oauth_token) # XXX: accounts
+    google_query = api.google.create_query(request, google_oauth2.session)
 
     date_end = date_end or date.today()
     date_start = date_start or date_end - timedelta(days=7)

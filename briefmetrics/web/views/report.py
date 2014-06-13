@@ -1,4 +1,3 @@
-import datetime
 from itertools import groupby
 from unstdlib import now, get_many
 from sqlalchemy import orm
@@ -32,8 +31,8 @@ def report_create(request):
         if len(remote_ids) > num_sites:
             raise APIControllerError("Maximum number of sites limit reached, please consider upgrading your plan.")
 
-    google_session = api.google.GoogleAPI(request, token=account.oauth_token)
-    google_query = api.google.create_query(request, google_session.session)
+    google_oauth2 = api.google.OAuth2(request, token=account.oauth_token)
+    google_query = api.google.create_query(request, google_oauth2.session)
     r = google_query.get_profiles(account_id=account.id)
 
     # Find profile item
@@ -154,8 +153,8 @@ class ReportController(Controller):
     def index(self):
         user = api.account.get_user(self.request, required=True, joinedload='accounts.reports.subscriptions.user')
 
-        google_session = api.google.GoogleAPI(self.request, token=user.account.oauth_token)
-        q = api.google.create_query(self.request, google_session.session)
+        google_oauth2 = api.google.OAuth2(self.request, token=user.account.oauth_token)
+        q = api.google.create_query(self.request, google_oauth2.session)
         try:
             self.c.available_profiles = q.get_profiles(account_id=user.account.id)
         except APIError as e:

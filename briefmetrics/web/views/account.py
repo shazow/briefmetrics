@@ -6,8 +6,6 @@ from briefmetrics.lib.exceptions import APIControllerError, APIError
 
 from .api import expose_api
 
-from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
-
 
 @expose_api('account.login')
 def account_login(request):
@@ -29,30 +27,7 @@ class AccountController(Controller):
         return self._redirect(self.next)
 
     def connect(self):
-        error = self.request.params.get('error')
-        if error:
-            self.request.session.flash('Failed to sign in: %s' % error)
-            return self._redirect(location='/')
-
-        oauth = api.google.GoogleAPI(self.request, state=self.session.get('oauth_state'))
-
-        url = self.request.current_route_url().replace('http://', 'https://') # We lie, because honeybadger.
-
-        try:
-            token = oauth.auth_token(url)
-        except InvalidGrantError:  # Try again.
-            return self._redirect(self.request.route_path('account_login'))
-
-        # Identify user
-        r = oauth.session.get('https://www.googleapis.com/oauth2/v1/userinfo')
-        r.raise_for_status()
-
-        user_info = r.json()
-        user = api.account.get_or_create(
-            email=user_info['email'],
-            token=token,
-            display_name=user_info.get('name'),
-        )
+        user = api.google.connect_user(self.request)
         api.account.login_user_id(self.request, user.id)
 
         restored_redirect = self.request.session.pop('next', None)

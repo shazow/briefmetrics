@@ -1,19 +1,59 @@
 import stripe
 import logging
+from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
 
 from briefmetrics import model
 from briefmetrics.model.meta import Session
 from briefmetrics.lib.exceptions import APIError, LoginRequired
 from briefmetrics.lib import pricing
+from briefmetrics.lib.service import registry as service_registry
 from briefmetrics.web.environment import httpexceptions
 
 from sqlalchemy import orm
 from unstdlib import iterate, get_many
 
-from . import google as api_google
-
 
 log = logging.getLogger(__name__)
+
+
+
+def connect_user(request, oauth, user_required=False):
+    user, account = get_account(request, service=oauth.id, user_required=user_required)
+
+    code = request.params.get('code')
+    if not code:
+        raise httpexceptions.HTTPBadRequest('Missing code.')
+
+    error = request.params.get('error')
+    if error:
+        raise APIError('Failed to connect: %s' % error)
+
+    url = request.current_route_url().replace('http://', 'https://') # We lie, because honeybadger.
+
+    try:
+        token = oauth.auth_token(url)
+    except InvalidGrantError:
+        # Try again.
+        raise httpexceptions.HTTPSeeOther(request.route_path('account_login', service=id))
+
+    # Identify user
+    if not user:
+        email, display_name = oauth.query_user()
+        user = get_or_create(
+            email=email,
+            service=oauth.id,
+            token=token,
+            display_name=display_name,
+        )
+    elif not account:
+        account = model.Account.create(display_name=display_name, user=user, oauth_token=token)
+    else:
+        account.oauth_token = token
+
+    Session.commit()
+
+    return account
+
 
 
 # Request helpers
@@ -54,6 +94,13 @@ def get_user(request, required=False, joinedload=None):
 
     return u
 
+def get_account(request, service, user_required=False):
+    user = get_user(request, required=user_required, joinedload=['accounts'])
+    if not user:
+        return
+
+    return user, next((a for a in user.accounts if a.service==service), None)
+
 def get_admin(request, required=True):
     u = get_user(request, required=required)
     if u.is_admin:
@@ -74,7 +121,7 @@ def login_user_id(request, user_id):
 
 
 def login_user(request):
-    is_force, token, save_redirect = get_many(request.params, optional=['force', 'token', 'next'])
+    is_force, token, save_redirect, service = get_many(request.params, optional=['force', 'token', 'next', 'service'])
     user_id = get_user_id(request)
 
     if user_id and not is_force:
@@ -90,7 +137,8 @@ def login_user(request):
     request.session['next'] = save_redirect
     request.session.save()
 
-    api = api_google.GoogleAPI(request)
+    ServiceAPI = service_registry[service or 'google']
+    api = ServiceAPI(request)
     next, state = api.auth_url()
     request.session['oauth_state'] = state
     raise httpexceptions.HTTPSeeOther(next)
@@ -128,11 +176,9 @@ def get(id=None, email=None, token=None):
     return q.first()
 
 
-def get_or_create(user_id=None, email=None, token=None, display_name=None, plan_id=None, **create_kw):
+def get_or_create(user_id=None, email=None, service=None, token=None, display_name=None, plan_id=None, **create_kw):
     u = None
-
-    q = Session.query(model.User).join(model.Account)
-    q = q.options(orm.contains_eager(model.User.account))
+    q = Session.query(model.User).options(orm.joinedload(model.User.accounts))
 
     if user_id:
         u = q.get(user_id)
@@ -144,12 +190,15 @@ def get_or_create(user_id=None, email=None, token=None, display_name=None, plan_
 
     if not u:
         u = model.User.create(email=email, display_name=display_name, **create_kw)
-        u.account = model.Account.create(display_name=display_name, user=u)
         u.set_plan(plan_id or 'trial')
+
+    account = next((a for a in u.accounts if a.service==service), None)
+    if not account:
+        account = model.Account.create(display_name=display_name, user=u)
 
     if token and token.get('refresh_token'):
         # Update token if it's a better one (with refresh).
-        u.account.oauth_token = token
+        account.oauth_token = token
 
     Session.commit()
     return u
