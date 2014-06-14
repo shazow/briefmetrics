@@ -97,7 +97,7 @@ def get_user(request, required=False, joinedload=None):
 def get_account(request, service=None, account_id=None, user_required=False):
     user = get_user(request, required=user_required, joinedload=['accounts'])
     if not user:
-        return
+        return None, None
 
     return user, user.get_account(service=service, id=account_id)
 
