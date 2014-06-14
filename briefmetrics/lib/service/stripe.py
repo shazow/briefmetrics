@@ -1,4 +1,4 @@
-from briefmetrics.lib.service import OAuth2API
+from .base import OAuth2API
 
 
 class StripeAPI(OAuth2API):

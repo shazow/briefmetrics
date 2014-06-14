@@ -26,6 +26,8 @@ class OAuth2API(object):
     config = {}  # Extend and override this.
 
     def __init__(self, request, token=None, state=None):
+        self.request = request
+
         if token and 'expires_at' in token:
             token['expires_in'] = int(token['expires_at'] - time.time())
 
@@ -77,4 +79,3 @@ def _clean_token(token):
         'refresh_token': token['refresh_token'],
         'expires_at': int(time.time() + token['expires_in']),
     }
-

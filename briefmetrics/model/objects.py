@@ -107,7 +107,18 @@ class User(meta.Model): # Email address / login
     @property
     def account(self):
         print "XXX: Deprecated use of User.account"
-        return next(a for a in self.accounts if a.service == 'google')
+        return self.get_account(service='google')
+
+    def get_account(self, service=None, id=None):
+        accounts = iter(self.accounts)
+        if service:
+            accounts = (a for a in accounts if a.service == service)
+        if id:
+            accounts = (a for a in accounts if a.id == id)
+
+        return next(accounts, None)
+
+
 
 
 class Account(meta.Model): # OAuth Service Account (such as Google Analytics)

@@ -11,7 +11,7 @@ import mock
 Session = model.Session
 
 
-@mock.patch('briefmetrics.api.google.Query', FakeQuery)
+@mock.patch('briefmetrics.lib.service.google.Query', FakeQuery)
 class TestSettings(test.TestWeb):
 
     def test_payment_set(self):

@@ -94,12 +94,12 @@ def get_user(request, required=False, joinedload=None):
 
     return u
 
-def get_account(request, service, user_required=False):
+def get_account(request, service=None, account_id=None, user_required=False):
     user = get_user(request, required=user_required, joinedload=['accounts'])
     if not user:
         return
 
-    return user, next((a for a in user.accounts if a.service==service), None)
+    return user, user.get_account(service=service, id=account_id)
 
 def get_admin(request, required=True):
     u = get_user(request, required=required)
@@ -137,8 +137,7 @@ def login_user(request):
     request.session['next'] = save_redirect
     request.session.save()
 
-    ServiceAPI = service_registry[service or 'google']
-    api = ServiceAPI(request)
+    api = service_registry[service or 'google'](request)
     next, state = api.auth_url()
     request.session['oauth_state'] = state
     raise httpexceptions.HTTPSeeOther(next)
@@ -176,7 +175,7 @@ def get(id=None, email=None, token=None):
     return q.first()
 
 
-def get_or_create(user_id=None, email=None, service=None, token=None, display_name=None, plan_id=None, **create_kw):
+def get_or_create(user_id=None, email=None, service='google', token=None, display_name=None, plan_id=None, **create_kw):
     u = None
     q = Session.query(model.User).options(orm.joinedload(model.User.accounts))
 
@@ -192,7 +191,7 @@ def get_or_create(user_id=None, email=None, service=None, token=None, display_na
         u = model.User.create(email=email, display_name=display_name, **create_kw)
         u.set_plan(plan_id or 'trial')
 
-    account = next((a for a in u.accounts if a.service==service), None)
+    account = u.get_account(service=service)
     if not account:
         account = model.Account.create(display_name=display_name, user=u)
 

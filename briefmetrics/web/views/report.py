@@ -6,13 +6,14 @@ from briefmetrics import api, model, tasks
 from briefmetrics.web.environment import Response, httpexceptions
 from briefmetrics.lib.controller import Controller, Context
 from briefmetrics.lib.exceptions import APIControllerError, APIError
+from briefmetrics.lib.service import registry as service_registry
 
 from .api import expose_api, handle_api
 
 
 @expose_api('report.create')
 def report_create(request):
-    report_id, report_type, account_id = get_many(request.params, required=['report_id'], optional=['report_type', 'account_id'])
+    remote_id, report_type, account_id = get_many(request.params, required=['remote_id'], optional=['type', 'account_id'])
     report_type = report_type or 'week'
     if not remote_id:
         raise APIControllerError("Select a report to create.")
@@ -31,8 +32,7 @@ def report_create(request):
         if len(remote_ids) > num_sites:
             raise APIControllerError("Maximum number of sites limit reached, please consider upgrading your plan.")
 
-    google_oauth2 = api.google.OAuth2(request, token=account.oauth_token)
-    google_query = api.google.create_query(request, google_oauth2.session)
+    google_query = service_registry['google'](request).create_query()
     r = google_query.get_profiles(account_id=account.id)
 
     # Find profile item
@@ -84,8 +84,8 @@ def subscription_create(request):
     if not report:
         raise APIControllerError("Invalid report id: %s" % report_id)
 
-    if report.account.user_id != user_id:
-        raise APIControllerError("Account does not belong to user: %s" % user_id)
+    if report.account.user_id != user.id:
+        raise APIControllerError("Account does not belong to user: %s" % user.id)
 
     num_recipients = user.get_feature('num_recipients')
     if num_recipients and len(report.subscriptions) >= num_recipients:
@@ -153,10 +153,9 @@ class ReportController(Controller):
     def index(self):
         user = api.account.get_user(self.request, required=True, joinedload='accounts.reports.subscriptions.user')
 
-        google_oauth2 = api.google.OAuth2(self.request, token=user.account.oauth_token)
-        q = api.google.create_query(self.request, google_oauth2.session)
+        google_query = service_registry['google'](self.request).create_query()
         try:
-            self.c.available_profiles = q.get_profiles(account_id=user.account.id)
+            self.c.available_profiles = google_query.get_profiles(account_id=user.account.id)
         except APIError as e:
             r = e.response.json()
             for msg in r['error']['errors']:

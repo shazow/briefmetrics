@@ -13,10 +13,13 @@ def _setup_features(RequestCls, settings, prefix='features.'):
 
 
 def _setup_api(settings):
-    from briefmetrics.lib.service import registry
+    # Service modules must be imported individually to be registered.
 
-    registry['google'].config.update(_dict_view_prefixed(settings, 'api.google.'))
-    registry['stripe'].config.update(_dict_view_prefixed(settings, 'api.stripe.'))
+    from briefmetrics.lib.service.google import GoogleAPI
+    GoogleAPI.config.update(_dict_view_prefixed(settings, 'api.google.'))
+
+    from briefmetrics.lib.service.stripe import StripeAPI
+    StripeAPI.config.update(_dict_view_prefixed(settings, 'api.stripe.'))
 
     import stripe
     stripe.api_key = settings['api.stripe.client_secret']

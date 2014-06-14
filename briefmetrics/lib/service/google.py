@@ -1,7 +1,8 @@
 from briefmetrics.lib.cache import ReportRegion
 from briefmetrics.lib.http import assert_response
-from briefmetrics.lib.service import OAuth2API
 from briefmetrics.lib.table import Table
+
+from .base import OAuth2API
 
 
 class GoogleAPI(OAuth2API):
@@ -30,12 +31,12 @@ class GoogleAPI(OAuth2API):
         return user_info['email'], user_info.get('name')
 
 
-def create_query(request, oauth):
-    if request.features.get('offline'):
-        from briefmetrics.test.fixtures.api_google import FakeQuery
-        return FakeQuery(oauth)
+    def create_query(self):
+        if self.request.features.get('offline'):
+            from briefmetrics.test.fixtures.api_google import FakeQuery
+            return FakeQuery(self.session)
 
-    return Query(oauth)
+        return Query(self.session)
 
 
 

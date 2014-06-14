@@ -8,10 +8,11 @@ from unstdlib import now, get_many
 from briefmetrics.lib.controller import Controller, Context
 from briefmetrics.lib.report import get_report, EmptyReportError
 from briefmetrics.lib.exceptions import APIError
+from briefmetrics.lib.service import registry as service_registry
 from briefmetrics.lib import helpers as h
 from briefmetrics import model
 
-from . import google as api_google, email as api_email, account as api_account
+from . import email as api_email, account as api_account
 
 
 log = logging.getLogger(__name__)
@@ -73,8 +74,7 @@ def get_pending(since_time=None, max_num=None):
 
 def fetch(request, report, since_time, google_query=None):
     if not google_query:
-        google_oauth = api_google.OAuth2(request, token=report.account.oauth_token)
-        google_query = api_google.create_query(request, google_oauth.session)
+        google_query = service_registry['google'](request).create_query()
 
     ReportCls = get_report(report.type)
     r = ReportCls(report, since_time)

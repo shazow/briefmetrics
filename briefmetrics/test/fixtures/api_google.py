@@ -1,6 +1,6 @@
 from itertools import cycle
 
-from briefmetrics.api.google import Query
+from briefmetrics.lib.service.google import Query
 from briefmetrics.lib.table import Table
 
 _response_profiles = {

@@ -1,4 +1,4 @@
-"""Add account.type
+"""Add account.service
 
 Revision ID: 4c2d27b91e10
 Revises: 1b5395ed8b5c
@@ -16,7 +16,7 @@ import sqlalchemy as sa
 
 
 def upgrade():
-    op.add_column('account', sa.Column('type', sa.Integer(), nullable=True))
+    op.add_column('account', sa.Column('service', sa.Integer(), nullable=True, default=1))
 
 
 def downgrade():

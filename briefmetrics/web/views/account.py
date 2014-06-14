@@ -1,8 +1,8 @@
 from briefmetrics.lib.controller import Controller
 
 from briefmetrics import api, model
-from briefmetrics.lib.exceptions import LoginRequired
-from briefmetrics.lib.exceptions import APIControllerError, APIError
+from briefmetrics.lib.exceptions import LoginRequired, APIControllerError, APIError
+from briefmetrics.lib.service import registry as service_registry
 
 from .api import expose_api
 
@@ -27,8 +27,9 @@ class AccountController(Controller):
         return self._redirect(self.next)
 
     def connect(self):
-        user = api.google.connect_user(self.request)
-        api.account.login_user_id(self.request, user.id)
+        oauth = service_registry['google'](self.request)
+        account = api.account.connect_user(self.request, oauth)
+        api.account.login_user_id(self.request, account.user)
 
         restored_redirect = self.request.session.pop('next', None)
         self.request.session.save()

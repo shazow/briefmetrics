@@ -10,7 +10,7 @@ from briefmetrics.test.fixtures.api_google import FakeQuery
 Session = model.Session
 
 
-@mock.patch('briefmetrics.api.google.Query', FakeQuery)
+@mock.patch('briefmetrics.lib.service.google.Query', FakeQuery)
 class TestSubscription(test.TestWeb):
     def test_repeated_subscription(self):
         u = api.account.get_or_create(email=u'example@example.com', token={}, display_name=u'Example')

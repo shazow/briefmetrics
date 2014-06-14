@@ -2,8 +2,9 @@ from briefmetrics import test
 from briefmetrics import api
 from briefmetrics import model
 from briefmetrics import tasks
-from briefmetrics.lib.report import Report, get_report, month_date_range
+from briefmetrics.lib.report import get_report
 from briefmetrics.lib.table import Column
+from briefmetrics.lib.service import registry as service_registry
 from briefmetrics.lib.controller import Context
 
 from briefmetrics.test.fixtures.api_google import FakeQuery
@@ -14,7 +15,7 @@ import datetime
 Session = model.Session
 
 
-@mock.patch('briefmetrics.api.google.Query', FakeQuery)
+@mock.patch('briefmetrics.lib.service.google.Query', FakeQuery)
 class TestReport(test.TestWeb):
     def _create_report(self):
         remote_data = FakeQuery().get_profiles(1)['items'][0]
@@ -29,7 +30,7 @@ class TestReport(test.TestWeb):
         r = q.get_profiles(1)
         self.assertEqual(r[u'username'], u'example@example.com')
 
-        q = api.google.Query(None)
+        q = service_registry['google'](self.request).create_query()
         r = q.get_profiles(1)
         self.assertEqual(r[u'username'], u'example@example.com')
 
