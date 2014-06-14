@@ -45,6 +45,7 @@ def connect_user(request, oauth, user_required=False):
             token=token,
             display_name=display_name,
         )
+        account = user.account
     elif not account:
         account = model.Account.create(display_name=display_name, user=user, oauth_token=token)
     else:
