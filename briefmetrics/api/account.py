@@ -17,6 +17,8 @@ log = logging.getLogger(__name__)
 
 
 
+# Request helpers
+
 def connect_user(request, oauth, user_required=False):
     user, account = get_account(request, service=oauth.id, user_required=user_required)
 
@@ -55,9 +57,6 @@ def connect_user(request, oauth, user_required=False):
 
     return account
 
-
-
-# Request helpers
 
 def get_user_id(request, required=False):
     """
@@ -117,7 +116,7 @@ def login_user_id(request, user_id):
     Force current session to be logged in as user_id, regardless of credentials.
     """
     # Success
-    request.session['user_id'] = user_id
+    request.session['user_id'] = int(user_id)
     request.session.save()
 
 
@@ -152,6 +151,9 @@ def logout_user(request):
     request.session.pop('user_id', None)
     request.session.save()
 
+
+def query_service(request, service, token):
+    return service_registry[service](request, token=token).create_query()
 
 
 # API queries

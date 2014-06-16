@@ -29,7 +29,7 @@ class AccountController(Controller):
     def connect(self):
         oauth = service_registry['google'](self.request)
         account = api.account.connect_user(self.request, oauth)
-        api.account.login_user_id(self.request, account.user)
+        api.account.login_user_id(self.request, account.user_id)
 
         restored_redirect = self.request.session.pop('next', None)
         self.request.session.save()
