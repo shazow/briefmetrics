@@ -6,7 +6,6 @@ from briefmetrics import api, model, tasks
 from briefmetrics.web.environment import Response, httpexceptions
 from briefmetrics.lib.controller import Controller, Context
 from briefmetrics.lib.exceptions import APIControllerError, APIError
-from briefmetrics.lib.service import registry as service_registry
 
 from .api import expose_api, handle_api
 
@@ -20,7 +19,7 @@ def report_create(request):
 
     user = api.account.get_user(request, required=True, joinedload='accounts')
     user_id = user.id
-    account = user.account # XXX: accounts
+    account = user.get_account(service='google')
     if not account:
         raise APIControllerError("Account does not exist for user: %s" % user_id)
 
@@ -32,7 +31,7 @@ def report_create(request):
         if len(remote_ids) > num_sites:
             raise APIControllerError("Maximum number of sites limit reached, please consider upgrading your plan.")
 
-    google_query = service_registry['google'](request).create_query()
+    google_query = api.account.query_service(request, service='google', token=account.oauth_token)
     r = google_query.get_profiles(account_id=account.id)
 
     # Find profile item
@@ -152,8 +151,9 @@ class ReportController(Controller):
     @handle_api(['report.create', 'report.delete'])
     def index(self):
         user = api.account.get_user(self.request, required=True, joinedload='accounts.reports.subscriptions.user')
+        account = user.get_account(service='google')
 
-        google_query = service_registry['google'](self.request).create_query()
+        google_query = api.account.query_service(self.request, service='google', token=account.oauth_token)
         try:
             self.c.available_profiles = google_query.get_profiles(account_id=user.account.id)
         except APIError as e:

@@ -137,8 +137,8 @@ def login_user(request):
     request.session['next'] = save_redirect
     request.session.save()
 
-    api = service_registry[service or 'google'](request)
-    next, state = api.auth_url()
+    oauth = service_registry[service or 'google'](request)
+    next, state = oauth.auth_url()
     request.session['oauth_state'] = state
     raise httpexceptions.HTTPSeeOther(next)
 

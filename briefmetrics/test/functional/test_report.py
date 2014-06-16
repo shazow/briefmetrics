@@ -4,7 +4,6 @@ from briefmetrics import model
 from briefmetrics import tasks
 from briefmetrics.lib.report import get_report
 from briefmetrics.lib.table import Column
-from briefmetrics.lib.service import registry as service_registry
 from briefmetrics.lib.controller import Context
 
 from briefmetrics.test.fixtures.api_google import FakeQuery
@@ -30,7 +29,7 @@ class TestReport(test.TestWeb):
         r = q.get_profiles(1)
         self.assertEqual(r[u'username'], u'example@example.com')
 
-        q = service_registry['google'](self.request).create_query()
+        q = api.account.query_service(self.request, service='google', token=None)
         r = q.get_profiles(1)
         self.assertEqual(r[u'username'], u'example@example.com')
 
