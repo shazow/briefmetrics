@@ -16,7 +16,7 @@
     </form>
     % else:
     <p>
-        Invalid token. Try <a href="${request.route_path('account_login')}">signing in</a> to unsubscribe?
+        Invalid token. Try <a href="${login_url}">signing in</a> to unsubscribe?
     </p>
     % endif
 </div>

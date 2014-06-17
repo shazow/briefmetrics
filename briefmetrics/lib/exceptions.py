@@ -28,3 +28,7 @@ class LoginRequired(APIException):
         APIException.__init__(self, message or 'Login required.', code=403)
 
         self.next = next
+
+    def next_url(self, request, next=None, service=None):
+        query = {'next': next or self.next}
+        return request.route_url('account_login', _query=query, service=service or 'google')

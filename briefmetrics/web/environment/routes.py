@@ -24,10 +24,11 @@ def add_routes(config):
         route('features', '/features/{id}', action='features')
 
     with handler_routes(config, views.account.AccountController) as route:
-        route('account_login', '/account/login', action='login')
+        route('account_login', '/account/login/{service}', action='login')
         route('account_logout', '/account/logout', action='logout')
-        route('account_connect', '/account/connect', action='connect')
+        route('account_connect', '/account/connect/{service}', action='connect')
         route('account_delete', '/account/delete', action='delete')
+        route('_account_login_old', '/account/login', action='login')
 
     with handler_routes(config, views.admin.AdminController) as route:
         route('admin', '/admin', action='index')

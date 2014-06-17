@@ -36,7 +36,7 @@ class TestSettings(test.TestWeb):
         # Set plan before signing up
         r = self.app.get('/pricing')
         r = self.call_api('settings.plan', plan_id=u'agency-10', format='redirect')
-        self.assertIn('/account/login?next=%2Fsettings', r.location)
+        self.assertIn('/account/login/google?next=%2Fsettings', r.location)
 
         r.follow()
 

@@ -3,6 +3,7 @@ from requests_oauthlib import OAuth2Session
 
 from briefmetrics.model.meta import Session
 
+from unstdlib import iterate
 
 registry = {}
 
@@ -28,13 +29,10 @@ class OAuth2API(object):
     def __init__(self, request, token=None, state=None):
         self.request = request
 
-        if token and 'expires_at' in token:
-            token['expires_in'] = int(token['expires_at'] - time.time())
-
         # TODO: Investigate if OAuth2Session reuses connections?
         self.session = OAuth2Session(
             self.config['client_id'],
-            redirect_uri=request.route_url('account_connect'),
+            redirect_uri=request.route_url('account_connect', service=self.id),
             scope=self.config['scope'],
             auto_refresh_url=self.config['token_url'],
             auto_refresh_kwargs={
@@ -59,23 +57,12 @@ class OAuth2API(object):
             authorization_response=response_url,
             client_secret=self.config['client_secret'],
         )
-        return _clean_token(token)
+        return token
 
 
 def _token_updater(old_token):
     def wrapped(new_token):
-        token = _clean_token(new_token)
-
-        old_token.update(token)
+        old_token.update(new_token)
         Session.commit()
 
     return wrapped
-
-
-def _clean_token(token):
-    return {
-        'access_token': token['access_token'],
-        'token_type': token['token_type'],
-        'refresh_token': token['refresh_token'],
-        'expires_at': int(time.time() + token['expires_in']),
-    }

@@ -57,8 +57,7 @@ def _login_tween(handler, registry):
         try:
             return handler(request)
         except LoginRequired, e:
-            next = request.route_url('account_login', _query={'next': e.next or '/'})
-            raise httpexceptions.HTTPSeeOther(next)
+            raise httpexceptions.HTTPSeeOther(e.next_url(request))
         except APIError, e:
             raise httpexceptions.HTTPBadRequest(detail=e.message)
 

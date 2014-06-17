@@ -1,18 +1,23 @@
 from briefmetrics.lib.controller import Controller
 
 from briefmetrics import api, model
-from briefmetrics.lib.exceptions import LoginRequired, APIControllerError, APIError
+from briefmetrics.lib.exceptions import LoginRequired
 from briefmetrics.lib.service import registry as service_registry
+
+from unstdlib import get_many
 
 from .api import expose_api
 
 
 @expose_api('account.login')
 def account_login(request):
-    try:
-        u = api.account.login_user(request)
-    except APIError:
-        raise APIControllerError('Invalid login.')
+    is_force, token, save_redirect, service = get_many(request.params, optional=['force', 'token', 'next', 'service'])
+    service = service or request.matchdict.get('service', 'google')
+
+    if service != 'google':
+        is_force = True
+
+    u = api.account.login_user(request, service=service, save_redirect=save_redirect, token=token, is_force=is_force)
 
     return {'user': u}
 
@@ -27,7 +32,9 @@ class AccountController(Controller):
         return self._redirect(self.next)
 
     def connect(self):
-        oauth = service_registry['google'](self.request)
+        service = self.request.matchdict.get('service', 'google')
+
+        oauth = service_registry[service](self.request)
         account = api.account.connect_user(self.request, oauth)
         api.account.login_user_id(self.request, account.user_id)
 

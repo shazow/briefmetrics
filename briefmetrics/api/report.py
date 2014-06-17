@@ -71,15 +71,15 @@ def get_pending(since_time=None, max_num=None):
 
 # Reporting tasks:
 
-def fetch(request, report, since_time, google_query=None):
-    if not google_query:
-        google_query = api_account.query_service(request, service='google', token=report.account.oauth_token)
+def fetch(request, report, since_time, api_query=None, service='google'):
+    if not api_query:
+        api_query = api_account.query_service(request, service=service, token=report.account.oauth_token)
 
     ReportCls = get_report(report.type)
     r = ReportCls(report, since_time)
 
     try:
-        r.fetch(google_query)
+        r.fetch(api_query)
     except EmptyReportError:
         r.tables = {}
         return r

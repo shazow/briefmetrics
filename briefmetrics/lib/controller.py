@@ -59,9 +59,9 @@ class Controller(object):
         namespace.
         """
         request = self.request
-        login_url = request.route_path('account_login')
+        login_url = request.route_path('account_login', service='google')
         if request.features.get('ssl'):
-            login_url = request.route_url('account_login', _scheme='https')
+            login_url = request.route_url('account_login', service='google', _scheme='https')
 
         try:
             current_route = request.current_route_path(_query=None)

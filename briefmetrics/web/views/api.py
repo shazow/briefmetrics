@@ -153,8 +153,7 @@ def index(request):
         data['status'] = 'error'
 
         if isinstance(e, LoginRequired):
-            query = {'next': e.next or next}
-            next = request.route_url('account_login', _query=query)
+            next = e.next_url(request, next=next)
 
     data['messages'] += request.pop_flash()
 

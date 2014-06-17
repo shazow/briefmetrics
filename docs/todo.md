@@ -1,7 +1,3 @@
-* Setup Devon:
-    * Add $35/mo plan
-
-
 * Small things
     * Another level for 'on your way'?
     * Monthly: Weekend-shifted day delta bar charts

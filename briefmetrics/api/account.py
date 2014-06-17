@@ -10,7 +10,7 @@ from briefmetrics.lib.service import registry as service_registry
 from briefmetrics.web.environment import httpexceptions
 
 from sqlalchemy import orm
-from unstdlib import iterate, get_many
+from unstdlib import iterate
 
 
 log = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ def connect_user(request, oauth, user_required=False):
         token = oauth.auth_token(url)
     except InvalidGrantError:
         # Try again.
-        raise httpexceptions.HTTPSeeOther(request.route_path('account_login', service=id))
+        raise httpexceptions.HTTPSeeOther(request.route_path('account_login', service=oauth.id))
 
     # Identify user
     if not user:
@@ -49,7 +49,7 @@ def connect_user(request, oauth, user_required=False):
         )
         account = user.account
     elif not account:
-        account = model.Account.create(display_name=display_name, user=user, oauth_token=token)
+        account = model.Account.create(display_name=user.display_name, user=user, oauth_token=token, service=oauth.id)
     else:
         account.oauth_token = token
 
@@ -120,8 +120,7 @@ def login_user_id(request, user_id):
     request.session.save()
 
 
-def login_user(request):
-    is_force, token, save_redirect, service = get_many(request.params, optional=['force', 'token', 'next', 'service'])
+def login_user(request, service='google', save_redirect=None, token=None, is_force=None):
     user_id = get_user_id(request)
 
     if user_id and not is_force:

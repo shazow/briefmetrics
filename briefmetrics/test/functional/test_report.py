@@ -66,7 +66,7 @@ class TestReport(test.TestWeb):
         report = self._create_report()
         google_query = FakeQuery(_num_rows=0)
         since_time = datetime.datetime(2013, 1, 13)
-        context = api.report.fetch(self.request, report, since_time, google_query=google_query)
+        context = api.report.fetch(self.request, report, since_time, api_query=google_query)
         self.assertFalse(context.data)
 
         # TODO: Test send.
