@@ -1,9 +1,10 @@
 from collections import OrderedDict
 import datetime
 
-from .gcharts import encode_rows
-from . import helpers as h
-from .table import Table, Column
+from briefmetrics.lib import helpers as h
+from briefmetrics.lib.gcharts import encode_rows
+from briefmetrics.lib.table import Table, Column
+from briefmetrics.lib.registry import registry_metaclass
 
 
 def _prune_abstract(v):
@@ -101,16 +102,10 @@ class EmptyReportError(Exception):
 
 ##
 
-REPORTS = {}
-
-def register_report(id):
-    def decorator(cls):
-        REPORTS[id] = cls
-        return cls
-    return decorator
+registry = {}
 
 def get_report(id):
-    return REPORTS[id]
+    return registry[id]
 
 
 # Self helpers
@@ -133,6 +128,8 @@ def month_get_subject(self):
 #
 
 class Report(object):
+    __metaclass__ = registry_metaclass(registry)
+
     template = 'email/report/daily.mako'
 
     def __init__(self, report, since_time):
@@ -146,10 +143,6 @@ class Report(object):
         base_url = self.report.remote_data.get('websiteUrl', '')
         if base_url and 'http://' not in base_url:
             base_url = 'http://' + base_url
-
-        if not self.remote_id:
-            # TODO: Remove this after backfill
-            self.remote_id = report.remote_id = report.remote_data['id']
 
         self.base_url = self.report.remote_data.get('websiteUrl', '')
 
@@ -194,8 +187,8 @@ class Report(object):
         pass
 
 
-@register_report('week')
 class ActivityReport(Report):
+    id = 'week'
     template = 'email/report/weekly.mako'
 
     def get_date_range(self, since_time):
@@ -412,9 +405,9 @@ class ActivityReport(Report):
 
 
 
-@register_report('activity-month')
 class ActivityMonthlyReport(ActivityReport):
     "Monthly report"
+    id = 'activity-month'
     get_date_range = month_date_range
     get_subject = month_get_subject
 
@@ -423,17 +416,17 @@ class ActivityMonthlyReport(ActivityReport):
         self.data['interval_label'] = 'month'
 
 
-@register_report('day')
 class DailyReport(Report):
+    id = 'day'
     template = 'email/report/daily.mako'
 
     def fetch(self, google_query):
         pass
 
 
-@register_report('month')
 class TrendsReport(Report):
     "Monthly report"
+    id = 'month'
     template = 'email/report/monthly.mako'
 
     get_date_range = month_date_range

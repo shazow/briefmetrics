@@ -3,6 +3,7 @@ from .base import OAuth2API
 
 class StripeAPI(OAuth2API):
     id = 'stripe'
+    autocreate_report = 'stripe'
 
     config = {
         'auth_url': 'https://connect.stripe.com/oauth/authorize',

@@ -1,30 +1,16 @@
-import time
 from requests_oauthlib import OAuth2Session
 
+from briefmetrics.lib.registry import registry_metaclass
 from briefmetrics.model.meta import Session
-
-from unstdlib import iterate
 
 registry = {}
 
 
-class RegistryMeta(type):
-    def __init__(cls, name, bases, attrs):
-        super(RegistryMeta, cls).__init__(name, bases, attrs)
-
-        id = getattr(cls, 'id', None)
-        if not id:
-            return
-
-        if id in registry:
-            raise KeyError("Service already registered: %s" % name)
-
-        registry[id] = cls
-
-
 class OAuth2API(object):
-    __metaclass__ = RegistryMeta
+    __metaclass__ = registry_metaclass(registry)
     config = {}  # Extend and override this.
+
+    autocreate_report = None
 
     def __init__(self, request, token=None, state=None):
         self.request = request
