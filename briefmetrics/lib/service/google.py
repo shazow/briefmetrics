@@ -1,6 +1,11 @@
+import datetime
+
+from briefmetrics.lib import helpers as h
 from briefmetrics.lib.cache import ReportRegion
+from briefmetrics.lib.gcharts import encode_rows
 from briefmetrics.lib.http import assert_response
-from briefmetrics.lib.table import Table
+from briefmetrics.lib.report import Report, EmptyReportError, inject_table_delta, cumulative_by_month
+from briefmetrics.lib.table import Table, Column
 
 from .base import OAuth2API
 
@@ -94,3 +99,407 @@ class Query(object):
     def get_profiles(self, account_id):
         # account_id used for caching, not in query.
         return self._get('https://www.googleapis.com/analytics/v3/management/accounts/~all/webproperties/~all/profiles', _cache_keys=(account_id,))
+
+
+
+## Reports:
+
+
+def _prune_abstract(v):
+    if v.startswith('('):
+        return
+    return v
+
+def _cast_bounce(v):
+    v = float(v or 0.0)
+    if v:
+        return v
+
+def _human_bounce(f):
+    return h.human_percent(f, denominator=100.0)
+
+def _cast_time(v):
+    v = float(v or 0.0)
+    if v:
+        return v
+
+def _cast_title(v):
+    # Also prunes abstract
+    if not v or v.startswith('('):
+        return
+
+    if not v[0].isupper():
+        return v.title()
+
+    return v
+
+
+# Self helpers
+
+def month_date_range(self, since_time):
+    since_start = since_time.date().replace(day=1) 
+    date_end = since_start - datetime.timedelta(days=1) # Last of the previous month
+    date_start = date_end.replace(day=1) # First of the previous month
+    date_next = self.report.next_preferred(since_start).date()
+    previous_date_start = (date_start - datetime.timedelta(days=1)).replace(day=1)
+
+    return previous_date_start, date_start, date_end, date_next
+
+def month_get_subject(self):
+    return u"Report for {site} ({date})".format(
+        date=self.date_start.strftime('%B'),
+        site=self.report.display_name,
+    )
+
+
+class ActivityReport(Report):
+    id = 'week'
+    template = 'email/report/weekly.mako'
+
+    def get_date_range(self, since_time):
+        # Last Sunday
+        date_start = since_time.date() - datetime.timedelta(days=6) # Last week
+        date_start -= datetime.timedelta(days=date_start.weekday()+1) # Sunday of that week
+        date_end = date_start + datetime.timedelta(days=6)
+        date_next = self.report.next_preferred(date_end + datetime.timedelta(days=7)).date()
+        previous_date_start = date_start - datetime.timedelta(days=7) # +1 day to account for the no-overlap.
+
+        return previous_date_start, date_start, date_end, date_next
+
+    def get_subject(self):
+        if self.date_start.month == self.date_end.month:
+            return u"Report for {site} ({date})".format(
+                date=self.date_start.strftime('%b {}-{}').format(self.date_start.day, self.date_end.day),
+                site=self.report.display_name,
+            )
+
+        return u"Report for {site} ({date_start}-{date_end})".format(
+            date_start=self.date_start.strftime('%b {}').format(self.date_start.day),
+            date_end=self.date_end.strftime('%b {}').format(self.date_end.day),
+            site=self.report.display_name,
+        )
+
+    def get_preview(self):
+        if len(self.tables['summary'].rows) < 2:
+            return u''
+
+        primary_metric = self.report.config.get('intro') or 'ga:pageviews'
+        this_week, last_week = (r.get(primary_metric) for r in self.tables['summary'].rows[:2])
+        delta = (this_week / float(last_week or 1.0)) - 1
+        return u"Your site had {this_week} this {interval} ({delta} over last {interval}).".format(
+            this_week=h.format_int(this_week, self.data['total_units']),
+            delta=h.human_percent(delta, signed=True),
+            interval=self.data.get('interval_label', 'week'),
+        )
+
+    def _get_social_search(self, google_query, date_start, date_end, summary_metrics, max_results=10):
+        organic_table = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': date_start,
+                'end-date': date_end,
+                'filters': 'ga:medium==organic;ga:socialNetwork==(not set)',
+                'sort': '-ga:pageviews',
+                'max-results': str(max_results),
+            },
+            dimensions=[
+                Column('ga:source', type_cast=_prune_abstract),
+            ],
+            metrics=[col.new() for col in summary_metrics],
+        )
+
+        social_table = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': date_start,
+                'end-date': date_end,
+                'sort': '-ga:pageviews',
+                'max-results': str(max_results),
+            },
+            dimensions=[
+                Column('ga:socialNetwork', type_cast=_prune_abstract),
+            ],
+            metrics=[col.new() for col in summary_metrics],
+        )
+
+        t = Table(columns=[
+            Column('source', label='Social & Search', visible=1, type_cast=_cast_title),
+        ] + [col.new() for col in summary_metrics])
+
+        for cells in social_table.iter_rows():
+            t.add(cells)
+
+        for cells in organic_table.iter_rows():
+            t.add(cells)
+
+        t.sort(reverse=True)
+        return t
+
+
+    def fetch(self, google_query):
+        last_month_date_start = self.date_end - datetime.timedelta(days=self.date_end.day)
+        last_month_date_start -= datetime.timedelta(days=last_month_date_start.day - 1)
+
+        interval_field = 'ga:nthWeek'
+        if (self.date_end - self.date_start).days > 6:
+            interval_field = 'ga:nthMonth'
+
+        # Summary
+        summary_metrics = [
+            Column('ga:pageviews', label='Views', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
+            Column('ga:visitors', label='Uniques', type_cast=int, type_format=h.human_int),
+            Column('ga:avgTimeOnSite', label='Time On Site', type_cast=_cast_time, type_format=h.human_time, threshold=0),
+            Column('ga:visitBounceRate', label='Bounce Rate', type_cast=_cast_bounce, type_format=_human_bounce, reverse=True, threshold=0),
+        ]
+        self.tables['summary'] = summary_table = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': self.previous_date_start, # Extra week
+                'end-date': self.date_end,
+                'sort': '-{}'.format(interval_field),
+            },
+            dimensions=[
+                Column(interval_field),
+            ],
+            metrics=summary_metrics + [Column('ga:visits', type_cast=int)],
+        )
+
+        # Pages
+        self.tables['pages'] = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': self.date_start,
+                'end-date': self.date_end,
+                'sort': '-ga:pageviews',
+                'max-results': '10',
+            },
+            dimensions=[
+                Column('ga:pagePath', label='Pages', visible=1, type_cast=_prune_abstract),
+            ],
+            metrics=[col.new() for col in summary_metrics] + [
+                Column('ga:avgPageLoadTime', label='Page Load', type_cast=float, type_format=h.human_time, reverse=True, threshold=0)
+            ],
+        )
+
+        if not self.tables['pages'].rows:
+            # TODO: Use a better short circuit?
+            raise EmptyReportError()
+
+        # Referrers
+
+        current_referrers = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': self.date_start,
+                'end-date': self.date_end,
+                'filters': 'ga:medium==referral;ga:socialNetwork==(not set)',
+                'sort': '-ga:pageviews',
+                'max-results': '25',
+            },
+            dimensions=[
+                Column('ga:fullReferrer', label='Referrer', visible=1, type_cast=_prune_abstract)
+            ],
+            metrics=[col.new() for col in summary_metrics],
+        )
+
+        last_referrers = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': self.previous_date_start,
+                'end-date': self.previous_date_end,
+                'filters': 'ga:medium==referral;ga:socialNetwork==(not set)',
+                'sort': '-ga:pageviews',
+                'max-results': '250',
+            },
+            dimensions=[
+                Column('ga:fullReferrer', label='Referrer', visible=1, type_cast=_prune_abstract)
+            ],
+            metrics=[
+                summary_table.get('ga:pageviews').new(),
+            ],
+        )
+
+        inject_table_delta(current_referrers, last_referrers, join_column='ga:fullReferrer')
+
+        self.tables['referrers'] = current_referrers
+
+        #
+
+        historic_table = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': last_month_date_start,
+                'end-date': self.date_end,
+            },
+            dimensions=[
+                Column('ga:date'),
+                Column('ga:month', visible=0),
+            ],
+            metrics=[
+                Column('ga:pageviews', label='Views', type_cast=int, visible=1),
+                Column('ga:visitors', label='Uniques', type_cast=int),
+            ],
+        )
+
+        intro_config = self.report.config.get('intro')
+        if intro_config:
+            # For John Sheehan
+            historic_table.set_visible('ga:month', intro_config)
+
+        iter_historic = historic_table.iter_visible()
+        _, views_column = next(iter_historic)
+        monthly_data, max_value = cumulative_by_month(iter_historic)
+        last_month, current_month = monthly_data
+
+        self.data['historic_data'] = encode_rows(monthly_data, max_value)
+        self.data['total_units'] = '{:,} %s' % views_column.label.lower().rstrip('s')
+        self.data['total_current'] = current_month[-1]
+        self.data['total_last'] = last_month[-1]
+        self.data['total_last_relative'] = last_month[min(len(current_month), len(last_month))-1]
+        self.data['total_last_date_start'] = last_month_date_start
+
+        social_search_table = self._get_social_search(google_query, self.date_start, self.date_end, summary_metrics, max_results=25)
+        last_social_search = self._get_social_search(google_query, self.previous_date_start, self.previous_date_end, summary_metrics, max_results=100)
+        inject_table_delta(social_search_table, last_social_search, join_column='source')
+
+        self.tables['social_search'] = social_search_table
+
+        self.tables['social_search'].tag_rows()
+        self.tables['referrers'].tag_rows()
+        self.tables['pages'].tag_rows()
+
+
+
+class ActivityMonthlyReport(ActivityReport):
+    "Monthly report"
+    id = 'activity-month'
+    get_date_range = month_date_range
+    get_subject = month_get_subject
+
+    def build(self):
+        super(ActivityMonthlyReport, self).build()
+        self.data['interval_label'] = 'month'
+
+
+class DailyReport(Report):
+    id = 'day'
+    template = 'email/report/daily.mako'
+
+    def fetch(self, google_query):
+        pass
+
+
+class TrendsReport(Report):
+    "Monthly report"
+    id = 'month'
+    template = 'email/report/monthly.mako'
+
+    get_date_range = month_date_range
+    get_subject = month_get_subject
+
+    def fetch(self, google_query):
+        last_month_date_start = (self.date_start - datetime.timedelta(days=self.date_start.day + 1)).replace(day=1)
+
+        # Summary
+        summary_metrics = [
+            Column('ga:pageviews', label='Views', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
+            Column('ga:visitors', label='Uniques', type_cast=int, type_format=h.human_int),
+            Column('ga:avgTimeOnSite', label='Time On Site', type_cast=_cast_time, type_format=h.human_time, threshold=0),
+            Column('ga:visitBounceRate', label='Bounce Rate', type_cast=_cast_bounce, type_format=_human_bounce, reverse=True, threshold=0),
+        ]
+        self.tables['summary'] = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': last_month_date_start, # Extra month
+                'end-date': self.date_end,
+                'sort': '-ga:month',
+            },
+            dimensions=[
+                Column('ga:month'),
+            ],
+            metrics=summary_metrics + [Column('ga:visits', type_cast=int)],
+        )
+
+        self.tables['geo'] = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': self.date_start,
+                'end-date': self.date_end,
+                'sort': '-ga:visitors',
+                'max-results': '10',
+            },
+            dimensions=[
+                Column('ga:country', label='Country', visible=1, type_cast=_prune_abstract),
+            ],
+            metrics=[col.new() for col in summary_metrics],
+        )
+
+        self.tables['device'] = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': self.date_start,
+                'end-date': self.date_end,
+                'sort': '-ga:visitors',
+            },
+            dimensions=[
+                Column('ga:deviceCategory', label='Device', visible=1, type_cast=_cast_title),
+            ],
+            metrics=[col.new() for col in summary_metrics],
+        )
+
+        self.tables['browser'] = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': self.date_start,
+                'end-date': self.date_end,
+                'sort': '-ga:visitors',
+            },
+            dimensions=[
+                Column('ga:browser', label='Browser', visible=1),
+            ],
+            metrics=[col.new() for col in summary_metrics] + [
+                Column('ga:avgPageLoadTime', label='Load Time', type_cast=float),
+            ],
+        )
+
+        self.tables['geo'].tag_rows()
+        self.tables['device'].tag_rows()
+        self.tables['browser'].tag_rows()
+
+
+        # TODO: Add last year's month
+
+        historic_table = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': last_month_date_start,
+                'end-date': self.date_end,
+            },
+            dimensions=[
+                Column('ga:date'),
+                Column('ga:month', visible=0),
+            ],
+            metrics=[
+                Column('ga:pageviews', label='Views', type_cast=int, visible=1),
+                Column('ga:visitors', label='Uniques', type_cast=int),
+            ],
+        )
+
+        intro_config = self.report.config.get('intro')
+        if intro_config:
+            # For John Sheehan
+            historic_table.set_visible('ga:month', intro_config)
+
+        iter_historic = historic_table.iter_visible()
+        _, views_column = next(iter_historic)
+        monthly_data, max_value = cumulative_by_month(iter_historic)
+        last_month, current_month = monthly_data
+
+        self.data['historic_data'] = encode_rows(monthly_data, max_value)
+        self.data['total_units'] = '{:,} %s' % views_column.label.lower().rstrip('s')
+        self.data['total_current'] = current_month[-1]
+        self.data['total_last'] = last_month[-1]
+        self.data['current_month'] = self.date_start.strftime('%B')
+        self.data['last_month'] = last_month_date_start.strftime('%B')
+        self.data['current_month_days'] = self.date_end.day
+        self.data['last_month_days'] = (self.date_start - datetime.timedelta(days=1)).day
