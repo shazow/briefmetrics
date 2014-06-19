@@ -17,3 +17,7 @@ class TestAccount(test.TestWeb):
         user, account = api.account.get_account(self.request)
         self.assertNotEqual(user, None)
         self.assertNotEqual(account, None)
+
+        user, account = api.account.get_account(self.request, service='test')
+        self.assertNotEqual(user, None)
+        self.assertEqual(account, None)

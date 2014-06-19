@@ -18,7 +18,7 @@ def report_create(request):
     user_id = user.id
     account = user.get_account(id=account_id)
     if not account:
-        raise APIControllerError("Account does not exist for user: %s" % user_id)
+        raise APIControllerError("Account [%s] does not exist for user: %s" % (account_id, user_id))
 
     # Check limits
     num_sites = user.get_feature('num_sites')

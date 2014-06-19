@@ -114,7 +114,7 @@ class User(meta.Model): # Email address / login
         if service:
             accounts = (a for a in accounts if a.service == service)
         if id:
-            accounts = (a for a in accounts if a.id == id)
+            accounts = (a for a in accounts if a.id == int(id))
 
         return next(accounts, None)
 

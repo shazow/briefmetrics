@@ -33,7 +33,6 @@ class AccountController(Controller):
 
     def connect(self):
         service = self.request.matchdict.get('service', 'google')
-
         oauth = service_registry[service](self.request)
 
         try:
@@ -48,7 +47,13 @@ class AccountController(Controller):
 
         next_url = restored_redirect or self.next or self.request.route_path('reports')
         if oauth.is_autocreate:
-            next_url = self.request.route_path('api', _query={'method': 'report.create', 'account_id': account.id})
+            next_url = self.request.route_path('api', _query={
+                'method': 'report.create',
+                'account_id': account.id,
+                'format': 'redirect',
+                'next': next_url,
+                'csrf_token': self.request.session.get_csrf_token(),
+            })
 
         return self._redirect(next_url)
 

@@ -38,8 +38,8 @@ def connect_user(request, oauth, user_required=False):
         # Try again.
         raise httpexceptions.HTTPSeeOther(request.route_path('account_login', service=oauth.id))
 
-    # Identify user
     if not user:
+        # New user
         email, display_name = oauth.query_user()
         user = get_or_create(
             email=email,
@@ -49,13 +49,15 @@ def connect_user(request, oauth, user_required=False):
         )
         account = user.account
     elif not account:
+        # New account
         account = model.Account.create(display_name=user.display_name, user=user, oauth_token=token, service=oauth.id)
     else:
+        # Update account
         account.oauth_token = token
-
-    if account.id:
-        # Already exists, skip autocreate.
-        oauth.is_autocreate = False
+        has_report = Session.query(model.Report).filter_by(account_id=account.id).limit(1).count()
+        if has_report:
+            # Already exists, skip autocreate.
+            oauth.is_autocreate = False
 
     Session.commit()
 
