@@ -12,6 +12,7 @@ piprot:
 
 $(REQUIREMENTS_OUT): $(REQUIREMENTS_FILE)
 	pip install -r $(REQUIREMENTS_FILE) | tee -a $(REQUIREMENTS_OUT)
+	python setup.py develop
 
 setup: virtualenv $(SETUP_OUT)
 

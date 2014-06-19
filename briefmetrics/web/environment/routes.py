@@ -19,6 +19,7 @@ def add_routes(config):
         route('index', '/', action='index')
         route('pricing', '/pricing', action='pricing')
         route('privacy', '/privacy', action='privacy')
+        route('terms', '/terms', action='terms')
         route('security', '/security', action='security')
         route('articles', '/articles/{id}', action='articles')
         route('features', '/features/{id}', action='features')

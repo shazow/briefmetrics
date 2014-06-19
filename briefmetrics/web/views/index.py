@@ -34,6 +34,10 @@ class IndexController(Controller):
         self.title = "Privacy Policy"
         return self._render('privacy.mako')
 
+    def terms(self):
+        self.title = "Terms of Service"
+        return self._render('terms.mako')
+
     def security(self):
         self.title = "Security"
         return self._render('security.mako')
