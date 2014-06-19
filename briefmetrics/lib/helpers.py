@@ -144,7 +144,11 @@ def truncate(s, max_length=80):
     return s[:max_length-1] + u'\u2026'
 
 def ga_permalink(section, report, date_start=None, date_end=None):
-    awp = "a{accountId}w{internalWebPropertyId}p{id}".format(**report.remote_data)
+    try:
+        awp = "a{accountId}w{internalWebPropertyId}p{id}".format(**report.remote_data)
+    except KeyError, _:
+        return ''
+
     r = "https://www.google.com/analytics/web/#" + section + "/" + awp + "/"
 
     params = {}

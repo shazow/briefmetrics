@@ -28,7 +28,7 @@ def create(account_id, remote_data=None, remote_id=None, display_name=None, subs
     if remote_data:
         report.remote_data = remote_data
         report.remote_id = str(remote_data['id'])
-        report.display_name = h.human_url(remote_data['websiteUrl']) or remote_data['name']
+        report.display_name = h.human_url(remote_data.get('websiteUrl')) or remote_data.get('display_name') or remote_data.get('name')
 
     if remote_id:
         report.remote_id = str(remote_id)

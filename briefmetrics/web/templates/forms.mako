@@ -141,7 +141,11 @@
             </h3>
 
             <div class="controls">
-                <a class="button external" target="_blank" href="${h.ga_permalink('report/visitors-overview', site.report)}">Google Analytics</a>
+                % if site.report.account.service == 'stripe':
+                    <a class="button external" target="_blank" href="https://dashboard.stripe.com/">Stripe</a>
+                % else:
+                    <a class="button external" target="_blank" href="${h.ga_permalink('report/visitors-overview', site.report)}">Google Analytics</a>
+                % endif
             </div>
         </nav>
 

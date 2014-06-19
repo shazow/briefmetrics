@@ -162,7 +162,10 @@ class ReportController(Controller):
         self.c.report_types = [(id, label, id==model.Report.DEFAULT_TYPE) for id, label in model.Report.TYPES if id in enable_reports]
 
         self.c.user = user
-        self.c.reports = user.account.reports # XXX: accounts
+        self.c.reports = []
+        for account in user.accounts:
+            self.c.reports += account.reports
+
         self.c.sites = sorted(Site.from_list(self.c.reports), key=lambda s: s.display_name)
 
         return self._render('reports.mako')
