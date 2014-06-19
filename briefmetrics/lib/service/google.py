@@ -4,7 +4,7 @@ from briefmetrics.lib import helpers as h
 from briefmetrics.lib.cache import ReportRegion
 from briefmetrics.lib.gcharts import encode_rows
 from briefmetrics.lib.http import assert_response
-from briefmetrics.lib.report import Report, EmptyReportError, inject_table_delta, cumulative_by_month
+from briefmetrics.lib.report import Report, EmptyReportError, MonthlyMixin, WeeklyMixin, DailyMixin, inject_table_delta, cumulative_by_month
 from briefmetrics.lib.table import Table, Column
 
 from .base import OAuth2API
@@ -134,50 +134,14 @@ def _cast_title(v):
     return v
 
 
-# Self helpers
 
-def month_date_range(self, since_time):
-    since_start = since_time.date().replace(day=1) 
-    date_end = since_start - datetime.timedelta(days=1) # Last of the previous month
-    date_start = date_end.replace(day=1) # First of the previous month
-    date_next = self.report.next_preferred(since_start).date()
-    previous_date_start = (date_start - datetime.timedelta(days=1)).replace(day=1)
+# TODO: Rename ids to GA-specific
 
-    return previous_date_start, date_start, date_end, date_next
-
-def month_get_subject(self):
-    return u"Report for {site} ({date})".format(
-        date=self.date_start.strftime('%B'),
-        site=self.report.display_name,
-    )
-
-
-class ActivityReport(Report):
+class ActivityReport(WeeklyMixin, Report):
     id = 'week'
+    label = 'Weekly'
+
     template = 'email/report/weekly.mako'
-
-    def get_date_range(self, since_time):
-        # Last Sunday
-        date_start = since_time.date() - datetime.timedelta(days=6) # Last week
-        date_start -= datetime.timedelta(days=date_start.weekday()+1) # Sunday of that week
-        date_end = date_start + datetime.timedelta(days=6)
-        date_next = self.report.next_preferred(date_end + datetime.timedelta(days=7)).date()
-        previous_date_start = date_start - datetime.timedelta(days=7) # +1 day to account for the no-overlap.
-
-        return previous_date_start, date_start, date_end, date_next
-
-    def get_subject(self):
-        if self.date_start.month == self.date_end.month:
-            return u"Report for {site} ({date})".format(
-                date=self.date_start.strftime('%b {}-{}').format(self.date_start.day, self.date_end.day),
-                site=self.report.display_name,
-            )
-
-        return u"Report for {site} ({date_start}-{date_end})".format(
-            date_start=self.date_start.strftime('%b {}').format(self.date_start.day),
-            date_end=self.date_end.strftime('%b {}').format(self.date_end.day),
-            site=self.report.display_name,
-        )
 
     def get_preview(self):
         if len(self.tables['summary'].rows) < 2:
@@ -370,32 +334,31 @@ class ActivityReport(Report):
 
 
 
-class ActivityMonthlyReport(ActivityReport):
+class ActivityMonthlyReport(MonthlyMixin, ActivityReport):
     "Monthly report"
     id = 'activity-month'
-    get_date_range = month_date_range
-    get_subject = month_get_subject
 
     def build(self):
         super(ActivityMonthlyReport, self).build()
         self.data['interval_label'] = 'month'
 
 
-class DailyReport(Report):
+class DailyReport(DailyMixin, Report):
     id = 'day'
+    label = 'Alerts (Daily)'
+
     template = 'email/report/daily.mako'
 
     def fetch(self, google_query):
         pass
 
 
-class TrendsReport(Report):
+class TrendsReport(MonthlyMixin, Report):
     "Monthly report"
     id = 'month'
-    template = 'email/report/monthly.mako'
+    label = 'Trends (Monthly)'
 
-    get_date_range = month_date_range
-    get_subject = month_get_subject
+    template = 'email/report/monthly.mako'
 
     def fetch(self, google_query):
         last_month_date_start = (self.date_start - datetime.timedelta(days=self.date_start.day + 1)).replace(day=1)

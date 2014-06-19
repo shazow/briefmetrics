@@ -235,6 +235,7 @@ class TestReportLib(test.TestCase):
 
         r = get_report('day')(report, since_time)
 
+        self.assertEqual((r.date_end-r.date_start).days, 0)
         self.assertEqual(r.date_end, datetime.date(2013, 1, 1))
         self.assertEqual(r.date_next, datetime.date(2013, 1, 2))
         self.assertEqual(r.get_subject(), u"Report for example.com (Jan 1)")
@@ -244,6 +245,7 @@ class TestReportLib(test.TestCase):
         since_time = datetime.datetime(2013, 1, 14) # Monday after Next Sunday
         r = get_report('week')(report, since_time)
 
+        self.assertEqual((r.date_end-r.date_start).days, 6)
         self.assertEqual(r.date_start, datetime.date(2013, 1, 6)) # First Sunday
         self.assertEqual(r.date_end, datetime.date(2013, 1, 12)) # Next Saturday
         self.assertEqual(r.date_next, datetime.date(2013, 1, 21)) # Week from Monday

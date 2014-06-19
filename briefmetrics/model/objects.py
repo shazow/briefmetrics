@@ -150,6 +150,7 @@ class Report(meta.Model): # Property within an account (such as a website)
         ('week', 'Weekly'), # TODO: Activity (Weekly)?
         ('month', 'Trends (Monthly)'),
         ('activity-month', 'Activity (Monthly)'),
+        ('stripe', 'Stripe'),
        #'quarter',
        #'combine',
        #'alert',
@@ -175,7 +176,6 @@ class Report(meta.Model): # Property within an account (such as a website)
 
     users = orm.relationship(User, innerjoin=True, secondary='subscription', backref='reports')
 
-    # FIXME: Use croniter?
     time_preferred = Column(types.DateTime) # Granularity relative to type
     type = Column(_types.Enum(TYPES), default='week')
 

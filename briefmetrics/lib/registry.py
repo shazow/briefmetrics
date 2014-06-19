@@ -1,4 +1,3 @@
-
 def registry_metaclass(storage):
     class RegistryMeta(type):
         def __init__(cls, name, bases, attrs):

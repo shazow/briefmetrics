@@ -108,6 +108,21 @@ class Report(object):
         date_start = now.date()
         return cls(report, date_start)
 
+    def get_query_params(self):
+        return {
+            'id': self.remote_id,
+            'date_start': self.date_start,
+            'date_end': self.date_end,
+        }
+
+    def get_preview(self):
+        return u''
+
+    def build(self):
+        pass
+
+
+class DailyMixin(object):
     def get_date_range(self, since_time):
         """
         Returns a (start, end, next) date tuple.
@@ -125,15 +140,44 @@ class Report(object):
             site=self.report.display_name,
         )
 
-    def get_query_params(self):
-        return {
-            'id': self.remote_id,
-            'date_start': self.date_start,
-            'date_end': self.date_end,
-        }
 
-    def get_preview(self):
-        return u''
+class MonthlyMixin(object):
+    def get_date_range(self, since_time):
+        since_start = since_time.date().replace(day=1) 
+        date_end = since_start - datetime.timedelta(days=1) # Last of the previous month
+        date_start = date_end.replace(day=1) # First of the previous month
+        date_next = self.report.next_preferred(since_start).date()
+        previous_date_start = (date_start - datetime.timedelta(days=1)).replace(day=1)
 
-    def build(self):
-        pass
+        return previous_date_start, date_start, date_end, date_next
+
+    def get_subject(self):
+        return u"Report for {site} ({date})".format(
+            date=self.date_start.strftime('%B'),
+            site=self.report.display_name,
+        )
+
+
+class WeeklyMixin(object):
+    def get_date_range(self, since_time):
+        # Last Sunday
+        date_start = since_time.date() - datetime.timedelta(days=6) # Last week
+        date_start -= datetime.timedelta(days=date_start.weekday()+1) # Sunday of that week
+        date_end = date_start + datetime.timedelta(days=6)
+        date_next = self.report.next_preferred(date_end + datetime.timedelta(days=7)).date()
+        previous_date_start = date_start - datetime.timedelta(days=7) # +1 day to account for the no-overlap.
+
+        return previous_date_start, date_start, date_end, date_next
+
+    def get_subject(self):
+        if self.date_start.month == self.date_end.month:
+            return u"Report for {site} ({date})".format(
+                date=self.date_start.strftime('%b {}-{}').format(self.date_start.day, self.date_end.day),
+                site=self.report.display_name,
+            )
+
+        return u"Report for {site} ({date_start}-{date_end})".format(
+            date_start=self.date_start.strftime('%b {}').format(self.date_start.day),
+            date_end=self.date_end.strftime('%b {}').format(self.date_end.day),
+            site=self.report.display_name,
+        )

@@ -1,5 +1,7 @@
 from .base import OAuth2API
 
+from briefmetrics.lib.report import Report, EmptyReportError, WeeklyMixin
+
 
 class StripeAPI(OAuth2API):
     id = 'stripe'
@@ -25,3 +27,12 @@ class Query(object):
 
     def get(self, *args, **kw):
         return self.api.get(*args, **kw)
+
+
+
+class StripeReport(WeeklyMixin, Report):
+    id = 'stripe'
+    label = 'Stripe'
+
+    template = 'email/report/stripe.mako'
+
