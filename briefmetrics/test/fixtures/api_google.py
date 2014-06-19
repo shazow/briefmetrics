@@ -51,18 +51,21 @@ data['ga:browser'] = ['Chrome', 'Firefox', 'Internet Explorer']
 
 
 skip_state = set(['ga:month'])
-cycles = {}
-def stateful_cycle(col_id):
-    r = cycle(data[col_id])
-    if col_id in skip_state:
-        return r
-    return cycles.setdefault(col_id, r)
 
 
 class FakeQuery(Query):
     def __init__(self, *args, **kw):
+        super(FakeQuery, self).__init__(*args, **kw)
         self.num_profiles = kw.get('_num_profiles', 5)
         self.num_rows = kw.get('_num_rows', 10)
+
+        self.cycles = {}
+
+    def _stateful_cycle(self, col_id):
+        r = cycle(data[col_id])
+        if col_id in skip_state:
+            return r
+        return self.cycles.setdefault(col_id, r)
 
     def get_table(self, params, dimensions=None, metrics=None, _cache_keys=None):
         columns = self._columns_to_params(params, dimensions=dimensions, metrics=metrics)
@@ -70,7 +73,7 @@ class FakeQuery(Query):
         limit = min(self.num_rows, int(params.get('max-results', 10)))
 
         t = Table(columns)
-        row_data = [stateful_cycle(col.id) for col in columns]
+        row_data = [self._stateful_cycle(col.id) for col in columns]
         for _ in xrange(limit):
             t.add(next(c) for c in row_data)
 

@@ -47,18 +47,8 @@ class AccountController(Controller):
         self.request.session.save()
 
         next_url = restored_redirect or self.next or self.request.route_path('reports')
-
-        if not oauth.autocreate_report:
-            return self._redirect(next_url)
-
-        try:
-            report = api.report.create(account_id=account.id, remote_data=profile, subscribe_user_id=user_id, type=report_type)
-
-            # Queue new report
-            tasks.report.send.delay(report.id)
-
-        except APIError as e:
-            self.request.session.flash("Failed to create a %s report: %s" % (oauth.autocreate_report.title(), e.message))
+        if oauth.is_autocreate:
+            next_url = self.request.route_path('api', _query={'method': 'report.create', 'account_id': account.id})
 
         return self._redirect(next_url)
 

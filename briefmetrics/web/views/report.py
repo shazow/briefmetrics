@@ -13,7 +13,6 @@ from .api import expose_api, handle_api
 @expose_api('report.create')
 def report_create(request):
     remote_id, report_type, account_id = get_many(request.params, optional=['remote_id', 'type', 'account_id'])
-    report_type = report_type or 'week'
 
     user = api.account.get_user(request, required=True, joinedload='accounts')
     user_id = user.id
@@ -34,6 +33,7 @@ def report_create(request):
     if not profile:
         raise APIControllerError("Profile does not belong to this account: %s" % remote_id)
 
+    report_type = report_type or api_query.oauth.default_report
     try:
         report = api.report.create(account_id=account.id, remote_data=profile, subscribe_user_id=user_id, type=report_type, remote_id=remote_id)
     except APIError as e:

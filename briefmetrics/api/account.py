@@ -54,8 +54,8 @@ def connect_user(request, oauth, user_required=False):
         account.oauth_token = token
 
     if account.id:
-        # Already exists
-        oauth.autocreate_report = False
+        # Already exists, skip autocreate.
+        oauth.is_autocreate = False
 
     Session.commit()
 

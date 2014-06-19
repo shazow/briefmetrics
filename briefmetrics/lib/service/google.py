@@ -12,6 +12,7 @@ from .base import OAuth2API
 
 class GoogleAPI(OAuth2API):
     id = 'google'
+    default_report = 'week'
 
     config = {
         'auth_url': 'https://accounts.google.com/o/oauth2/auth',
@@ -39,9 +40,9 @@ class GoogleAPI(OAuth2API):
     def create_query(self, cache_keys=None):
         if self.request.features.get('offline'):
             from briefmetrics.test.fixtures.api_google import FakeQuery
-            return FakeQuery(self.session)
+            return FakeQuery(self)
 
-        return Query(self.session, cache_keys=cache_keys)
+        return Query(self, cache_keys=cache_keys)
 
 
 
@@ -59,7 +60,8 @@ DIMENSIONS = [u'ga:adContent', u'ga:adDestinationUrl', u'ga:adDisplayUrl', u'ga:
 
 class Query(object):
     def __init__(self, oauth, cache_keys=None):
-        self.api = oauth
+        self.oauth = oauth
+        self.api = oauth.session
         self.cache_keys = cache_keys
 
     @ReportRegion.cache_on_arguments()
@@ -83,6 +85,9 @@ class Query(object):
 
         return columns
 
+    def get(self, url, params=None):
+        return self._get(url, params=params, _cache_keys=self.cache_keys)
+
     def get_table(self, params, dimensions=None, metrics=None, _cache_keys=None):
         params = dict(params)
         columns = self._columns_to_params(params, dimensions=dimensions, metrics=metrics)
@@ -103,7 +108,7 @@ class Query(object):
 
     def get_profiles(self):
         # account_id used for caching, not in query.
-        return self._get('https://www.googleapis.com/analytics/v3/management/accounts/~all/webproperties/~all/profiles', _cache_keys=self.cache_keys)
+        return self.get('https://www.googleapis.com/analytics/v3/management/accounts/~all/webproperties/~all/profiles')
 
 
 
