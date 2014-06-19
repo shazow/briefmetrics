@@ -17,7 +17,7 @@ Session = model.Session
 @mock.patch('briefmetrics.lib.service.google.Query', FakeQuery)
 class TestReport(test.TestWeb):
     def _create_report(self):
-        remote_data = FakeQuery().get_profiles(1)['items'][0]
+        remote_data = FakeQuery().get_profiles()['items'][0]
         u = api.account.get_or_create(email=u'example@example.com', token={}, display_name=u'Example')
         report = model.Report.create(account=u.account, remote_data=remote_data, display_name=u'example.com')
         model.Subscription.create(user=u, report=report)
@@ -26,11 +26,13 @@ class TestReport(test.TestWeb):
 
     def test_fake_query(self):
         q = FakeQuery(None)
-        r = q.get_profiles(1)
+        r = q.get_profiles()
         self.assertEqual(r[u'username'], u'example@example.com')
 
-        q = api.account.query_service(self.request, service='google', token=None)
-        r = q.get_profiles(1)
+        account = model.Account(service='google')
+
+        q = api.account.query_service(self.request, account=account)
+        r = q.get_profiles()
         self.assertEqual(r[u'username'], u'example@example.com')
 
         t = q.get_table({'max-results': 5}, dimensions=[

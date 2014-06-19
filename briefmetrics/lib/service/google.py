@@ -36,12 +36,12 @@ class GoogleAPI(OAuth2API):
         return user_info['email'], user_info.get('name')
 
 
-    def create_query(self):
+    def create_query(self, cache_keys=None):
         if self.request.features.get('offline'):
             from briefmetrics.test.fixtures.api_google import FakeQuery
             return FakeQuery(self.session)
 
-        return Query(self.session)
+        return Query(self.session, cache_keys=cache_keys)
 
 
 
@@ -58,8 +58,9 @@ DIMENSIONS = [u'ga:adContent', u'ga:adDestinationUrl', u'ga:adDisplayUrl', u'ga:
 
 
 class Query(object):
-    def __init__(self, oauth):
+    def __init__(self, oauth, cache_keys=None):
         self.api = oauth
+        self.cache_keys = cache_keys
 
     @ReportRegion.cache_on_arguments()
     def _get(self, url, params=None, _cache_keys=None):
@@ -68,7 +69,7 @@ class Query(object):
         return r.json()
 
     def _get_data(self, params=None, _cache_keys=None):
-        return self._get('https://www.googleapis.com/analytics/v3/data/ga', params=params, _cache_keys=_cache_keys)
+        return self._get('https://www.googleapis.com/analytics/v3/data/ga', params=params, _cache_keys=_cache_keys or self.cache_keys)
 
     def _columns_to_params(self, params, dimensions=None, metrics=None):
         columns = []
@@ -87,7 +88,7 @@ class Query(object):
         columns = self._columns_to_params(params, dimensions=dimensions, metrics=metrics)
 
         t = Table(columns)
-        t._response_data = response_data = self._get_data(params, _cache_keys=_cache_keys)
+        t._response_data = response_data = self._get_data(params)
         if 'rows' not in response_data:
             return t
 
@@ -96,9 +97,13 @@ class Query(object):
 
         return t
 
-    def get_profiles(self, account_id):
+    def get_profile(self, remote_id):
+        r = self.get_profiles()
+        return next((item for item in r['items'] if item['id'] == remote_id), None)
+
+    def get_profiles(self):
         # account_id used for caching, not in query.
-        return self._get('https://www.googleapis.com/analytics/v3/management/accounts/~all/webproperties/~all/profiles', _cache_keys=(account_id,))
+        return self._get('https://www.googleapis.com/analytics/v3/management/accounts/~all/webproperties/~all/profiles', _cache_keys=self.cache_keys)
 
 
 

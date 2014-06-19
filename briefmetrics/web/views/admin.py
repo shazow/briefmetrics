@@ -30,8 +30,9 @@ def explore_api(request):
     if not report:
         raise APIControllerError("Invalid report id: %s" % report_id)
 
+    cache_keys = ('admin/explore_api',)
     google_oauth2 = api.google.OAuth2(request, token=u.account.oauth_token) # XXX: accounts
-    google_query = api.google.create_query(request, google_oauth2.session)
+    google_query = api.google.create_query(request, google_oauth2.session, cache_keys=cache_keys)
 
     date_end = date_end or date.today()
     date_start = date_start or date_end - timedelta(days=7)
@@ -51,10 +52,9 @@ def explore_api(request):
     if extra:
         params.update(part.split('=', 1) for part in extra.split('&'))
 
-    cache_keys = ('admin/explore_api',)
 
     try:
-        r = google_query.get_table(params, metrics=metrics, dimensions=dimensions, _cache_keys=cache_keys)
+        r = google_query.get_table(params, metrics=metrics, dimensions=dimensions)
     except KeyError as e:
         raise APIControllerError("Invalid metric or dimension: %s" % e.args[0])
 

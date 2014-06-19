@@ -73,7 +73,7 @@ def get_pending(since_time=None, max_num=None):
 
 def fetch(request, report, since_time, api_query=None, service='google'):
     if not api_query:
-        api_query = api_account.query_service(request, service=service, token=report.account.oauth_token)
+        api_query = api_account.query_service(request, account=report.account)
 
     ReportCls = get_report(report.type)
     r = ReportCls(report, since_time)

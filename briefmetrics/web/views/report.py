@@ -12,14 +12,12 @@ from .api import expose_api, handle_api
 
 @expose_api('report.create')
 def report_create(request):
-    remote_id, report_type, account_id = get_many(request.params, required=['remote_id'], optional=['type', 'account_id'])
+    remote_id, report_type, account_id = get_many(request.params, optional=['remote_id', 'type', 'account_id'])
     report_type = report_type or 'week'
-    if not remote_id:
-        raise APIControllerError("Select a report to create.")
 
     user = api.account.get_user(request, required=True, joinedload='accounts')
     user_id = user.id
-    account = user.get_account(service='google')
+    account = user.get_account(id=account_id)
     if not account:
         raise APIControllerError("Account does not exist for user: %s" % user_id)
 
@@ -31,16 +29,13 @@ def report_create(request):
         if len(remote_ids) > num_sites:
             raise APIControllerError("Maximum number of sites limit reached, please consider upgrading your plan.")
 
-    google_query = api.account.query_service(request, service='google', token=account.oauth_token)
-    r = google_query.get_profiles(account_id=account.id)
-
-    # Find profile item
-    profile = next((item for item in r['items'] if item['id'] == remote_id), None)
+    api_query = api.account.query_service(request, account=account)
+    profile = api_query.get_profile(remote_id=remote_id)
     if not profile:
         raise APIControllerError("Profile does not belong to this account: %s" % remote_id)
 
     try:
-        report = api.report.create(account_id=account.id, remote_data=profile, subscribe_user_id=user_id, type=report_type)
+        report = api.report.create(account_id=account.id, remote_data=profile, subscribe_user_id=user_id, type=report_type, remote_id=remote_id)
     except APIError as e:
         raise APIControllerError(e.message)
 
@@ -153,9 +148,9 @@ class ReportController(Controller):
         user = api.account.get_user(self.request, required=True, joinedload='accounts.reports.subscriptions.user')
         account = user.get_account(service='google')
 
-        google_query = api.account.query_service(self.request, service='google', token=account.oauth_token)
+        google_query = api.account.query_service(self.request, account=account)
         try:
-            self.c.available_profiles = google_query.get_profiles(account_id=user.account.id)
+            self.c.available_profiles = google_query.get_profiles()
         except APIError as e:
             r = e.response.json()
             for msg in r['error']['errors']:

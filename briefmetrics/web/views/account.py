@@ -1,7 +1,7 @@
 from briefmetrics.lib.controller import Controller
 
-from briefmetrics import api, model
-from briefmetrics.lib.exceptions import LoginRequired
+from briefmetrics import api, model, tasks
+from briefmetrics.lib.exceptions import LoginRequired, APIError, APIControllerError
 from briefmetrics.lib.service import registry as service_registry
 
 from unstdlib import get_many
@@ -35,13 +35,32 @@ class AccountController(Controller):
         service = self.request.matchdict.get('service', 'google')
 
         oauth = service_registry[service](self.request)
-        account = api.account.connect_user(self.request, oauth)
+
+        try:
+            account = api.account.connect_user(self.request, oauth)
+        except APIError, e:
+            raise APIControllerError(e.message)
+
         api.account.login_user_id(self.request, account.user_id)
 
         restored_redirect = self.request.session.pop('next', None)
         self.request.session.save()
 
-        return self._redirect(restored_redirect or self.next or self.request.route_path('reports'))
+        next_url = restored_redirect or self.next or self.request.route_path('reports')
+
+        if not oauth.autocreate_report:
+            return self._redirect(next_url)
+
+        try:
+            report = api.report.create(account_id=account.id, remote_data=profile, subscribe_user_id=user_id, type=report_type)
+
+            # Queue new report
+            tasks.report.send.delay(report.id)
+
+        except APIError as e:
+            self.request.session.flash("Failed to create a %s report: %s" % (oauth.autocreate_report.title(), e.message))
+
+        return self._redirect(next_url)
 
     def logout(self):
         api.account.logout_user(self.request)

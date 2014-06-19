@@ -76,7 +76,7 @@ class FakeQuery(Query):
 
         return t
 
-    def get_profiles(self, account_id):
+    def get_profiles(self):
         r = _response_profiles.copy()
         r[u'items'] = []
 

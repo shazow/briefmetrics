@@ -53,6 +53,10 @@ def connect_user(request, oauth, user_required=False):
     else:
         account.oauth_token = token
 
+    if account.id:
+        # Already exists
+        oauth.autocreate_report = False
+
     Session.commit()
 
     return account
@@ -151,8 +155,8 @@ def logout_user(request):
     request.session.save()
 
 
-def query_service(request, service, token):
-    return service_registry[service](request, token=token).create_query()
+def query_service(request, account):
+    return service_registry[account.service](request, token=account.oauth_token).create_query(cache_keys=(account.id,))
 
 
 # API queries
