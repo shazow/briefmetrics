@@ -83,6 +83,7 @@ class Report(object):
     __metaclass__ = registry_metaclass(registry)
 
     template = 'email/report/daily.mako'
+    frequency = 'day'
 
     def __init__(self, report, since_time):
         self.data = {}
@@ -91,12 +92,6 @@ class Report(object):
         self.owner = report.account and report.account.user
         self.remote_id = report.remote_id
         self.messages = []
-
-        base_url = self.report.remote_data.get('websiteUrl', '')
-        if base_url and 'http://' not in base_url:
-            base_url = 'http://' + base_url
-
-        self.base_url = self.report.remote_data.get('websiteUrl', '')
 
         self.since_time = since_time
         self.previous_date_start, self.date_start, self.date_end, self.date_next = self.get_date_range(since_time)
@@ -121,15 +116,51 @@ class Report(object):
     def build(self):
         pass
 
+    def next_preferred(self, now):
+        # TODO: Use combine?
+        # TODO: Use delorean/arrow? :/
+        time_preferred = self.report.time_preferred or self.report.encode_preferred_time()
+        datetime_tuple = now.timetuple()[:3] + time_preferred.timetuple()[3:6]
+        now = datetime.datetime(*datetime_tuple)
+
+        # TODO: Break it out into separate member methods per mixin?
+        if self.frequency == 'day':
+            days_offset = 1
+
+        elif self.frequency == 'week':
+            preferred_weekday = time_preferred.weekday() if time_preferred.day > 1 else 0
+            days_offset = preferred_weekday - now.weekday()
+            if days_offset < 0:
+                days_offset += 7
+
+        elif self.frequency == 'month':
+            next_month = now.replace(day=1) + datetime.timedelta(days=32)
+            next_month = next_month.replace(day=1)
+
+            if time_preferred.day != 1:
+                weekday_offset = time_preferred.weekday() - next_month.weekday()
+                if weekday_offset:
+                    next_month += datetime.timedelta(days=7 + weekday_offset)
+
+            days_offset = (next_month - now).days
+
+        else:
+            raise ValueError('Invalid type: %s' % self.frequency)
+
+        return now + datetime.timedelta(days=days_offset)
+
+
 
 class DailyMixin(object):
+    frequency = 'day'
+
     def get_date_range(self, since_time):
         """
         Returns a (start, end, next) date tuple.
         """
         date_start = (since_time - datetime.timedelta(days=1)).date()
         date_end = date_start
-        date_next = self.report.next_preferred(date_end).date()
+        date_next = self.next_preferred(date_end).date()
         previous_date_start = date_start - datetime.timedelta(days=1)
 
         return previous_date_start, date_start, date_end, date_next
@@ -142,11 +173,13 @@ class DailyMixin(object):
 
 
 class MonthlyMixin(object):
+    frequency = 'month'
+
     def get_date_range(self, since_time):
         since_start = since_time.date().replace(day=1) 
         date_end = since_start - datetime.timedelta(days=1) # Last of the previous month
         date_start = date_end.replace(day=1) # First of the previous month
-        date_next = self.report.next_preferred(since_start).date()
+        date_next = self.next_preferred(since_start).date()
         previous_date_start = (date_start - datetime.timedelta(days=1)).replace(day=1)
 
         return previous_date_start, date_start, date_end, date_next
@@ -159,12 +192,14 @@ class MonthlyMixin(object):
 
 
 class WeeklyMixin(object):
+    frequency = 'week'
+
     def get_date_range(self, since_time):
         # Last Sunday
         date_start = since_time.date() - datetime.timedelta(days=6) # Last week
         date_start -= datetime.timedelta(days=date_start.weekday()+1) # Sunday of that week
         date_end = date_start + datetime.timedelta(days=6)
-        date_next = self.report.next_preferred(date_end + datetime.timedelta(days=7)).date()
+        date_next = self.next_preferred(date_end + datetime.timedelta(days=7)).date()
         previous_date_start = date_start - datetime.timedelta(days=7) # +1 day to account for the no-overlap.
 
         return previous_date_start, date_start, date_end, date_next

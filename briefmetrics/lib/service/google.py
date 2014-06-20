@@ -147,7 +147,19 @@ def _cast_title(v):
 
 # TODO: Rename ids to GA-specific
 
-class ActivityReport(WeeklyMixin, Report):
+class GAReport(Report):
+    def __init__(self, report, since_time):
+        super(GAReport, self).__init__(report, since_time)
+
+        remote_data = self.report.remote_data or {}
+        base_url = remote_data.get('websiteUrl', '')
+        if base_url and 'http://' not in base_url:
+            base_url = 'http://' + base_url
+
+        self.base_url = remote_data.get('websiteUrl', '')
+
+
+class ActivityReport(WeeklyMixin, GAReport):
     id = 'week'
     label = 'Weekly'
 
@@ -353,7 +365,7 @@ class ActivityMonthlyReport(MonthlyMixin, ActivityReport):
         self.data['interval_label'] = 'month'
 
 
-class DailyReport(DailyMixin, Report):
+class DailyReport(DailyMixin, GAReport):
     id = 'day'
     label = 'Alerts (Daily)'
 
@@ -363,7 +375,7 @@ class DailyReport(DailyMixin, Report):
         pass
 
 
-class TrendsReport(MonthlyMixin, Report):
+class TrendsReport(MonthlyMixin, GAReport):
     "Monthly report"
     id = 'month'
     label = 'Trends (Monthly)'

@@ -1,11 +1,13 @@
 import datetime
 import logging
+import warnings
 
 from unstdlib import random_string, now
 from sqlalchemy import orm, types
 from sqlalchemy import Column, ForeignKey, Index
 
 from briefmetrics.lib import pricing
+from briefmetrics.lib.report import get_report
 from . import meta, _types
 
 
@@ -106,6 +108,7 @@ class User(meta.Model): # Email address / login
 
     @property
     def account(self):
+        #warnings.warn("Deprecated use of User.account", DeprecationWarning)
         print "XXX: Deprecated use of User.account"
         return self.get_account(service='google')
 
@@ -182,39 +185,6 @@ class Report(meta.Model): # Property within an account (such as a website)
     @property
     def type_label(self):
         return self.__table__.columns['type'].type.name_labels[self.type]
-
-    def next_preferred(self, now):
-        # Add preferred time offset
-        # TODO: Use combine?
-        # TODO: Use delorean/arrow? :/
-        time_preferred = self.time_preferred or self.encode_preferred_time()
-        datetime_tuple = now.timetuple()[:3] + time_preferred.timetuple()[3:6]
-        now = datetime.datetime(*datetime_tuple)
-
-        if self.type == 'day':
-            days_offset = 1
-
-        elif self.type == 'week':
-            preferred_weekday = time_preferred.weekday() if time_preferred.day > 1 else 0
-            days_offset = preferred_weekday - now.weekday()
-            if days_offset < 0:
-                days_offset += 7
-
-        elif self.type in ('month', 'activity-month'):
-            next_month = now.replace(day=1) + datetime.timedelta(days=32)
-            next_month = next_month.replace(day=1)
-
-            if time_preferred.day != 1:
-                weekday_offset = time_preferred.weekday() - next_month.weekday()
-                if weekday_offset:
-                    next_month += datetime.timedelta(days=7 + weekday_offset)
-
-            days_offset = (next_month - now).days
-
-        else:
-            raise ValueError('Invalid type: %s' % self.type)
-
-        return now + datetime.timedelta(days=days_offset)
 
     @staticmethod
     def encode_preferred_time(hour=13, minute=0, second=0, weekday=None, min_year=1900):

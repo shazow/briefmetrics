@@ -200,25 +200,24 @@ class TestReportModel(test.TestCase):
     def test_next_preferred(self):
         now = datetime.datetime(2013, 1, 1, 7, 35, 15) # Tuesday
 
-        r = model.Report(type='day')
-
-        r.set_time_preferred(hour=12)
+        r = get_report('day')(model.Report(), now)
+        r.report.set_time_preferred(hour=12)
         self.assertEqual(r.next_preferred(now), datetime.datetime(2013, 1, 2, 12, 0, 0))
 
-        r = model.Report(type='week')
+        r = get_report('week')(model.Report(), now)
         # Default to Monday @ 8pm EST for weekly
         self.assertEqual(r.next_preferred(now), datetime.datetime(2013, 1, 7, 13, 0, 0))
         self.assertEqual(r.next_preferred(datetime.date(2013, 1, 12)), datetime.datetime(2013, 1, 14, 13)) # Sat -> Mon
 
         # Wednesdays @ 12pm UTC
-        r.set_time_preferred(weekday=2, hour=12)
+        r.report.set_time_preferred(weekday=2, hour=12)
         self.assertEqual(r.next_preferred(now), datetime.datetime(2013, 1, 2, 12, 0, 0))
 
         # Mondays @ 12pm UTC
-        r.set_time_preferred(weekday=0, hour=12)
+        r.report.set_time_preferred(weekday=0, hour=12)
         self.assertEqual(r.next_preferred(now), datetime.datetime(2013, 1, 7, 12, 0, 0))
 
-        r = model.Report(type='activity-month')
+        r = get_report('activity-month')(model.Report(), now)
         self.assertEqual(r.next_preferred(now), datetime.datetime(2013, 2, 1, 13, 0, 0))
         self.assertEqual(r.next_preferred(datetime.date(2013, 2, 2)), datetime.datetime(2013, 3, 1, 13))
         self.assertEqual(r.next_preferred(datetime.date(2013, 2, 1)), datetime.datetime(2013, 3, 1, 13))

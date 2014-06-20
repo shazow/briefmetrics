@@ -197,6 +197,6 @@ def send(request, report, since_time=None, pretend=False):
         owner.num_remaining -= 1
 
     report.time_last = now()
-    report.time_next = report.next_preferred(report_context.date_end + datetime.timedelta(days=7)) # XXX: Generalize
+    report.time_next = report_context.next_preferred(report_context.date_end + datetime.timedelta(days=7)) # XXX: Generalize
 
     model.Session.commit()

@@ -55,3 +55,5 @@ class StripeReport(WeeklyMixin, Report):
 
     template = 'email/report/stripe.mako'
 
+    def fetch(self, api_query):
+        return
