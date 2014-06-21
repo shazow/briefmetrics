@@ -1,8 +1,28 @@
+import time
+import datetime
+
 from .base import OAuth2API
 
 from briefmetrics.lib.http import assert_response
 from briefmetrics.lib.cache import ReportRegion
 from briefmetrics.lib.report import Report, EmptyReportError, WeeklyMixin
+from briefmetrics.lib.table import Column, Table
+
+
+def to_epoch(dt):
+    return time.mktime(dt.timetuple())
+
+def to_datetime(n):
+    return datetime.datetime.utcfromtimestamp(n)
+
+def to_email(name, email):
+    if not name:
+        return email
+
+    return u'"{name}" <{email}>'.format(
+        display_name=name.replace('"', '&#34;'),
+        email=email,
+    )
 
 
 class StripeAPI(OAuth2API):
@@ -56,4 +76,26 @@ class StripeReport(WeeklyMixin, Report):
     template = 'email/report/stripe.mako'
 
     def fetch(self, api_query):
-        return
+        new_customers = Table([
+            Column('id'),
+            Column('created'),
+            Column('email_to'),
+            Column('plan'),
+        ])
+
+        r = api_query.get('https://api.stripe.com/v1/customers', params={
+            'created[gte]': to_epoch(self.date_start),
+            'created[lt]': to_epoch(self.date_end + datetime.timedelta(days=1)),
+        })
+
+        for customer in r.get('data', {}):
+            plan = customer.get('subscription', {}).get('plan', {})
+            if plan:
+                plan = '{name} @ ${amount}/{interval}'.format(**plan)
+
+            new_customers.add([
+                customer['id'],
+                to_datetime(customer['created']),
+                to_email(name=customer['description'], email=customer['email']),
+                plan,
+            ])
