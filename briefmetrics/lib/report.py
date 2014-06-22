@@ -1,5 +1,6 @@
 from collections import OrderedDict
 import datetime
+import calendar
 
 from briefmetrics.lib import helpers as h
 from briefmetrics.lib.table import Column
@@ -21,6 +22,44 @@ def cumulative_by_month(month_views_iter):
         max_value = max(max_value, val)
 
     return months.values(), max_value
+
+
+def days_in_month(dt):
+    _, days = calendar.monthrange(dt.year, dt.month)
+    return days
+
+
+def sparse_cumulative(data):
+    "Data must be ascending."
+    cumulated = OrderedDict()
+    max_value = 0
+    last_val = 0
+    last_day = 1
+
+    current_list, current_key, last_date = None, None, None
+    for dt, amount in data:
+        key = dt.month
+        if key != current_key:
+            if current_list:
+                # Backfill remainder of month
+                current_list += [last_val] * (days_in_month(last_date)-last_day)
+
+            current_key = key
+            current_list = cumulated.setdefault(current_key, [])
+            last_val = 0
+            last_day = 1
+            last_date = dt
+
+        # Backfill missing days
+        if last_day < dt.day:
+            current_list += [last_val] * (dt.day-last_day)
+
+        last_day = dt.day
+        last_val += amount
+        max_value = max(max_value, last_val)
+
+    current_list += [last_val] * (dt.day-last_day)
+    return cumulated.values(), max_value
 
 
 def inject_table_delta(a, b, join_column, compare_column='ga:pageviews', num_normal=10, num_missing=5):

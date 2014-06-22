@@ -15,8 +15,12 @@ def assert_response(r):
         log.error("assert_response failure: Request to [%s] returned code [%s]: %s" % (e.response.request.url, e.response.status_code, e.response.text[:200]))
 
         try:
-            errors = r.json()['error']['errors']
-            message = '; '.join(error['message'] for error in errors)
+            error = r.json()['error']
+            if 'errors' in error:
+                message = '; '.join(e['message'] for e in error)
+            else:
+                message = error['message']
+
             raise APIError("API call failed: %s" % message, e.response.status_code, response=e.response)
         except ValueError, KeyError:
             raise APIError("API call failed.", e.response.status_code, response=e.response)

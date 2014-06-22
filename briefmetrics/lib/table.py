@@ -1,13 +1,18 @@
 from itertools import izip
+from unstdlib import html
+
+
+TABLE, THEAD, TBODY, TR, TD = html.tag_builder(['table', 'thead', 'tbody', 'tr', 'td'])
 
 
 class Column(object):
-    def __init__(self, id, label=None, type_cast=None, type_format=None, visible=None, reverse=False, average=None, threshold=None):
+    def __init__(self, id, label=None, type_cast=None, type_format=None, type_class=None, visible=None, reverse=False, average=None, threshold=None):
         self.table = None
         self.id = id
-        self.label = label or id
+        self.label = label if label is not None else id
         self.type_cast = type_cast
         self.type_format = type_format
+        self.type_class = type_class
         self.visible = visible
         self.reverse = reverse
 
@@ -234,17 +239,34 @@ class Table(object):
         for row in self.rows:
             yield (row.values[i] for i in column_positions)
 
-    def iter_visible(self):
+    def iter_visible(self, reverse=False):
         ordered_columns = self.get_visible()
         yield ordered_columns
 
         column_positions = [self.column_to_index[c.id] for c in ordered_columns]
-        for row in self.rows:
+        rows = self.rows if not reverse else reversed(self.rows)
+        for row in rows:
             yield (row.values[i] for i in column_positions)
 
     def limit(self, num):
         "Truncate rows to `num`."
         self.rows = self.rows[:num]
+
+    def render_html(self):
+        rows = self.iter_visible()
+        columns = next(rows)
+
+        return TABLE(
+            THEAD(
+                TR(TD(col.label, attrs={'class': col.type_class}) for col in columns)
+            ) +
+            TBODY (
+                TR(
+                    TD(col.format(v), attrs={'class': col.type_class}) for col, v in izip(columns, row)
+                ) for row in rows
+            )
+        )
+
 
     def __json__(self):
         # TODO: ...
