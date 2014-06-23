@@ -88,12 +88,12 @@ class StripeReport(WeeklyMixin, Report):
             'limit': 100,
         }
 
-        customers_table = Table([
+        self.tables['customers'] = customers_table = Table([
             Column('id'),
-            Column('created', label='', visible=3, type_format=lambda d: str(d.date())),
-            Column('email', label='Email', visible=2),
-            Column('plan', label='', visible=1),
-            Column('amount', label='Plan', visible=0, type_class='number'),
+            Column('created', label='', visible=0, type_format=lambda d: str(d.date())),
+            Column('email', label='New Customers', visible=3),
+            Column('plan', label='', visible=2, nullable=True),
+            Column('amount', label='', visible=1, type_class='number', nullable=True),
         ])
 
         r = api_query.get('https://api.stripe.com/v1/customers', params=week_params)
@@ -101,6 +101,7 @@ class StripeReport(WeeklyMixin, Report):
         for item in r.get('data', []):
             plan = (item.get('subscription') or {}).get('plan')
             plan_name, plan_amount = None, None
+
             if plan:
                 plan_name = plan['name'][len('Briefmetrics: '):]
                 interval = {'month': 'mo', 'year': 'yr'}.get(plan['interval'], plan['interval'])
@@ -110,16 +111,16 @@ class StripeReport(WeeklyMixin, Report):
                 item['id'],
                 to_datetime(item['created']),
                 item['email'],
-                plan_name,
-                plan_amount,
+                plan_name or '(No plan yet)',
+                plan_amount or '',
             ])
 
         ##
 
-        events_table = Table([
-            Column('timestamp', visible=0, type_format=lambda d: str(d.date())),
-            Column('type', visible=1),
-            Column('content', visible=2),
+        self.tables['events'] = events_table = Table([
+            Column('timestamp', label='', visible=0, type_format=lambda d: str(d.date())),
+            Column('type', label='Events', visible=1),
+            Column('content', label='', visible=2),
         ])
 
         r = api_query.get('https://api.stripe.com/v1/events', params=week_params)
@@ -160,6 +161,3 @@ class StripeReport(WeeklyMixin, Report):
         self.data['total_last_relative'] = last_month[min(len(current_month), len(last_month))-1]/100.0
         self.data['total_last_date_start'] = last_month_date_start
 
-        self.data['hi'] = 42
-        self.tables['customers'] = customers_table
-        self.tables['events'] = events_table

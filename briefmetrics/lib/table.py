@@ -6,7 +6,7 @@ TABLE, THEAD, TBODY, TR, TD = html.tag_builder(['table', 'thead', 'tbody', 'tr',
 
 
 class Column(object):
-    def __init__(self, id, label=None, type_cast=None, type_format=None, type_class=None, visible=None, reverse=False, average=None, threshold=None):
+    def __init__(self, id, label=None, type_cast=None, type_format=None, type_class=None, visible=None, reverse=False, average=None, threshold=None, nullable=False):
         self.table = None
         self.id = id
         self.label = label if label is not None else id
@@ -15,6 +15,7 @@ class Column(object):
         self.type_class = type_class
         self.visible = visible
         self.reverse = reverse
+        self.nullable = nullable
 
         self._threshold = threshold
         self._average = average and float(average)
@@ -80,7 +81,7 @@ class Column(object):
         return True
 
     def is_boring(self, value, threshold=0.005):
-        if value is None:
+        if value is None and not self.nullable:
             return True
 
         max_value, _ = self.max_row
