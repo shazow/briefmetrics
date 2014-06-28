@@ -272,3 +272,41 @@ class Table(object):
     def __json__(self):
         # TODO: ...
         return {'_response_data': self._response_data}
+
+
+class Timeline(Table):
+    "Similar to a table but with two visible columns: 'timestamp' and 'content'."
+    _response_data = None
+
+    def __init__(self, columns=None):
+        if not columns:
+            columns = [
+                Column('timestamp', visible=0, type_format=lambda d: '{:%a, %b %d}'.format(d)),
+                Column('content', visible=1),
+            ]
+
+        if len(columns) != 2:
+            raise ValueError('Timeline must be two columns, not: %r' % columns)
+
+        super(Timeline, self).__init__(columns)
+
+    def add(self, row):
+        self.rows.append(row)
+
+    def iter_formatted(self):
+        last_date = None
+        timestamp_col, content_col = self.columns
+        for timestamp, content in self.rows:
+            d = timestamp.date()
+            if last_date == d:
+                yield '', content_col.format(content)
+            else:
+                last_date = d
+                yield timestamp_col.format(timestamp), content_col.format(content)
+
+    def render_html(self):
+        return TABLE(
+            TR(
+                TD(timestamp, attrs={'class': 'date'}) + TD(content)
+            ) for timestamp, content in self.iter_formatted()
+        )

@@ -14,6 +14,8 @@
 ${h.chart(c.report.data['historic_data'], width=560, height=200)}
 
 % if c.report.tables['customers'].rows:
+    <h2>New Customers</h2>
+
     ${c.report.tables['customers'].render_html()}
 % else:
     <p>
@@ -21,4 +23,5 @@ ${h.chart(c.report.data['historic_data'], width=560, height=200)}
     </p>
 % endif
 
+<h2>Events</h2>
 ${c.report.tables['events'].render_html()}

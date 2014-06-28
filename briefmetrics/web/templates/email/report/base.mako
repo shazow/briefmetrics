@@ -78,6 +78,12 @@
         vertical-align: top;
         width: 4.5em;
     }
+    td.date {
+        width: 6em;
+        vertical-align: top;
+        text-align: right;
+        padding-right: 1em;
+    }
     h1 {
         line-height: 1em;
         margin: 0;

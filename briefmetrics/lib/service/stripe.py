@@ -6,8 +6,8 @@ from .base import OAuth2API
 from briefmetrics.lib import helpers as h
 from briefmetrics.lib.http import assert_response
 from briefmetrics.lib.cache import ReportRegion
-from briefmetrics.lib.report import Report, EmptyReportError, WeeklyMixin, sparse_cumulative
-from briefmetrics.lib.table import Column, Table
+from briefmetrics.lib.report import Report, WeeklyMixin, sparse_cumulative
+from briefmetrics.lib.table import Column, Table, Timeline
 from briefmetrics.lib.gcharts import encode_rows
 
 
@@ -61,6 +61,21 @@ class Query(object):
     def get(self, url, params=None):
         return self._get(url, params=params, _cache_keys=self.cache_keys)
 
+    def get_paged(self, url, params=None):
+        data = []
+        starting_after = None
+        while True:
+            if starting_after:
+                params['starting_after'] = starting_after
+
+            r = self.get(url, params)
+            items = r['data']
+            data += items
+            if not r.get('has_more'):
+                return data
+
+            starting_after = items[-1]['id']
+
     def get_profile(self, remote_id=None):
         r = self.get('https://api.stripe.com/v1/account')
         if remote_id and r['id'] != remote_id:
@@ -88,17 +103,11 @@ class StripeReport(WeeklyMixin, Report):
             'limit': 100,
         }
 
-        self.tables['customers'] = customers_table = Table([
-            Column('id'),
-            Column('created', label='', visible=0, type_format=lambda d: str(d.date())),
-            Column('email', label='New Customers', visible=3),
-            Column('plan', label='', visible=2, nullable=True),
-            Column('amount', label='', visible=1, type_class='number', nullable=True),
-        ])
+        self.tables['customers'] = customers_table = Timeline()
 
-        r = api_query.get('https://api.stripe.com/v1/customers', params=week_params)
+        items = api_query.get_paged('https://api.stripe.com/v1/customers', params=week_params)
 
-        for item in r.get('data', []):
+        for item in items:
             plan = (item.get('subscription') or {}).get('plan')
             plan_name, plan_amount = None, None
 
@@ -108,27 +117,23 @@ class StripeReport(WeeklyMixin, Report):
                 plan_amount = u'{amount}/{interval}'.format(amount=h.human_dollar(plan['amount']), interval=interval)
 
             customers_table.add([
-                item['id'],
                 to_datetime(item['created']),
-                item['email'],
-                plan_name or '(No plan yet)',
-                plan_amount or '',
+                ' '.join([
+                    item['email'], 
+                    plan_name or '(No plan yet)',
+                    plan_amount or '',
+                ])
             ])
 
         ##
 
-        self.tables['events'] = events_table = Table([
-            Column('timestamp', label='', visible=0, type_format=lambda d: str(d.date())),
-            Column('type', label='Events', visible=1),
-            Column('content', label='', visible=2),
-        ])
+        self.tables['events'] = events_table = Timeline()
 
-        r = api_query.get('https://api.stripe.com/v1/events', params=week_params)
-        for item in r.get('data', []):
+        items = api_query.get_paged('https://api.stripe.com/v1/events', params=week_params)
+        for item in items:
             events_table.add([
                 to_datetime(item['created']),
-                item['type'],
-                item['data']['object'].get('description'),
+                ' '.join([item['type'], item['data']['object'].get('description') or ''])
             ])
 
         ##
@@ -138,12 +143,12 @@ class StripeReport(WeeklyMixin, Report):
             Column('amount', label='Amount', visible=1),
         ])
 
-        r = api_query.get('https://api.stripe.com/v1/charges', params={
+        items = api_query.get_paged('https://api.stripe.com/v1/charges', params={
             'created[gte]': to_epoch(last_month_date_start),
             'created[lt]': to_epoch(self.date_end + datetime.timedelta(days=1)),
             'limit': 100,
         })
-        for item in r.get('data', []):
+        for item in items:
             historic_table.add([
                 to_datetime(item['created']),
                 item['amount'],
