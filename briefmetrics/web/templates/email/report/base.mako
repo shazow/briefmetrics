@@ -70,19 +70,22 @@
         font-size: 0.9em;
     }
     td {
-        padding: 2px 0 2px 0;
+        padding: 2px 4px 2px 4px;
     }
     td.number {
-        padding-right: 1em;
+        padding-right: 0.5em;
         text-align: right;
         vertical-align: top;
         width: 4.5em;
     }
     td.date {
+        color: #999;
         width: 6em;
         vertical-align: top;
         text-align: right;
-        padding-right: 1em;
+    }
+    td.alt,tr.alt {
+        background: #f5f5f5;
     }
     h1 {
         line-height: 1em;

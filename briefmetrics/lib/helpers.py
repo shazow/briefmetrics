@@ -138,9 +138,13 @@ def human_percent(f, denominator=1.0, signed=False):
 def human_delta(f):
     return human_percent(f, signed=True)
 
-def human_dollar(cents):
+def human_dollar(cents, currency=None):
     precision = min(cents % 100, 2)
     f = u'${:0.%df}' % precision
+    if currency:
+        # TODO: Localize $?
+        f += ' %s' % currency.upper()
+
     return f.format(float(cents)/100.0)
 
 def truncate(s, max_length=80):
@@ -151,7 +155,7 @@ def truncate(s, max_length=80):
 def ga_permalink(section, report, date_start=None, date_end=None):
     try:
         awp = "a{accountId}w{internalWebPropertyId}p{id}".format(**report.remote_data)
-    except KeyError, _:
+    except KeyError:
         return ''
 
     r = "https://www.google.com/analytics/web/#" + section + "/" + awp + "/"

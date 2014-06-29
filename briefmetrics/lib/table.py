@@ -1,4 +1,4 @@
-from itertools import izip
+from itertools import izip, cycle
 from unstdlib import html
 
 
@@ -291,12 +291,15 @@ class Timeline(Table):
         super(Timeline, self).__init__(columns)
 
     def add(self, row):
+        if not row[1]:
+            return # Skip
+
         self.rows.append(row)
 
     def iter_formatted(self):
         last_date = None
         timestamp_col, content_col = self.columns
-        for timestamp, content in self.rows:
+        for timestamp, content in reversed(self.rows):
             d = timestamp.date()
             if last_date == d:
                 yield '', content_col.format(content)
@@ -305,8 +308,10 @@ class Timeline(Table):
                 yield timestamp_col.format(timestamp), content_col.format(content)
 
     def render_html(self):
+        cycle_rows = cycle(['alt', None])
         return TABLE(
             TR(
-                TD(timestamp, attrs={'class': 'date'}) + TD(content)
+                TD(timestamp, attrs={'class': 'date'}) +
+                TD(content, attrs={'class': next(cycle_rows)})
             ) for timestamp, content in self.iter_formatted()
         )

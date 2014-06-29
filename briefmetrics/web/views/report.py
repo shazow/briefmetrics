@@ -184,7 +184,8 @@ class ReportController(Controller):
             raise httpexceptions.HTTPNotFound()
 
         # Last Sunday
-        since_time = now()
+        import datetime
+        since_time = now() - datetime.timedelta(hours=3)
         report_context = api.report.fetch(self.request, report, since_time)
 
         template = report_context.template

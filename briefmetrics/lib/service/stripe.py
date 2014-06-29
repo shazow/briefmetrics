@@ -84,6 +84,68 @@ class Query(object):
         return r
 
 
+event_formatters = {
+    'transfer': 'Transfer of {amount_str} is {status}.',
+    'balance': 'Balance available: {available}',
+    'charge': 'Charge {type}: {amount_str} for {email}',
+    'customer': 'Customer {type}: {email}',
+    'customer.subscription': 'Customer subscription {type}: {plan}',
+    'customer.card': 'Customer card {type}: {customer}',
+}
+
+def describe_plan(plan):
+    interval = {'month': 'mo', 'year': 'yr'}.get(plan['interval'], plan['interval'])
+    return u'"{name}" at {amount}/{interval}'.format(name=plan['name'], amount=h.human_dollar(plan['amount']), interval=interval)
+
+
+def describe_event(item):
+    type_full = item['type']
+    type_prefix, type_suffix = type_full.rsplit('.', 1)
+
+    if type_prefix in ['invoice'] or type_full in ['customer.subscription.updated']:
+        # Skip
+        return
+
+    f = event_formatters.get(type_full) or event_formatters.get(type_prefix)
+    obj = item['data']['object']
+
+    if type_prefix == 'transfer':
+        r = f.format(amount_str=h.human_dollar(obj['amount'], currency=obj['currency']), status=obj['status'])
+        if type_full == 'transfer.paid':
+            r = '<b>%s</b>' % r
+        return r
+
+    elif type_prefix == 'balance':
+        available = ', '.join((h.human_dollar(a['amount'], currency=a['currency'])) for a in obj['available'])
+        pending = ', '.join((h.human_dollar(a['amount'], currency=a['currency'])) for a in obj['pending'])
+        r = f.format(available=available)
+        if pending:
+            r += ' (also %s pending)' % pending
+
+        return r
+
+    elif type_prefix == 'customer':
+        r = f.format(type=type_suffix, email=obj['email'])
+        if type_full in ('customer.created', 'customer.deleted'):
+            r = '<b>%s</b>' % r
+        return r
+
+    elif type_prefix == 'customer.subscription':
+        return f.format(type=type_suffix, plan=describe_plan(obj['plan']))
+
+    elif type_prefix == 'customer.card':
+        return f.format(type=type_suffix, customer=obj['customer'])
+
+    elif type_prefix == 'charge':
+        amount_str = h.human_dollar(obj['amount'], currency=obj['currency'])
+        r = f.format(type=type_suffix, amount_str=amount_str, email=obj['receipt_email'])
+        return '<b>%s</b>' % r
+
+    if not f:
+        return ' '.join([type_full, obj.get('description') or ''])
+
+    return f.format(**obj)
+
 
 
 class StripeReport(WeeklyMixin, Report):
@@ -109,19 +171,14 @@ class StripeReport(WeeklyMixin, Report):
 
         for item in items:
             plan = (item.get('subscription') or {}).get('plan')
-            plan_name, plan_amount = None, None
-
             if plan:
-                plan_name = plan['name'][len('Briefmetrics: '):]
-                interval = {'month': 'mo', 'year': 'yr'}.get(plan['interval'], plan['interval'])
-                plan_amount = u'{amount}/{interval}'.format(amount=h.human_dollar(plan['amount']), interval=interval)
+                plan = describe_plan(plan)
 
             customers_table.add([
                 to_datetime(item['created']),
                 ' '.join([
                     item['email'], 
-                    plan_name or '(No plan yet)',
-                    plan_amount or '',
+                    plan or '(no plan yet)',
                 ])
             ])
 
@@ -133,7 +190,7 @@ class StripeReport(WeeklyMixin, Report):
         for item in items:
             events_table.add([
                 to_datetime(item['created']),
-                ' '.join([item['type'], item['data']['object'].get('description') or ''])
+                describe_event(item),
             ])
 
         ##
@@ -165,4 +222,3 @@ class StripeReport(WeeklyMixin, Report):
         self.data['total_last'] = last_month[-1]/100.0
         self.data['total_last_relative'] = last_month[min(len(current_month), len(last_month))-1]/100.0
         self.data['total_last_date_start'] = last_month_date_start
-
