@@ -225,7 +225,7 @@ class StripeReport(WeeklyMixin, Report):
 
         iter_historic = historic_table.iter_visible(reverse=True)
         _, views_column = next(iter_historic)
-        monthly_data, max_value = sparse_cumulative(iter_historic)
+        monthly_data, max_value = sparse_cumulative(iter_historic, final_date=self.date_end)
         last_month, current_month = monthly_data
 
         self.data['historic_data'] = encode_rows(monthly_data, max_value)
