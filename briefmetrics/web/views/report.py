@@ -1,6 +1,7 @@
 from itertools import groupby
 from unstdlib import now, get_many
 from sqlalchemy import orm
+from collections import defaultdict
 
 from briefmetrics import api, model, tasks
 from briefmetrics.web.environment import Response, httpexceptions
@@ -146,17 +147,18 @@ class ReportController(Controller):
     @handle_api(['report.create', 'report.delete'])
     def index(self):
         user = api.account.get_user(self.request, required=True, joinedload='accounts.reports.subscriptions.user')
-        account = user.get_account(service='google')
 
-        google_query = api.account.query_service(self.request, account=account)
-        try:
-            self.c.available_profiles = google_query.get_profiles()
-        except APIError as e:
-            r = e.response.json()
-            for msg in r['error']['errors']:
-                self.request.flash('Error: %s' % msg['message'])
+        available_profiles = defaultdict(list)
+        for account in user.accounts:
+            query = api.account.query_service(self.request, account=account)
+            try:
+                available_profiles[account.service] += query.get_profiles()
+            except APIError as e:
+                r = e.response.json()
+                for msg in r['error']['errors']:
+                    self.request.flash('Error: %s' % msg['message'])
 
-            self.c.available_profiles = []
+        self.c.available_profiles = available_profiles
 
         enable_reports = set(user.config.get('enable_reports', []) + [model.Report.DEFAULT_TYPE])
         self.c.report_types = [(id, label, id==model.Report.DEFAULT_TYPE) for id, label in model.Report.TYPES if id in enable_reports]
@@ -177,7 +179,7 @@ class ReportController(Controller):
 
         q = model.Session.query(model.Report).filter_by(id=report_id)
         if not user.is_admin:
-            q = q.join(model.Report.account).filter_by(uer_id=user.id)
+            q = q.join(model.Report.account).filter_by(user_id=user.id)
 
         report = q.first()
         if not report:

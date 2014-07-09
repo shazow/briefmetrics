@@ -102,8 +102,11 @@ class Query(object):
 
         return t
 
-    def get_profile(self, remote_id):
+    def get_profile(self, remote_id=None):
         r = self.get_profiles()
+        if remote_id is None:
+            return next(iter(r['items']), None)
+
         return next((item for item in r['items'] if item['id'] == remote_id), None)
 
     def get_profiles(self):

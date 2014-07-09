@@ -47,7 +47,7 @@ def connect_user(request, oauth, user_required=False):
             token=token,
             display_name=display_name,
         )
-        account = user.account
+        account = user.accounts[0]
     elif not account:
         # New account
         account = model.Account.create(display_name=user.display_name, user=user, oauth_token=token, service=oauth.id)
@@ -201,7 +201,8 @@ def get_or_create(user_id=None, email=None, service='google', token=None, displa
 
     account = u.get_account(service=service)
     if not account:
-        account = model.Account.create(display_name=display_name, user=u)
+        account = model.Account.create(display_name=display_name, user=u, service=service)
+        u.accounts.append(account)
 
     if token and token.get('refresh_token'):
         # Update token if it's a better one (with refresh).

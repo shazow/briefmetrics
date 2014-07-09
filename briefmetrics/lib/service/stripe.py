@@ -42,6 +42,12 @@ class StripeAPI(OAuth2API):
         # 'client_secret': ...,
     }
 
+    def query_user(self):
+        r = self.session.get('https://api.stripe.com/v1/account')
+        r.raise_for_status()
+        user_info = r.json()
+        return user_info['email'], user_info.get('display_name')
+
     def create_query(self, cache_keys=None):
         return Query(self, cache_keys=cache_keys)
 
@@ -82,6 +88,12 @@ class Query(object):
             return
 
         return r
+
+    def get_profiles(self):
+        p = self.get_profile()
+        if not p:
+            return
+        return [p]
 
 
 event_formatters = {

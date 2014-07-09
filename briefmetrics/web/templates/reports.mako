@@ -11,7 +11,11 @@
 <section id="new-report">
     <h2>New report</h2>
 
-    ${forms.report_new(c.available_profiles, report_types=c.report_types)}
+    % if c.available_profiles.get('google'):
+        ${forms.report_new(c.available_profiles['google'], report_types=c.report_types)}
+    % else:
+        <a href="${login_url}">Connect your Google Analytics account</a>
+    % endif
 </section>
 
 % if c.reports:
