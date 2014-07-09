@@ -7,7 +7,6 @@ from sqlalchemy import orm, types
 from sqlalchemy import Column, ForeignKey, Index
 
 from briefmetrics.lib import pricing
-from briefmetrics.lib.report import get_report
 from . import meta, _types
 
 
@@ -108,8 +107,7 @@ class User(meta.Model): # Email address / login
 
     @property
     def account(self):
-        #warnings.warn("Deprecated use of User.account", DeprecationWarning)
-        print "XXX: Deprecated use of User.account"
+        warnings.warn("Deprecated use of User.account", DeprecationWarning)
         return self.get_account(service='google')
 
     def get_account(self, service=None, id=None):
@@ -120,7 +118,6 @@ class User(meta.Model): # Email address / login
             accounts = (a for a in accounts if a.id == int(id))
 
         return next(accounts, None)
-
 
 
 

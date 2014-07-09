@@ -18,9 +18,10 @@ Session = model.Session
 class TestReport(test.TestWeb):
     def _create_report(self):
         u = api.account.get_or_create(email=u'example@example.com', token={}, display_name=u'Example')
-        api_query = api.account.query_service(self.request, account=u.account)
+        account = u.accounts[0]
+        api_query = api.account.query_service(self.request, account=account)
         remote_data = api_query.get_profiles()['items'][0]
-        report = model.Report.create(account=u.account, remote_data=remote_data, display_name=u'example.com')
+        report = model.Report.create(account=account, remote_data=remote_data, display_name=u'example.com')
         model.Subscription.create(user=u, report=report)
         Session.commit()
         return report
