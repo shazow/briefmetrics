@@ -177,15 +177,14 @@ class ReportController(Controller):
 
         q = model.Session.query(model.Report).filter_by(id=report_id)
         if not user.is_admin:
-            q = q.filter_by(account_id=user.account.id) # XXX: accounts
+            q = q.join(model.Report.account).filter_by(uer_id=user.id)
 
         report = q.first()
         if not report:
             raise httpexceptions.HTTPNotFound()
 
         # Last Sunday
-        import datetime
-        since_time = now() - datetime.timedelta(hours=3)
+        since_time = now()
         report_context = api.report.fetch(self.request, report, since_time)
 
         template = report_context.template

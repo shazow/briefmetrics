@@ -94,8 +94,7 @@ class SettingsController(Controller):
 
     @handle_api(['settings.payments_set', 'settings.payments_cancel', 'settings.plan', 'settings.branding'])
     def index(self):
-        user = api.account.get_user(self.request, required=True, joinedload=['accounts'])
-        account = user.account # XXX: accounts
+        user = api.account.get_user(self.request, required=True)
 
         plan_id = self.request.session.pop('plan_id', None)
         if plan_id:
@@ -104,6 +103,5 @@ class SettingsController(Controller):
 
         self.c.selected_plan = user.plan if user.plan.id != 'trial' else PLAN_DEFAULT
         self.c.user = user
-        self.c.report_ids = set((r.remote_id or r.remote_data.get('id')) for r in account.reports)
 
         return self._render('settings.mako')
