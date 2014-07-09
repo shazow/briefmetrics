@@ -229,8 +229,7 @@ class StripeReport(WeeklyMixin, Report):
         last_month, current_month = monthly_data
 
         self.data['historic_data'] = encode_rows(monthly_data, max_value)
-        self.data['total_units'] = u'${:0.2f} dollar'
-        self.data['total_current'] = current_month[-1]/100.0
-        self.data['total_last'] = last_month[-1]/100.0
-        self.data['total_last_relative'] = last_month[min(len(current_month), len(last_month))-1]/100.0
+        self.data['total_current'] = current_month[-1]
+        self.data['total_last'] = last_month[-1]
+        self.data['total_last_relative'] = last_month[min(len(current_month), len(last_month))-1]
         self.data['total_last_date_start'] = last_month_date_start

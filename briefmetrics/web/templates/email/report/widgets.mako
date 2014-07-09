@@ -131,6 +131,6 @@
             You're on your way to beat <span class="chartBottom">last months's total of ${h.human_int(last)}</span>.
         % endif
     % else:
-        compared to <span class="chartBottom">last month's ${h.format_int(last_relative, units)}</span> at this time.
+        compared to <span class="chartBottom">last month's ${h.format_int(last_relative, units)}</span> at this time and ${h.human_int(last)} by the end of last month.
     % endif
 </%def>
