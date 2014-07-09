@@ -29,37 +29,37 @@ def days_in_month(dt):
     return days
 
 
-def sparse_cumulative(data):
+def sparse_cumulative(iterable, final_date=None):
     "Data must be ascending."
     cumulated = OrderedDict()
-    max_value = 0
-    last_val = 0
-    last_day = 1
 
-    current_list, current_key, last_date = None, None, None
-    for dt, amount in data:
-        key = dt.month
-        if key != current_key:
-            if current_list:
-                # Backfill remainder of month
-                current_list += [last_val] * (days_in_month(last_date)-last_day)
+    max_value = data = key = last_dt = last_amount = 0
 
-            current_key = key
-            current_list = cumulated.setdefault(current_key, [])
-            last_val = 0
-            last_day = 1
-            last_date = dt
+    for dt, amount in iterable:
+        if dt.month != key:
+            if data:
+                # Wrap up thelast month
+                data += [last_amount] * (days_in_month(last_dt) - last_dt.day)
+                max_value = max(last_amount, max_value)
+                last_dt = last_amount = 0
+
+            key = dt.month
+            cumulated[key] = data = []
 
         # Backfill missing days
-        if last_day < dt.day:
-            current_list += [last_val] * (dt.day-last_day)
+        if last_dt and last_dt.day < dt.day:
+            data += [last_amount] * (dt.day - last_dt.day)
 
-        last_day = dt.day
-        last_val += amount
-        max_value = max(max_value, last_val)
+        last_dt = dt
+        last_amount += amount
 
-    current_list += [last_val] * (dt.day-last_day)
-    return cumulated.values(), max_value
+    if final_date:
+        data += [last_amount] * (final_date.day - last_dt.day + 1)
+    else:
+        data.append(last_amount)
+
+    return cumulated.values(), max(last_amount, max_value)
+
 
 
 def inject_table_delta(a, b, join_column, compare_column='ga:pageviews', num_normal=10, num_missing=5):

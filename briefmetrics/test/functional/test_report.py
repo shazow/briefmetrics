@@ -319,14 +319,29 @@ class TestReportLib(test.TestCase):
             (datetime.date(2014, 1, 1), 1),
             (datetime.date(2014, 1, 5), 2),
             (datetime.date(2014, 2, 1), 3),
-            (datetime.date(2014, 2, 1), 4),
+            (datetime.date(2014, 2, 2), 4),
             (datetime.date(2014, 2, 2), 5),
         ]
+
+        iterable = data[:1]
+        monthly_data, max_value = sparse_cumulative(iterable)
+        self.assertEqual(monthly_data, [[1]])
+        self.assertEqual(max_value, 1)
+
+        iterable = data[:1] * 3
+        monthly_data, max_value = sparse_cumulative(iterable)
+        self.assertEqual(monthly_data, [[3]])
+        self.assertEqual(max_value, 3)
+
+        monthly_data, max_value = sparse_cumulative(data[:1], final_date=datetime.date(2014, 1, 5))
+        self.assertEqual(monthly_data, [[1, 1, 1, 1, 1]])
+        self.assertEqual(max_value, 1)
 
         monthly_data, max_value = sparse_cumulative(data)
         last_month, current_month = monthly_data
         self.assertEqual(max_value, 12)
         self.assertEqual(len(last_month), 30)
         self.assertEqual(len(current_month), 2)
-        self.assertEqual(last_month, [1, 3] + [0] * 28)
+
+        self.assertEqual(last_month, [1, 1, 1, 1, 3] + [3] * 25)
         self.assertEqual(current_month, [3, 12])
