@@ -2,7 +2,7 @@ from briefmetrics import test
 from briefmetrics import api
 from briefmetrics import model
 from briefmetrics import tasks
-from briefmetrics.lib.report import get_report
+from briefmetrics.lib.report import get_report, sparse_cumulative
 from briefmetrics.lib.table import Column
 from briefmetrics.lib.controller import Context
 
@@ -313,3 +313,20 @@ class TestReportLib(test.TestCase):
         self.assertEqual(date_start, datetime.date(2013, 1, 1))
         self.assertEqual(date_end, datetime.date(2013, 1, 31))
         self.assertEqual(date_next, datetime.date(2013, 3, 1))
+
+    def test_sparse_cumulative(self):
+        data = [
+            (datetime.date(2014, 1, 1), 1),
+            (datetime.date(2014, 1, 5), 2),
+            (datetime.date(2014, 2, 1), 3),
+            (datetime.date(2014, 2, 1), 4),
+            (datetime.date(2014, 2, 2), 5),
+        ]
+
+        monthly_data, max_value = sparse_cumulative(data)
+        last_month, current_month = monthly_data
+        self.assertEqual(max_value, 12)
+        self.assertEqual(len(last_month), 30)
+        self.assertEqual(len(current_month), 2)
+        self.assertEqual(last_month, [1, 3] + [0] * 28)
+        self.assertEqual(current_month, [3, 12])

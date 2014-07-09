@@ -13,6 +13,22 @@
 
 ${h.chart(c.report.data['historic_data'], width=560, height=200)}
 
+<%
+    interval_label = c.report.data.get('interval_label')
+%>
+<h2>
+    % if interval_label:
+        Last ${interval_label}&hellip;
+    % else:
+        Last week&hellip;
+        <% overlap_days = 7 - c.report.date_end.day %>
+        % if overlap_days > 0:
+            <span class="quiet">(includes ${h.format_int(overlap_days, '{} day')} from last month)</span>
+        % endif
+    % endif
+</h2>
+
+
 % if c.report.tables['customers'].rows:
     <h2>New Customers</h2>
 
