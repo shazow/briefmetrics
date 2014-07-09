@@ -111,7 +111,8 @@ class Query(object):
 
     def get_profiles(self):
         # account_id used for caching, not in query.
-        return self.get('https://www.googleapis.com/analytics/v3/management/accounts/~all/webproperties/~all/profiles')
+        r = self.get('https://www.googleapis.com/analytics/v3/management/accounts/~all/webproperties/~all/profiles')
+        return r['items']
 
 
 

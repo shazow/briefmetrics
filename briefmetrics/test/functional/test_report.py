@@ -20,7 +20,7 @@ class TestReport(test.TestWeb):
         u = api.account.get_or_create(email=u'example@example.com', token={}, display_name=u'Example')
         account = u.accounts[0]
         api_query = api.account.query_service(self.request, account=account)
-        remote_data = api_query.get_profiles()['items'][0]
+        remote_data = api_query.get_profiles()[0]
         report = model.Report.create(account=account, remote_data=remote_data, display_name=u'example.com')
         model.Subscription.create(user=u, report=report)
         Session.commit()
@@ -30,12 +30,12 @@ class TestReport(test.TestWeb):
         account = model.Account(service='google')
         q = api.account.query_service(self.request, account=account)
 
-        r = q.get_profiles()
-        self.assertEqual(r[u'username'], u'example@example.com')
+        r = q.get_profile()
+        self.assertEqual(r[u'websiteUrl'], u'example.com')
 
         q = api.account.query_service(self.request, account=account)
-        r = q.get_profiles()
-        self.assertEqual(r[u'username'], u'example@example.com')
+        r = q.get_profile()
+        self.assertEqual(r[u'websiteUrl'], u'example.com')
 
         t = q.get_table({'max-results': 5}, dimensions=[
             Column('ga:pagePath'),

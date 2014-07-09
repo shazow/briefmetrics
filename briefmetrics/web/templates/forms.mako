@@ -76,7 +76,7 @@
 </%def>
 
 <%def name="report_new(available_profiles, report_types)">
-    % if not available_profiles or not available_profiles.get('items'):
+    % if not available_profiles:
         <p>
             <strong>Briefmetrics was unable to load a list of your Google Analytics properties.</strong> Are you sure you signed in with the correct Google account? 
         </p>
@@ -93,7 +93,7 @@
         <p class="row">
             <select name="remote_id" data-placeholder="Choose a site">
                 <option />
-            % for item in available_profiles['items']:
+            % for item in available_profiles:
                 <%
                     human_url = h.human_url(item.get('websiteUrl')) or item['name']
                     name = h.human_url(item['name'])

@@ -79,7 +79,7 @@ class FakeQuery(Query):
 
         return t
 
-    def get_profiles(self):
+    def _get_profiles(self):
         r = _response_profiles.copy()
         r[u'items'] = []
 
@@ -89,9 +89,15 @@ class FakeQuery(Query):
             t = profile_item_template.copy()
             t[u'id'] = unicode(start_id + i)
             t[u'internalWebPropertyId'] = unicode(start_internalId + i)
-
             r[u'items'].append(t)
 
         r[u'totalResults'] = len(r[u'items'])
 
         return r
+
+    def get_profiles(self):
+        r = self._get_profiles()
+        return r[u'items']
+
+    def get_profile(self, remote_id=None):
+        return next(iter(self.get_profiles()))
