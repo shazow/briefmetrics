@@ -18,4 +18,4 @@ pyyaml==3.11
 requests-oauthlib==0.4.1
 requests==2.3.0
 stripe==1.17.0
-unstdlib==dev
+unstdlib==1.7
