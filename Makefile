@@ -5,7 +5,7 @@ SETUP_OUT=*.egg-info
 
 all: setup requirements model_upgrade
 
-requirements: $(REQUIREMENTS_OUT)
+requirements: setup $(REQUIREMENTS_OUT)
 
 piprot:
 	piprot -x $(REQUIREMENTS_FILE)
@@ -25,7 +25,7 @@ clean:
 	find . -name "__pycache__" -delete
 	rm $(REQUIREMENTS_OUT)
 
-test: setup requirements
+test: requirements
 	nosetests
 
 virtualenv:
@@ -38,23 +38,23 @@ endif
 
 INI_FILE=development.ini
 
-develop: setup requirements
+develop: requirements
 	screen -c develop.screenrc
 
-serve: setup requirements
+serve: requirements
 	pserve --reload $(INI_FILE)
 
-shell: setup requirements
+shell: requirements
 	pshell $(INI_FILE)
 
-fixtures: setup requirements
+fixtures: requirements
 	echo "model.drop_all(); model.create_all(); fixtures.populate_dev()" | pshell $(INI_FILE) -p python
 	alembic -c $(INI_FILE) stamp head 2>&1 | tee -a $(ALEMBIC_OUT)
 
 
 ## Celery:
 
-celery: setup requirements
+celery: requirements
 	INI_FILE=$(INI_FILE) celery worker -B --app=briefmetrics.tasks.setup --loglevel INFO
 
 
