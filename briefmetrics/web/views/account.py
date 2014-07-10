@@ -1,6 +1,6 @@
 from briefmetrics.lib.controller import Controller
 
-from briefmetrics import api, model, tasks
+from briefmetrics import api, model
 from briefmetrics.lib.exceptions import LoginRequired, APIError, APIControllerError
 from briefmetrics.lib.service import registry as service_registry
 
@@ -15,7 +15,12 @@ def account_login(request):
     service = service or request.matchdict.get('service', 'google')
 
     if service != 'google':
-        is_force = True
+        if not api.account.get_user_id(request):
+            # Not logged in? Force Google first.
+            save_redirect  = request.route_url('account_login', service=service, _query={'next': save_redirect})
+            service = 'google'
+        else:
+            is_force = True
 
     u = api.account.login_user(request, service=service, save_redirect=save_redirect, token=token, is_force=is_force)
 
