@@ -107,7 +107,7 @@ class Query(object):
         if remote_id is None:
             return next(iter(r['items']), None)
 
-        return next((item for item in r['items'] if item['id'] == remote_id), None)
+        return next((item for item in r if item['id'] == remote_id), None)
 
     def get_profiles(self):
         # account_id used for caching, not in query.

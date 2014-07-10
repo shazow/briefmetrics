@@ -75,7 +75,7 @@
     </form>
 </%def>
 
-<%def name="report_new(available_profiles, report_types)">
+<%def name="report_new(available_profiles, report_types, account_id='')">
     % if not available_profiles:
         <p>
             <strong>Briefmetrics was unable to load a list of your Google Analytics properties.</strong> Are you sure you signed in with the correct Google account? 
@@ -115,6 +115,7 @@
             <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
             <input type="hidden" name="method" value="report.create" />
             <input type="hidden" name="format" value="redirect" />
+            <input type="hidden" name="account_id" value="${account_id}" />
             <input type="submit" value="Create Report" />
 
             % if len(report_types) == 1:

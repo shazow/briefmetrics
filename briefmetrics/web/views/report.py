@@ -148,11 +148,12 @@ class ReportController(Controller):
     def index(self):
         user = api.account.get_user(self.request, required=True, joinedload='accounts.reports.subscriptions.user')
 
-        available_profiles = defaultdict(list)
-        for account in user.accounts:
-            query = api.account.query_service(self.request, account=account)
+        available_profiles = []
+        google_account = user.get_account(service='google')
+        if google_account:
+            query = api.account.query_service(self.request, account=google_account)
             try:
-                available_profiles[account.service] += query.get_profiles()
+                available_profiles += query.get_profiles()
             except APIError as e:
                 r = e.response.json()
                 for msg in r['error']['errors']:
@@ -163,6 +164,7 @@ class ReportController(Controller):
         enable_reports = set(user.config.get('enable_reports', []) + [model.Report.DEFAULT_TYPE])
         self.c.report_types = [(id, label, id==model.Report.DEFAULT_TYPE) for id, label in model.Report.TYPES if id in enable_reports]
 
+        self.c.google_account = google_account
         self.c.user = user
         self.c.reports = []
         for account in user.accounts:
