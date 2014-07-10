@@ -218,6 +218,8 @@ class StripeReport(WeeklyMixin, Report):
             'limit': 100,
         })
         for item in items:
+            if not item['paid'] or item['refunded']:
+                continue
             historic_table.add([
                 to_datetime(item['created']),
                 item['amount'],
