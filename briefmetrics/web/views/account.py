@@ -45,6 +45,8 @@ class AccountController(Controller):
         except APIError, e:
             raise APIControllerError(e.message)
 
+        # TODO: Handle InvalidRequestError?
+
         api.account.login_user_id(self.request, account.user_id)
 
         restored_redirect = self.request.session.pop('next', None)
