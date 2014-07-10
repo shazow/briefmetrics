@@ -189,7 +189,7 @@ class StripeReport(WeeklyMixin, Report):
             customers_table.add([
                 to_datetime(item['created']),
                 ' '.join([
-                    item['email'], 
+                    item['email'] or '(no email)',
                     plan or '(no plan yet)',
                 ])
             ])
