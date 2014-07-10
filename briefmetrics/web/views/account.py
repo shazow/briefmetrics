@@ -9,7 +9,7 @@ from unstdlib import get_many
 from .api import expose_api
 
 
-@expose_api('account.login')
+@expose_api('account.login', check_csrf=False, check_referer=False)
 def account_login(request):
     is_force, token, save_redirect, service = get_many(request.params, optional=['force', 'token', 'next', 'service'])
     service = service or request.matchdict.get('service', 'google')
