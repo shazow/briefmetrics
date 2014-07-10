@@ -143,7 +143,7 @@ def login_user(request, service='google', save_redirect=None, token=None, is_for
     request.session.save()
 
     oauth = service_registry[service or 'google'](request)
-    next, state = oauth.auth_url()
+    next, state = oauth.auth_url(is_force=is_force)
     request.session['oauth_state'] = state
     raise httpexceptions.HTTPSeeOther(next)
 
