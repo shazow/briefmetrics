@@ -1,7 +1,6 @@
 from itertools import groupby
 from unstdlib import now, get_many
 from sqlalchemy import orm
-from collections import defaultdict
 
 from briefmetrics import api, model, tasks
 from briefmetrics.web.environment import Response, httpexceptions
