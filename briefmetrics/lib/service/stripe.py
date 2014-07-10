@@ -137,7 +137,7 @@ def describe_event(item):
         return r
 
     elif type_prefix == 'customer':
-        r = f.format(type=type_suffix, email=obj['email'])
+        r = f.format(type=type_suffix, email=obj.get('email') or '(no email)')
         if type_full in ('customer.created', 'customer.deleted'):
             r = '<b>%s</b>' % r
         return r
