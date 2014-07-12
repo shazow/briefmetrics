@@ -261,6 +261,7 @@ class ActivityReport(WeeklyMixin, GAReport):
         this_week, last_week = raw_table.rows
         col_compare = t.columns[1]
         col_compare_delta = Column('%s:delta' % col_compare.id, label='Completions', type_cast=float, type_format=h.human_delta, threshold=0)
+        has_completions = False
         for col_id, pos in raw_table.column_to_index.items():
             col = raw_table.columns[pos]
             if not col.id.startswith('ga:goal'):
@@ -270,9 +271,13 @@ class ActivityReport(WeeklyMixin, GAReport):
             row = t.add([col.label, completions])
 
             if completions:
+                has_completions = True
                 delta = (completions - completions_last) / float(completions)
                 if abs(delta) > 0.02:
                     row.tag(type='delta', value=delta, column=col_compare_delta)
+
+        if not has_completions:
+            return
 
         t.sort(reverse=True)
 
