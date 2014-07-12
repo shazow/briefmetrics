@@ -233,6 +233,10 @@ class ActivityReport(WeeklyMixin, GAReport):
         if not has_goals:
             return
 
+        metrics = [
+                Column('ga:goal{id}Completions'.format(id=g['id']), label=g['name'], type_cast=int, threshold=0) for g in has_goals if g.get('active')
+        ]
+
         raw_table = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
@@ -240,9 +244,7 @@ class ActivityReport(WeeklyMixin, GAReport):
                 'end-date': self.date_end,
                 'sort': '-{}'.format(interval_field),
             },
-            metrics=[
-                Column('ga:goal{id}Completions'.format(id=g['id']), label=g['name'], type_cast=int, threshold=0) for g in has_goals
-            ],
+            metrics=metrics[-10:],
             dimensions=[
                 Column(interval_field),
             ],
