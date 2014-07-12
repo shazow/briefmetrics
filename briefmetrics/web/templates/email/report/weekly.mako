@@ -71,3 +71,11 @@ ${widgets.render_table(
     'Social & Search',
     h.ga_permalink('report/social-sources', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
 )}
+
+% if c.report.tables.get('goals'):
+    ${widgets.render_table(
+        c.report.tables['goals'],
+        'Goals',
+        h.ga_permalink('report/conversions-goals-overview', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
+    )}
+% endif

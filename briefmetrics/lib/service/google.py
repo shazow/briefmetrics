@@ -225,6 +225,57 @@ class ActivityReport(WeeklyMixin, GAReport):
         t.sort(reverse=True)
         return t
 
+    def _get_goals(self, google_query, interval_field):
+        goals_api = 'https://www.googleapis.com/analytics/v3/management/accounts/{accountId}/webproperties/{webPropertyId}/profiles/{profileId}/goals'
+        r = google_query.get(goals_api.format(profileId=self.report.remote_data['id'], **self.report.remote_data))
+        has_goals = r.get('items')
+
+        if not has_goals:
+            return
+
+        raw_table = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': self.previous_date_start, # Extra week
+                'end-date': self.date_end,
+                'sort': '-{}'.format(interval_field),
+            },
+            metrics=[
+                Column('ga:goal{id}Completions'.format(id=g['id']), label=g['name'], type_cast=int, threshold=0) for g in has_goals
+            ],
+            dimensions=[
+                Column(interval_field),
+            ],
+        )
+
+        if len(raw_table.rows) != 2:
+            return
+
+        t = Table(columns=[
+            Column('goal', label='Goals', visible=1, type_cast=_cast_title),
+            Column('completions', label='Actions', visible=0, type_cast=int, type_format=h.human_int, threshold=0),
+        ])
+
+        this_week, last_week = raw_table.rows
+        col_compare = t.columns[1]
+        col_compare_delta = Column('%s:delta' % col_compare.id, label='Completions', type_cast=float, type_format=h.human_delta, threshold=0)
+        for col_id, pos in raw_table.column_to_index.items():
+            col = raw_table.columns[pos]
+            if not col.id.startswith('ga:goal'):
+                continue
+
+            completions, completions_last = this_week.values[pos], last_week.values[pos]
+            row = t.add([col.label, completions])
+
+            if completions:
+                delta = (completions - completions_last) / float(completions)
+                if abs(delta) > 0.02:
+                    row.tag(type='delta', value=delta, column=col_compare_delta)
+
+        t.sort(reverse=True)
+
+        return t
+
 
     def fetch(self, google_query):
         last_month_date_start = self.date_end - datetime.timedelta(days=self.date_end.day)
@@ -313,7 +364,11 @@ class ActivityReport(WeeklyMixin, GAReport):
 
         self.tables['referrers'] = current_referrers
 
-        #
+        # Goals?
+        self.tables['goals'] = self._get_goals(google_query, interval_field)
+
+
+        # Historic
 
         historic_table = google_query.get_table(
             params={

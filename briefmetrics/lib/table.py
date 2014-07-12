@@ -2,7 +2,7 @@ from itertools import izip, cycle
 from unstdlib import html
 
 
-TABLE, THEAD, TBODY, TR, TD = html.tag_builder(['table', 'thead', 'tbody', 'tr', 'td'])
+TABLE, THEAD, TBODY, TR, TD, SPAN = html.tag_builder(['table', 'thead', 'tbody', 'tr', 'td', 'span'])
 
 
 class Column(object):
@@ -124,6 +124,31 @@ class RowTag(object):
 
         if self.value:
             return self.value > 0 ^ self.column.reverse
+
+    def render_html(self):
+        # TODO: Get rid of this somehow
+        if self.column and self.column.id == 'ga:avgPageLoadTime' and (not self.value or self.is_positive or self.value < 2.0 or self.value < self.column.average * 3):
+            return ''
+
+        label = self.column and self.column.label or self.type
+        prefix = postfix = u''
+
+        if self.is_prefixed:
+            prefix = self.value or u''
+        elif self.value:
+            postfix = self.column and self.column.format(self.value) or self.value
+
+        css_class = {
+            None: 'neutral',
+            True: 'positive',
+            False: 'negative',
+        }[self.is_positive]
+
+        return SPAN(
+            prefix + SPAN(label, attrs={'class': 'label'}) + postfix,
+            attrs={'class': 'annotation %s' % css_class}
+        )
+
 
     def __str__(self):
         parts = []
