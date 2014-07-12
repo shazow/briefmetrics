@@ -67,6 +67,9 @@ class FakeQuery(Query):
             return r
         return self.cycles.setdefault(col_id, r)
 
+    def get(self, url, params=None):
+        return {}
+
     def get_table(self, params, dimensions=None, metrics=None, _cache_keys=None):
         columns = self._columns_to_params(params, dimensions=dimensions, metrics=metrics)
 
