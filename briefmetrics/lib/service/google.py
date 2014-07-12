@@ -124,12 +124,12 @@ def _prune_abstract(v):
         return
     return v
 
-def _cast_bounce(v):
+def _cast_percent(v):
     v = float(v or 0.0)
     if v:
         return v
 
-def _human_bounce(f):
+def _format_percent(f):
     return h.human_percent(f, denominator=100.0)
 
 def _cast_time(v):
@@ -234,7 +234,7 @@ class ActivityReport(WeeklyMixin, GAReport):
             return
 
         metrics = [
-                Column('ga:goal{id}Completions'.format(id=g['id']), label=g['name'], type_cast=int, threshold=0) for g in has_goals if g.get('active')
+                Column('ga:goal{id}ConversionRate'.format(id=g['id']), label=g['name'], type_cast=float) for g in has_goals if g.get('active')
         ]
 
         raw_table = google_query.get_table(
@@ -255,12 +255,12 @@ class ActivityReport(WeeklyMixin, GAReport):
 
         t = Table(columns=[
             Column('goal', label='Goals', visible=1, type_cast=_cast_title),
-            Column('completions', label='Actions', visible=0, type_cast=int, type_format=h.human_int, threshold=0),
+            Column('completions', label='Converts', visible=0, type_cast=_cast_percent, type_format=_format_percent, threshold=0),
         ])
 
         this_week, last_week = raw_table.rows
         col_compare = t.columns[1]
-        col_compare_delta = Column('%s:delta' % col_compare.id, label='Completions', type_cast=float, type_format=h.human_delta, threshold=0)
+        col_compare_delta = Column('%s:delta' % col_compare.id, label='Conversions', type_cast=float, type_format=h.human_delta, threshold=0)
         has_completions = False
         for col_id, pos in raw_table.column_to_index.items():
             col = raw_table.columns[pos]
@@ -272,8 +272,8 @@ class ActivityReport(WeeklyMixin, GAReport):
 
             if completions:
                 has_completions = True
-                delta = (completions - completions_last) / float(completions)
-                if abs(delta) > 0.02:
+                delta = (completions - completions_last) / 10.0 # / float(completions)
+                if abs(delta) > 0.01:
                     row.tag(type='delta', value=delta, column=col_compare_delta)
 
         if not has_completions:
@@ -297,7 +297,7 @@ class ActivityReport(WeeklyMixin, GAReport):
             Column('ga:pageviews', label='Views', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
             Column('ga:visitors', label='Uniques', type_cast=int, type_format=h.human_int),
             Column('ga:avgTimeOnSite', label='Time On Site', type_cast=_cast_time, type_format=h.human_time, threshold=0),
-            Column('ga:visitBounceRate', label='Bounce Rate', type_cast=_cast_bounce, type_format=_human_bounce, reverse=True, threshold=0),
+            Column('ga:visitBounceRate', label='Bounce Rate', type_cast=_cast_percent, type_format=_format_percent, reverse=True, threshold=0),
         ]
         self.tables['summary'] = summary_table = google_query.get_table(
             params={
@@ -456,7 +456,7 @@ class TrendsReport(MonthlyMixin, GAReport):
             Column('ga:pageviews', label='Views', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
             Column('ga:visitors', label='Uniques', type_cast=int, type_format=h.human_int),
             Column('ga:avgTimeOnSite', label='Time On Site', type_cast=_cast_time, type_format=h.human_time, threshold=0),
-            Column('ga:visitBounceRate', label='Bounce Rate', type_cast=_cast_bounce, type_format=_human_bounce, reverse=True, threshold=0),
+            Column('ga:visitBounceRate', label='Bounce Rate', type_cast=_cast_percent, type_format=_format_percent, reverse=True, threshold=0),
         ]
         self.tables['summary'] = google_query.get_table(
             params={

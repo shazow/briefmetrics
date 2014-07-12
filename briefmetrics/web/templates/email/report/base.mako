@@ -76,7 +76,7 @@
         padding-right: 0.5em;
         text-align: right;
         vertical-align: top;
-        width: 4.5em;
+        width: 5.5em;
     }
     td.date {
         color: #999;

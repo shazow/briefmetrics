@@ -59,7 +59,7 @@
             link = h.human_link(url, max_length=100)
     %>
         <tr>
-            <td class="number">${h.human_int(views)}</td>
+            <td class="number">${columns[0].format(views)}</td>
             <td>
                 ${link}
 
