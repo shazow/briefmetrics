@@ -52,7 +52,7 @@ ${h.chart(c.report.data['historic_data'], width=560, height=200)}
         % if not conversion:
             per session.
         % else:
-            per session, with a total conversion rate of
+            per session, with a combined conversion rate of
             <span class="highlight">${h.human_percent(conversion, denominator=100.0)}</span>.
         % endif
     </p>
