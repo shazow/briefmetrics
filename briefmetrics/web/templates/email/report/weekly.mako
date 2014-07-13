@@ -37,8 +37,9 @@ ${h.chart(c.report.data['historic_data'], width=560, height=200)}
         </tr>
     </table>
     <%
-        columns = 'ga:pageviews', 'ga:visitors', 'ga:avgTimeOnSite', 'ga:visitBounceRate', 'ga:visits'
-        pageviews, uniques, seconds, bounces, visits = next(c.report.tables['summary'].iter_rows(*columns))
+        columns = 'ga:pageviews', 'ga:visitors', 'ga:avgTimeOnSite', 'ga:visitBounceRate', 'ga:visits', 'ga:goalConversionRateAll'
+        rows = c.report.tables['summary'].iter_rows(*columns)
+        pageviews, uniques, seconds, bounces, visits, conversion = next(rows)
     %>
 
     % if uniques and seconds:
@@ -48,7 +49,12 @@ ${h.chart(c.report.data['historic_data'], width=560, height=200)}
         <span class="highlight">${h.human_time(seconds)}</span>
         over
         <span class="highlight">${'%0.1f' % (float(pageviews or 0.0) / float(visits or 1.0))} pages</span>
-        per session.
+        % if not conversion:
+            per session.
+        % else:
+            per session, with a total conversion rate of
+            <span class="highlight">${h.human_percent(conversion, denominator=100.0)}</span>.
+        % endif
     </p>
     % endif
 % endif
