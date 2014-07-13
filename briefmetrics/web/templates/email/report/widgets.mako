@@ -20,7 +20,7 @@
 
     if tag.is_prefixed:
         prefix = tag.value or u''
-    elif tag.value:
+    elif tag.value is not None:
         postfix = tag.column and tag.column.format(tag.value) or tag.value
 %>
 

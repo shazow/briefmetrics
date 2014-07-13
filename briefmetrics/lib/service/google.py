@@ -124,10 +124,15 @@ def _prune_abstract(v):
         return
     return v
 
+def _prune_referrer(v):
+    if v.startswith('('):
+        return
+    if v.startswith('semalt.semalt.com'):
+        return
+    return v
+
 def _cast_percent(v):
-    v = float(v or 0.0)
-    if v:
-        return v
+    return float(v or 0.0)
 
 def _format_percent(f):
     return h.human_percent(f, denominator=100.0)
@@ -272,9 +277,9 @@ class ActivityReport(WeeklyMixin, GAReport):
 
             if completions:
                 has_completions = True
-                delta = (completions - completions_last) / 10.0 # / float(completions)
+                delta = (completions - completions_last) / 100.0 # / float(completions)
                 if abs(delta) > 0.01:
-                    row.tag(type='delta', value=delta, column=col_compare_delta)
+                    row.tag(type='delta', value=h.human_percent(delta, signed=True), column=col_compare_delta, is_prefixed=True)
 
         if not has_completions:
             return
@@ -298,6 +303,7 @@ class ActivityReport(WeeklyMixin, GAReport):
             Column('ga:visitors', label='Uniques', type_cast=int, type_format=h.human_int),
             Column('ga:avgTimeOnSite', label='Time On Site', type_cast=_cast_time, type_format=h.human_time, threshold=0),
             Column('ga:visitBounceRate', label='Bounce Rate', type_cast=_cast_percent, type_format=_format_percent, reverse=True, threshold=0),
+            Column('ga:goalConversionRateAll', label='Conversion', type_cast=float, type_format=_format_percent, threshold=0)
         ]
         self.tables['summary'] = summary_table = google_query.get_table(
             params={
@@ -324,7 +330,7 @@ class ActivityReport(WeeklyMixin, GAReport):
             dimensions=[
                 Column('ga:pagePath', label='Pages', visible=1, type_cast=_prune_abstract),
             ],
-            metrics=[col.new() for col in summary_metrics] + [
+            metrics=[col.new() for col in summary_metrics[:-1]] + [
                 Column('ga:avgPageLoadTime', label='Page Load', type_cast=float, type_format=h.human_time, reverse=True, threshold=0)
             ],
         )
@@ -345,7 +351,7 @@ class ActivityReport(WeeklyMixin, GAReport):
                 'max-results': '25',
             },
             dimensions=[
-                Column('ga:fullReferrer', label='Referrer', visible=1, type_cast=_prune_abstract)
+                Column('ga:fullReferrer', label='Referrer', visible=1, type_cast=_prune_referrer)
             ],
             metrics=[col.new() for col in summary_metrics],
         )
@@ -360,13 +366,12 @@ class ActivityReport(WeeklyMixin, GAReport):
                 'max-results': '250',
             },
             dimensions=[
-                Column('ga:fullReferrer', label='Referrer', visible=1, type_cast=_prune_abstract)
+                Column('ga:fullReferrer', label='Referrer', visible=1, type_cast=_prune_referrer)
             ],
             metrics=[
                 summary_table.get('ga:pageviews').new(),
             ],
         )
-
         inject_table_delta(current_referrers, last_referrers, join_column='ga:fullReferrer')
 
         self.tables['referrers'] = current_referrers
@@ -419,7 +424,6 @@ class ActivityReport(WeeklyMixin, GAReport):
         self.tables['social_search'].tag_rows()
         self.tables['referrers'].tag_rows()
         self.tables['pages'].tag_rows()
-
 
 
 class ActivityMonthlyReport(MonthlyMixin, ActivityReport):

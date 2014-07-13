@@ -48,6 +48,7 @@ data['ga:pagePath'] = ['/foo', '/bar', '/baz']
 data['ga:country'] = ['United States', 'Canada', 'Germany']
 data['ga:deviceCategory'] = ['mobile', 'tablet', 'desktop']
 data['ga:browser'] = ['Chrome', 'Firefox', 'Internet Explorer']
+data['ga:goalConversionRateAll'] = [0.0, 0.123, 0.0]
 
 
 skip_state = set(['ga:month'])

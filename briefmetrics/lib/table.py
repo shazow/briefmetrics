@@ -63,18 +63,20 @@ class Column(object):
         self.sum += value
 
         min_value, _ = self.min_row
-        if min_value > value:
-            self.min_row = value, row
-
         max_value, _ = self.max_row
+
         if max_value < value:
             self.max_row = value, row
+        elif min_value > value or min_value is None:
+            self.min_row = value, row
 
     def is_interesting(self, value):
         if value is None or self._threshold is None:
             return False
 
         delta = self.delta_value(value)
+        if not delta and not value:
+            return False
         if delta and abs(delta) < self._threshold:
             return False
 
@@ -135,7 +137,7 @@ class RowTag(object):
 
         if self.is_prefixed:
             prefix = self.value or u''
-        elif self.value:
+        elif self.value is not None:
             postfix = self.column and self.column.format(self.value) or self.value
 
         css_class = {
@@ -163,6 +165,9 @@ class RowTag(object):
             parts.append(self.type.title())
 
         return ' '.join(parts)
+
+    def __repr__(self):
+        return '<Tag: %s>' % self
 
 
 class Row(object):
