@@ -279,7 +279,7 @@ class ActivityReport(WeeklyMixin, GAReport):
                 has_completions = True
                 delta = (completions - completions_last) / 100.0 # / float(completions)
                 if abs(delta) > 0.01:
-                    row.tag(type='delta', value=h.human_percent(delta, signed=True), column=col_compare_delta, is_prefixed=True)
+                    row.tag(type='delta', value=h.human_percent(delta, signed=True), column=col_compare_delta, is_prefixed=True, is_positive=delta>0)
 
         if not has_completions:
             return
