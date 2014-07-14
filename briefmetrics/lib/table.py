@@ -256,10 +256,12 @@ class Table(object):
 
             max_value, max_row = column.max_row
             min_value, min_row = column.min_row
+
             if max_row and column.is_interesting(max_value):
                 max_row.tag(type='max', value=max_value, column=column)
-            elif min_row and column.is_interesting(min_value):
-                min_row.tag(type='min', value=max_value, column=column)
+
+            if min_row and column.is_interesting(min_value):
+                min_row.tag(type='min', value=min_value, column=column)
 
     def iter_rows(self, *column_ids):
         if not column_ids:
