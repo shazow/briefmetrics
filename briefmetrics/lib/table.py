@@ -254,13 +254,12 @@ class Table(object):
                 # We only want non-visible thresholded columns
                 continue
 
-            value, row = column.max_row
-            if row and column.is_interesting(value):
-                row.tag(type='max', value=value, column=column)
-
-            value, row = column.min_row
-            if row and column.is_interesting(value):
-                row.tag(type='min', value=value, column=column)
+            max_value, max_row = column.max_row
+            min_value, min_row = column.min_row
+            if max_row and column.is_interesting(max_value):
+                max_row.tag(type='max', value=max_value, column=column)
+            elif min_row and column.is_interesting(min_value):
+                min_row.tag(type='min', value=max_value, column=column)
 
     def iter_rows(self, *column_ids):
         if not column_ids:
