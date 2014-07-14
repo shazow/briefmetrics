@@ -49,7 +49,7 @@ ${h.chart(c.report.data['historic_data'], width=560, height=200)}
         <span class="highlight">${h.human_time(seconds)}</span>
         over
         <span class="highlight">${'%0.1f' % (float(pageviews or 0.0) / float(visits or 1.0))} pages</span>
-        % if not conversion:
+        % if not conversion or conversion < 0.1:
             per session.
         % else:
             per session, with a combined conversion rate of
