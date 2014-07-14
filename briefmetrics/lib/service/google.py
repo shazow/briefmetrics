@@ -275,7 +275,7 @@ class ActivityReport(WeeklyMixin, GAReport):
             completions, completions_last = this_week.values[pos], last_week.values[pos]
             row = t.add([col.label, completions])
 
-            if completions > 0.01:
+            if completions > 0.1:
                 has_completions = True
                 delta = (completions - completions_last) / 100.0 # / float(completions)
                 if abs(delta) > 0.01:
