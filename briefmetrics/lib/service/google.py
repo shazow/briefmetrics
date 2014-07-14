@@ -233,14 +233,13 @@ class ActivityReport(WeeklyMixin, GAReport):
     def _get_goals(self, google_query, interval_field):
         goals_api = 'https://www.googleapis.com/analytics/v3/management/accounts/{accountId}/webproperties/{webPropertyId}/profiles/{profileId}/goals'
         r = google_query.get(goals_api.format(profileId=self.report.remote_data['id'], **self.report.remote_data))
-        has_goals = r.get('items')
-
-        if not has_goals:
-            return
-
+        has_goals = r.get('items') or []
         metrics = [
                 Column('ga:goal{id}ConversionRate'.format(id=g['id']), label=g['name'], type_cast=float) for g in has_goals if g.get('active')
         ]
+
+        if not metrics:
+            return
 
         raw_table = google_query.get_table(
             params={
