@@ -303,7 +303,7 @@ class ActivityReport(WeeklyMixin, GAReport):
             Column('ga:visitors', label='Uniques', type_cast=int, type_format=h.human_int),
             Column('ga:avgTimeOnSite', label='Time On Site', type_cast=_cast_time, type_format=h.human_time, threshold=0),
             Column('ga:visitBounceRate', label='Bounce Rate', type_cast=_cast_percent, type_format=_format_percent, reverse=True, threshold=0),
-            Column('ga:goalConversionRateAll', label='Conversion', type_cast=float, type_format=_format_percent, threshold=0.01)
+            Column('ga:goalConversionRateAll', label='Conversion', type_cast=float, type_format=_format_percent, threshold=0.1)
         ]
         self.tables['summary'] = summary_table = google_query.get_table(
             params={
