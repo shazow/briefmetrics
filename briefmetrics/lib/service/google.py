@@ -105,15 +105,14 @@ class Query(object):
     def get_profile(self, remote_id=None):
         r = self.get_profiles()
         if remote_id is None:
-            return next(iter(r['items']), None)
+            return next(iter(r, None))
 
         return next((item for item in r if item['id'] == remote_id), None)
 
     def get_profiles(self):
         # account_id used for caching, not in query.
         r = self.get('https://www.googleapis.com/analytics/v3/management/accounts/~all/webproperties/~all/profiles')
-        return r['items']
-
+        return r.get('items') or []
 
 
 ## Reports:

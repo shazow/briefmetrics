@@ -24,6 +24,11 @@ class Request(_Request):
         # FIXME: Is there a cleaner place to put this?
         self.add_finished_callback(_teardown_session)
 
+    # For debugging
+    @property
+    def unauthenticated_userid(self):
+        return self.session.get('user_id')
+
     def flash(self, msg, queue='', allow_duplicate=True):
         """
         Similar to request.session.flash(...) but messages only last for the
