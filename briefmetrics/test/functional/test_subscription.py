@@ -34,3 +34,4 @@ class TestSubscription(test.TestWeb):
         # Second subscription create should not override the first.
         new_user = model.User.get(2)
         self.assertEqual(new_user.display_name, 'Foo')
+        self.assertEqual(new_user.plan_id, 'recipient')
