@@ -235,3 +235,5 @@ class StripeReport(WeeklyMixin, Report):
         self.data['total_last'] = last_month[-1]
         self.data['total_last_relative'] = last_month[min(len(current_month), len(last_month))-1]
         self.data['total_last_date_start'] = last_month_date_start
+
+        self.data['canary'] = None # XXX: Fix this before launching
