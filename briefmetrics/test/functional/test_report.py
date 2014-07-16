@@ -27,7 +27,9 @@ class TestReport(test.TestWeb):
         return report
 
     def test_fake_query(self):
-        account = model.Account(service='google')
+        account = model.Account.create(service='google')
+        Session.commit()
+
         q = api.account.query_service(self.request, account=account)
 
         r = q.get_profile()

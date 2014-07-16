@@ -40,7 +40,7 @@ class GoogleAPI(OAuth2API):
     def create_query(self, cache_keys):
         if self.request.features.get('offline'):
             from briefmetrics.test.fixtures.api_google import FakeQuery
-            return FakeQuery(self)
+            return FakeQuery(self, cache_keys=cache_keys)
 
         return Query(self, cache_keys=cache_keys)
 
