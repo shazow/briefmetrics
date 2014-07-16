@@ -37,7 +37,7 @@ class GoogleAPI(OAuth2API):
         return user_info['email'], user_info.get('name')
 
 
-    def create_query(self, cache_keys=None):
+    def create_query(self, cache_keys):
         if self.request.features.get('offline'):
             from briefmetrics.test.fixtures.api_google import FakeQuery
             return FakeQuery(self)
@@ -59,7 +59,7 @@ DIMENSIONS = [u'ga:adContent', u'ga:adDestinationUrl', u'ga:adDisplayUrl', u'ga:
 
 
 class Query(object):
-    def __init__(self, oauth, cache_keys=None):
+    def __init__(self, oauth, cache_keys):
         self.oauth = oauth
         self.api = oauth.session
         self.cache_keys = cache_keys

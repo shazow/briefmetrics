@@ -160,6 +160,8 @@ def logout_user(request):
 
 
 def query_service(request, account):
+    if not account.id:
+        raise APIError('Invalid account for service query.')
     return service_registry[account.service](request, token=account.oauth_token).create_query(cache_keys=(account.id,))
 
 

@@ -48,15 +48,15 @@ class StripeAPI(OAuth2API):
         user_info = r.json()
         return user_info['email'], user_info.get('display_name')
 
-    def create_query(self, cache_keys=None):
+    def create_query(self, cache_keys):
         return Query(self, cache_keys=cache_keys)
 
 
 class Query(object):
-    def __init__(self, oauth, cache_keys=None):
+    def __init__(self, oauth, cache_keys):
         self.oauth = oauth
         self.api = oauth.session
-        self.cache_keys = None
+        self.cache_keys = cache_keys
 
     @ReportRegion.cache_on_arguments()
     def _get(self, url, params=None, _cache_keys=None):
