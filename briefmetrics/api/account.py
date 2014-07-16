@@ -1,6 +1,6 @@
 import stripe
 import logging
-from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
+from oauthlib.oauth2.rfc6749.errors import InvalidGrantError, OAuth2Error
 
 from briefmetrics import model
 from briefmetrics.model.meta import Session
@@ -37,6 +37,8 @@ def connect_user(request, oauth, user_required=False):
     except InvalidGrantError:
         # Try again.
         raise httpexceptions.HTTPSeeOther(request.route_path('account_login', service=oauth.id))
+    except OAuth2Error as e:
+        raise APIError("Unexpected authentication error, please try again: %s" % e.description)
 
     if not user:
         # New user
