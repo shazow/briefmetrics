@@ -360,6 +360,8 @@ input[type="file"] {
 textarea {
   font-size: 1.2em;
   padding: 3px 7px;
+  width: 100%;
+  display: block;
 }
 
 select {
@@ -663,7 +665,7 @@ nav.header h1 {
   padding: 0 0.5em;
 }
 
-a.cta {
+a.cta, input.cta {
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
@@ -682,10 +684,10 @@ a.cta {
   padding: 3px 2em;
   cursor: pointer;
 }
-a.cta:hover {
+a.cta:hover, input.cta:hover {
   background: #f8a915;
 }
-a.cta small {
+a.cta small, input.cta small {
   display: block;
   color: #fee8c0;
   font-size: 0.8em;

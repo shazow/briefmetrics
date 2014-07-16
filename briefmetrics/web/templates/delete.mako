@@ -4,14 +4,32 @@
     % if c.user:
     <form action="${request.route_path('account_delete')}" method="post" class="delete-confirm">
         <input type="hidden" name="token" value="${c.token or ''}" />
-        <input type="hidden" name="confirmed" value="true" />
+
+        <p>
+            Sorry to see you go. :(
+        </p>
+
+        <p>
+            <label>
+                Why are you leaving Briefmetrics?
+                <textarea name="why" placeholder=""></textarea>
+            </label>
+        </p>
+
+        <p>
+            <label>
+                Anything we can do to keep your business?
+                <textarea name="retention" placeholder=""></textarea>
+            </label>
+        </p>
 
         <p>
             Are you sure you want to delete your account? This cannot be undone.
         </p>
         <p>
-            <input type="submit" class="negative" value="Yes, delete everything" />
-            <span style="padding: 0 0.5em;">or</span> <a href="${request.route_path('index')}" class="cta" style="width: 200px;">Nevermind, take me back</a>
+            <input type="submit" class="negative" name="confirmed" value="Yes, delete everything" style="height: 38px;" />
+            <span style="padding: 0 0.5em;">or</span>
+            <input type="submit" class="cta" name="feedback" value="Send feedback &amp; take me back" />
         </p>
     </form>
     % else:

@@ -337,7 +337,6 @@
             </p>
             <div>
                 <textarea name="header_text" placeholder="(Optional)">${user.config.get('email_intro_text') or ''}</textarea>
-
             </div>
         </label>
 

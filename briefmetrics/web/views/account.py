@@ -71,7 +71,7 @@ class AccountController(Controller):
     def delete(self):
         # TODO: Move to API?
         user_id = api.account.get_user_id(self.request)
-        token = self.request.params.get('token')
+        token, is_confirmed, is_feedback, why, retention = get_many(self.request.params, optional=['token', 'confirmed', 'feedback', 'why', 'retention'])
 
         if not user_id and not token:
             raise LoginRequired(next=self.current_path)
@@ -86,16 +86,21 @@ class AccountController(Controller):
         self.c.user = user
         self.c.token = token
 
+        reasons = 'Why:\r\n%s\r\n\r\nRetention:\r\n%s' % (why, retention)
+
         if not user:
             return self._render('delete.mako')
 
-        confirmed = self.request.params.get('confirmed')
-        if not confirmed:
+        if is_confirmed:
+            api.email.notify_admin(self.request, 'Account deleted: [%s] "%s" <%s>' % (user.id, user.display_name, user.email), text=reasons)
+            api.account.delete(user_id=user.id)
+            api.account.logout_user(self.request)
+            self.request.session.flash('Good bye.')
+        elif is_feedback:
+            api.email.notify_admin(self.request, 'RETENTION: [%s] "%s" <%s>' % (user.id, user.display_name, user.email), text=reasons)
+            self.request.session.flash('Feedback submitted. We\'ll be in touch shortly!')
+        else:
             self.c.token = token
             return self._render('delete.mako')
-
-        api.email.notify_admin(self.request, 'Account deleted: [%s] "%s" <%s>' % (user.id, user.display_name, user.email))
-        api.account.delete(user_id=user.id)
-        self.request.session.flash('Good bye.')
 
         return self._redirect(location=self.request.route_path('index'))

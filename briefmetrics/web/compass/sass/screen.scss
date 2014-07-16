@@ -289,7 +289,7 @@ nav.header {
     }
 }
 
-a.cta {
+a.cta, input.cta {
     @include border-radius(3px);
     @include background-image(linear-gradient(#f8a915, #ea9613));
     border: 1px solid #d28811;
@@ -311,7 +311,6 @@ a.cta {
         font-size: 0.8em;
     }
 }
-
 
 .preview, .screenshot {
     @include boxed;
