@@ -201,14 +201,16 @@ def get_or_create(user_id=None, email=None, service='google', token=None, displa
         u = model.User.create(email=email, display_name=display_name, **create_kw)
         u.set_plan(plan_id or 'trial')
 
-    account = u.get_account(service=service)
-    if not account:
-        account = model.Account.create(display_name=display_name, user=u, service=service)
-        u.accounts.append(account)
+    if service:
+        # Create account
+        account = u.get_account(service=service)
+        if not account:
+            account = model.Account.create(display_name=display_name, user=u, service=service)
+            u.accounts.append(account)
 
-    if token and token.get('refresh_token'):
-        # Update token if it's a better one (with refresh).
-        account.oauth_token = token
+        if token and token.get('refresh_token'):
+            # Update token if it's a better one (with refresh).
+            account.oauth_token = token
 
     Session.commit()
     return u
