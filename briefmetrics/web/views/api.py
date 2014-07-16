@@ -71,7 +71,7 @@ def handle_api(method_whitelist=None):
                     # Copy request-level messages to session storage.
                     self.request.session.flash(message)
 
-            next = self.request.params.get('next') or self.request.referer
+            next = self.request.params.get('next') or self.request.referer or '/'
             return httpexceptions.HTTPSeeOther(next)
 
         return wrapped
