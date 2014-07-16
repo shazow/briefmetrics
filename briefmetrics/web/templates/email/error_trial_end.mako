@@ -1,51 +1,30 @@
 <%inherit file="base.mako"/>
 
 <p>
-    Hi there,
+    We hope your weekly analytics reports were valuable and convenient.
 </p>
 
 <p>
-    I hope you enjoyed your Briefmetrics reports. Unfortunately you ran out of
-    free reports. If you wouldn't mind answering a few questions, I'm happy to
-    toss a few extra free reports your way. :)
-</p>
-
-<ul>
-    <li>
-        Before Briefmetrics, how often would you check your stats on Google
-        Analytics?
-    </li>
-    <li>
-        What else would you like to see in your report each week (or
-        day/month/quarter?) to keep you better informed of your analytics?
-    </li>
-    <li>
-        If anything, how much would you be willing to pay for these reports?
-    </li>
-    <li>
-        How many extra free reports would you like?
-    </li>
-    <li>
-        Unrelated to anything but... how's your day going?
-    </li>
-</ul>
-
-<p>
-    If you're up for it, just reply to this email with your answers and any
-    other feedback you might have. If not, no hard feelings. Maybe some new
-    features in the future will lure you back in. :)
+    Please <a href="https://briefmetrics.com/settings">add your credit card here</a>
+    to continue receiving Briefmetrics reports for just $8 per month.
 </p>
 
 <p>
-    Thank you for giving Briefmetrics a try!
+    If you'd like to customize the branding of your email with your company's logo, we have
+    a <a href="https://briefmetrics.com/pricing">suite of agency plans starting at $35 per month</a>.
+</p>
+
+<p>
+    Thanks for giving Briefmetrics a spot in your inbox!
 </p>
 
 <p>
     Sincerely,<br />
-    Andrey and his army of code collectively known as Briefmetrics
+    Andrey
 </p>
 
 <p>
-    P.S. If you did want to upgrade to a paid plan but simply forgot, you can
-    <a href="https://briefmetrics.com/settings">add your credit card here</a>.
+    P.S. Do you need a few more weeks to decide if Briefmetrics is right for
+    your business? Just reply to this email and I'd be happy to extend your
+    trial.
 </p>

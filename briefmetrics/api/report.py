@@ -132,8 +132,8 @@ def send(request, report, since_time=None, pretend=False):
 
     elif not owner.stripe_customer_id and owner.num_remaining == 1:
         messages.append(h.literal('''
-            <strong>This is your final report. :(</strong><br />
-            Please <a href="https://briefmetrics.com/settings">add a credit card now</a> to keep receiving Briefmetrics reports.
+            <strong>This is your final report. </strong><br />
+            Please <a href="https://briefmetrics.com/settings">add a credit card now</a> to continue receiving Briefmetrics reports.
         '''.strip()))
 
 
