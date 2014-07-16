@@ -11,7 +11,7 @@
 
 <p>
     If you'd like to customize the branding of your email with your company's logo, we have
-    a <a href="https://briefmetrics.com/pricing">suite of agency plans starting at $35 per month</a>.
+    a <a href="https://briefmetrics.com/pricing">suite of agency plans starting</a> at $35 per month.
 </p>
 
 <p>
