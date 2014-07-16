@@ -199,7 +199,7 @@ def get_or_create(user_id=None, email=None, service='google', token=None, displa
 
     if not u:
         u = model.User.create(email=email, display_name=display_name, **create_kw)
-        u.set_plan(plan_id or 'trial')
+        set_plan(u, plan_id or 'trial')
 
     if service:
         # Create account
@@ -230,7 +230,7 @@ def delete(user_id):
 def set_payments(user, plan_id=None, card_token=None):
     if plan_id:
         try:
-            user.set_plan(plan_id)
+            set_plan(user, plan_id)
         except KeyError:
             raise APIError('Invalid plan: %s' % plan_id)
 
