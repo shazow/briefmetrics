@@ -10,6 +10,8 @@
     * API explorer thing
     * New dashboard with report type toggles
     * Yearly plans
+        * Alert  John Z <john@battalionstudios.com>
+        * Alert Andrew Kalek <andrew.kalek@anlek.com>
     * Bitcoin integration
     * Detect private pages: Very few uniques, but high time on site and views
     * Pitch the "share analytics with your team" angle.
