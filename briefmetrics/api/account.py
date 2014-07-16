@@ -287,11 +287,16 @@ def start_subscription(user):
 
 
 def set_plan(user, plan_id, update_subscription=None):
-    try:
-        user.set_plan(plan_id)
-        Session.commit()
-    except KeyError:
+    plan = pricing.PLANS_LOOKUP.get(plan_id)
+    if not plan:
         raise APIError('Invalid plan: %s' % plan_id)
+
+    user.plan_id = plan_id
+    num_remaining = plan.features.get('num_emails')
+    if num_remaining or not user.num_remaining:
+        user.num_remaining = num_remaining
+
+    Session.commit()
 
     if update_subscription is None:
         # Default behaviour

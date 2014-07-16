@@ -69,16 +69,6 @@ class User(meta.Model): # Email address / login
     def unsubscribe_token(self):
         return '%s-%s' % (self.email_token, self.id)
 
-    def set_plan(self, plan_id):
-        plan = pricing.PLANS_LOOKUP[plan_id]
-        self.plan_id = plan_id
-
-        num_remaining = plan.features.get('num_emails')
-        if not num_remaining and self.num_remaining:
-            pass
-        else:
-            self.num_remaining = num_remaining
-
     @property
     def plan(self):
         return pricing.PLANS_LOOKUP[self.plan_id or 'trial']
