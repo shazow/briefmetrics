@@ -50,7 +50,8 @@
                 ${widgets.user_render(u)}
 
                 <div class="id">
-                    ${u.email_to}
+                    <div>${u.email_to}</div>
+                    <small>Joined ${h.human_date(u.time_created, max_unit='year')}</small>
 
                     % if u.account:
                         <ol>
