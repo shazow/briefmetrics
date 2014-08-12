@@ -1,4 +1,5 @@
 import datetime
+from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
 
 from briefmetrics.lib import helpers as h
 from briefmetrics.lib.cache import ReportRegion
@@ -111,7 +112,10 @@ class Query(object):
 
     def get_profiles(self):
         # account_id used for caching, not in query.
-        r = self.get('https://www.googleapis.com/analytics/v3/management/accounts/~all/webproperties/~all/profiles')
+        try:
+            r = self.get('https://www.googleapis.com/analytics/v3/management/accounts/~all/webproperties/~all/profiles')
+        except InvalidGrantError:
+            raise APIError('Insufficient permissions to query Google Analytics. Please re-connect your account.')
         return r.get('items') or []
 
 
