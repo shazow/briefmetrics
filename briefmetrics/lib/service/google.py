@@ -7,6 +7,7 @@ from briefmetrics.lib.gcharts import encode_rows
 from briefmetrics.lib.http import assert_response
 from briefmetrics.lib.report import Report, EmptyReportError, MonthlyMixin, WeeklyMixin, DailyMixin, inject_table_delta, cumulative_by_month
 from briefmetrics.lib.table import Table, Column
+from briefmetrics.lib.exceptions import APIError
 
 from .base import OAuth2API
 
