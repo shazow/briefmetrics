@@ -154,9 +154,12 @@ class ReportController(Controller):
             try:
                 available_profiles += query.get_profiles()
             except APIError as e:
-                r = e.response.json()
-                for msg in r['error']['errors']:
-                    self.request.flash('Error: %s' % msg['message'])
+                if e.response:
+                    r = e.response.json()
+                    for msg in r['error']['errors']:
+                        self.request.flash('Error: %s' % msg['message'])
+                else:
+                    self.request.flash(e.message)
 
         self.c.available_profiles = available_profiles
 
