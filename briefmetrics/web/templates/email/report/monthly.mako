@@ -31,7 +31,7 @@ ${h.chart(c.report.data['historic_data'], width=560, height=200)}
         over
         <span class="highlight">${'%0.1f' % (float(pageviews or 0.0) / float(visits or 1.0))} pages</span>
         per session.
-        <span class="highlight">${h.human_percent(bounces)} of visits</span> bounced after a single page view.
+        <span class="highlight">${h.human_percent(bounces, denominator=100.0)} of visits</span> bounced after a single page view.
     </p>
     % endif
 % endif
