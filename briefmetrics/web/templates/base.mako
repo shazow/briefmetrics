@@ -77,9 +77,9 @@ Questions? Send an email to <a href="mailto:support@briefmetrics.com">support@br
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
   % if request.unauthenticated_userid:
-      ga('create', 'UA-407051-16');
-  % else:
       ga('create', 'UA-407051-16', {'userId': '${request.unauthenticated_userid}'});
+  % else:
+      ga('create', 'UA-407051-16');
   % endif
   ga('send', 'pageview');
 </script>
