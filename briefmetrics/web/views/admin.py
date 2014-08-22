@@ -82,6 +82,7 @@ class AdminController(Controller):
 
         self.c.num_users = len(users)
         self.c.num_credit_cards = len([u for u in users if u.stripe_customer_id])
+        self.c.num_mrr = sum([(u.plan.price_monthly or 0) for u in users if u.stripe_customer_id])
 
         self.c.by_plan = groupby_count(users, key=lambda u: u.plan_id)
 

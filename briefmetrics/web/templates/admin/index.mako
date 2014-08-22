@@ -32,7 +32,10 @@
     <section>
         <h2>Plans</h2>
 
-        <p><strong>${c.num_credit_cards}</strong> users with credit cards.</p>
+        <p><strong>${c.num_credit_cards}</strong>
+            users with credit cards,
+            expected to pay
+            <strong>${h.human_dollar(c.num_mrr)}/mo</strong>.</p>
 
         <ul class="vertical">
         % for count, plan_id in sorted(c.by_plan, reverse=True):
