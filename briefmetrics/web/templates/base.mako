@@ -88,6 +88,7 @@ Questions? Send an email to <a href="mailto:support@briefmetrics.com">support@br
   % else:
   ga('create', 'UA-407051-16', 'auto');
   % endif
+  ga('require', 'displayfeatures');
   ga('send', 'pageview');
 </script>
 
