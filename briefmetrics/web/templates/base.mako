@@ -83,9 +83,10 @@ Questions? Send an email to <a href="mailto:support@briefmetrics.com">support@br
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-  ga('create', 'UA-407051-16');
   % if request.unauthenticated_userid:
-  ga('set', '&uid', '${request.unauthenticated_userid}');
+  ga('create', 'UA-407051-16', {'userId': '${request.unauthenticated_userid}');
+  % else:
+  ga('create', 'UA-407051-16');
   % endif
   ga('send', 'pageview');
 </script>
