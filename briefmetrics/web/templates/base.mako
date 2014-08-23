@@ -86,7 +86,7 @@ Questions? Send an email to <a href="mailto:support@briefmetrics.com">support@br
   % if request.unauthenticated_userid:
   ga('create', 'UA-407051-16', {'userId': '${request.unauthenticated_userid}');
   % else:
-  ga('create', 'UA-407051-16');
+  ga('create', 'UA-407051-16', 'auto');
   % endif
   ga('send', 'pageview');
 </script>
