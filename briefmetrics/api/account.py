@@ -242,17 +242,20 @@ def set_payments(user, plan_id=None, card_token=None):
         return user
 
     description = 'Briefmetrics User: %s' % user.email
+    metadata = {'user_id': user.id}
 
     if user.stripe_customer_id:
         customer = stripe.Customer.retrieve(user.stripe_customer_id)
         customer.card = card_token
         customer.description = description
+        customer.metadata = metadata
         customer.save()
     else:
         customer = stripe.Customer.create(
             card=card_token,
             description=description,
             email=user.email,
+            metadata=metadata,
         )
         user.stripe_customer_id = customer.id
 
@@ -347,3 +350,23 @@ def sync_plans(pretend=True, include_hidden=False):
             currency='usd',
             statement_description='Briefmetrics',
         )
+
+
+def sync_customers(pretend=True):
+    stripe_users = [u for u in model.User.all() if u.stripe_customer_id]
+
+    for user in stripe_users:
+        description = 'Briefmetrics User: %s' % user.email
+        metadata = {'user_id': user.id}
+        customer = stripe.Customer.retrieve(user.stripe_customer_id)
+        customer.description = description
+        customer.metadata = metadata
+        customer.email = user.email
+
+        print "Setting customer: {}".format(description)
+        if pretend:
+            continue
+
+        customer.save()
+
+    print "Updated {} users.".format(len(stripe_users))
