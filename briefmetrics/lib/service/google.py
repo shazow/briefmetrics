@@ -131,6 +131,10 @@ def collect(tracking_id, user_id=None, client_id=None, hit_type='pageview', http
 
     collect('UA-407051-16', '1', hit_type='transaction', ti='test', tr='1.42', cu='USD')
 
+    Page:
+        hit_type='pageview'
+        dp='/', # Page
+
     Transactions:
         hit_type='transaction',
         ti='...', # Transaction ID
@@ -143,16 +147,23 @@ def collect(tracking_id, user_id=None, client_id=None, hit_type='pageview', http
         ea='...', # Event Action
         el='...', # Event Label
         ev='...', # Event Value
+
+    Other:
+        uip='1.2.3.4', # IP Override
+
+    via https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide
     """
     client_id = client_id or uuid.uuid4().hex
     params = {
         'v': 1, # Protocol version
         'tid': tracking_id, # Tracking ID (UA-XXXXXX-XX)
         'cid': client_id, # Client ID,
+        'uid': user_id, # User ID,
         't': hit_type, # Hit Type
-        'aip': 1, # Anonymize IP
+        'uip': '0.0.0.0', # IP Override
         'ni': 1, # Non-interactive
     }
+    params.update(kw)
 
     req = requests.Request('POST', COLLECT_URL, data=urlencode(params)).prepare()
     return http_session.send(req)
