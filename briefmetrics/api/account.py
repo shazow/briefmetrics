@@ -312,6 +312,9 @@ def set_plan(user, plan_id, update_subscription=None):
 
 
 def sync_plans(pretend=True, include_hidden=False):
+    if pretend:
+        print "(Running in pretend mode)"
+
     local_plans = set(key for key, plan in pricing.Plan.all() if not plan.is_hidden)
 
     r = stripe.Plan.all()
@@ -353,6 +356,9 @@ def sync_plans(pretend=True, include_hidden=False):
 
 
 def sync_customers(pretend=True):
+    if pretend:
+        print "(Running in pretend mode)"
+
     stripe_users = [u for u in model.User.all() if u.stripe_customer_id]
 
     for user in stripe_users:

@@ -1,4 +1,7 @@
 import datetime
+import uuid
+import requests
+from urllib import urlencode
 from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
 
 from briefmetrics.lib import helpers as h
@@ -118,6 +121,44 @@ class Query(object):
         except InvalidGrantError:
             raise APIError('Insufficient permissions to query Google Analytics. Please re-connect your account.')
         return r.get('items') or []
+
+
+COLLECT_URL = 'https://ssl.google-analytics.com/collect'
+COLLECT_SESSION = requests.Session()
+
+def collect(tracking_id, user_id=None, client_id=None, hit_type='pageview', http_session=COLLECT_SESSION, **kw):
+    """
+
+    collect('UA-407051-16', '1', hit_type='transaction', ti='test', tr='1.42', cu='USD')
+
+    Transactions:
+        hit_type='transaction',
+        ti='...', # Transaction ID
+        tr='...', # Transaction Revenue
+        cu='USD', # Currency Code
+
+    Events:
+        hit_type='event',
+        ec='...', # Event Category
+        ea='...', # Event Action
+        el='...', # Event Label
+        ev='...', # Event Value
+    """
+    client_id = client_id or uuid.uuid4().hex
+    params = {
+        'v': 1, # Protocol version
+        'tid': tracking_id, # Tracking ID (UA-XXXXXX-XX)
+        'cid': client_id, # Client ID,
+        't': hit_type, # Hit Type
+        'aip': 1, # Anonymize IP
+        'ni': 1, # Non-interactive
+    }
+
+    req = requests.Request('POST', COLLECT_URL, data=urlencode(params)).prepare()
+    return http_session.send(req)
+
+
+
 
 
 ## Reports:
