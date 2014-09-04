@@ -1,3 +1,11 @@
+* Stripe gateway candidates: https://twitter.com/shazow/status/507319347103027200
+  * John Sheehan
+  * Sam Clay
+  * Issac Kelly
+  * Babak Morshedizadeh (@bmorsh)
+
+
+
 * Small things
     * Another level for 'on your way'?
     * Monthly: Weekend-shifted day delta bar charts
@@ -30,7 +38,7 @@
       Emailed: rich@flyte.biz
     * http://www.portent.com/blog/analytics/google_analytics_video_tutoria.htm
       Emailed: ian@portentinteractive.com
-    * http://www.kaushik.net/avinash/about/ 
+    * http://www.kaushik.net/avinash/about/
       Emailed: blog@kaushik.net
     * http://cutroni.com/blog/contact/
       Emailed: justin@cutroni.com
