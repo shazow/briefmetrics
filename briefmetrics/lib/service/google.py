@@ -50,6 +50,17 @@ class GoogleAPI(OAuth2API):
         return Query(self, cache_keys=cache_keys)
 
 
+    @staticmethod
+    def inject_transaction(self, t):
+        if not t:
+            return
+
+        items = t.pop('items', [])
+        assert_response(collect(**t))
+        for item in items:
+            assert_response(collect(**items))
+
+
 
 """
 METRICS = [u'ga:CPC', u'ga:CPM', u'ga:CTR', u'ga:ROI', u'ga:RPC', u'ga:adClicks', u'ga:adCost', u'ga:adsenseAdUnitsViewed', u'ga:adsenseAdsClicks', u'ga:adsenseAdsViewed', u'ga:adsenseCTR', u'ga:adsenseECPM', u'ga:adsenseExits', u'ga:adsensePageImpressions', u'ga:adsenseRevenue', u'ga:appviews', u'ga:appviewsPerVisit', u'ga:avgDomContentLoadedTime', u'ga:avgDomInteractiveTime', u'ga:avgDomainLookupTime', u'ga:avgEventValue', u'ga:avgPageDownloadTime', u'ga:avgPageLoadTime', u'ga:avgRedirectionTime', u'ga:avgScreenviewDuration', u'ga:avgSearchDepth', u'ga:avgSearchDuration', u'ga:avgSearchResultViews', u'ga:avgServerConnectionTime', u'ga:avgServerResponseTime', u'ga:avgTimeOnPage', u'ga:avgTimeOnSite', u'ga:avgUserTimingValue', u'ga:bounces', u'ga:costPerConversion', u'ga:costPerGoalConversion', u'ga:costPerTransaction', u'ga:domContentLoadedTime', u'ga:domInteractiveTime', u'ga:domLatencyMetricsSample', u'ga:domainLookupTime', u'ga:entranceBounceRate', u'ga:entranceRate', u'ga:entrances', u'ga:eventValue', u'ga:eventsPerVisitWithEvent', u'ga:exceptions', u'ga:exceptionsPerScreenview', u'ga:exitRate', u'ga:exits', u'ga:fatalExceptions', u'ga:fatalExceptionsPerScreenview', u'ga:goalAbandonRateAll', u'ga:goalAbandonsAll', u'ga:goalCompletionsAll', u'ga:goalConversionRateAll', u'ga:goalStartsAll', u'ga:goalValueAll', u'ga:goalValueAllPerSearch', u'ga:goalValuePerVisit', u'ga:goalXXAbandonRate', u'ga:goalXXAbandons', u'ga:goalXXCompletions', u'ga:goalXXConversionRate', u'ga:goalXXStarts', u'ga:goalXXValue', u'ga:impressions', u'ga:itemQuantity', u'ga:itemRevenue', u'ga:itemsPerPurchase', u'ga:localItemRevenue', u'ga:localTransactionRevenue', u'ga:localTransactionShipping', u'ga:localTransactionTax', u'ga:margin', u'ga:metricXX', u'ga:newVisits', u'ga:organicSearches', u'ga:pageDownloadTime', u'ga:pageLoadSample', u'ga:pageLoadTime', u'ga:pageValue', u'ga:pageviews', u'ga:pageviewsPerVisit', u'ga:percentNewVisits', u'ga:percentSearchRefinements', u'ga:percentVisitsWithSearch', u'ga:redirectionTime', u'ga:revenuePerItem', u'ga:revenuePerTransaction', u'ga:screenviews', u'ga:screenviewsPerSession', u'ga:searchDepth', u'ga:searchDuration', u'ga:searchExitRate', u'ga:searchExits', u'ga:searchGoalConversionRateAll', u'ga:searchGoalXXConversionRate', u'ga:searchRefinements', u'ga:searchResultViews', u'ga:searchUniques', u'ga:searchVisits', u'ga:serverConnectionTime', u'ga:serverResponseTime', u'ga:socialActivities', u'ga:socialInteractions', u'ga:socialInteractionsPerVisit', u'ga:speedMetricsSample', u'ga:timeOnPage', u'ga:timeOnScreen', u'ga:timeOnSite', u'ga:totalEvents', u'ga:totalValue', u'ga:transactionRevenue', u'ga:transactionRevenuePerVisit', u'ga:transactionShipping', u'ga:transactionTax', u'ga:transactions', u'ga:transactionsPerVisit', u'ga:uniqueAppviews', u'ga:uniqueEvents', u'ga:uniquePageviews', u'ga:uniquePurchases', u'ga:uniqueScreenviews', u'ga:uniqueSocialInteractions', u'ga:userTimingSample', u'ga:userTimingValue', u'ga:visitBounceRate', u'ga:visitors', u'ga:visits', u'ga:visitsWithEvent']
@@ -139,7 +150,18 @@ def collect(tracking_id, user_id=None, client_id=None, hit_type='pageview', http
         hit_type='transaction',
         ti='...', # Transaction ID
         tr='...', # Transaction Revenue
+        ta='...', # Transaction Affiliation.
         cu='USD', # Currency Code
+
+    Transaction Item:
+        hit_type='item',
+        ti='12345',   # Transaction ID
+        in='sofa',    # Item name. Required.
+        ip='300',     # Item price.
+        iq='2',       # Item quantity.
+        ic='u3eqds4', # Item code / SKU.
+        iv='furnitu', # Item variation / category.
+        cu='EUR',     # Currency code.
 
     Events:
         hit_type='event',
@@ -167,8 +189,6 @@ def collect(tracking_id, user_id=None, client_id=None, hit_type='pageview', http
 
     req = requests.Request('POST', COLLECT_URL, data=urlencode(params)).prepare()
     return http_session.send(req)
-
-
 
 
 

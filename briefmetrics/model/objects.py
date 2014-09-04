@@ -131,6 +131,20 @@ class Account(meta.Model): # OAuth Service Account (such as Google Analytics)
     service = Column(_types.Enum(SERVICES), default='google')
 
 
+class Webhook(meta.Model): # Funnel from webhook to account
+    __tablename__ = 'webhook'
+
+    id = Column(types.Integer, primary_key=True)
+    time_created = Column(types.DateTime, default=now, nullable=False)
+    time_updated = Column(types.DateTime, onupdate=now)
+
+    account_id = Column(types.Integer, ForeignKey(Account.id, ondelete='CASCADE'), index=True)
+    account = orm.relationship(Account, innerjoin=True, backref=orm.backref('webhooks', cascade='all,delete'))
+
+    token = Column(types.String, default=lambda: random_string(16), nullable=False)
+    service = Column(_types.Enum(Account.SERVICES), default='stripe')
+
+
 class Report(meta.Model): # Property within an account (such as a website)
     __tablename__ = 'report'
     __json_whitelist__ = ['id', 'time_next', 'account_id', 'display_name', 'type']

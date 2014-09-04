@@ -5,4 +5,5 @@ from . import (
     index,
     report,
     settings,
+    webhook,
 )

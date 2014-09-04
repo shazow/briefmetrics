@@ -10,6 +10,8 @@ from briefmetrics.lib.report import Report, WeeklyMixin, sparse_cumulative
 from briefmetrics.lib.table import Column, Table, Timeline
 from briefmetrics.lib.gcharts import encode_rows
 
+from unstdlib import get_many
+
 
 def to_epoch(dt):
     return int(time.mktime(dt.timetuple()))
@@ -50,6 +52,35 @@ class StripeAPI(OAuth2API):
 
     def create_query(self, cache_keys):
         return Query(self, cache_keys=cache_keys)
+
+    @staticmethod
+    def extract_transaction(webhook_data):
+        if webhook_data['type'] != "invoice.payment_succeeded":
+            return # Skip
+
+        invoice = webhook_data['data']['object']
+        id, total, currency, metadata, lines = get_many(invoice, ['id', 'total', 'currency', 'metadata', 'lines'])
+
+        items = []
+        for line in lines['data']:
+            items.append({
+                'hit_type': 'item',
+                'ti': id,
+                'ip': line['amount']/100.0,
+                'iq': line['quantity'],
+                'in': line.get('plan', {}).get('name') or line.get('description') or line['id'],
+                'cu': line['currency'].upper(),
+            })
+
+        transaction = {
+            'hit_type': 'transaction',
+            'items': items,
+            'ti': id,
+            'tr': total/100.0,
+            'cu': currency.upper(),
+        }
+
+        return transaction
 
 
 class Query(object):
