@@ -61,14 +61,17 @@ class GoogleAPI(OAuth2API):
 
 
     @staticmethod
-    def inject_transaction(self, t):
+    def inject_transaction(self, tracking_id, t, collect_fn=None):
         if not t:
             return
 
+        if not collect_fn:
+            collect_fn = collect
+
         items = t.pop('items', [])
-        assert_response(collect(**t))
+        assert_response(collect_fn(tracking_id, **t))
         for item in items:
-            assert_response(collect(**items))
+            assert_response(collect_fn(tracking_id, **items))
 
 
 

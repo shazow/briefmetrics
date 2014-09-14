@@ -28,6 +28,12 @@ def to_email(name, email):
         email=email,
     )
 
+def to_ga_uid(metadata, keys=('ga_uid', 'user_id', 'uid')):
+    for k in keys:
+        v = metadata.get(k)
+        if v:
+            return v
+
 
 class StripeAPI(OAuth2API):
     id = 'stripe'
@@ -53,18 +59,23 @@ class StripeAPI(OAuth2API):
     def create_query(self, cache_keys):
         return Query(self, cache_keys=cache_keys)
 
-    @staticmethod
-    def extract_transaction(webhook_data):
+    def extract_transaction(self, webhook_data):
         if webhook_data['type'] != "invoice.payment_succeeded":
             return # Skip
 
         invoice = webhook_data['data']['object']
-        id, total, currency, metadata, lines = get_many(invoice, ['id', 'total', 'currency', 'metadata', 'lines'])
+        id, total, currency, metadata, lines, customer_id = get_many(invoice, ['id', 'total', 'currency', 'metadata', 'lines'], ['customer_id'])
+
+        user_id = None
+        if customer_id:
+            r = self.session.get('https://api.stripe.com/v1/customers/%s' % customer_id).json()
+            user_id = to_ga_uid(r['metadata'])
 
         items = []
         for line in lines['data']:
             items.append({
                 'hit_type': 'item',
+                'user_id': user_id,
                 'ti': id,
                 'ip': line['amount']/100.0,
                 'iq': line['quantity'],
@@ -74,6 +85,7 @@ class StripeAPI(OAuth2API):
 
         transaction = {
             'hit_type': 'transaction',
+            'user_id': user_id,
             'items': items,
             'ti': id,
             'tr': total/100.0,

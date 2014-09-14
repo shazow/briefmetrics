@@ -21,3 +21,5 @@ class WebhookController(Controller):
         w = model.Webhook.get_by(id=id, token=token)
         if not w:
             raise httpexceptions.HTTPNotFound('Webhook handler not found.')
+
+        # TODO: use tasks.service.stripe_webhook
