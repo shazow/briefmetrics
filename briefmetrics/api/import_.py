@@ -71,3 +71,17 @@ def backfill_invited_by():
         report = user.reports[0]
         user.invited_by_user_id = report.account.user_id
         print "Linking user invite: [%s] %s -> [%s] %s" % (user.id, user.display_name, report.account.user_id, report.account.display_name)
+
+
+def backfill_account_remoteid():
+    q = Session.query(model.User).filter_by(plan_id='recipient')
+    q = q.options(orm.joinedload_all('reports.account'))
+
+    for user in q:
+        if not user.reports:
+            print "No active report for user: [%s] %s" % (user.id, user.display_name)
+            continue
+
+        report = user.reports[0]
+        user.invited_by_user_id = report.account.user_id
+        print "Linking user invite: [%s] %s -> [%s] %s" % (user.id, user.display_name, report.account.user_id, report.account.display_name)

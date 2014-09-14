@@ -130,6 +130,8 @@ class Account(meta.Model): # OAuth Service Account (such as Google Analytics)
 
     service = Column(_types.Enum(SERVICES), default='google')
     remote_id = Column(types.String)
+    remote_data = Column(_types.MutationDict.as_mutable(_types.JSONEncodedDict), default=dict) # Profile info
+
 
 Index('ix_account_service_remote_id',
       Account.service,

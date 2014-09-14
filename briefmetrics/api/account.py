@@ -42,12 +42,14 @@ def connect_user(request, oauth, user_required=False):
 
     if not user:
         # New user
-        email, display_name = oauth.query_user()
+        remote_id, email, display_name, remote_data = oauth.query_user()
         user = get_or_create(
             email=email,
             service=oauth.id,
             token=token,
             display_name=display_name,
+            remote_id=remote_id,
+            remote_data=remote_data,
         )
         account = user.accounts[0]
     elif not account:
@@ -187,7 +189,7 @@ def get(id=None, email=None, token=None):
     return q.first()
 
 
-def get_or_create(user_id=None, email=None, service='google', token=None, display_name=None, plan_id=None, **create_kw):
+def get_or_create(user_id=None, email=None, service='google', token=None, display_name=None, plan_id=None, remote_id=None, remote_data=None, **create_kw):
     u = None
     q = Session.query(model.User).options(orm.joinedload(model.User.accounts))
 
@@ -207,7 +209,7 @@ def get_or_create(user_id=None, email=None, service='google', token=None, displa
         # Create account
         account = u.get_account(service=service)
         if not account:
-            account = model.Account.create(display_name=display_name, user=u, service=service)
+            account = model.Account.create(display_name=display_name, user=u, service=service, remote_id=remote_id, remote_data=remote_data)
             u.accounts.append(account)
 
         if token and token.get('refresh_token'):

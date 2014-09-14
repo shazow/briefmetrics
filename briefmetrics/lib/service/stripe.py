@@ -48,7 +48,7 @@ class StripeAPI(OAuth2API):
         r = self.session.get('https://api.stripe.com/v1/account')
         r.raise_for_status()
         user_info = r.json()
-        return user_info['email'], user_info.get('display_name')
+        return user_info['id'], user_info['email'], user_info.get('display_name'), user_info
 
     def create_query(self, cache_keys):
         return Query(self, cache_keys=cache_keys)

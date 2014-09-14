@@ -23,8 +23,8 @@ class GoogleAPI(OAuth2API):
         'auth_url': 'https://accounts.google.com/o/oauth2/auth',
         'token_url': 'https://accounts.google.com/o/oauth2/token',
         'scope': [
-            'https://www.googleapis.com/auth/userinfo.email',
-            'https://www.googleapis.com/auth/userinfo.profile',
+            'profile',
+            'email',
             'https://www.googleapis.com/auth/analytics.readonly',
         ],
 
@@ -35,11 +35,21 @@ class GoogleAPI(OAuth2API):
     }
 
     def query_user(self):
-        r = self.session.get('https://www.googleapis.com/oauth2/v1/userinfo')
+        fields = ','.join(['id', 'kind', 'displayName', 'emails', 'name'])
+        r = self.session.get('https://www.googleapis.com/plus/v1/people/me', fields=fields)
         r.raise_for_status()
 
         user_info = r.json()
-        return user_info['email'], user_info.get('name')
+        for e in user_info['emails']:
+            # Find the account email if there is one.
+            if e['type'] == 'account':
+                break
+
+        remote_id = user_info['id']
+        email = e['value']
+        name = user_info.get('display_name')
+
+        return remote_id, email, name, user_info
 
 
     def create_query(self, cache_keys):
