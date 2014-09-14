@@ -129,6 +129,12 @@ class Account(meta.Model): # OAuth Service Account (such as Google Analytics)
     user = orm.relationship(User, innerjoin=True, backref=orm.backref('accounts', cascade='all,delete'))
 
     service = Column(_types.Enum(SERVICES), default='google')
+    remote_id = Column(types.String)
+
+Index('ix_account_service_remote_id',
+      Account.service,
+      Account.remote_id
+)
 
 
 class Webhook(meta.Model): # Funnel from webhook to account
