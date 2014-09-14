@@ -12,13 +12,15 @@ STRIPE_WEBHOOKS = {
 class TestStripe(test.TestCase):
     def test_webhook_extract(self):
         w = STRIPE_WEBHOOKS['invoice.payment.succeeded']
-        t = stripe.StripeAPI.extract_transaction(w)
+        t = stripe.Query(None, None).extract_transaction(w, load_customer=False)
 
         self.assertEqual(t, {
             'cu': u'USD',
             'hit_type': 'transaction',
+            'user_id': None,
             'items': [{'cu': u'USD',
                 'hit_type': 'item',
+                'user_id': None,
                 'in': u'Briefmetrics: Personal',
                 'ip': 8.00,
                 'iq': 1,

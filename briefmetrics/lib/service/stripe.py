@@ -66,7 +66,7 @@ class StripeAPI(OAuth2API):
 class Query(object):
     def __init__(self, oauth, cache_keys):
         self.oauth = oauth
-        self.api = oauth.session
+        self.api = oauth and oauth.session
         self.cache_keys = cache_keys
 
     @ReportRegion.cache_on_arguments()
@@ -106,7 +106,7 @@ class Query(object):
             return
         return [p]
 
-    def extract_transaction(self, webhook_data):
+    def extract_transaction(self, webhook_data, load_customer=True):
         if webhook_data['type'] != "invoice.payment_succeeded":
             return # Skip
 
@@ -114,7 +114,7 @@ class Query(object):
         id, total, currency, metadata, lines, customer_id = get_many(invoice, ['id', 'total', 'currency', 'metadata', 'lines'], ['customer'])
 
         user_id = None
-        if customer_id:
+        if load_customer and customer_id:
             r = self.get('https://api.stripe.com/v1/customers/%s' % customer_id)
             user_id = to_ga_uid(r.get('metadata'))
 
