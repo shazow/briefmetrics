@@ -29,6 +29,9 @@ def to_email(name, email):
     )
 
 def to_ga_uid(metadata, keys=('ga_uid', 'user_id', 'uid')):
+    if not metadata:
+        return
+
     for k in keys:
         v = metadata.get(k)
         if v:
@@ -38,7 +41,7 @@ def to_ga_uid(metadata, keys=('ga_uid', 'user_id', 'uid')):
 class StripeAPI(OAuth2API):
     id = 'stripe'
     default_report = 'stripe'
-    is_autocreate = True
+    is_autocreate = False
 
     config = {
         'auth_url': 'https://connect.stripe.com/oauth/authorize',
@@ -58,41 +61,6 @@ class StripeAPI(OAuth2API):
 
     def create_query(self, cache_keys):
         return Query(self, cache_keys=cache_keys)
-
-    def extract_transaction(self, webhook_data):
-        if webhook_data['type'] != "invoice.payment_succeeded":
-            return # Skip
-
-        invoice = webhook_data['data']['object']
-        id, total, currency, metadata, lines, customer_id = get_many(invoice, ['id', 'total', 'currency', 'metadata', 'lines'], ['customer_id'])
-
-        user_id = None
-        if customer_id:
-            r = self.session.get('https://api.stripe.com/v1/customers/%s' % customer_id).json()
-            user_id = to_ga_uid(r['metadata'])
-
-        items = []
-        for line in lines['data']:
-            items.append({
-                'hit_type': 'item',
-                'user_id': user_id,
-                'ti': id,
-                'ip': line['amount']/100.0,
-                'iq': line['quantity'],
-                'in': line.get('plan', {}).get('name') or line.get('description') or line['id'],
-                'cu': line['currency'].upper(),
-            })
-
-        transaction = {
-            'hit_type': 'transaction',
-            'user_id': user_id,
-            'items': items,
-            'ti': id,
-            'tr': total/100.0,
-            'cu': currency.upper(),
-        }
-
-        return transaction
 
 
 class Query(object):
@@ -137,6 +105,43 @@ class Query(object):
         if not p:
             return
         return [p]
+
+    def extract_transaction(self, webhook_data):
+        if webhook_data['type'] != "invoice.payment_succeeded":
+            return # Skip
+
+        invoice = webhook_data['data']['object']
+        id, total, currency, metadata, lines, customer_id = get_many(invoice, ['id', 'total', 'currency', 'metadata', 'lines'], ['customer'])
+
+        user_id = None
+        if customer_id:
+            r = self.get('https://api.stripe.com/v1/customers/%s' % customer_id)
+            user_id = to_ga_uid(r.get('metadata'))
+
+        items = []
+        for line in lines['data']:
+            items.append({
+                'hit_type': 'item',
+                'user_id': user_id,
+                'ti': id,
+                'ip': line['amount']/100.0,
+                'iq': line['quantity'],
+                'in': line.get('plan', {}).get('name') or line.get('description') or line['id'],
+                'cu': line['currency'].upper(),
+            })
+
+        transaction = {
+            'hit_type': 'transaction',
+            'user_id': user_id,
+            'items': items,
+            'ti': id,
+            'tr': total/100.0,
+            'cu': currency.upper(),
+        }
+
+        return transaction
+
+
 
 
 event_formatters = {

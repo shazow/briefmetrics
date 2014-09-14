@@ -40,9 +40,9 @@ def connect_user(request, oauth, user_required=False):
     except OAuth2Error as e:
         raise APIError("Unexpected authentication error, please try again: %s" % e.description)
 
+    remote_id, email, display_name, remote_data = oauth.query_user()
     if not user:
         # New user
-        remote_id, email, display_name, remote_data = oauth.query_user()
         user = get_or_create(
             email=email,
             service=oauth.id,
@@ -54,10 +54,19 @@ def connect_user(request, oauth, user_required=False):
         account = user.accounts[0]
     elif not account:
         # New account
-        account = model.Account.create(display_name=user.display_name, user=user, oauth_token=token, service=oauth.id)
+        account = model.Account.create(
+            display_name=display_name or user.display_name,
+            user=user,
+            oauth_token=token,
+            service=oauth.id,
+            remote_id=remote_id,
+            remote_data=remote_data,
+        )
     else:
         # Update account
         account.oauth_token = token
+        account.remote_id = remote_id
+        account.remote_data = remote_data
         has_report = Session.query(model.Report).filter_by(account_id=account.id).limit(1).count()
         if has_report:
             # Already exists, skip autocreate.

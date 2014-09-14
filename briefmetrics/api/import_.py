@@ -1,7 +1,8 @@
 import string
+import time
 from sqlalchemy import orm
 
-from briefmetrics import model
+from briefmetrics import model, lib
 from . import account as api_account
 
 
@@ -85,20 +86,16 @@ def backfill_account_remote_id():
 
 
 def backfill_stripe_to_google(request, stripe_account, ga_tracking_id, since_datetime=None, limit=100, pretend=True):
-    stripe_api = service.registry['stripe'](celery.request, stripe_account)
+    stripe_query = api_account.query_service(request, stripe_account)
     params = {
         'type': 'invoice.payment_succeeded',
         'limit': str(limit),
         'created[gte]': int(time.mktime(since_datetime.timetuple())),
     }
-    items = stripe_api.get_paged('https://api.stripe.com/v1/events', params=params)
+    items = stripe_query.get_paged('https://api.stripe.com/v1/events', params=params)
 
-    kw = {}
-    if pretend:
-        kw['collect_fn'] = _pretend_collect
+    for data in items:
+        t = stripe_query.extract_transaction(data)
+        lib.service.registry['google'].inject_transaction(ga_tracking_id, t, pretend=pretend)
 
-    for data in items['data']:
-        t = stripe_api.extract_transaction(data)
-        service.registry['google'].inject_transaction(ga_tracking_id, t, **kw)
-
-    print "Backfilled {} Stripe ecommerce transactions to GA.".format(len(items['data']))
+    print "Backfilled {} Stripe ecommerce transactions to GA.".format(len(items))

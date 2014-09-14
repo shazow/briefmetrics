@@ -36,7 +36,7 @@ class GoogleAPI(OAuth2API):
 
     def query_user(self):
         fields = ','.join(['id', 'kind', 'displayName', 'emails', 'name'])
-        r = self.session.get('https://www.googleapis.com/plus/v1/people/me', fields=fields)
+        r = self.session.get('https://www.googleapis.com/plus/v1/people/me', params=fields)
         r.raise_for_status()
 
         user_info = r.json()
@@ -61,17 +61,16 @@ class GoogleAPI(OAuth2API):
 
 
     @staticmethod
-    def inject_transaction(self, tracking_id, t, collect_fn=None):
+    def inject_transaction(tracking_id, t, pretend=False):
         if not t:
             return
 
-        if not collect_fn:
-            collect_fn = collect
+        collect_fn = pretend_collect if pretend else collect
 
         items = t.pop('items', [])
-        assert_response(collect_fn(tracking_id, **t))
+        collect_fn(tracking_id, **t)
         for item in items:
-            assert_response(collect_fn(tracking_id, **items))
+            collect_fn(tracking_id, **item)
 
 
 
@@ -150,6 +149,11 @@ class Query(object):
 COLLECT_URL = 'https://ssl.google-analytics.com/collect'
 COLLECT_SESSION = requests.Session()
 
+
+def pretend_collect(*args, **kw):
+    print "pretend_collect:", args, kw
+
+
 def collect(tracking_id, user_id=None, client_id=None, hit_type='pageview', http_session=COLLECT_SESSION, **kw):
     """
 
@@ -201,7 +205,9 @@ def collect(tracking_id, user_id=None, client_id=None, hit_type='pageview', http
     params.update(kw)
 
     req = requests.Request('POST', COLLECT_URL, data=urlencode(params)).prepare()
-    return http_session.send(req)
+    resp = http_session.send(req)
+    assert_response(resp)
+    return resp
 
 
 

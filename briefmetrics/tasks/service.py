@@ -9,10 +9,6 @@ from .setup import celery
 log = get_task_logger(__name__)
 
 
-def _pretend_collect(*args, **kw):
-    print "pretend_collect:", args, kw
-
-
 @celery.task(ignore_result=True)
 def stripe_webhook(ga_tracking_id, stripe_account_id, data, pretend=False):
     """Task to send a specific weekly report (gets created by send_all)."""
