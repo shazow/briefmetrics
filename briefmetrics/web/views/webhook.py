@@ -13,13 +13,18 @@ from .api import expose_api
 class WebhookController(Controller):
     def index(self):
         service = self.request.matchdict['service']
-        token, id = self.request.matchdict['token'].split('-', 1)
-
-        if service != 'google':
+        if service != 'stripe':
             raise httpexceptions.HTTPNotFound('Service webhook handler not found: {}'.format(service))
 
-        w = model.Webhook.get_by(id=id, token=token)
-        if not w:
-            raise httpexceptions.HTTPNotFound('Webhook handler not found.')
+        data = self.request.json
+        if not data['livemode']:
+            return
 
-        # TODO: use tasks.service.stripe_webhook
+        remote_id = data['user_id']
+        accounts = model.Session.query(model.Account).filter_by(remote_id=remote_id, service=service)
+        if not accuonts:
+            raise httpexceptions.HTTPNotFound('Account handler not found.')
+
+        for a in account:
+            for ga_tracking_id in a.config.get('ga_funnels', []):
+                tasks.service.stripe_webhook.delay(ga_tracking_id, a.id, data)

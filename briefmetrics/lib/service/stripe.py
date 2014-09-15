@@ -113,6 +113,8 @@ class Query(object):
         invoice = webhook_data['data']['object']
         id, total, currency, metadata, lines, customer_id = get_many(invoice, ['id', 'total', 'currency', 'metadata', 'lines'], ['customer'])
 
+        # TODO: Verify event
+
         user_id = None
         if load_customer and customer_id:
             r = self.get('https://api.stripe.com/v1/customers/%s' % customer_id)

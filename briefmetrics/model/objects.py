@@ -131,26 +131,13 @@ class Account(meta.Model): # OAuth Service Account (such as Google Analytics)
     service = Column(_types.Enum(SERVICES), default='google')
     remote_id = Column(types.String)
     remote_data = Column(_types.MutationDict.as_mutable(_types.JSONEncodedDict), default=dict) # Profile info
+    config = Column(_types.MutationDict.as_mutable(_types.JSONEncodedDict), default=dict) # Funnel settings
 
 
 Index('ix_account_service_remote_id',
       Account.service,
       Account.remote_id
 )
-
-
-class Webhook(meta.Model): # Funnel from webhook to account
-    __tablename__ = 'webhook'
-
-    id = Column(types.Integer, primary_key=True)
-    time_created = Column(types.DateTime, default=now, nullable=False)
-    time_updated = Column(types.DateTime, onupdate=now)
-
-    account_id = Column(types.Integer, ForeignKey(Account.id, ondelete='CASCADE'), index=True)
-    account = orm.relationship(Account, innerjoin=True, backref=orm.backref('webhooks', cascade='all,delete'))
-
-    token = Column(types.String, default=lambda: random_string(16), nullable=False)
-    service = Column(_types.Enum(Account.SERVICES), default='stripe')
 
 
 class Report(meta.Model): # Property within an account (such as a website)
