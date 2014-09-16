@@ -137,11 +137,13 @@ def send(request, report, since_time=None, pretend=False):
         '''.strip()))
 
 
-    report_context = fetch(request, report, since_time)
-
-    report_context.messages += messages
-
     send_users = report.users
+    if not send_users:
+        log.warn('No recipients, skipping report: %s' % report.id)
+        return
+
+    report_context = fetch(request, report, since_time)
+    report_context.messages += messages
     subject = report_context.get_subject()
     template = report_context.template
 
