@@ -69,14 +69,17 @@ class Query(object):
         self.api = oauth and oauth.session
         self.cache_keys = cache_keys
 
-    @ReportRegion.cache_on_arguments()
-    def _get(self, url, params=None, _cache_keys=None):
+    def _get(self, url, params=None):
         r = self.api.get(url, params=params)
         assert_response(r)
         return r.json()
 
+    @ReportRegion.cache_on_arguments()
+    def _get_cached(self, url, params=None, _cache_keys=None):
+        return self._get(url, url, params=params)
+
     def get(self, url, params=None):
-        return self._get(url, params=params, _cache_keys=self.cache_keys)
+        return self._get_cached(url, params=params, _cache_keys=self.cache_keys)
 
     def get_paged(self, url, params=None):
         data = []
@@ -105,6 +108,9 @@ class Query(object):
         if not p:
             return
         return [p]
+
+    def validate_webhook(self, webhook_data):
+        return api_query.get('https://api.stripe.com/v1/events/%s' % webhook_data['id'])
 
     def extract_transaction(self, webhook_data, load_customer=True):
         if webhook_data['type'] != "invoice.payment_succeeded":
