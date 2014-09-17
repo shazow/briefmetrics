@@ -91,7 +91,7 @@ Questions? Send an email to <a href="mailto:support@briefmetrics.com">support@br
   ga('require', 'displayfeatures');
   ga('send', 'pageview');
 
-  % if hasattr(self.c, 'user'):
+  % if getattr(c, 'user', None):
   heap.identify({
       handle: '${request.unauthenticated_userid}',
       name: '${self.c.user.display_name}',
