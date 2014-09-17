@@ -95,7 +95,7 @@ Questions? Send an email to <a href="mailto:support@briefmetrics.com">support@br
   heap.identify({
       handle: '${request.unauthenticated_userid}',
       name: '${c.user.display_name}',
-      plam: '${c.user.plan_id}',
+      plan: '${c.user.plan_id}',
   });
   % elif request.unauthenticated_userid:
   heap.identify({handle: '${request.unauthenticated_userid}'});
