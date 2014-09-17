@@ -97,7 +97,7 @@ Questions? Send an email to <a href="mailto:support@briefmetrics.com">support@br
       name: '${self.c.user.display_name}',
       plam: '${self.c.user.plan_id}',
   });
-  % else if request.unauthenticated_userid:
+  % elif request.unauthenticated_userid:
   heap.identify({handle: '${request.unauthenticated_userid}'});
   % endif
 </script>
