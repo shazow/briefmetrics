@@ -94,8 +94,8 @@ Questions? Send an email to <a href="mailto:support@briefmetrics.com">support@br
   % if getattr(c, 'user', None):
   heap.identify({
       handle: '${request.unauthenticated_userid}',
-      name: '${self.c.user.display_name}',
-      plam: '${self.c.user.plan_id}',
+      name: '${c.user.display_name}',
+      plam: '${c.user.plan_id}',
   });
   % elif request.unauthenticated_userid:
   heap.identify({handle: '${request.unauthenticated_userid}'});
