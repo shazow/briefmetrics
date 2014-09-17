@@ -169,8 +169,10 @@ class ReportController(Controller):
         self.c.google_account = google_account
         self.c.user = user
         self.c.reports = []
+        self.c.available_services = set()
         for account in user.accounts:
             self.c.reports += account.reports
+            self.c.available_services.add(account.service)
 
         self.c.sites = sorted(Site.from_list(self.c.reports), key=lambda s: s.display_name)
 

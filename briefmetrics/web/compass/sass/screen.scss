@@ -40,6 +40,10 @@ input.negative, .button.negative {
     }
 }
 
+small {
+    color: lighten($color-text, 20);
+}
+
 a.button {
     display: inline-block;
     @include border-radius(3px);

@@ -42,6 +42,8 @@ class StripeAPI(OAuth2API):
     id = 'stripe'
     default_report = 'stripe'
     is_autocreate = False
+    label = 'Stripe'
+    description = 'Inject Stripe transactions as Ecommerce events in Google Analytics.'
 
     config = {
         'auth_url': 'https://connect.stripe.com/oauth/authorize',

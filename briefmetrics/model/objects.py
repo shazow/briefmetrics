@@ -7,6 +7,7 @@ from sqlalchemy import orm, types
 from sqlalchemy import Column, ForeignKey, Index
 
 from briefmetrics.lib import pricing
+from briefmetrics.lib.service import registry as service_registry
 from . import meta, _types
 
 
@@ -132,6 +133,10 @@ class Account(meta.Model): # OAuth Service Account (such as Google Analytics)
     remote_id = Column(types.String)
     remote_data = Column(_types.MutationDict.as_mutable(_types.JSONEncodedDict), default=dict) # Profile info
     config = Column(_types.MutationDict.as_mutable(_types.JSONEncodedDict), default=dict) # Funnel settings
+
+    @property
+    def service_api(self):
+        return service_registry.get(self.service)
 
 
 Index('ix_account_service_remote_id',

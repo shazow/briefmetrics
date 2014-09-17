@@ -18,6 +18,8 @@ from .base import OAuth2API
 class GoogleAPI(OAuth2API):
     id = 'google'
     default_report = 'week'
+    label = 'Google Analytics'
+    description = 'Weekly email reports of your analyics.'
 
     config = {
         'auth_url': 'https://accounts.google.com/o/oauth2/auth',

@@ -60,6 +60,12 @@
 
     </section>
 
+    <section id="connections">
+        <h2>Connected Services</h2>
+
+        ${forms.account_connections(c.user, extra_services=c.extra_services)}
+    </section>
+
     <section id="delete">
         <h2>Account</h2>
 

@@ -3,6 +3,7 @@ from unstdlib import get_many
 from briefmetrics import api, model
 from briefmetrics.lib.exceptions import APIError, APIControllerError, LoginRequired
 from briefmetrics.lib.image import save_logo
+from briefmetrics.lib.service import registry as service_registry
 
 from .api import expose_api, handle_api
 from briefmetrics.lib.controller import Controller
@@ -94,7 +95,7 @@ class SettingsController(Controller):
 
     @handle_api(['settings.payments_set', 'settings.payments_cancel', 'settings.plan', 'settings.branding'])
     def index(self):
-        user = api.account.get_user(self.request, required=True)
+        user = api.account.get_user(self.request, required=True, joinedload='accounts')
 
         plan_id = self.request.session.pop('plan_id', None)
         if plan_id:
@@ -103,5 +104,12 @@ class SettingsController(Controller):
 
         self.c.selected_plan = user.plan if user.plan.id != 'trial' else PLAN_DEFAULT
         self.c.user = user
+
+        available_services = set(['google', 'stripe'])
+        for a in user.accounts:
+            available_services.remove(a.service)
+
+        # TODO: Merge with plan level/features?
+        self.c.extra_services = get_many(service_registry, available_services)
 
         return self._render('settings.mako')

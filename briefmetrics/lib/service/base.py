@@ -10,6 +10,10 @@ class OAuth2API(object):
     __metaclass__ = registry_metaclass(registry)
     config = {}  # Extend and override this.
 
+    id = None
+    label = 'ACME Api'
+    description = ''
+
     default_report = None
     is_autocreate = False
 

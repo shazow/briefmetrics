@@ -131,7 +131,7 @@
     </form>
 </%def>
 
-<%def name="site_config(site, is_active=True, is_admin=False)">
+<%def name="site_config(site, is_active=True, is_admin=False, available_services='')">
     <%
         anchor = 'report-{}'.format(site.report.id)
     %>
@@ -145,6 +145,9 @@
                 % if site.report.account.service == 'stripe':
                     <a class="button external" target="_blank" href="https://dashboard.stripe.com/">Stripe</a>
                 % else:
+                    % if 'stripe' in available_services:
+                    <a class="button" href="todo">Inject Stripe Data</a>
+                    % endif
                     <a class="button external" target="_blank" href="${h.ga_permalink('report/visitors-overview', site.report)}">Google Analytics</a>
                 % endif
             </div>
@@ -372,4 +375,27 @@
         <input type="hidden" name="format" value="redirect" />
         <input type="submit" value="Save Changes" />
     </form>
+</%def>
+
+<%def name="account_connections(user, extra_services='')">
+    % if extra_services:
+    <p>
+        Connect additional services to enable more features.
+    </p>
+    % endif
+    <ul>
+    % for account in sorted(user.accounts, key=lambda a: a.service):
+        <li>
+            <a class="button negative" href="/account/disconnect/${account.id}">Disconnect</a>
+            <strong>${account.service_api.label}</strong>
+        </li>
+    % endfor
+    % for service_api in extra_services:
+        <li>
+            <a class="button" href="/account/connect/${service_api.id}">Connect</a>
+            <strong>${service_api.label}</strong>
+            <small>${service_api.description}</small>
+        </li>
+    % endfor
+    </ul>
 </%def>
