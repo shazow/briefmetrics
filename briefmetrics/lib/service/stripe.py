@@ -78,7 +78,7 @@ class Query(object):
 
     @ReportRegion.cache_on_arguments()
     def _get_cached(self, url, params=None, _cache_keys=None):
-        return self._get(url, url, params=params)
+        return self._get(url, params=params)
 
     def get(self, url, params=None):
         return self._get_cached(url, params=params, _cache_keys=self.cache_keys)

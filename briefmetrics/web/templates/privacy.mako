@@ -3,6 +3,16 @@
 <div class="container">
     <h2>Privacy Policy</h2>
 
+
+    <h3>Website</h3>
+    <ul>
+        <li>
+            Briefmetrics.com, the website, uses third-party analytics services
+            (like Google Analytics) to track our own analytics.
+        </li>
+    </ul>
+
+    <h3>Service</h3>
     <ul>
         <li>
             Briefmetrics requires access to your Google Analytics account in
