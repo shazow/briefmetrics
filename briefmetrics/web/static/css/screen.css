@@ -1,82 +1,902 @@
-/*
-Error: File to import not found or unreadable: blueprint.
-       Load paths:
-         Compass::SpriteImporter
-         /Users/shazow/projects/briefmetrics/briefmetrics/web/compass/sass
-         /usr/local/lib/ruby/gems/2.1.0/gems/compass-core-1.0.1/stylesheets
-        on line 32 of briefmetrics/web/compass/sass/_base.scss
-        from line 1 of briefmetrics/web/static/../compass/sass/screen.scss
+@charset "UTF-8";
+html {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
 
-27:         border-color: #ccc;
-28:         color: #999;
-29:     }
-30: }
-31: 
-32: input.negative, .button.negative {
-33:     border: none;
-34:     color: rgba(0, 0, 0, 0.5);
-35:     background: rgba(50, 50, 50, 0.15);
-36: 
-37:     &:hover {
+article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary, blockquote, q, th, td, caption, table, body, div, span, object, iframe, p,
+pre, a, abbr, acronym, address,
+code, del, dfn, em, img,
+dl, dt, dd, ol, ul, li, fieldset,
+form, label, legend, tbody, tfoot, thead, tr, h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-weight: inherit;
+  font-style: inherit;
+  font-size: 100%;
+  font-family: inherit;
+  vertical-align: baseline;
+}
 
-Backtrace:
-briefmetrics/web/compass/sass/_base.scss:32
-briefmetrics/web/static/../compass/sass/screen.scss:1
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/import_node.rb:66:in `rescue in import'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/import_node.rb:45:in `import'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/import_node.rb:28:in `imported_file'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/import_node.rb:37:in `css_import?'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/visitors/perform.rb:301:in `visit_import'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/visitors/base.rb:36:in `visit'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/visitors/perform.rb:158:in `block in visit'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/stack.rb:79:in `block in with_base'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/stack.rb:115:in `with_frame'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/stack.rb:79:in `with_base'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/visitors/perform.rb:158:in `visit'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/visitors/perform.rb:315:in `block (2 levels) in visit_import'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/visitors/perform.rb:315:in `map'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/visitors/perform.rb:315:in `block in visit_import'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/stack.rb:88:in `block in with_import'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/stack.rb:115:in `with_frame'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/stack.rb:88:in `with_import'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/visitors/perform.rb:312:in `visit_import'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/visitors/base.rb:36:in `visit'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/visitors/perform.rb:158:in `block in visit'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/stack.rb:79:in `block in with_base'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/stack.rb:115:in `with_frame'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/stack.rb:79:in `with_base'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/visitors/perform.rb:158:in `visit'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/visitors/base.rb:52:in `block in visit_children'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/visitors/base.rb:52:in `map'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/visitors/base.rb:52:in `visit_children'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/visitors/perform.rb:167:in `block in visit_children'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/visitors/perform.rb:179:in `with_environment'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/visitors/perform.rb:166:in `visit_children'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/visitors/base.rb:36:in `block in visit'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/visitors/perform.rb:186:in `visit_root'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/visitors/base.rb:36:in `visit'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/visitors/perform.rb:157:in `visit'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/visitors/perform.rb:8:in `visit'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/root_node.rb:36:in `css_tree'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/tree/root_node.rb:20:in `render'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/engine.rb:268:in `render'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/plugin/compiler.rb:491:in `update_stylesheet'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/plugin/compiler.rb:215:in `block in update_stylesheets'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/plugin/compiler.rb:209:in `each'
-/usr/local/lib/ruby/gems/2.1.0/gems/sass-3.4.4/lib/sass/plugin/compiler.rb:209:in `update_stylesheets'
-/usr/local/lib/ruby/gems/2.1.0/gems/compass-1.0.1/lib/compass/sass_compiler.rb:40:in `compile!'
-/usr/local/lib/ruby/gems/2.1.0/gems/compass-1.0.1/lib/compass/commands/update_project.rb:49:in `perform'
-/usr/local/lib/ruby/gems/2.1.0/gems/compass-1.0.1/lib/compass/commands/base.rb:18:in `execute'
-/usr/local/lib/ruby/gems/2.1.0/gems/compass-1.0.1/lib/compass/commands/project_base.rb:19:in `execute'
-/usr/local/lib/ruby/gems/2.1.0/gems/compass-1.0.1/lib/compass/exec/sub_command_ui.rb:43:in `perform!'
-/usr/local/lib/ruby/gems/2.1.0/gems/compass-1.0.1/lib/compass/exec/sub_command_ui.rb:15:in `run!'
-/usr/local/lib/ruby/gems/2.1.0/gems/compass-1.0.1/bin/compass:30:in `block in <top (required)>'
-/usr/local/lib/ruby/gems/2.1.0/gems/compass-1.0.1/bin/compass:44:in `call'
-/usr/local/lib/ruby/gems/2.1.0/gems/compass-1.0.1/bin/compass:44:in `<top (required)>'
-/usr/local/bin/compass:23:in `load'
-/usr/local/bin/compass:23:in `<main>'
-*/
-body:before {
+article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary {
+  display: block;
+}
+
+blockquote, q {
+  quotes: "" "";
+}
+blockquote:before, q:before, blockquote:after, q:after {
+  content: "";
+}
+
+th, td, caption {
+  float: none !important;
+  text-align: left;
+  font-weight: normal;
+  vertical-align: middle;
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  vertical-align: middle;
+}
+
+a img {
+  border: none;
+}
+
+body {
+  line-height: 1.5;
+  font-family: "Nunito", "Helvetica Neue", Arial, Helvetica, sans-serif;
+  color: #616666;
+  font-size: 75%;
+  background-color: #f4faed;
+  font-size: 15px;
+  font-weight: 300;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal;
+  color: #505555;
+}
+h1 img, h2 img, h3 img, h4 img, h5 img, h6 img {
+  margin: 0;
+}
+
+h1 {
+  font-size: 3em;
+  line-height: 1;
+  margin-bottom: 0.50em;
+}
+
+h2 {
+  font-size: 2em;
+  margin-bottom: 0.75em;
+}
+
+h3 {
+  font-size: 1.5em;
+  line-height: 1;
+  margin-bottom: 1.00em;
+}
+
+h4 {
+  font-size: 1.2em;
+  line-height: 1.25;
+  margin-bottom: 1.25em;
+}
+
+h5 {
+  font-size: 1em;
+  font-weight: bold;
+  margin-bottom: 1.50em;
+}
+
+h6 {
+  font-size: 1em;
+  font-weight: bold;
+}
+
+p {
+  margin: 0 0 1.5em;
+}
+p .left {
+  float: left;
+  margin: 1.5em 1.5em 1.5em 0;
+  padding: 0;
+}
+p .right {
+  float: right;
+  margin: 1.5em 0 1.5em 1.5em;
+  padding: 0;
+}
+
+a {
+  text-decoration: underline;
+  color: #f37934;
+}
+a:visited {
+  color: #e65c0e;
+}
+a:focus {
+  color: #f69964;
+}
+a:hover {
+  color: #f69964;
+}
+a:active {
+  color: #9df664;
+}
+
+blockquote {
+  margin: 1.5em;
+  color: #666666;
+  font-style: italic;
+}
+
+strong, dfn {
+  font-weight: bold;
+}
+
+em, dfn {
+  font-style: italic;
+}
+
+sup, sub {
+  line-height: 0;
+}
+
+abbr, acronym {
+  border-bottom: 1px dotted #666666;
+}
+
+address {
+  margin: 0 0 1.5em;
+  font-style: italic;
+}
+
+del {
+  color: #666666;
+}
+
+pre {
+  margin: 1.5em 0;
   white-space: pre;
-  font-family: monospace;
-  content: "Error: File to import not found or unreadable: blueprint.\A        Load paths:\A          Compass::SpriteImporter\A          /Users/shazow/projects/briefmetrics/briefmetrics/web/compass/sass\A          /usr/local/lib/ruby/gems/2.1.0/gems/compass-core-1.0.1/stylesheets\A         on line 32 of briefmetrics/web/compass/sass/_base.scss\A         from line 1 of briefmetrics/web/static/../compass/sass/screen.scss\A \A 27:         border-color: #ccc;\A 28:         color: #999;\A 29:     }\A 30: }\A 31: \A 32: input.negative, .button.negative {\A 33:     border: none;\A 34:     color: rgba(0, 0, 0, 0.5);\A 35:     background: rgba(50, 50, 50, 0.15);\A 36: \A 37:     &:hover {"; }
+}
+
+pre, code, tt {
+  font: 1em "andale mono", "lucida console", monospace;
+  line-height: 1.5;
+}
+
+li ul, li ol {
+  margin: 0;
+}
+
+ul, ol {
+  margin: 0 1.5em 1.5em 0;
+  padding-left: 1.5em;
+}
+
+ul {
+  list-style-type: disc;
+}
+
+ol {
+  list-style-type: decimal;
+}
+
+dl {
+  margin: 0 0 1.5em 0;
+}
+dl dt {
+  font-weight: bold;
+}
+
+dd {
+  margin-left: 1.5em;
+}
+
+table {
+  margin-bottom: 1.4em;
+  width: 100%;
+}
+
+th {
+  font-weight: bold;
+}
+
+thead th {
+  background: #c3d9ff;
+}
+
+th, td, caption {
+  padding: 4px 10px 4px 5px;
+}
+
+table.striped tr:nth-child(even) td,
+table tr.even td {
+  background: #e5ecf9;
+}
+
+tfoot {
+  font-style: italic;
+}
+
+caption {
+  background: #eeeeee;
+}
+
+.quiet {
+  color: #949999;
+}
+
+.loud {
+  color: #404343;
+}
+
+footer {
+  width: 710px;
+  margin: 0 auto;
+  overflow: hidden;
+  *zoom: 1;
+  font-size: 0.8em;
+  border-top: 5px solid #dae0d4;
+  text-align: center;
+  margin-bottom: 1em;
+  margin-top: 4em;
+  padding-top: 0.5em;
+}
+footer a {
+  background: rgba(60, 30, 10, 0.05);
+  padding: 0 2px;
+  color: #AA6A46;
+}
+
+a {
+  text-decoration: none;
+}
+
+p {
+  margin-bottom: 1em;
+}
+
+code, pre.code {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 1px 2px;
+}
+code em, pre.code em {
+  color: #3c781e;
+}
+
+h1, h2 {
+  font-size: 1.6em;
+  color: #37b89a;
+  line-height: 26px;
+}
+h1 small, h2 small {
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: bold;
+  color: #aaaaaa;
+  margin-left: -1em;
+}
+h1 a, h1 a:visited, h1 a:active, h1 a:hover, h2 a, h2 a:visited, h2 a:active, h2 a:hover {
+  color: #37b89a;
+}
+
+h1 {
+  margin-top: 10px;
+}
+
+h2 {
+  color: #40413e;
+}
+
+h3 {
+  line-height: 1.3em;
+  margin: 1em 0 0.5em 0;
+}
+
+strong {
+  color: #4a4a4a;
+}
+
+ul, ol {
+  margin: 0 0 1em 0;
+}
+ul.vertical, ol.vertical {
+  list-style: none;
+  padding: 0;
+}
+
+ol {
+  padding-left: 2em;
+}
+
+li {
+  margin: 0.5em 0 0.5em 0;
+}
+
+label {
+  display: block;
+}
+
+small {
+  color: black;
+}
+
+input {
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  padding: 0 7px;
+  margin: 0 0.5em 0 0;
+  font-size: 1.2em;
+  line-height: 1.5em;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+}
+input[type="submit"] {
+  border-color: rgba(0, 0, 0, 0.25);
+  padding: 0 2em;
+  cursor: pointer;
+}
+input[type="file"] {
+  font-size: 1em;
+  line-height: 1em;
+  padding: 0.5em 0;
+  border: 0;
+}
+
+textarea {
+  font-size: 1.2em;
+  padding: 3px 7px;
+  width: 100%;
+  display: block;
+}
+
+select {
+  font-size: 1.2em;
+  width: 100%;
+  margin-bottom: 1px;
+  vertical-align: bottom;
+}
+
+pre {
+  overflow-x: auto;
+}
+
+.container {
+  width: 710px;
+  margin: 0 auto;
+  overflow: hidden;
+  *zoom: 1;
+  margin: 0 auto 20px auto;
+  overflow: inherit;
+}
+
+form {
+  margin-bottom: 1em;
+}
+
+input[type="submit"] {
+  font-size: 1em;
+  line-height: 2em;
+  background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuNSIgeTE9IjAuMCIgeDI9IjAuNSIgeTI9IjEuMCI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZhZmFmYSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2RkZGRkZCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
+  background-size: 100%;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #fafafa), color-stop(100%, #dddddd));
+  background-image: -moz-linear-gradient(#fafafa, #dddddd);
+  background-image: -webkit-linear-gradient(#fafafa, #dddddd);
+  background-image: linear-gradient(#fafafa, #dddddd);
+  color: #555;
+}
+input[type="submit"]:hover {
+  background: #ddd;
+}
+input[type="submit"]:disabled {
+  background: #ccc;
+  border-color: #ccc;
+  color: #999;
+}
+
+input.negative, .button.negative {
+  border: none;
+  color: rgba(0, 0, 0, 0.5);
+  background: rgba(50, 50, 50, 0.15);
+}
+input.negative:hover, .button.negative:hover {
+  color: #fff;
+  background: #dd4b58;
+}
+
+small {
+  color: #949999;
+}
+
+a.button {
+  display: inline-block;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  background: #c2d7aa;
+  color: rgba(0, 0, 0, 0.5);
+  padding: 2px 1em;
+  vertical-align: middle;
+  margin-right: 0.5em;
+  font-size: 12px;
+}
+a.button:hover, a.button.active {
+  background: #a9c787;
+}
+a.button.symbol {
+  color: rgba(0, 0, 0, 0.4);
+  padding: 0;
+  height: 1.5em;
+  width: 1.5em;
+  line-height: 1.5em;
+  text-align: center;
+  margin-right: 0.5em;
+  vertical-align: top;
+  font-size: 14px;
+}
+a.button.external {
+  background: #eee;
+  color: #999;
+}
+a.button.disabled {
+  background: #ddd;
+  color: #999;
+}
+a.button.disabled:hover {
+  background: #ddd;
+}
+
+.button-note, .note {
+  font-size: 0.8em;
+  color: #949999;
+}
+
+section {
+  margin-bottom: 3em;
+}
+
+dd {
+  margin-left: 0;
+}
+
+.flash-messages {
+  width: 710px;
+  margin: 0 auto;
+  overflow: hidden;
+  *zoom: 1;
+  overflow: inherit;
+  margin: 1em auto 2em auto;
+}
+.flash-messages ul {
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  background: #dbe8cc;
+  padding: 0.5em 2em;
+  list-style: none;
+}
+
+.highlight {
+  background: #fce09b;
+  padding: 0px 2px;
+}
+
+.status {
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  background: #999;
+  color: white;
+  padding: 0px 4px;
+  display: inline-block;
+  min-width: 80px;
+  text-align: center;
+}
+.status.disabled {
+  background: #ed4f38;
+}
+.status.enabled {
+  background: #37b89a;
+}
+.status.hidden {
+  visibility: hidden;
+}
+.status a {
+  color: white;
+}
+
+.user h4 {
+  display: inline-block;
+}
+
+.user-list > li {
+  margin-bottom: 2em;
+}
+
+.user-status {
+  float: right;
+  margin-left: 0.5em;
+  font-size: 0.8em;
+  white-space: nowrap;
+}
+.user-status:hover .hidden {
+  visibility: visible;
+}
+
+nav.header {
+  padding: 1em 0;
+  margin-bottom: 1em;
+}
+nav.header ul {
+  margin: 0;
+  padding: 0;
+  width: 710px;
+  margin: 0 auto;
+  overflow: hidden;
+  *zoom: 1;
+}
+nav.header li {
+  margin: 0 0.5em 0 0.5em;
+  padding: 0.5em 1em;
+  display: inline-block;
+  list-style: none;
+}
+nav.header li.logo {
+  padding: 0;
+  margin-left: 0;
+  margin-right: 1.5em;
+}
+nav.header .menu {
+  font-size: 0.9em;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+nav.header .menu.active, nav.header .menu:hover {
+  -moz-border-radius: 1em;
+  -webkit-border-radius: 1em;
+  border-radius: 1em;
+  background: white;
+}
+nav.header a, nav.header a:visited {
+  color: #37b89a;
+}
+nav.header h1 {
+  font-size: 1.8em;
+  line-height: 1.5em;
+}
+
+.intro h1 {
+  line-height: 1.25em;
+  margin: 1.5em 0;
+  letter-spacing: 0.05em;
+  font-size: 2em;
+  text-align: center;
+}
+.intro h1 a {
+  color: inherit;
+  background: #cdeee6;
+  padding: 0 0.2em;
+  margin-right: -0.2em;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+}
+.intro .cta {
+  font-size: 1.5em;
+  padding: 5px 20px;
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px;
+  border-radius: 7px;
+}
+.intro .signup {
+  display: table;
+  margin: 3em auto;
+}
+.intro .signup .cta {
+  width: 340px;
+  display: table-cell;
+  margin: 0 20px;
+}
+.intro .closer {
+  text-align: center;
+  margin-top: 2em;
+}
+.intro .details {
+  display: table-cell;
+  font-size: 0.8em;
+  list-style: none;
+  margin: 0;
+}
+.intro .features {
+  margin: 2em 0;
+  padding: 0;
+  display: table;
+  text-align: center;
+}
+.intro .features li {
+  display: table-cell;
+  width: 33%;
+}
+.intro .features img {
+  width: 200px;
+  height: 100px;
+  border: 2px solid #dbe8cc;
+  overflow: hidden;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+.intro .features strong {
+  display: block;
+  margin-bottom: 0.2em;
+  font-size: 0.8em;
+  line-height: 2em;
+}
+.intro .features strong:before {
+  content: "✓";
+  margin-right: 0.5em;
+  color: #f37934;
+}
+.intro .features p {
+  font-size: 0.8em;
+  padding: 0 0.5em;
+}
+
+a.cta, input.cta {
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuNSIgeTE9IjAuMCIgeDI9IjAuNSIgeTI9IjEuMCI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2Y4YTkxNSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2VhOTYxMyIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
+  background-size: 100%;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f8a915), color-stop(100%, #ea9613));
+  background-image: -moz-linear-gradient(#f8a915, #ea9613);
+  background-image: -webkit-linear-gradient(#f8a915, #ea9613);
+  background-image: linear-gradient(#f8a915, #ea9613);
+  border: 1px solid #d28811;
+  display: inline-block;
+  vertical-align: middle;
+  text-align: center;
+  color: #fff;
+  padding: 3px 2em;
+  cursor: pointer;
+}
+a.cta:hover, input.cta:hover {
+  background: #f8a915;
+}
+a.cta small, input.cta small {
+  display: block;
+  color: #fee8c0;
+  font-size: 0.8em;
+}
+
+.preview, .screenshot {
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  border: 2px solid #dbe8cc;
+  background: #fff;
+  padding: 20px 20px 20px 20px;
+  margin-bottom: 2em;
+}
+
+.screenshot {
+  text-align: center;
+  padding: 20px 10px 10px 10px;
+}
+.screenshot h3 {
+  color: #bbb;
+  line-height: 2em;
+}
+
+.payment {
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  border: 2px solid #dbe8cc;
+  background: #fff;
+  padding: 1em 2em 1em 2em;
+  display: inline-block;
+}
+.payment > div {
+  overflow: hidden;
+  margin-bottom: 1em;
+  margin-left: 0.5em;
+}
+.payment label {
+  padding-left: 1px;
+  float: left;
+}
+.payment input[type="text"] {
+  display: inline-block;
+  font-size: 23px;
+}
+.payment input[type="submit"] {
+  margin-top: 22px;
+  line-height: 33px;
+  width: 180px;
+}
+.payment .card-expiry-month {
+  margin-right: 0;
+}
+.payment .card-expiry-sep {
+  padding: 0 0.2em;
+  vertical-align: middle;
+  font-size: 1.5em;
+}
+.payment .card-date {
+  text-align: center;
+}
+
+.report nav {
+  width: 100%;
+  display: table;
+  margin-bottom: 0.5em;
+}
+.report nav h3 {
+  margin-top: 0;
+  margin-bottom: 0.5em;
+}
+.report nav .controls {
+  display: table-cell;
+  text-align: right;
+  font-size: 0.8em;
+  vertical-align: top;
+  white-space: nowrap;
+}
+.report nav .controls input {
+  border: none;
+}
+.report .details {
+  width: 100%;
+  display: table;
+  margin-bottom: 0;
+}
+.report .details tr {
+  display: table-row;
+}
+.report .details td {
+  padding-right: 0;
+  margin-right: 1em;
+  display: table-cell;
+}
+.report .details .recipients {
+  margin-left: 2em;
+}
+
+form#create-report p .chosen-container:first {
+  margin-right: 5px;
+}
+
+form.add-recipient {
+  margin-top: 1em;
+  padding-left: 2em;
+}
+form.add-recipient input[name="display_name"] {
+  width: 8em;
+}
+form.add-recipient input[name="email"] {
+  width: 14em;
+}
+form.add-recipient input {
+  line-height: 1.8em;
+  font-size: 1em;
+  line-height: default;
+}
+
+.delete-confirm .negative {
+  margin: 0;
+  vertical-align: bottom;
+}
+
+.articles {
+  margin: 4em 0;
+}
+.articles h3 {
+  font-size: 1.4em;
+}
+
+.pricing {
+  width: 100%;
+  margin: 2em auto;
+  text-align: center;
+  overflow: hidden;
+}
+
+.pricing-plan {
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  vertical-align: top;
+  border: 2px solid #dbe8cc;
+  background: #fff;
+  padding: 0 1em;
+  display: inline-block;
+  text-align: left;
+  width: 180px;
+  margin: 0 5px;
+}
+.pricing-plan h3 {
+  text-align: center;
+  margin: 0.5em;
+  line-height: 2em;
+}
+.pricing-plan .value {
+  font-weight: bold;
+}
+.pricing-plan ul {
+  padding: 0;
+  list-style: none;
+}
+.pricing-plan .price {
+  margin-top: 2em;
+  text-align: center;
+}
+.pricing-plan .price .value {
+  font-weight: bold;
+  background: #fce09b;
+  color: #432;
+  padding: 2px 4px;
+}
+.pricing-plan .action span {
+  display: block;
+  background: #eee;
+  color: #aaa;
+  text-align: center;
+  line-height: 2em;
+}
+.pricing-plan input[type="submit"] {
+  width: 100%;
+}
+
+#credit-card .pricing-plan-group {
+  border-left: 0.5em #dbe8cc solid;
+  padding: 0.5em 1em;
+  line-height: 1.25em;
+  margin-bottom: 2em;
+}
+#credit-card .pricing-plan-group ul {
+  margin: 0;
+}
+#credit-card .pricing-plan {
+  margin-bottom: 2em;
+}
+#credit-card .pricing-plan h3 {
+  font-size: 1.3em;
+}
+
+#update-payment {
+  display: none;
+}
+#update-payment:target {
+  display: block;
+}
+
+#branding input[type="text"], #branding input[type="email"], #branding textarea {
+  font-size: 14px;
+  padding: 0.2em 0.5em;
+  line-height: 1.5em;
+  width: 28em;
+  margin-bottom: 1em;
+}
+#branding label {
+  margin-bottom: 1em;
+}
+#branding textarea {
+  width: 560px;
+}
+#branding blockquote {
+  width: 560px;
+  padding: 1em 0.3em;
+  text-align: center;
+  background: #fff;
+  border: #dbe8cc 2px solid;
+  margin: 0;
+}

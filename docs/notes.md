@@ -1,3 +1,6 @@
-Affected report ids:
+stripe_account = model.Account.all()[1]
+ga_tracking_id = model.Report.all()[0].remote_data.get('webPropertyId')
+import datetime
+since_datetime = datetime.datetime.now().replace(day=15)
+r = api.import_.backfill_stripe_to_google(request, stripe_account, ga_tracking_id, since_datetime=since_datetime, pretend=True)
 
-[119, 96, 115, 120, 98, 116, 121, 117, 118, 97, 99, 103, 104, 109, 110, 114]
