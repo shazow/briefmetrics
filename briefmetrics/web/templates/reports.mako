@@ -51,3 +51,7 @@ ${h.javascript_link(request, 'briefmetrics.web:static/js/external/chosen/chosen.
 <%block name="extra_head">
 ${h.stylesheet_link(request, 'briefmetrics.web:static/js/external/chosen/chosen.min.css')}
 </%block>
+
+<!--
+${c.keys()}
+-->
