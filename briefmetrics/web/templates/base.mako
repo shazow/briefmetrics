@@ -97,10 +97,12 @@ Questions? Send an email to <a href="mailto:support@briefmetrics.com">support@br
       name: '${c.user.display_name}',
       plan: '${c.user.plan_id}',
   });
-  % endif
-  % if not c.get('user') and request.unauthenticated_userid:
+  % elif request.unauthenticated_userid:
   heap.identify({handle: '${request.unauthenticated_userid}'});
   % endif
+  <!--
+    ${c.keys()}
+  -->
 </script>
 
 <!-- begin olark code -->
