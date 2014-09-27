@@ -65,6 +65,7 @@ class AdminController(Controller):
 
     DEFAULT_NEXT='/admin'
     title = 'Admin Panel'
+    track_analytics = False
 
     def index(self):
         api.account.get_admin(self.request)

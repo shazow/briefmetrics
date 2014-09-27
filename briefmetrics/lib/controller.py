@@ -27,6 +27,7 @@ class Controller(object):
     definition with the route logic which returns a response.
     """
     DEFAULT_NEXT = '/'
+    track_analytics = True
 
     def __init__(self, request, context=None):
         self.title = None
@@ -69,6 +70,10 @@ class Controller(object):
             # Tests and tasks have no current route. TODO: Maybe fix this somehow?
             current_route = u'/'
 
+        track_analytics = self.track_analytics
+        if request.features.get('offline') or request.host.startswith('localhost'):
+            track_analytics = False
+
         return {
             'h': h, 
             'c': self.context,
@@ -79,6 +84,7 @@ class Controller(object):
             'settings': request.registry.settings,
             'title': self.title,
             'is_logged_in': 'user_id' in self.session,
+            'track_analytics': track_analytics,
             'current_path': self.current_path,
             'current_route': current_route,
             'previous_url': self.previous_url,
