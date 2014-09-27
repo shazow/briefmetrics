@@ -17,7 +17,7 @@
 
     <%block name="extra_head"></%block>
 
-    % if not request.features.get('offline') and not request.host.startswith('localhost'):
+    % if track_analytics:
     <script type="text/javascript">
       window.heap=window.heap||[],heap.load=function(t,e){window.heap.appid=t,window.heap.config=e;var a=document.createElement("script");a.type="text/javascript",a.async=!0,a.src=("https:"===document.location.protocol?"https:":"http:")+"//cdn.heapanalytics.com/js/heap.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(a,n);for(var o=function(t){return function(){heap.push([t].concat(Array.prototype.slice.call(arguments,0)))}},p=["identify","track"],c=0;c<p.length;c++)heap[p[c]]=o(p[c])};
       heap.load("1675620903");
@@ -100,9 +100,6 @@ Questions? Send an email to <a href="mailto:support@briefmetrics.com">support@br
   % elif request.unauthenticated_userid:
   heap.identify({handle: '${request.unauthenticated_userid}'});
   % endif
-  <!--
-    ${c.keys()}
-  -->
 </script>
 
 <!-- begin olark code -->
