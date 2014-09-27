@@ -75,7 +75,7 @@ class Controller(object):
             track_analytics = False
 
         return {
-            'h': h, 
+            'h': h,
             'c': self.context,
             'default': self.default,
             'features': request.features,
