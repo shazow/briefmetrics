@@ -34,7 +34,7 @@
 
 <!--
 ${c.user.display_name}
-${c.get('user') and c.get('user').display_name}
+${getattr(c, 'user', None) and 'has user'}
 ${c.keys()}
 -->
 
