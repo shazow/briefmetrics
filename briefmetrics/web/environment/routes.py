@@ -31,6 +31,7 @@ def add_routes(config):
         route('account_login', '/account/login/{service}', action='login')
         route('account_logout', '/account/logout', action='logout')
         route('account_connect', '/account/connect/{service}', action='connect')
+        route('account_disconnect', '/account/disconnect', action='disconnect')
         route('account_delete', '/account/delete', action='delete')
         route('_account_login_old', '/account/login', action='login')
 

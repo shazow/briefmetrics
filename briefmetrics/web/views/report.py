@@ -113,6 +113,43 @@ def subscription_delete(request):
     request.flash("Removed subscriber [%s] to report for [%s]" % (email, report.display_name))
 
 
+@expose_api('funnel.create')
+def funnel_create(request):
+    user_id = api.account.get_user_id(request, required=True)
+    from_account_id, to_report_id = get_many(request.params, required=['from_account_id', 'to_report_id'])
+
+    from_account = model.Account.get(from_account_id)
+    to_report = model.Report.get(to_report_id)
+
+    if not from_account or not to_report:
+        raise APIControllerError("Invalid account in funnel: %s -> %s", from_account_id, to_report_id)
+
+
+    ga_tracking_id = to_report.remote_data['webPropertyId']
+    ga_funnels = from_account.config.get('ga_funnels') or []
+    ga_funnels.append(ga_tracking_id)
+    from_account.config['ga_funnels'] = ga_funnels
+    model.Session.commit()
+
+    request.flash("Attached events from Stripe (%s) to Google Analytics property (%s) for new transactions." % (from_account.display_name, to_report.display_name))
+
+
+@expose_api('funnel.clear')
+def funnel_clear(request):
+    user_id = api.account.get_user_id(request, required=True)
+    account_id, = get_many(request.params, required=['account_id'])
+
+    account = model.Account.get(account_id)
+    if not account:
+        raise APIControllerError("Invalid account: %s", account_id)
+
+    account.config.pop('ga_funnels', None)
+    account.config.changed()
+    model.Session.commit()
+
+    request.flash("Cleared event connections from %s account: %s" % (account.service, account.display_name))
+
+
 # TODO: Move this somewhere else?
 class Site(object):
     report_types = model.Report.TYPES
@@ -167,12 +204,15 @@ class ReportController(Controller):
         self.c.report_types = [(id, label, id==model.Report.DEFAULT_TYPE) for id, label in model.Report.TYPES if id in enable_reports]
 
         self.c.google_account = google_account
+
+        self.c.accounts_by_service = {}
+        for a in user.accounts:
+            self.c.accounts_by_service.setdefault(a.service, []).append(a)
+
         self.c.user = user
         self.c.reports = []
-        self.c.available_services = set()
         for account in user.accounts:
             self.c.reports += account.reports
-            self.c.available_services.add(account.service)
 
         self.c.sites = sorted(Site.from_list(self.c.reports), key=lambda s: s.display_name)
 

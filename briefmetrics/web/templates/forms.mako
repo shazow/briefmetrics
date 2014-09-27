@@ -131,9 +131,10 @@
     </form>
 </%def>
 
-<%def name="site_config(site, is_active=True, is_admin=False, available_services='')">
+<%def name="site_config(site, is_active=True, is_admin=False, accounts_by_service=None)">
     <%
         anchor = 'report-{}'.format(site.report.id)
+        accounts_by_service = accounts_by_service or {}
     %>
     <div class="preview report" id="${anchor}">
         <nav>
@@ -145,9 +146,17 @@
                 % if site.report.account.service == 'stripe':
                     <a class="button external" target="_blank" href="https://dashboard.stripe.com/">Stripe</a>
                 % else:
-                    % if 'stripe' in available_services:
-                    <a class="button" href="todo">Inject Stripe Data</a>
-                    % endif
+                    % for stripe_account in accounts_by_service.get('stripe', []):
+                        % if site.report.remote_data.get('webPropertyId') not in (stripe_account.config.get('ga_funnels') or []):
+                            <a class="button" href="${request.route_path('api', _query=dict(
+                                from_account_id=stripe_account.id,
+                                to_report_id=site.report.id,
+                                method="funnel.create",
+                                format='redirect',
+                                csrf_token=session.get_csrf_token())
+                            )}">Attach Stripe <em>${stripe_account.display_name}</em> Ecommerce</a>
+                        % endif
+                    % endfor
                     <a class="button external" target="_blank" href="${h.ga_permalink('report/visitors-overview', site.report)}">Google Analytics</a>
                 % endif
             </div>
@@ -386,13 +395,13 @@
     <ul>
     % for account in sorted(user.accounts, key=lambda a: a.service):
         <li>
-            <a class="button negative" href="/account/disconnect/${account.id}">Disconnect</a>
+            <a class="button negative" href="${request.route_path('account_disconnect', _query={'account_id': account.id})}">Disconnect</a>
             <strong>${account.service_api.label}</strong>
         </li>
     % endfor
     % for service_api in extra_services:
         <li>
-            <a class="button" href="/account/connect/${service_api.id}">Connect</a>
+            <a class="button" href="${request.route_path('account_login', service=service_api.id)}">Connect</a>
             <strong>${service_api.label}</strong>
             <small>${service_api.description}</small>
         </li>

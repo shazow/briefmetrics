@@ -64,6 +64,26 @@ class AccountController(Controller):
 
         return self._redirect(next_url)
 
+    def disconnect(self):
+        user = api.account.get_user(self.request, required=True, joinedload='accounts')
+        account_id, = get_many(self.request.params, ['account_id'])
+
+        account = user.get_account(id=account_id)
+        if not account:
+            raise APIControllerError('Invalid account id: %s' % account_id)
+
+        if len(user.accounts) == 1:
+            raise APIControllerError('Cannot disconnect last remaining service while retaining the account.')
+
+        display_name = account.display_name
+        model.Session.delete(account)
+        model.Session.commit()
+
+        self.request.flash('Account disconnected: %s' % display_name)
+
+        return self._redirect(location='/settings')
+
+
     def logout(self):
         api.account.logout_user(self.request)
         return self._redirect(location='/')

@@ -18,6 +18,29 @@
     % endif
 </section>
 
+<%
+    event_connected_accounts = [a for a in c.accounts_by_service.get('stripe') if a.config.get('ga_funnels')]
+%>
+% if event_connected_accounts:
+<section id="event-connections">
+    <h2>Event connections</h2>
+% for account in event_connected_accounts:
+    <h3><em>${account.display_name}</em> on Stripe</h3>
+
+    <p>
+        Converting transactions into Google Analytics Ecommerce events on these tracking codes:<br />
+        ${', '.join(account.config.get('ga_funnels'))}
+        <a class="button negative" href="${request.route_path('api', _query={
+            'method': 'funnel.clear',
+            'account_id': account.id,
+            'format': 'redirect',
+            'csrf_token': session.get_csrf_token(),
+        })}">Clear</a>
+    </p>
+% endfor
+</section>
+% endif
+
 % if c.reports:
 <section id="active-reports">
     <h2>Active reports</h2>
@@ -27,6 +50,7 @@
             site,
             is_active=c.user.num_remaining != 0 or c.user.stripe_customer_id,
             is_admin=c.user.is_admin,
+            accounts_by_service=c.accounts_by_service,
         )}
     % endfor
 </section>

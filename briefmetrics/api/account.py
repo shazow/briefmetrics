@@ -96,6 +96,8 @@ def get_user_id(request, required=False):
 def get_user(request, required=False, joinedload=None):
     """
     Get the current logged in User object, else None.
+
+    Overrides request.features from loaded user.
     """
     user_id = get_user_id(request, required=required)
     if not user_id:
@@ -110,6 +112,10 @@ def get_user(request, required=False, joinedload=None):
         request.session.pop('user_id', None)
         request.session.save()
         return get_user(request, required=required) # Try again.
+
+    if u:
+        # Override features
+        request.features.update(u.config.get('features', {}))
 
     return u
 
