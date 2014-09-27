@@ -32,12 +32,6 @@
 </section>
 % endif
 
-<!--
-${c.user.display_name}
-${getattr(c, 'user', None) and 'has user'}
-${c.keys()}
--->
-
 </div>
 
 <%block name="tail">
