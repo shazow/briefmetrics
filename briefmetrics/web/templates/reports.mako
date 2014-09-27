@@ -33,6 +33,8 @@
 % endif
 
 <!--
+${c.user.display_name}
+${c.get('user') and c.get('user').display_name}
 ${c.keys()}
 -->
 
