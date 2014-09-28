@@ -19,7 +19,7 @@
 </section>
 
 <%
-    event_connected_accounts = [a for a in c.accounts_by_service.get('stripe') if a.config.get('ga_funnels')]
+    event_connected_accounts = [a for a in c.accounts_by_service.get('stripe', []) if a.config.get('ga_funnels')]
 %>
 % if event_connected_accounts:
 <section id="event-relays">

@@ -25,7 +25,7 @@ def add_routes(config):
         route('features', '/features/{id}', action='features')
 
     with handler_routes(config, views.webhook.WebhookController) as route:
-        route('webhook', '/webhook/{service}/{token}', action='index')
+        route('webhook', '/webhook/{service}', action='index')
 
     with handler_routes(config, views.account.AccountController) as route:
         route('account_login', '/account/login/{service}', action='login')

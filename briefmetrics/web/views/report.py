@@ -116,22 +116,28 @@ def subscription_delete(request):
 @expose_api('funnel.create')
 def funnel_create(request):
     user_id = api.account.get_user_id(request, required=True)
-    from_account_id, to_report_id = get_many(request.params, required=['from_account_id', 'to_report_id'])
+    from_account_id, to_report_id, ga_tracking_id = get_many(request.params, required=['from_account_id'], optional=['to_report_id', 'ga_tracking_id'])
 
-    from_account = model.Account.get(from_account_id)
-    to_report = model.Report.get(to_report_id)
+    from_account = model.Account.get_by(id=from_account_id, user_id=user_id)
+    if not from_account:
+        raise APIControllerError("Invalid account: %s" % from_account_id)
 
-    if not from_account or not to_report:
-        raise APIControllerError("Invalid account in funnel: %s -> %s", from_account_id, to_report_id)
+    to_display_name = ga_tracking_id
+    if not ga_tracking_id:
+        to_report = model.Report.get_by(id=to_report_id, user_id=user_id)
+        if to_report:
+            ga_tracking_id = to_report.remote_data['webPropertyId']
+            to_display_name = to_report.display_name
 
+    if not ga_tracking_id:
+        raise APIControllerError("Failed to load Google Analytics tracking id from report: %s" % to_report_id)
 
-    ga_tracking_id = to_report.remote_data['webPropertyId']
     ga_funnels = from_account.config.get('ga_funnels') or []
     ga_funnels.append(ga_tracking_id)
     from_account.config['ga_funnels'] = ga_funnels
     model.Session.commit()
 
-    request.flash("Attached events from Stripe (%s) to Google Analytics property (%s) for new transactions." % (from_account.display_name, to_report.display_name))
+    request.flash("Attached events from Stripe (%s) to Google Analytics property (%s) for new transactions." % (from_account.display_name, to_display_name))
 
 
 @expose_api('funnel.clear')

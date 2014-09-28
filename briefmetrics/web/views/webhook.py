@@ -6,7 +6,7 @@ from datetime import date, timedelta
 from briefmetrics import api, model, tasks
 from briefmetrics.lib.controller import Controller
 from briefmetrics.lib.service import registry as service_registry
-from briefmetrics.web.environment import httpexceptions
+from briefmetrics.web.environment import httpexceptions, Response
 
 from .api import expose_api
 
@@ -28,7 +28,7 @@ def handle_stripe(request, data):
         return
 
     # Validate webhook
-    stripe_query = api_account.query_service(request, accounts[0])
+    stripe_query = api.account.query_service(request, accounts[0])
     event_data = stripe_query.validate_webhook(data)
     if not event_data:
         raise httpexceptions.HTTPBadRequest('Webhook failed to validate: %s' % data['id'])

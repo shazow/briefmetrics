@@ -62,6 +62,10 @@ class StripeAPI(OAuth2API):
         return user_info['id'], user_info['email'], user_info.get('display_name'), user_info
 
     def create_query(self, cache_keys):
+        if self.request.features.get('offline'):
+            from briefmetrics.test.fixtures.api_stripe import FakeQuery
+            return FakeQuery(self, cache_keys=cache_keys)
+
         return Query(self, cache_keys=cache_keys)
 
 
@@ -112,7 +116,7 @@ class Query(object):
         return [p]
 
     def validate_webhook(self, webhook_data):
-        return api_query.get('https://api.stripe.com/v1/events/%s' % webhook_data['id'])
+        return self.api.get('https://api.stripe.com/v1/events/%s' % webhook_data['id'])
 
     def extract_transaction(self, webhook_data, load_customer=True):
         if webhook_data['type'] != "invoice.payment_succeeded":
