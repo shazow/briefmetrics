@@ -23,15 +23,16 @@ def dry_run(request):
 @expose_api('admin.explore_api')
 def explore_api(request):
     u = api.account.get_admin(request)
+    a = u.get_account(service='google')
 
     report_id, dimensions, metrics, extra, date_start, date_end = get_many(request.params, ['report_id'], optional=['dimensions', 'metrics', 'extra', 'date_start', 'date_end'])
-    report = model.Report.get_by(account_id=u.account.id, id=report_id) # XXX: accounts
+    report = model.Report.get_by(account_id=a.id, id=report_id)
 
     if not report:
         raise APIControllerError("Invalid report id: %s" % report_id)
 
     cache_keys = ('admin/explore_api',)
-    google_oauth2 = api.google.OAuth2(request, token=u.account.oauth_token) # XXX: accounts
+    google_oauth2 = api.google.OAuth2(request, token=a.oauth_token)
     google_query = api.google.create_query(request, google_oauth2.session, cache_keys=cache_keys)
 
     date_end = date_end or date.today()
@@ -74,10 +75,13 @@ class AdminController(Controller):
         q = q.order_by(model.User.id.asc())
         users = q.all()
 
-        self.c.active_users, self.c.inactive_users = [], []
+        self.c.active_users, self.c.inactive_users, self.c.active_trials = [], [], []
         for u in users:
-            if u.is_active and (u.subscriptions or u.account and u.account.reports or u.stripe_customer_id): # XXX: accounts
+            account_reports = [a.reports for a in u.accounts]
+            if u.is_active and (u.subscriptions or account_reports or u.stripe_customer_id):
                 self.c.active_users.append(u)
+                if u.plan_id == 'trial':
+                    self.c.active_trials.append(u)
             else:
                 self.c.inactive_users.append(u)
 
@@ -86,6 +90,13 @@ class AdminController(Controller):
         self.c.num_mrr = sum([(u.plan.price_monthly or 0) for u in users if u.stripe_customer_id])
 
         self.c.by_plan = groupby_count(users, key=lambda u: u.plan_id)
+
+        self.c.expiring_trials = []
+        for u in self.c.active_trials:
+            num_reports = len([a.reports for a in u.accounts])
+            if num_reports * 2 < u.num_remaining:
+                continue
+            self.c.expiring_trials.append(u)
 
         q = Session.query(model.ReportLog).order_by(model.ReportLog.id.desc()).limit(10)
         self.c.recent_reports = q.all()
@@ -108,11 +119,9 @@ class AdminController(Controller):
         if self.c.user.invited_by_user_id:
             self.c.invited_by = model.User.get(self.c.user.invited_by_user_id)
 
-        self.c.recent_reports = []
-        if self.c.user.account: # XXX: accounts
-            q = Session.query(model.ReportLog).filter_by(account_id=self.c.user.account.id) # XXX: accounts
-            q = q.order_by(model.ReportLog.id.desc()).limit(10)
-            self.c.recent_reports = q.all()
+        q = Session.query(model.ReportLog).join(model.Account).filter_by(user_id=self.c.user.id)
+        q = q.order_by(model.ReportLog.id.desc()).limit(10)
+        self.c.recent_reports = q.all()
 
         return self._render('admin/user.mako')
 

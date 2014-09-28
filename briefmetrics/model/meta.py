@@ -68,7 +68,8 @@ class _Base(object):
         Session.refresh(self)
 
     def __repr__(self):
-        values = ', '.join("%s=%r" % (n, getattr(self, n)) for n in self.__table__.c.keys())
+        keys = self.__json_whitelist__ or self.__table__.c.keys()
+        values = ', '.join("%s=%r" % (n, getattr(self, n)) for n in keys)
         return "%s(%s)" % (self.__class__.__name__, values)
 
     def __json__(self):

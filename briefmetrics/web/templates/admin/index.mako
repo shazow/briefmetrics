@@ -45,6 +45,34 @@
     </section>
 
     <section>
+    <h2>Expiring Soon (${len(c.expiring_trials)} / ${len(c.active_trials)})</h2>
+
+        <ol class="user-list" id="expiring-trials">
+        % for u in c.expiring_trials:
+            <li value="${u.id}">
+                ${widgets.user_render(u)}
+
+                <div class="id">
+                    <div>${u.email_to}</div>
+                    <small>Joined ${h.human_date(u.time_created, max_unit='year')}</small>
+
+                    % if u.account:
+                        <ol>
+                        % for r in u.account.reports:
+                            <li value="${r.id}">${r.display_name} (next report: ${h.human_date(r.time_next)})
+                        % endfor
+                        </ol>
+                    % else:
+                        <br />(No account)
+                    % endif
+                </div>
+            </li>
+        % endfor
+        </ol>
+    </section>
+
+
+    <section>
         <h2>Active Users (${len(c.active_users)} / ${c.num_users})</h2>
 
         <ol class="user-list" id="active-users">
