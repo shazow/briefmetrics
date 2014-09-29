@@ -28,6 +28,9 @@ def report_create(request):
         if len(remote_ids) > num_sites:
             raise APIControllerError("Maximum number of sites limit reached, please consider upgrading your plan.")
 
+    if not remote_id:
+        remote_id = account.remote_id
+
     api_query = api.account.query_service(request, account=account)
     profile = api_query.get_profile(remote_id=remote_id)
     if not profile:
