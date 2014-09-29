@@ -124,7 +124,7 @@ def funnel_create(request):
 
     to_display_name = ga_tracking_id
     if not ga_tracking_id:
-        to_report = model.Report.get_by(id=to_report_id, user_id=user_id)
+        to_report = model.Session.query(model.Report).join(model.Account).filter(model.Report.id==to_report_id, model.Account.user_id==user_id).first()
         if to_report:
             ga_tracking_id = to_report.remote_data['webPropertyId']
             to_display_name = to_report.display_name
