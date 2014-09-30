@@ -113,7 +113,7 @@ class User(meta.Model): # Email address / login
 
 class Account(meta.Model): # OAuth Service Account (such as Google Analytics)
     __tablename__ = 'account'
-    __json_whitelist__ = ['id', 'user_id', 'display_name']
+    __json_whitelist__ = ['id', 'user_id', 'display_name', 'service', 'remote_id']
 
     SERVICES = ['google', 'stripe']
 
@@ -148,7 +148,7 @@ Index('ix_account_service_remote_id',
 
 class Report(meta.Model): # Property within an account (such as a website)
     __tablename__ = 'report'
-    __json_whitelist__ = ['id', 'time_next', 'account_id', 'display_name', 'type']
+    __json_whitelist__ = ['id', 'time_next', 'account_id', 'display_name', 'type', 'remote_id']
 
     TYPES = [
         ('day', 'Alerts (Daily)'),

@@ -48,6 +48,7 @@ class TestWeb(TestModel):
         self.csrf_token = self.settings['session.constant_csrf_token']
         self.request = get_current_request()
         self.request.registry = self.config.registry
+        #self.request.features['offline'] = True
 
     def call_api(self, method, format='json', csrf_token=_DEFAULT, _status=None, _extra_params=None, _upload_files=None, **params):
         if csrf_token is _DEFAULT:

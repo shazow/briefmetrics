@@ -9,3 +9,6 @@ class FakeQuery(Query):
 
     def validate_webhook(self, webhook_data):
         return webhook_data
+
+    def extract_transaction(self, webhook_data, load_customer=False):
+        return Query.extract_transaction(self, webhook_data, load_customer=load_customer)

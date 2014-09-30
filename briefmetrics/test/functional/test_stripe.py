@@ -4,7 +4,10 @@ import mock
 from briefmetrics import api
 from briefmetrics import test
 from briefmetrics import model
+from briefmetrics import tasks
 from briefmetrics.lib.service import stripe
+
+from briefmetrics.test.fixtures.api_stripe import FakeQuery
 
 
 STRIPE_WEBHOOKS = {
@@ -32,6 +35,7 @@ class TestStripeService(test.TestCase):
             'tr': 8.00})
 
 
+@mock.patch('briefmetrics.lib.service.stripe.Query', FakeQuery)
 class TestStripe(test.TestWeb):
     def test_webhook(self):
         # Create account
@@ -47,6 +51,8 @@ class TestStripe(test.TestWeb):
         # Connect Stripe
         u = api.account.get_or_create(service='stripe', email=u.email, display_name=u'Example', remote_id='acct_example')
         u_stripe = u.get_account(service='stripe')
+
+        webhook_args = None
 
         with mock.patch('briefmetrics.tasks.service.stripe_webhook.delay') as stripe_webhook:
             body = json.dumps(STRIPE_WEBHOOKS['invoice.payment.succeeded'])
@@ -67,3 +73,12 @@ class TestStripe(test.TestWeb):
             call, = stripe_webhook.call_args_list
             self.assertEqual(call[0][0:2], (u'foo', u_stripe.id))
 
+            webhook_args = call[0]
+
+        with mock.patch('briefmetrics.lib.service.google.collect') as collect:
+            tasks.service.celery.request = self.request
+            tasks.service.stripe_webhook(*webhook_args)
+            self.assertTrue(collect.called)
+
+            call = collect.call_args_list[0]
+            self.assertEqual(call[0][0:2], (u'foo',))
