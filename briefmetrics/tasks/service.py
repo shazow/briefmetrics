@@ -21,7 +21,7 @@ def stripe_webhook(ga_tracking_id, stripe_account_id, data, pretend=False):
         log.warn('Invalid stripe account webhook, skipping: %s' % stripe_account_id)
         return
 
-    stripe_api = service.registry['stripe'](celery.request, stripe_account)
+    stripe_api = service.registry['stripe'](celery.request, token=stripe_account.oauth_token)
 
     t = stripe_api.extract_transaction(data)
     service.registry['google'].inject_transaction(ga_tracking_id, t, **kw)
