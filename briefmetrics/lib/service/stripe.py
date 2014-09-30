@@ -116,7 +116,7 @@ class Query(object):
         return [p]
 
     def validate_webhook(self, webhook_data):
-        return self.api.get('https://api.stripe.com/v1/events/%s' % webhook_data['id']).json
+        return self.api.get('https://api.stripe.com/v1/events/%s' % webhook_data['id']).json()
 
     def extract_transaction(self, webhook_data, load_customer=True):
         if webhook_data['type'] != "invoice.payment_succeeded":
