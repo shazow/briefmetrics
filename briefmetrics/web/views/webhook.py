@@ -23,6 +23,11 @@ def handle_stripe(request, data):
     if data['type'] != "invoice.payment_succeeded":
         return
 
+    if not data['data']['object']['total']:
+        # Shortcut for empty totals (free accounts)
+        return
+
+
     remote_id = data['user_id']
     accounts = model.Session.query(model.Account).filter_by(remote_id=remote_id, service='stripe')
     if not accounts:
