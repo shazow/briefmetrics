@@ -1,4 +1,6 @@
+import logging
 import operator
+
 from sqlalchemy import orm
 from unstdlib import get_many, groupby_count
 from datetime import date, timedelta
@@ -9,6 +11,9 @@ from briefmetrics.lib.service import registry as service_registry
 from briefmetrics.web.environment import httpexceptions, Response
 
 from .api import expose_api
+
+
+log = logging.getLogger(__name__)
 
 
 def handle_stripe(request, data):
@@ -33,9 +38,13 @@ def handle_stripe(request, data):
     if not event_data:
         raise httpexceptions.HTTPBadRequest('Webhook failed to validate: %s' % data['id'])
 
+    count = 0
     for a in accounts:
         for ga_tracking_id in a.config.get('ga_funnels', []):
+            count += 1
             tasks.service.stripe_webhook.delay(ga_tracking_id, a.id, event_data)
+
+    log.info('stripe webhook: Queued %d funnels for account: %s' % (count, a.id))
 
 
 # TODO: Should this live in lib.service?
