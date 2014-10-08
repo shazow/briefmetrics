@@ -1,20 +1,21 @@
 <%inherit file="base.mako"/>
 <%namespace file="widgets.mako" name="widgets" />
 
+<%def name="render_weekly(r)">
 <p>
     ${widgets.render_intro(
-        current=c.report.data['total_current'],
-        last=c.report.data['total_last'],
-        last_relative=c.report.data['total_last_relative'],
-        units=c.report.data['total_units'],
-        interval=(c.report.data.get('total_last_date_start', c.report.previous_date_start), c.report.date_start, c.report.date_end),
+        current=r.data['total_current'],
+        last=r.data['total_last'],
+        last_relative=r.data['total_last_relative'],
+        units=r.data['total_units'],
+        interval=(r.data.get('total_last_date_start', r.previous_date_start), r.date_start, r.date_end),
     )}
 </p>
 
-${h.chart(c.report.data['historic_data'], width=560, height=200)}
+${h.chart(r.data['historic_data'], width=560, height=200)}
 
 <%
-    interval_label = c.report.data.get('interval_label')
+    interval_label = r.data.get('interval_label')
 %>
 
 <h2>
@@ -22,23 +23,23 @@ ${h.chart(c.report.data['historic_data'], width=560, height=200)}
         Last ${interval_label}&hellip;
     % else:
         Last week&hellip;
-        <% overlap_days = 7 - c.report.date_end.day %>
+        <% overlap_days = 7 - r.date_end.day %>
         % if overlap_days > 0:
             <span class="quiet">(includes ${h.format_int(overlap_days, '{} day')} from last month)</span>
         % endif
     % endif
 </h2>
 
-% if c.report.tables.get('summary'):
+% if r.tables.get('summary'):
     <table class="overview">
         <tr>
-            ${widgets.overview_cell(c.report.tables['summary'], 'ga:visitBounceRate', is_percent=100.0)}
-            ${widgets.overview_cell(c.report.tables['summary'], 'ga:pageviews')}
+            ${widgets.overview_cell(r.tables['summary'], 'ga:visitBounceRate', is_percent=100.0)}
+            ${widgets.overview_cell(r.tables['summary'], 'ga:pageviews')}
         </tr>
     </table>
     <%
         columns = 'ga:pageviews', 'ga:visitors', 'ga:avgTimeOnSite', 'ga:visitBounceRate', 'ga:visits', 'ga:goalConversionRateAll'
-        rows = c.report.tables['summary'].iter_rows(*columns)
+        rows = r.tables['summary'].iter_rows(*columns)
         pageviews, uniques, seconds, bounces, visits, conversion = next(rows)
     %>
 
@@ -60,28 +61,32 @@ ${h.chart(c.report.data['historic_data'], width=560, height=200)}
 % endif
 
 ${widgets.render_table(
-    c.report.tables['pages'],
+    r.tables['pages'],
     'Top Pages',
-    h.ga_permalink('report/content-pages', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
-    prefix_links=c.report.base_url,
+    h.ga_permalink('report/content-pages', r.report, date_start=r.date_start, date_end=r.date_end),
+    prefix_links=r.base_url,
 )}
 
 ${widgets.render_table(
-    c.report.tables['referrers'],
+    r.tables['referrers'],
     'Referrers',
-    h.ga_permalink('report/trafficsources-referrals', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
+    h.ga_permalink('report/trafficsources-referrals', r.report, date_start=r.date_start, date_end=r.date_end),
 )}
 
 ${widgets.render_table(
-    c.report.tables['social_search'],
+    r.tables['social_search'],
     'Social & Search',
-    h.ga_permalink('report/social-sources', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
+    h.ga_permalink('report/social-sources', r.report, date_start=r.date_start, date_end=r.date_end),
 )}
 
-% if c.report.tables.get('goals'):
+% if r.tables.get('goals'):
     ${widgets.render_table(
-        c.report.tables['goals'],
+        r.tables['goals'],
         'Goals',
-        h.ga_permalink('report/conversions-goals-overview', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
+        h.ga_permalink('report/conversions-goals-overview', r.report, date_start=r.date_start, date_end=r.date_end),
     )}
 % endif
+</%def>
+
+
+${render_weekly(r=c.report)}

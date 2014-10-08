@@ -254,10 +254,13 @@ def _cast_title(v):
 # TODO: Rename ids to GA-specific
 
 class GAReport(Report):
-    def __init__(self, report, since_time):
+    def __init__(self, report, since_time, remote_data=None):
         super(GAReport, self).__init__(report, since_time)
+        if remote_data:
+            self.remote_id = str(remote_data.get('id', self.remote_id))
 
-        remote_data = self.report.remote_data or {}
+        self.remote_data = remote_data = remote_data or self.report.remote_data or {}
+
         base_url = remote_data.get('websiteUrl', '')
         if base_url and 'http://' not in base_url:
             base_url = 'http://' + base_url
@@ -329,7 +332,7 @@ class ActivityReport(WeeklyMixin, GAReport):
 
     def _get_goals(self, google_query, interval_field):
         goals_api = 'https://www.googleapis.com/analytics/v3/management/accounts/{accountId}/webproperties/{webPropertyId}/profiles/{profileId}/goals'
-        r = google_query.get(goals_api.format(profileId=self.report.remote_data['id'], **self.report.remote_data))
+        r = google_query.get(goals_api.format(profileId=self.remote_data['id'], **self.remote_data))
         has_goals = r.get('items') or []
         metrics = [
                 Column('ga:goal{id}ConversionRate'.format(id=g['id']), label=g['name'], type_cast=float) for g in has_goals if g.get('active')
@@ -520,6 +523,30 @@ class ActivityReport(WeeklyMixin, GAReport):
         self.tables['social_search'].tag_rows()
         self.tables['referrers'].tag_rows()
         self.tables['pages'].tag_rows()
+
+
+class ActivityConcatReport(ActivityReport):
+    id = 'week-concat'
+    label = 'Weekly (Combined)'
+
+    template = 'email/report/weekly-concat.mako'
+
+    def __init__(self, report, since_time):
+        remote_data = self.report.remote_data['combined']
+        contexts = []
+        for data in remote_data:
+            context.append(ActivityReport(report, since_time, remote_data=data))
+
+        self.contexts = contexts
+
+    def fetch(self, google_query):
+        for context in self.contexts:
+            context.fetch(google_query)
+
+    def build(self):
+        for context in self.contexts:
+            context.build()
+
 
 
 class ActivityMonthlyReport(MonthlyMixin, ActivityReport):

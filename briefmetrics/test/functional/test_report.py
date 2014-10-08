@@ -190,6 +190,33 @@ class TestReport(test.TestWeb):
         self.assertEqual(model.User.count(), 2)
         self.assertEqual(model.Report.count(), 3)
 
+    def test_combine(self):
+        u1 = api.account.get_or_create(email=u'example@example.com', token={}, display_name=u'Example')
+        u2 = api.account.get_or_create(email=u'bono@example.com', token={}, display_name=u'Bono')
+        account = u1.accounts[0]
+
+        r1 = model.Report.create(account=account, remote_data={'id': 'foo'}, display_name=u'example.com', type='week')
+        model.Subscription.create(user=u1, report=r1)
+        model.Subscription.create(user=u2, report=r1)
+
+        r2 = model.Report.create(account=account, remote_data={'id': 'bar'}, display_name=u'bar.example.com', type='week')
+        model.Subscription.create(user=u1, report=r2)
+
+        Session.commit()
+
+        report = api.report.combine(report_ids=[r1.id, r2.id], is_replace=False, account_id=account.id)
+        display_name = report.display_name
+        self.assertEqual(report.remote_data, {'combined': [{'id': 'foo'}, {'id': 'bar'}]})
+        self.assertEqual(report.display_name, 'example.com, bar.example.com')
+        Session.delete(report)
+        Session.commit()
+
+        r = self.call_api('account.login', token=u'%s-%d' % (u1.email_token, u1.id))
+        r = self.call_api('report.combine', report_ids=[r1.id, r2.id])
+
+        self.assertEqual(r['result']['report']['display_name'], display_name)
+
+
 
 class TestReportModel(test.TestCase):
 

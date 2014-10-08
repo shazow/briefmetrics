@@ -156,6 +156,7 @@ class Report(meta.Model): # Property within an account (such as a website)
         ('month', 'Trends (Monthly)'),
         ('activity-month', 'Activity (Monthly)'),
         ('stripe', 'Stripe'),
+        ('week-concat', 'Weekly (Combined)'),
        #'quarter',
        #'combine',
        #'alert',

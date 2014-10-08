@@ -44,9 +44,32 @@ def report_create(request):
 
     # Queue new report
     tasks.report.send.delay(report.id)
-
     request.flash("First %s report for %s has been queued. Please check your Spam folder if you don't see it in your Inbox in a few minutes." % (report.type, report.display_name))
+    return {'report': report}
 
+
+@expose_api('report.combine')
+def report_combine(request):
+    report_ids = request.params.getall('report_ids')
+    is_replace = request.params.get('replace')
+
+    if len(report_ids) <= 1:
+        raise APIControllerError('Must combine more than one report.')
+
+    user = api.account.get_user(request, required=True, joinedload='accounts')
+    r = model.Report.get(report_ids[0])
+    account = user.get_account(id=r.account_id)
+    if not account:
+        raise APIControllerError('Report [%s] does not belong to user: %s' % (r.id, user_id))
+
+    try:
+        report = api.report.combine(report_ids, is_replace=is_replace, account_id=account.id)
+    except APIError as e:
+        raise APIControllerError(e.message)
+
+    # Queue new report
+    tasks.report.send.delay(report.id)
+    request.flash("Combined %d reports: %s" % (len(report_ids), report.display_name))
     return {'report': report}
 
 

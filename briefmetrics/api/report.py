@@ -3,6 +3,7 @@ import logging
 import datetime
 import random
 
+from sqlalchemy import orm
 from unstdlib import now, get_many
 
 from briefmetrics.lib.controller import Controller, Context
@@ -25,19 +26,60 @@ def create(account_id, remote_data=None, remote_id=None, display_name=None, subs
     if report.id:
         raise APIError("Report already exists.")
 
+    report.remote_id = remote_id
     if remote_data:
         report.remote_data = remote_data
-        report.remote_id = str(remote_data['id'])
         report.display_name = h.human_url(remote_data.get('websiteUrl')) or remote_data.get('display_name') or remote_data.get('name')
-
-    if remote_id:
-        report.remote_id = str(remote_id)
 
     if display_name:
         report.display_name = display_name
 
     if subscribe_user_id:
         model.Subscription.create(user_id=subscribe_user_id, report=report)
+
+    model.Session.commit()
+    return report
+
+
+def combine(report_ids, is_replace=False, account_id=None):
+    ids_str = ','.join(map(str, report_ids))
+
+    q = model.Session.query(model.Report).filter(model.Report.id.in_(report_ids))
+    q = q.options(orm.joinedload('subscriptions'))
+    reports = q.all()
+
+    if len(reports) != len(report_ids):
+        raise APIError('Not all reports exist: %s' % ids_str)
+
+    if account_id and not all(r.account_id for r in reports):
+        raise APIError('Reports do not belong to account: %s' % account_id)
+    elif len(set(r.account_id for r in reports)) > 1:
+        raise APIError('Inconsistent accounts for reports: %s' % ids_str)
+
+    if not all(r.type == 'week' for r in reports):
+        raise APIError('Unsupported combine type for reports: %s' % ids_str)
+
+    remote_data = {'combined': [r.remote_data for r in reports]}
+    display_name = ', '.join(r.display_name for r in reports)
+
+    # Find common subscribers
+    subscriptions = [set(s.user_id for s in subs) for subs in (r.subscriptions for r in reports)]
+    subscription_user_ids = reduce(set.intersection, subscriptions)
+
+    report = create(
+        account_id=reports[0].account_id,
+        remote_data=remote_data,
+        remote_id=ids_str,
+        display_name=display_name,
+        type='week-concat',
+    )
+
+    for subscribe_user_id in subscription_user_ids:
+        model.Subscription.create(user_id=subscribe_user_id, report=report)
+
+    if is_replace:
+        for r in reports:
+            Session.delete(r)
 
     model.Session.commit()
     return report
