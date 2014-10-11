@@ -44,6 +44,7 @@ FEATURES = [
     Feature.new('num_sites', 'Websites'),
     Feature.new('num_recipients', 'Recipients'),
     Feature.new('custom_branding', 'Custom Branding'),
+    Feature.new('combine_reports', 'Combined Reports'),
     Feature.new('email_domain', 'Your Domain'),
     Feature.new('support', 'Support'),
 ]
@@ -146,16 +147,19 @@ PLANS = [
     Plan.new('agency-10', 'Agency (10 sites)', price_monthly=3500, features=[
         Feature.value('num_sites', 10),
         Feature.value('custom_branding', True),
+        Feature.value('combine_reports', True),
     ]),
 
     Plan.new('agency-25', 'Agency (25 sites)', price_monthly=8500, features=[
         Feature.value('num_sites', 25),
         Feature.value('custom_branding', True),
+        Feature.value('combine_reports', True),
     ]),
 
     Plan.new('agency-50', 'Agency (50 sites)', price_monthly=15000, features=[
         Feature.value('num_sites', 50),
         Feature.value('custom_branding', True),
+        Feature.value('combine_reports', True),
     ]),
 
 
@@ -167,11 +171,13 @@ PLANS = [
     Plan.new('agency-small', 'Small Agency', '10 branded properties', price_monthly=3500, features=[
         Feature.value('num_sites', 10),
         Feature.value('custom_branding', True),
+        Feature.value('combine_reports', True),
     ], is_hidden=True),
 
     Plan.new('agency', 'Agency', '50 branded properties', price_monthly=15000, features=[
         Feature.value('num_sites', 50),
         Feature.value('custom_branding', True),
+        Feature.value('combine_reports', True),
     ], is_hidden=True),
 ]
 
@@ -186,6 +192,7 @@ PlanGroup.new('agency-10', 'Agency', features=[
 
 PlanGroup.new('enterprise', 'Enterprise', price_monthly=27500, features=[
     Feature.value('custom_branding', True),
+    Feature.value('combine_reports', True),
     Feature.value('email_domain', True),
     Feature.value('support', 'Email & Phone'),
 ], is_hidden=True),

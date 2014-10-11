@@ -60,8 +60,14 @@
 % if len(c.reports) > 1:
 <section id="merge-reports">
     <h2>Merge reports</h2>
-    <p>Stitch multiple reports into one big email.</p>
-    ${forms.combine_reports(c.reports)}
+    % if not c.user.get_feature('combine_reports'):
+        <p>Stitch multiple reports into one big email.
+            <a href="${request.route_path('pricing')}">Upgrade your plan</a> to unlock this feature.
+        </p>
+    % else:
+        <p>Stitch multiple reports into one big email.</p>
+        ${forms.combine_reports(c.reports)}
+    % endif
 </section>
 % endif
 

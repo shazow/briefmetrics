@@ -58,6 +58,9 @@ def report_combine(request):
         raise APIControllerError('Must combine more than one report.')
 
     user = api.account.get_user(request, required=True, joinedload='accounts')
+    if not user.get_feature('combine_reports'):
+        raise APIControllerError("Please upgrade your plan to enable combined reports.")
+
     r = model.Report.get(report_ids[0])
     account = user.get_account(id=r.account_id)
     if not account:
