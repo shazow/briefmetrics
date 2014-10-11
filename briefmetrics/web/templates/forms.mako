@@ -227,6 +227,25 @@
     </div>
 </%def>
 
+<%def name="combine_reports(reports, filter_types='week')">
+    <%
+        reports = [r for r in reports if r.type == filter_types]
+        if len(reports) < 2:
+            return ''
+    %>
+    <form action="${request.route_path('api')}" method="post" class="combine-reports">
+        <p>
+        % for r in reports:
+            <label><input type="checkbox" name="report_ids" value="${r.id}" checked="checked" /> ${r.display_name}</label>
+        % endfor
+        </p>
+        <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
+        <input type="hidden" name="method" value="report.combine" />
+        <input type="hidden" name="format" value="redirect" />
+        <input type="submit" value="Combine Reports" />
+    </form>
+</%def>
+
 <%def name="subscription_create(report_id)">
     <form action="${request.route_path('api')}" method="post" class="add-recipient">
         <input type="text" placeholder="Full Name" name="display_name" />

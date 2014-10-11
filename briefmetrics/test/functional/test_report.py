@@ -195,18 +195,22 @@ class TestReport(test.TestWeb):
         u2 = api.account.get_or_create(email=u'bono@example.com', token={}, display_name=u'Bono')
         account = u1.accounts[0]
 
-        r1 = model.Report.create(account=account, remote_data={'id': 'foo'}, display_name=u'example.com', type='week')
+        api_query = api.account.query_service(self.request, account=account)
+
+        r1 = model.Report.create(account=account, remote_data=api_query.get_profiles()[0], display_name=u'example.com', type='week')
         model.Subscription.create(user=u1, report=r1)
         model.Subscription.create(user=u2, report=r1)
 
-        r2 = model.Report.create(account=account, remote_data={'id': 'bar'}, display_name=u'bar.example.com', type='week')
+        r2 = model.Report.create(account=account, remote_data=api_query.get_profiles()[1], display_name=u'bar.example.com', type='week')
         model.Subscription.create(user=u1, report=r2)
 
         Session.commit()
 
         report = api.report.combine(report_ids=[r1.id, r2.id], is_replace=False, account_id=account.id)
         display_name = report.display_name
-        self.assertEqual(report.remote_data, {'combined': [{'id': 'foo'}, {'id': 'bar'}]})
+        self.assertEqual(len(report.remote_data['combined']), 2)
+        self.assertEqual(report.remote_data['combined'][0]['id'], '200000')
+        self.assertEqual(report.remote_data['combined'][1]['id'], '200001')
         self.assertEqual(report.display_name, 'example.com, bar.example.com')
         Session.delete(report)
         Session.commit()
@@ -215,6 +219,8 @@ class TestReport(test.TestWeb):
         r = self.call_api('report.combine', report_ids=[r1.id, r2.id])
 
         self.assertEqual(r['result']['report']['display_name'], display_name)
+
+        r = self.app.get('/reports/%s' % r['result']['report']['id'])
 
 
 

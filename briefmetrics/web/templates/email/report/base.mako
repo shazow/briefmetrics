@@ -10,6 +10,19 @@
         font-size: 21px;
         color: #000;
     }
+    h1 {
+        letter-spacing: 0.5px;
+        line-height: 1em;
+        margin: 0;
+        text-align: center;
+        padding: 1em 0 1em 0;
+        color: #bbb;
+    }
+    h2 {
+        margin-top: 1.5em;
+        font-size: 1.5em;
+    }
+
     .content {
         background-color: #fff;
         max-width: 560px;
@@ -86,17 +99,6 @@
     }
     td.alt,tr.alt {
         background: #f5f5f5;
-    }
-    h1 {
-        line-height: 1em;
-        margin: 0;
-        text-align: center;
-        padding: 1em 0 1em 0;
-    }
-
-    h2 {
-        margin-top: 1.5em;
-        font-size: 1.5em;
     }
 
     .highlight {
@@ -186,6 +188,11 @@
         text-align: center;
         font-size: 0.8em;
         color: #999;
+    }
+    .report {
+        margin-bottom: 1.5em;
+        padding-bottom: 2em;
+        border-bottom: 1px solid #ddd;
     }
     </style>
 </head>

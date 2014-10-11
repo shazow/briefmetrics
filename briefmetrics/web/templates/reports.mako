@@ -54,6 +54,10 @@
             accounts_by_service=c.accounts_by_service,
         )}
     % endfor
+
+    % if len(c.reports) > 1:
+    ${forms.combine_reports(c.reports)}
+    % endif
 </section>
 % endif
 

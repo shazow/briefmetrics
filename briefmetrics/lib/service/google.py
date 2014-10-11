@@ -14,6 +14,9 @@ from briefmetrics.lib.exceptions import APIError
 
 from .base import OAuth2API
 
+def to_display_name(remote_data):
+    return h.human_url(remote_data.get('websiteUrl')) or remote_data.get('display_name') or remote_data.get('name')
+
 
 class GoogleAPI(OAuth2API):
     id = 'google'
@@ -254,12 +257,13 @@ def _cast_title(v):
 # TODO: Rename ids to GA-specific
 
 class GAReport(Report):
-    def __init__(self, report, since_time, remote_data=None):
+    def __init__(self, report, since_time, remote_data=None, display_name=None):
         super(GAReport, self).__init__(report, since_time)
         if remote_data:
             self.remote_id = str(remote_data.get('id', self.remote_id))
 
         self.remote_data = remote_data = remote_data or self.report.remote_data or {}
+        self.display_name = display_name or report.display_name
 
         base_url = remote_data.get('websiteUrl', '')
         if base_url and 'http://' not in base_url:
@@ -532,12 +536,15 @@ class ActivityConcatReport(ActivityReport):
     template = 'email/report/weekly-concat.mako'
 
     def __init__(self, report, since_time):
-        remote_data = self.report.remote_data['combined']
+        super(ActivityConcatReport, self).__init__(report, since_time)
+
+        remote_data = report.remote_data['combined']
         contexts = []
         for data in remote_data:
-            context.append(ActivityReport(report, since_time, remote_data=data))
+            contexts.append(ActivityReport(report, since_time, remote_data=data, display_name=to_display_name(data)))
 
         self.contexts = contexts
+        self.data = True
 
     def fetch(self, google_query):
         for context in self.contexts:
@@ -546,6 +553,9 @@ class ActivityConcatReport(ActivityReport):
     def build(self):
         for context in self.contexts:
             context.build()
+
+    def get_preview(self):
+        return u''
 
 
 
