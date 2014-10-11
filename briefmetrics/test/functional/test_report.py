@@ -191,7 +191,7 @@ class TestReport(test.TestWeb):
         self.assertEqual(model.Report.count(), 3)
 
     def test_combine(self):
-        u1 = api.account.get_or_create(email=u'example@example.com', token={}, display_name=u'Example')
+        u1 = api.account.get_or_create(email=u'example@example.com', token={}, display_name=u'Example', plan_id='agency-10')
         u2 = api.account.get_or_create(email=u'bono@example.com', token={}, display_name=u'Bono')
         account = u1.accounts[0]
 
