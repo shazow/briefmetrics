@@ -41,7 +41,7 @@ def create(account_id, remote_data=None, remote_id=None, display_name=None, subs
     return report
 
 
-def combine(report_ids, is_replace=False, account_id=None):
+def combine(report_ids, is_replace=False, account_id=None, subscribe_user_id=None):
     ids_str = ','.join(map(str, report_ids))
 
     q = model.Session.query(model.Report).filter(model.Report.id.in_(report_ids))
@@ -63,8 +63,12 @@ def combine(report_ids, is_replace=False, account_id=None):
     display_name = ', '.join(r.display_name for r in reports)
 
     # Find common subscribers
-    subscriptions = [set(s.user_id for s in subs) for subs in (r.subscriptions for r in reports)]
-    subscription_user_ids = reduce(set.intersection, subscriptions)
+    subscribe_user_ids = []
+    if subscribe_user_id:
+        subscribe_user_ids.append(subscribe_user_id)
+    else:
+        subscriptions = [set(s.user_id for s in subs) for subs in (r.subscriptions for r in reports)]
+        subscribe_user_ids = reduce(set.intersection, subscriptions)
 
     report = create(
         account_id=reports[0].account_id,
@@ -74,7 +78,7 @@ def combine(report_ids, is_replace=False, account_id=None):
         type='week-concat',
     )
 
-    for subscribe_user_id in subscription_user_ids:
+    for subscribe_user_id in subscribe_user_ids:
         model.Subscription.create(user_id=subscribe_user_id, report=report)
 
     if is_replace:

@@ -52,6 +52,7 @@ def report_create(request):
 def report_combine(request):
     report_ids = request.params.getall('report_ids')
     is_replace = request.params.get('replace')
+    with_subscribers = request.params.get('with_subscribers')
 
     if len(report_ids) <= 1:
         raise APIControllerError('Must combine more than one report.')
@@ -62,8 +63,12 @@ def report_combine(request):
     if not account:
         raise APIControllerError('Report [%s] does not belong to user: %s' % (r.id, user_id))
 
+    subscribe_user_id = None
+    if not with_subscribers:
+        subscribe_user_id = user.id
+
     try:
-        report = api.report.combine(report_ids, is_replace=is_replace, account_id=account.id)
+        report = api.report.combine(report_ids, is_replace=is_replace, account_id=account.id, subscribe_user_id=subscribe_user_id)
     except APIError as e:
         raise APIControllerError(e.message)
 
