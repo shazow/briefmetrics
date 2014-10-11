@@ -415,6 +415,28 @@ a.cta, input.cta {
 
 }
 
+.combine-summary {
+    @include border-radius(3px);
+    line-height: 1em;
+    background: rgba(0, 0, 0, 0.1);
+    padding: 0.5em 0.25em;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: inline-block;
+    vertical-align: bottom;
+
+    &:hover {
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    .button.symbol {
+        @include border-radius(2px);
+        margin: 0em 0.25em 0em 0.1em;
+        padding: 0 0.3em;
+        background: rgba(255, 255, 255, 0.7);
+    }
+}
+
 form#create-report {
     p .chosen-container:first {
         margin-right: 5px;

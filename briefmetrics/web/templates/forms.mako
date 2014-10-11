@@ -234,7 +234,11 @@
             return ''
     %>
     <form action="${request.route_path('api')}" method="post" class="combine-reports">
-        <p>
+        <div onclick="$(this).hide().next().show();" class="combine-summary">
+            <span class="button symbol">&#9998;</span>
+            ${' + '.join(r.display_name for r in reports)}
+        </div>
+        <p style="display: none;">
         % for r in reports:
             <label><input type="checkbox" name="report_ids" value="${r.id}" checked="checked" /> ${r.display_name}</label>
         % endfor
@@ -242,7 +246,7 @@
         <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
         <input type="hidden" name="method" value="report.combine" />
         <input type="hidden" name="format" value="redirect" />
-        <input type="submit" value="Combine Reports" />
+        <input type="submit" value="Create Report" />
     </form>
 </%def>
 

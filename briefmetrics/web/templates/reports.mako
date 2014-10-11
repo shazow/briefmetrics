@@ -54,10 +54,14 @@
             accounts_by_service=c.accounts_by_service,
         )}
     % endfor
+</section>
+% endif
 
-    % if len(c.reports) > 1:
+% if len(c.reports) > 1:
+<section id="merge-reports">
+    <h2>Merge reports</h2>
+    <p>Stitch multiple reports into one big email.</p>
     ${forms.combine_reports(c.reports)}
-    % endif
 </section>
 % endif
 
