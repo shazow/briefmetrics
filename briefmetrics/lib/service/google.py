@@ -49,7 +49,7 @@ class GoogleAPI(OAuth2API):
 
         remote_id = user_info['id']
         email = e['value']
-        name = user_info.get('display_name')
+        name = user_info.get('displayName')
 
         return remote_id, email, name, user_info
 
