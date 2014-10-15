@@ -136,6 +136,8 @@
         anchor = 'report-{}'.format(site.report.id)
         accounts_by_service = accounts_by_service or {}
         is_stripe_attached = any(a.config.get('ga_funnels') for a in accounts_by_service.get('stripe', []))
+
+        # Eww.
     %>
     <div class="preview report" id="${anchor}">
         <nav>
@@ -146,18 +148,20 @@
             <div class="controls">
                 % if site.report.account.service == 'stripe':
                     <a class="button external" target="_blank" href="https://dashboard.stripe.com/">Stripe</a>
-                % elif not is_stripe_attached:
-                    % for stripe_account in accounts_by_service.get('stripe', []):
-                        % if site.report.remote_data.get('webPropertyId') not in (stripe_account.config.get('ga_funnels') or []):
-                            <a class="button" href="${request.route_path('api', _query=dict(
-                                from_account_id=stripe_account.id,
-                                to_report_id=site.report.id,
-                                method="funnel.create",
-                                format='redirect',
-                                csrf_token=session.get_csrf_token())
-                            )}">Attach Stripe <em>${stripe_account.display_name}</em> Ecommerce</a>
-                        % endif
-                    % endfor
+                % else:
+                    % if not is_stripe_attached:
+                        % for stripe_account in accounts_by_service.get('stripe', []):
+                            % if site.report.remote_data.get('webPropertyId') not in (stripe_account.config.get('ga_funnels') or []):
+                                <a class="button" href="${request.route_path('api', _query=dict(
+                                    from_account_id=stripe_account.id,
+                                    to_report_id=site.report.id,
+                                    method="funnel.create",
+                                    format='redirect',
+                                    csrf_token=session.get_csrf_token())
+                                )}">Attach Stripe <em>${stripe_account.display_name}</em> Ecommerce</a>
+                            % endif
+                        % endfor
+                    % endif
                     <a class="button external" target="_blank" href="${h.ga_permalink('report/visitors-overview', site.report)}">Google Analytics</a>
                 % endif
             </div>
