@@ -115,7 +115,7 @@ def get_user(request, required=False, joinedload=None):
 
     if u:
         # Override features
-        request.features.update(u.config.get('features', {}))
+        request.features.update(u.config or {})
 
     return u
 
