@@ -39,6 +39,8 @@ def connect_user(request, oauth, user_required=False):
         raise httpexceptions.HTTPSeeOther(request.route_path('account_login', service=oauth.id))
     except OAuth2Error as e:
         raise APIError("Unexpected authentication error, please try again: %s" % e.description)
+    except ValueError as e:
+        raise APIError("Unexpected response error, please try again: %s" % e)
 
     remote_id, email, display_name, remote_data = oauth.query_user()
     if not user:
