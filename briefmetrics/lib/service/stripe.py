@@ -133,7 +133,9 @@ class Query(object):
             user_id = to_ga_uid(r.get('metadata'))
 
         items = []
-        for line in lines['data']:
+        for line in (lines or {}).get('data', []):
+            if not line:
+                continue
             items.append({
                 'hit_type': 'item',
                 'user_id': user_id,
