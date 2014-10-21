@@ -136,13 +136,14 @@ class Query(object):
         for line in (lines or {}).get('data', []):
             if not line:
                 continue
+
             items.append({
                 'hit_type': 'item',
                 'user_id': user_id,
                 'ti': id,
                 'ip': line['amount']/100.0,
                 'iq': line['quantity'],
-                'in': line.get('plan', {}).get('name') or line.get('description') or line['id'],
+                'in': (line.get('plan') or {}).get('name') or line.get('description') or line['id'],
                 'cu': line['currency'].upper(),
             })
 
