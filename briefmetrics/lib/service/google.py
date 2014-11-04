@@ -421,6 +421,10 @@ class ActivityReport(WeeklyMixin, GAReport):
             metrics=summary_metrics + [Column('ga:visits', type_cast=int)],
         )
 
+        has_pageviews = any(next(row) for row in summary_table.iter_rows('ga:pageviews'))
+        if not has_pageviews:
+            raise EmptyReportError()
+
         # Pages
         self.tables['pages'] = google_query.get_table(
             params={
@@ -437,10 +441,6 @@ class ActivityReport(WeeklyMixin, GAReport):
                 Column('ga:avgPageLoadTime', label='Page Load', type_cast=float, type_format=h.human_time, reverse=True, threshold=0)
             ],
         )
-
-        if not self.tables['pages'].rows:
-            # TODO: Use a better short circuit?
-            raise EmptyReportError()
 
         # Referrers
 

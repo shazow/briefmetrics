@@ -15,6 +15,7 @@ pyramid_mailer==0.13
 pyramid_mako==1.0.2
 pytz==2014.9
 pyyaml==3.11
+oauthlib<0.7 # Breaks scope change
 requests-oauthlib==0.4.2
 requests==2.4.3
 stripe==1.19.1
