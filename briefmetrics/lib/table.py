@@ -82,7 +82,7 @@ class Column(object):
 
         return True
 
-    def is_boring(self, value, threshold=0.005):
+    def is_boring(self, value, threshold=0.003):
         if value is None and not self.nullable:
             return True
 
