@@ -5,6 +5,7 @@ import random
 
 from sqlalchemy import orm
 from unstdlib import now, get_many
+from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
 
 from briefmetrics.lib.controller import Controller, Context
 from briefmetrics.lib.report import get_report, EmptyReportError
@@ -188,7 +189,26 @@ def send(request, report, since_time=None, pretend=False):
         log.warn('No recipients, skipping report: %s' % report.id)
         return
 
-    report_context = fetch(request, report, since_time)
+    try:
+        report_context = fetch(request, report, since_time)
+    except InvalidGrantError:
+        subject = u"Problem with your Briefmetrics"
+        html = render(request, 'email/error_auth.mako', Context({
+            'report': report,
+        }))
+
+        message = api_email.create_message(request,
+            to_email=owner.email,
+            subject=subject,
+            html=html,
+        )
+
+        if not pretend:
+            api_email.send_message(request, message)
+            report.delete()
+            model.Session.commit()
+            return
+
     report_context.messages += messages
     subject = report_context.get_subject()
     template = report_context.template

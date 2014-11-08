@@ -135,6 +135,26 @@ class TestReport(test.TestWeb):
         Session.refresh(user)
         self.assertEqual(user.num_remaining, 0)
 
+    def test_oauth_error(self):
+        tasks.report.celery.request = self.request
+
+        report = self._create_report()
+
+        def raise_error(*args, **kw):
+            from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
+            raise InvalidGrantError()
+
+        with mock.patch('briefmetrics.api.report.fetch', raise_error):
+            with mock.patch('briefmetrics.api.email.send_message') as send_message:
+                tasks.report.send_all(async=False)
+                self.assertTrue(send_message.called)
+
+                call, = send_message.call_args_list
+                message = call[0][1]
+                self.assertEqual(message['subject'], u"Problem with your Briefmetrics")
+
+        self.assertEqual(model.Report.count(), 0)
+
     def test_api(self):
         u = api.account.get_or_create(email=u'example@example.com', token={}, display_name=u'Example')
         r = self.call_api('account.login', token=u'%s-%d' % (u.email_token, u.id))
