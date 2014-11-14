@@ -279,6 +279,9 @@ def set_payments(user, plan_id=None, card_token=None):
         user.stripe_customer_id = customer.id
 
     Session.commit()
+    if plan_id and not user.num_remaining:
+        start_subscription(user)
+
     return user
 
 
@@ -324,7 +327,7 @@ def set_plan(user, plan_id, update_subscription=None):
 
     if update_subscription is None:
         # Default behaviour
-        update_subscription = user.num_remaining <= 0
+        update_subscription = user.num_remaining <= 0 or user.num_remaining is None
 
     if update_subscription and user.stripe_customer_id:
         start_subscription(user)
