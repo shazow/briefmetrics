@@ -16,8 +16,8 @@ Session = model.Session
 
 @mock.patch('briefmetrics.lib.service.google.Query', FakeQuery)
 class TestReport(test.TestWeb):
-    def _create_report(self):
-        u = api.account.get_or_create(email=u'example@example.com', token={}, display_name=u'Example')
+    def _create_report(self, user=None):
+        u = user or api.account.get_or_create(email=u'example@example.com', token={}, display_name=u'Example')
         account = u.accounts[0]
         api_query = api.account.query_service(self.request, account=account)
         remote_data = api_query.get_profiles()[0]
@@ -134,6 +134,36 @@ class TestReport(test.TestWeb):
 
         Session.refresh(user)
         self.assertEqual(user.num_remaining, 0)
+
+
+    def test_expire_then_upgrade(self):
+        report = self._create_report()
+        user = report.account.user
+        user.num_remaining = 0
+        Session.commit()
+
+        tasks.report.celery.request = self.request
+
+        # Add credit card
+        with mock.patch('briefmetrics.api.account.stripe') as stripe:
+            stripe.Customer.create().id = 'TEST'
+            update_subscription = stripe.Customer.retrieve().update_subscription
+
+            api.account.set_payments(user, plan_id='starter', card_token='FAKETOKEN')
+            self.assertEqual(stripe.Customer.create.call_args[1]['card'], 'FAKETOKEN')
+
+            Session.refresh(user)
+            self.assertEqual(user.num_remaining, None)
+            self.assertEqual(user.stripe_customer_id, 'TEST')
+
+            report = self._create_report(user=user)
+            with mock.patch('briefmetrics.api.email.send_message') as send_message:
+                tasks.report.send_all(async=False)
+                self.assertTrue(send_message.called)
+
+            self.assertTrue(update_subscription.called)
+            self.assertEqual(update_subscription.call_args[1]['plan'], 'briefmetrics_starter')
+
 
     def test_oauth_error(self):
         tasks.report.celery.request = self.request
