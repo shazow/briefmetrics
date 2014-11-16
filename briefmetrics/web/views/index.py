@@ -30,6 +30,10 @@ class IndexController(Controller):
 
         return self._render('pricing.mako')
 
+    def about(self):
+        self.title = "About"
+        return self._render('about.mako')
+
     def privacy(self):
         self.title = "Privacy Policy"
         return self._render('privacy.mako')
