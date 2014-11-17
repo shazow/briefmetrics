@@ -392,6 +392,17 @@ def sync_customers(pretend=True):
         customer.metadata = metadata
         customer.email = user.email
 
+        if user.num_remaining is None:
+            subscriptions = customer.subscriptions.all()
+            if not subscriptions.count:
+                print "Plan missing: %r -> %s" % (user, user.plan_id)
+            elif subscriptions.count > 1:
+                print "Too many plans: %r -> %s -> %s" % (user, user.plan_id, ', '.join(d.plan.id for d in subscriptions.data))
+            elif subscriptions.data[0].plan.id != 'briefmetrics_' + user.plan_id:
+                print "Wrong plan: %r -> %s -> %s" % (user, user.plan_id, ', '.join(d.plan.id for d in subscriptions.data))
+            else:
+                print "Plan confirmed: %r -> %s" % (user, user.plan_id)
+
         print "Setting customer: {}".format(description)
         if pretend:
             continue
