@@ -413,6 +413,9 @@ def sync_customers(pretend=True, only_plan=False):
             print "  Updating plan: {}".format(user.plan_id)
             customer.update_subscription(plan=_plan_to_stripe(user.plan_id))
 
+        if only_plan:
+            continue
+
         customer.save()
 
     print "Updated {} users.".format(len(stripe_users))
