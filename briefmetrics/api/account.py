@@ -263,20 +263,24 @@ def set_payments(user, plan_id=None, card_token=None):
     description = 'Briefmetrics User: %s' % user.email
     metadata = {'user_id': user.id}
 
-    if user.stripe_customer_id:
-        customer = stripe.Customer.retrieve(user.stripe_customer_id)
-        customer.card = card_token
-        customer.description = description
-        customer.metadata = metadata
-        customer.save()
-    else:
-        customer = stripe.Customer.create(
-            card=card_token,
-            description=description,
-            email=user.email,
-            metadata=metadata,
-        )
-        user.stripe_customer_id = customer.id
+    try:
+        if user.stripe_customer_id:
+            customer = stripe.Customer.retrieve(user.stripe_customer_id)
+            customer.card = card_token
+            customer.description = description
+            customer.metadata = metadata
+            customer.save()
+        else:
+            customer = stripe.Customer.create(
+                card=card_token,
+                description=description,
+                email=user.email,
+                metadata=metadata,
+            )
+            user.stripe_customer_id = customer.id
+
+    except stripe.error.CardError as e:
+        raise APIError(e.message)
 
     Session.commit()
 
