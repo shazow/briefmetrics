@@ -284,7 +284,8 @@ class ReportController(Controller):
             'user': user,
         }))
 
-        if self.request.params.get('send'):
+        is_send = self.request.params.get('send')
+        if is_send:
             owner = report_context.owner
             email_kw = {}
             from_name, reply_to = get_many(owner.config, optional=['from_name', 'reply_to'])
@@ -293,12 +294,16 @@ class ReportController(Controller):
             if reply_to:
                 email_kw['reply_to'] = reply_to
 
+            to_email = user.email
             message = api.email.create_message(self.request,
-                to_email=user.email,
+                to_email=to_email,
                 subject=report_context.get_subject(), 
                 html=html,
                 **email_kw
             )
             api.email.send_message(self.request, message)
+            self.request.session.flash('Sent report for [%s] to: %s' % (report.display_name, to_email))
+            return self._redirect(self.request.route_path('reports'))
+
 
         return Response(html)
