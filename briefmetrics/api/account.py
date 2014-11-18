@@ -378,7 +378,7 @@ def sync_plans(pretend=True, include_hidden=False):
         )
 
 
-def sync_customers(pretend=True):
+def sync_customers(pretend=True, only_plan=False):
     if pretend:
         print "(Running in pretend mode)"
 
@@ -400,8 +400,9 @@ def sync_customers(pretend=True):
                 print "Too many plans: %r -> %s -> %s" % (user, user.plan_id, ', '.join(d.plan.id for d in subscriptions.data))
             elif subscriptions.data[0].plan.id != 'briefmetrics_' + user.plan_id:
                 print "Wrong plan: %r -> %s -> %s" % (user, user.plan_id, ', '.join(d.plan.id for d in subscriptions.data))
-            else:
-                print "Plan confirmed: %r -> %s" % (user, user.plan_id)
+
+        if only_plan:
+            continue
 
         print "Setting customer: {}".format(description)
         if pretend:
