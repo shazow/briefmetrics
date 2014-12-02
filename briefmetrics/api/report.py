@@ -207,7 +207,9 @@ def send(request, report, since_time=None, pretend=False):
             api_email.send_message(request, message)
             report.delete()
             model.Session.commit()
-            return
+
+        log.warn('Invalid token, skipping report: %s' % report.id)
+        return
 
     report_context.messages += messages
     subject = report_context.get_subject()
