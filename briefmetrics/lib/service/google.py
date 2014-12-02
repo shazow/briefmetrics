@@ -209,7 +209,7 @@ def collect(tracking_id, user_id=None, client_id=None, hit_type='pageview', http
     }
     params.update(kw)
 
-    req = requests.Request('POST', COLLECT_URL, data=urlencode(params)).prepare()
+    req = requests.Request('POST', COLLECT_URL, data=urlencode(params, doseq=True)).prepare()
     resp = http_session.send(req)
     assert_response(resp)
     return resp
