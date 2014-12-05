@@ -28,7 +28,11 @@ def to_email(name, email):
         email=email,
     )
 
-def to_ga_uid(metadata, keys=('ga_uid', 'user_id', 'uid')):
+
+GA_UID_KEYS = ('ga_uid', 'user_id', 'uid', 'userId')
+GA_CID_KEYS = ('ga_cid', 'client_id', 'cid', 'clientId')
+
+def to_ga_key(metadata, keys=GA_UID_KEYS):
     if not metadata:
         return
 
@@ -127,10 +131,11 @@ class Query(object):
 
         # TODO: Verify event
 
-        user_id = None
+        user_id = client_id = None
         if load_customer and customer_id:
             r = self.get('https://api.stripe.com/v1/customers/%s' % customer_id)
-            user_id = to_ga_uid(r.get('metadata'))
+            user_id = to_ga_key(r.get('metadata'), keys=GA_UID_KEYS)
+            client_id = to_ga_key(r.get('metadata'), keys=GA_CID_KEYS) 
 
         items = []
         for line in (lines or {}).get('data', []):
@@ -140,6 +145,7 @@ class Query(object):
             items.append({
                 'hit_type': 'item',
                 'user_id': user_id,
+                'client_id': client_id,
                 'ti': id,
                 'ip': line['amount']/100.0,
                 'iq': line['quantity'],
@@ -150,6 +156,7 @@ class Query(object):
         transaction = {
             'hit_type': 'transaction',
             'user_id': user_id,
+            'client_id': client_id,
             'items': items,
             'ti': id,
             'tr': total/100.0,

@@ -248,7 +248,7 @@ def delete(user_id):
     Session.commit()
 
 
-def set_payments(user, plan_id=None, card_token=None):
+def set_payments(user, plan_id=None, card_token=None, metadata=None):
     if plan_id:
         try:
             set_plan(user, plan_id)
@@ -261,7 +261,8 @@ def set_payments(user, plan_id=None, card_token=None):
         return user
 
     description = 'Briefmetrics User: %s' % user.email
-    metadata = {'user_id': user.id}
+    metadata = metadata or {}
+    metadata.update({'user_id': user.id})
 
     try:
         if user.stripe_customer_id:

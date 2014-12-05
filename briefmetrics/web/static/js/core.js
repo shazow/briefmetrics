@@ -4,8 +4,11 @@ function stripeResponseHandler(status, response) {
         $('input[type="submit"]', this).prop('disabled', false);
         $(this).get(0).disabled = false;
     } else {
-        var stripeToken = $('<input type="hidden" name="stripe_token" />').val(response['id']);
-        $(this).append(stripeToken);
+        $('<input type="hidden" name="stripe_token" />').val(response['id']).appendTo(this);
+
+        var tracker = ga.getAll()[0];
+        $('<input type="hidden" name="ga_cid" />').val(tracker.get('clientId')).appendTo(this);
+
         $(this).get(0).submit();
     }
 };
