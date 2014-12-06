@@ -6,8 +6,10 @@ function stripeResponseHandler(status, response) {
     } else {
         $('<input type="hidden" name="stripe_token" />').val(response['id']).appendTo(this);
 
-        var tracker = ga.getAll()[0];
-        $('<input type="hidden" name="ga_cid" />').val(tracker.get('clientId')).appendTo(this);
+        try {
+            var tracker = ga.getAll()[0];
+            $('<input type="hidden" name="ga_cid" />').val(tracker.get('clientId')).appendTo(this);
+        } catch (e) {};
 
         $(this).get(0).submit();
     }

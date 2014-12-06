@@ -13,12 +13,16 @@ from briefmetrics.lib.pricing import PLAN_DEFAULT
 @expose_api('settings.payments_set')
 def settings_payments(request):
     user = api.account.get_user(request, required=True)
-    stripe_token, plan_id = get_many(request.params, optional=['stripe_token', 'plan_id'])
+    stripe_token, plan_id, ga_cid = get_many(request.params, optional=['stripe_token', 'plan_id', 'ga_cid'])
 
     if not stripe_token and not request.registry.settings.get('testing'):
         raise APIControllerError('Missing Stripe card token.')
 
-    api.account.set_payments(user, plan_id=plan_id, card_token=stripe_token)
+    metadata = {}
+    if ga_cid:
+        metadata['ga_cid'] = ga_cid
+
+    api.account.set_payments(user, plan_id=plan_id, card_token=stripe_token, metadata=metadata)
 
     api.email.notify_admin(request, 'Payment added: [%s] %s' % (user.id, user.display_name), 'plan_id=%s' % plan_id)
 
