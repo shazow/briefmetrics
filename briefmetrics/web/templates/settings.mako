@@ -87,8 +87,10 @@
 </div>
 
 <%block name="tail">
+% if not request.features.get('offline'):
 <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
 <script type="text/javascript">
     Stripe.setPublishableKey('${settings["api.stripe.public_key"]}');
 </script>
+% endif
 </%block>
