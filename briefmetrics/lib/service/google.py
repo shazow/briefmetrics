@@ -557,6 +557,7 @@ class ActivityConcatReport(ActivityReport):
     def get_preview(self):
         primary_metric = self.report.config.get('intro') or 'ga:pageviews'
 
+        ctx = None
         this_week, last_week = 0, 0
         for context in self.contexts:
             if not context.tables.get('summary') or len(context.tables['summary'].rows) < 2:
@@ -565,11 +566,14 @@ class ActivityConcatReport(ActivityReport):
             a, b = (r.get(primary_metric) for r in context.tables['summary'].rows[:2])
             this_week += a
             last_week += b
+            ctx = context
+
+        assert ctx, 'Failed to find valid context: %r' % self.contexts
 
         delta = (this_week / float(last_week or 1.0)) - 1
         return u"Your {number} combined sites had {this_week} this {interval} ({delta} over last {interval}).".format(
             number=len(self.contexts),
-            this_week=h.format_int(this_week, context.data['total_units']),
+            this_week=h.format_int(this_week, ctx.data['total_units']),
             delta=h.human_percent(delta, signed=True),
             interval=context.data.get('interval_label', 'week'),
         )
