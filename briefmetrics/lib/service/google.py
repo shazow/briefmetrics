@@ -556,7 +556,7 @@ class ActivityConcatReport(ActivityReport):
 
     def get_preview(self):
         primary_metric = self.report.config.get('intro') or 'ga:pageviews'
-        assert self.context, "ActivityConcatReport with no contexts"
+        assert self.contexts, "ActivityConcatReport with no contexts"
 
         total_units, interval = None, None
         this_week, last_week = 0, 0
