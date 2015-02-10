@@ -7,7 +7,7 @@
     % if title:
         <title>${title} | Briefmetrics</title>
     % else:
-        <title>Briefmetrics - Email Reports For Your Google Analytics</title>
+        <title>Briefmetrics - Email Reports for Google Analytics</title>
     % endif
 
     <link rel="icon" type="image/png" href="/static/images/icon_32px.png?5" />
