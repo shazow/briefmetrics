@@ -4,16 +4,17 @@
     <h2>Terms of Service</h2>
 
     <p>
-        Last Updated: <em>June 19, 2014</em>
+        Last Updated: <em>February 10, 2015</em>
     </p>
 
     <p>
-        Welcome to Briefmetrics.com ("Briefmetrics", "we", or "us"). Your use
-        of this Web site (the "Site") and the services made available on the
-        Site is subject to these Terms of Use (these "Terms"). By using any of
-        our Services, you agree to be bound by, and use our Services in
-        compliance with, these Terms of Use. IF YOU DO NOT AGREE TO THESE TERMS
-        OF USE, DO NOT USE OUR SERVICES.
+        This agreement applies to briefmetrics.com, the website and analytics
+        service ("Briefmetrics", "we", or "us"). Your use of this Web site
+        (the "Site") and the services made available on the Site is subject to
+        these Terms of Use (these "Terms"). By using any of our Services, you
+        agree to be bound by, and use our Services in compliance with, these
+        Terms of Use. IF YOU DO NOT AGREE TO THESE TERMS OF USE, DO NOT USE OUR
+        SERVICES.
     </p>
 
     <p>

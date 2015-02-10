@@ -15,9 +15,10 @@
     <h3>Service</h3>
     <ul>
         <li>
-            Briefmetrics requires access to your Google Analytics account in
-            order to function. We achieve this by requesting your permission during
-            signup to communicate with the Google Analytics API on your behalf.
+            Briefmetrics, the analytics service, requires access to your Google
+            Analytics account in order to function. We achieve this by requesting
+            your permission during signup to communicate with the Google Analytics
+            API on your behalf.
         </li>
         <li>
             It is our intention to keep your Google Analytics data confidential and
