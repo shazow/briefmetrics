@@ -570,7 +570,7 @@ class ActivityConcatReport(ActivityReport):
             total_units = context.data.get('total_units', total_units)
             interval = context.data.get('interval_label', interval)
 
-        assert ctx, 'Failed to find valid context: %r' % self.contexts
+        assert total_units, 'Failed to find valid context: %r' % self.contexts
 
         delta = (this_week / float(last_week or 1.0)) - 1
         return u"Your {number} combined sites had {this_week} this {interval} ({delta} over last {interval}).".format(
