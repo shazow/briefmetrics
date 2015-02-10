@@ -7,7 +7,7 @@
 % if r.data:
     ${weekly.render_weekly(r)}
 % else:
-    <em>(Insufficient data for this site, will be included in future)</em>
+    <em>Insufficient data for this site. Will try again with future reports.</em>
 % endif
 </div>
 % endfor
