@@ -559,9 +559,8 @@ class ActivityConcatReport(ActivityReport):
 
         this_week, last_week = 0, 0
         for context in self.contexts:
-            if len(context.tables['summary'].rows) < 2:
+            if not context.tables.get('summary') or len(context.tables['summary'].rows) < 2:
                 continue
-
 
             a, b = (r.get(primary_metric) for r in context.tables['summary'].rows[:2])
             this_week += a
