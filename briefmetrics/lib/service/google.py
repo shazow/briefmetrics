@@ -548,7 +548,10 @@ class ActivityConcatReport(ActivityReport):
 
     def fetch(self, google_query):
         for context in self.contexts:
-            context.fetch(google_query)
+            try:
+                context.fetch(google_query)
+            except EmptyReportError:
+                pass
 
     def build(self):
         for context in self.contexts:
@@ -561,7 +564,7 @@ class ActivityConcatReport(ActivityReport):
         total_units, interval = None, None
         this_week, last_week = 0, 0
         for context in self.contexts:
-            if not context.tables.get('summary') or len(context.tables['summary'].rows) < 2:
+            if not context.data or not context.tables.get('summary') or len(context.tables['summary'].rows) < 2:
                 continue
 
             a, b = (r.get(primary_metric) for r in context.tables['summary'].rows[:2])
