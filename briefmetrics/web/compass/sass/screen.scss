@@ -98,6 +98,29 @@ dd {
     margin-left: 0;
 }
 
+
+blockquote {
+    font-size: 1.3em;
+    font-style: normal;
+    color: desaturate($color-header, 60%);
+
+    em {
+        font-style: normal;
+        color: darken(desaturate($color-header, 30%), 10%);
+        background: desaturate(lighten($color-header, 40%), 5%);
+    }
+
+    cite {
+        font-size: 0.7em;
+        font-style: normal;
+        color: darken($color-text, 5%);
+        font-weight: bold;
+        &:before {
+            content: "- ";
+        }
+    }
+}
+
 .flash-messages {
     @include container;
     overflow: inherit;
@@ -243,7 +266,7 @@ nav.header {
 
     .closer {
         text-align: center;
-        margin-top: 2em;
+        margin: 3em;
     }
 
     .details {
@@ -289,6 +312,23 @@ nav.header {
         p {
             font-size: 0.8em;
             padding: 0 0.5em;
+        }
+    }
+
+    .testimonials {
+        margin-bottom: 3em;
+
+        h4 {
+            margin-bottom: 0.5em;
+            margin-top: 2em;
+        }
+        blockquote {
+            margin: 0;
+        }
+        img {
+            margin: 0 auto;
+            width: 225px;
+            height: 45px;
         }
     }
 }

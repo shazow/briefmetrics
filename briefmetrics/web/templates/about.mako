@@ -7,8 +7,9 @@
     <div style="overflow: hidden;">
         <img src="/static/images/andrey-petrov.jpg" class="bio-photo" style="float: right; padding-left: 2em;" />
         <p>
-            Hi, my name is Andrey. I founded and created Briefmetrics. Before
-            this, I worked at Google on Google Analytics. 
+            Hi, my name is Andrey. I created Briefmetrics and founded our
+            company, Zowic. Before this, I worked at Google on Google
+            Analytics. 
         </p>
         <p>
             I am passionate about building useful tools for all kinds of

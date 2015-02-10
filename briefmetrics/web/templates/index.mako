@@ -59,6 +59,33 @@
         </p>
     </div>
 
+    <div class="testimonials" id="customers">
+        <h3>Happy Customers</h3>
+
+        <p>Briefmetrics is used by many startups, design agencies, and hobbyists. Here are some nice words they'd like to share with you:</p>
+
+        <ul class="vertical">
+            <li>
+                <h4>
+                    <a href="https://runscope.com/"><img src="/static/images/customer-runscope.png" alt="Runscope" /></a>
+                </h4>
+                <blockquote>
+                    &ldquo;Runscope hosts several important tools for developers, <em>Briefmetrics lets us keep track of how they're doing without spending hours navigating Google Analytics</em>. Thanks to Briefmetrics&lsquo; concise weekly reports sent to the Runscope team, everything is 200 OK.&rdquo;
+                    <cite>John Sheehan, CEO at Runscope</cite>
+                </blockquote>
+            </li>
+            <li>
+                <h4>
+                    <a href="https://namecheap.com/"><img src="/static/images/customer-namecheap.png" alt="Namecheap"/></a>
+                </h4>
+                <blockquote>
+                    &ldquo;While Namecheap is busy supporting Internet freedom, Briefmetrics is at work sifting through our Google Analytics and crafting our weekly executive analytics report. <em>Our marketing team and executives easily consume the reports and it saves us a ton of time every week!</em>&rdquo;
+                    <cite>Teddy Worcester, Head of Product at Namecheap</cite>
+                </blockquote>
+            </li>
+        <ul>
+    </div>
+
     <div class="closer">
         <a class="cta" href="${login_url}">
             Sign in with Google Analytics
@@ -69,6 +96,9 @@
     <div class="articles">
         <h3>Recent Articles</h3>
         <ul>
+            <li>
+                <a href="/about">Who is behind Briefmetrics?</a> Hi, I'm Andrey. I used to work on Google Analytics at Google and I've built many analytics products before...
+            </li>
             <li>
                 <a href="/articles/remove-localhost-from-referrers">How to remove localhost from your referrer list</a> and avoid skewing your valuable visitor data.
             </li>

@@ -467,6 +467,26 @@ dd {
   margin-left: 0;
 }
 
+blockquote {
+  font-size: 1.3em;
+  font-style: normal;
+  color: #777777;
+}
+blockquote em {
+  font-style: normal;
+  color: #47756a;
+  background: #cdeee6;
+}
+blockquote cite {
+  font-size: 0.7em;
+  font-style: normal;
+  color: #555959;
+  font-weight: bold;
+}
+blockquote cite:before {
+  content: "- ";
+}
+
 .flash-messages {
   width: 710px;
   margin: 0 auto;
@@ -607,7 +627,7 @@ nav.header h1 {
 }
 .intro .closer {
   text-align: center;
-  margin-top: 2em;
+  margin: 3em;
 }
 .intro .details {
   display: table-cell;
@@ -648,6 +668,21 @@ nav.header h1 {
 .intro .features p {
   font-size: 0.8em;
   padding: 0 0.5em;
+}
+.intro .testimonials {
+  margin-bottom: 3em;
+}
+.intro .testimonials h4 {
+  margin-bottom: 0.5em;
+  margin-top: 2em;
+}
+.intro .testimonials blockquote {
+  margin: 0;
+}
+.intro .testimonials img {
+  margin: 0 auto;
+  width: 225px;
+  height: 45px;
 }
 
 a.cta, input.cta {
