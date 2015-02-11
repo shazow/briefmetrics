@@ -247,6 +247,11 @@ nav.header {
         }
     }
 
+    h3, h4 {
+        margin-top: 3em;
+        text-align: center;
+    }
+
     .cta {
         font-size: 1.5em;
         padding: 5px 20px;
@@ -368,6 +373,7 @@ a.cta, input.cta {
     padding: 20px 10px 10px 10px;
 
     h3 {
+        margin-top: 1em;
         color: #bbb;
         line-height: 2em;
     }

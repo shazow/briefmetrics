@@ -609,6 +609,10 @@ nav.header h1 {
   -webkit-border-radius: 3px;
   border-radius: 3px;
 }
+.intro h3, .intro h4 {
+  margin-top: 3em;
+  text-align: center;
+}
 .intro .cta {
   font-size: 1.5em;
   padding: 5px 20px;
@@ -727,6 +731,7 @@ a.cta small, input.cta small {
   padding: 20px 10px 10px 10px;
 }
 .screenshot h3 {
+  margin-top: 1em;
   color: #bbb;
   line-height: 2em;
 }
