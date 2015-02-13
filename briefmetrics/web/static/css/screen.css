@@ -610,7 +610,8 @@ nav.header h1 {
   border-radius: 3px;
 }
 .intro h3, .intro h4 {
-  margin-top: 3em;
+  font-size: 1.8em;
+  margin-top: 2em;
   text-align: center;
 }
 .intro .cta {
@@ -674,7 +675,7 @@ nav.header h1 {
   padding: 0 0.5em;
 }
 .intro .testimonials {
-  margin-bottom: 3em;
+  margin-bottom: 4em;
 }
 .intro .testimonials h4 {
   margin-bottom: 0.5em;
@@ -685,7 +686,6 @@ nav.header h1 {
 }
 .intro .testimonials img {
   margin: 0 auto;
-  width: 225px;
   height: 45px;
 }
 

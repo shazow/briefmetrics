@@ -83,6 +83,15 @@
                     <cite>Teddy Worcester, Head of Product at Namecheap</cite>
                 </blockquote>
             </li>
+            <li>
+                <h4>
+                    <a href="http://www.delappdesign.com/"><img src="/static/images/customer-delapp.png" alt="DeLapp Design"/></a>
+                </h4>
+                <blockquote>
+                    &ldquo;Our web design agency proudly includes Briefmetrics reports as a perk for being our client. With custom-branded reports, <em>our clients stay more engaged with their websites' growth which drives more iteration and business for our agency.</em>&rdquo;
+                    <cite>Devon DeLapp, Principal at DeLapp Design</cite>
+                </blockquote>
+            </li>
         <ul>
     </div>
 
