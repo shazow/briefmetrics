@@ -1,6 +1,6 @@
 <%inherit file="/base.mako"/>
 
-<div class="container intro">
+<div class="container feature">
     ${next.body()}
 
     <p class="closer">

@@ -62,3 +62,7 @@ class IndexController(Controller):
             return self._render('features/{}.mako'.format(template_name))
         except TopLevelLookupException:
             raise httpexceptions.HTTPNotFound('Article does not exist: {}'.format(template_name))
+
+    def agency(self):
+        self.title = "Whitelabel Reports for Web Design Agencies"
+        return self._render('agency.mako')

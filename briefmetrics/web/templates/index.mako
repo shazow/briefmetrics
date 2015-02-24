@@ -33,7 +33,7 @@
             <strong>Custom Branding</strong>
             <img src="/static/images/feature-branding.png" />
             <p>
-                Prepare reports for your clients using your own logo and footer with <br />our <a href="/pricing">Agency plans</a>.
+                White label reports perfect for web design agencies and SEO consultants. (<a href="/features/custom-branding-for-agencies">Read more</a>)
             </p>
         </li>
     </ul>

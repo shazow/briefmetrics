@@ -44,6 +44,13 @@ small {
     color: lighten($color-text, 20);
 }
 
+
+iframe {
+    margin: auto 1em auto 2em;
+    padding-top: 0.5em;
+    padding-bottom: 1em;
+}
+
 a.button {
     display: inline-block;
     @include border-radius(3px);
@@ -230,6 +237,31 @@ nav.header {
     }
 }
 
+.intro, .feature {
+    .signup {
+        display: table;
+        margin: 3em auto;
+
+        .cta {
+            width: 340px;
+            display: table-cell;
+            margin: 0 20px;
+        }
+    }
+
+    .cta {
+        font-size: 1.5em;
+        padding: 5px 20px;
+        @include border-radius(7px);
+    }
+
+
+    .closer {
+        text-align: center;
+        margin: 3em;
+    }
+}
+
 .intro {
     h1 {
         line-height: 1.25em;
@@ -251,28 +283,6 @@ nav.header {
         font-size: 1.8em;
         margin-top: 2em;
         text-align: center;
-    }
-
-    .cta {
-        font-size: 1.5em;
-        padding: 5px 20px;
-        @include border-radius(7px);
-    }
-
-    .signup {
-        display: table;
-        margin: 3em auto;
-
-        .cta {
-            width: 340px;
-            display: table-cell;
-            margin: 0 20px;
-        }
-    }
-
-    .closer {
-        text-align: center;
-        margin: 3em;
     }
 
     .details {
@@ -320,21 +330,31 @@ nav.header {
             padding: 0 0.5em;
         }
     }
+}
 
+.feature {
+    h3 {
+        margin-top: 1.5em;
+    }
     .testimonials {
+        width: 95%;
+        margin: 0 auto;
         margin-bottom: 4em;
+    }
+}
 
-        h4 {
-            margin-bottom: 0.5em;
-            margin-top: 2em;
-        }
-        blockquote {
-            margin: 0;
-        }
-        img {
-            margin: 0 auto;
-            height: 45px;
-        }
+.testimonials {
+    h4 {
+        margin-bottom: 0.5em;
+        margin-top: 2em;
+        text-align: center;
+    }
+    blockquote {
+        margin: 0;
+    }
+    img {
+        margin: 0 auto;
+        height: 45px;
     }
 }
 

@@ -416,6 +416,12 @@ small {
   color: #949999;
 }
 
+iframe {
+  margin: auto 1em auto 2em;
+  padding-top: 0.5em;
+  padding-bottom: 1em;
+}
+
 a.button {
   display: inline-block;
   -moz-border-radius: 3px;
@@ -593,6 +599,27 @@ nav.header h1 {
   line-height: 1.5em;
 }
 
+.intro .signup, .feature .signup {
+  display: table;
+  margin: 3em auto;
+}
+.intro .signup .cta, .feature .signup .cta {
+  width: 340px;
+  display: table-cell;
+  margin: 0 20px;
+}
+.intro .cta, .feature .cta {
+  font-size: 1.5em;
+  padding: 5px 20px;
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px;
+  border-radius: 7px;
+}
+.intro .closer, .feature .closer {
+  text-align: center;
+  margin: 3em;
+}
+
 .intro h1 {
   line-height: 1.25em;
   margin: 1.5em 0;
@@ -613,26 +640,6 @@ nav.header h1 {
   font-size: 1.8em;
   margin-top: 2em;
   text-align: center;
-}
-.intro .cta {
-  font-size: 1.5em;
-  padding: 5px 20px;
-  -moz-border-radius: 7px;
-  -webkit-border-radius: 7px;
-  border-radius: 7px;
-}
-.intro .signup {
-  display: table;
-  margin: 3em auto;
-}
-.intro .signup .cta {
-  width: 340px;
-  display: table-cell;
-  margin: 0 20px;
-}
-.intro .closer {
-  text-align: center;
-  margin: 3em;
 }
 .intro .details {
   display: table-cell;
@@ -674,17 +681,25 @@ nav.header h1 {
   font-size: 0.8em;
   padding: 0 0.5em;
 }
-.intro .testimonials {
+
+.feature h3 {
+  margin-top: 1.5em;
+}
+.feature .testimonials {
+  width: 95%;
+  margin: 0 auto;
   margin-bottom: 4em;
 }
-.intro .testimonials h4 {
+
+.testimonials h4 {
   margin-bottom: 0.5em;
   margin-top: 2em;
+  text-align: center;
 }
-.intro .testimonials blockquote {
+.testimonials blockquote {
   margin: 0;
 }
-.intro .testimonials img {
+.testimonials img {
   margin: 0 auto;
   height: 45px;
 }
