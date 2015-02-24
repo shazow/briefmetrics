@@ -16,24 +16,27 @@
     <ul class="features">
         <li>
             <strong>Set It and Forget It</strong>
-            <img src="/static/images/feature-start.png" />
+            <img src="/static/images/feature-start.png" alt="Less than 5 clicks to gets started"/>
             <p>
                 Just 15 seconds to start receiving email reports perfect for you, no extra configuration required.
             </p>
         </li>
         <li>
             <strong>Actionable Analytics Emails</strong>
-            <img src="/static/images/feature-email.png" />
+            <img src="/static/images/feature-email.png" alt="Simple and easy to consume reports" />
             <p>
                 Charts and valuable data right in your inbox,
                 skip the usual PDF attachments and web dashboards.
             </p>
         </li>
         <li>
-            <strong>Custom Branding</strong>
-            <img src="/static/images/feature-branding.png" />
+            <a href="/features/custom-branding-for-agencies">
+                <strong>Custom Branding</strong>
+                <img src="/static/images/feature-branding.png" alt="Use your own logo in your reports" />
+            </a>
             <p>
-                White label reports perfect for web design agencies and SEO consultants. (<a href="/features/custom-branding-for-agencies">Read more</a>)
+                White label reports perfect for web design agencies and SEO consultants.
+                (<a href="/features/custom-branding-for-agencies">Read more</a>)
             </p>
         </li>
     </ul>

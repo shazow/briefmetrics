@@ -311,6 +311,9 @@ nav.header {
             overflow: hidden;
             @include border-radius(5px);
         }
+        a img {
+            border-color: darken($color-border, 20%);
+        }
 
         strong {
             display: block;

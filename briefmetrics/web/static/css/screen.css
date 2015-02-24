@@ -666,6 +666,9 @@ nav.header h1 {
   -webkit-border-radius: 5px;
   border-radius: 5px;
 }
+.intro .features a img {
+  border-color: #a9c787;
+}
 .intro .features strong {
   display: block;
   margin-bottom: 0.2em;
