@@ -1,3 +1,6 @@
+<%block name="head_title">
+<title>Whitelabel Reports | Briefmetrics for Web Design Agencies</title>
+</%block>
 <%inherit file="base.mako" />
 
 <h2>Briefmetrics for Agencies</h2>

@@ -22,7 +22,6 @@ def add_routes(config):
         route('privacy', '/privacy', action='privacy')
         route('terms', '/terms', action='terms')
         route('security', '/security', action='security')
-        route('agency', '/agency', action='agency')
         route('articles', '/articles/{id}', action='articles')
         route('features', '/features/{id}', action='features')
 

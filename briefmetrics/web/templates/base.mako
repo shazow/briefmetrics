@@ -4,11 +4,13 @@
 <head>
     <meta charset="utf-8" />
 
+    <%block name="head_title">
     % if title:
         <title>${title} | Briefmetrics</title>
     % else:
         <title>Briefmetrics - Email Reports for Google Analytics</title>
     % endif
+    </%block>
 
     <link rel="icon" type="image/png" href="/static/images/icon_32px.png?5" />
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Nunito:300,700" />
