@@ -59,12 +59,14 @@
     </div>
 
     <div class="closer">
+        % if not c.user:
         <p>
             <a class="cta signup" href="${login_url}">
                 Sign in with Google Analytics
                 <small>includes 10 free email reports</small>
             </a>
         </p>
+        % endif
 
         <p>
             If you have any other questions or need something special for your business,</br >
