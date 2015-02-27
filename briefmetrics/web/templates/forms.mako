@@ -271,8 +271,8 @@
     <%
         is_active = user and user.plan_id == plan.id
         value_map = {
-        True: u'✓',
-        None: u'Unlimited',
+            True: u'✓',
+            None: u'Unlimited',
         }
     %>
     <form action="${request.route_path('settings')}" method="post" class="pricing-plan ${h.text_if(is_active, 'active')}">

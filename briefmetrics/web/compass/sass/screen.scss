@@ -254,12 +254,17 @@ nav.header {
         padding: 5px 20px;
         @include border-radius(7px);
     }
+}
 
+.closer {
+    text-align: center;
+    margin: 3em;
+}
 
-    .closer {
-        text-align: center;
-        margin: 3em;
-    }
+.cta.signup {
+    font-size: 1.5em;
+    padding: 5px 20px;
+    @include border-radius(7px);
 }
 
 .intro {
@@ -358,6 +363,27 @@ nav.header {
     img {
         margin: 0 auto;
         height: 45px;
+    }
+}
+
+ul.questions {
+    overflow: hidden;
+    list-style: none;
+    padding: 0;
+    font-size: 0.9em;
+
+    h3 {
+        font-size: 1em;
+        font-weight: bold;
+        margin-right: 1.5em;
+    }
+    p {
+        margin-right: 1.5em;
+    }
+
+    li {
+        width: 50%;
+        float: left;
     }
 }
 

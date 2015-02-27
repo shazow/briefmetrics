@@ -615,9 +615,18 @@ nav.header h1 {
   -webkit-border-radius: 7px;
   border-radius: 7px;
 }
-.intro .closer, .feature .closer {
+
+.closer {
   text-align: center;
   margin: 3em;
+}
+
+.cta.signup {
+  font-size: 1.5em;
+  padding: 5px 20px;
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px;
+  border-radius: 7px;
 }
 
 .intro h1 {
@@ -705,6 +714,25 @@ nav.header h1 {
 .testimonials img {
   margin: 0 auto;
   height: 45px;
+}
+
+ul.questions {
+  overflow: hidden;
+  list-style: none;
+  padding: 0;
+  font-size: 0.9em;
+}
+ul.questions h3 {
+  font-size: 1em;
+  font-weight: bold;
+  margin-right: 1.5em;
+}
+ul.questions p {
+  margin-right: 1.5em;
+}
+ul.questions li {
+  width: 50%;
+  float: left;
 }
 
 a.cta, input.cta {

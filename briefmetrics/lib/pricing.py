@@ -46,6 +46,7 @@ FEATURES = [
     Feature.new('custom_branding', 'Custom Branding'),
     Feature.new('combine_reports', 'Combined Reports'),
     Feature.new('email_domain', 'Your Domain'),
+    Feature.new('self_hosted', 'Your Server'),
     Feature.new('support', 'Support'),
 ]
 
@@ -194,6 +195,7 @@ PlanGroup.new('enterprise', 'Enterprise', price_monthly=27500, features=[
     Feature.value('custom_branding', True),
     Feature.value('combine_reports', True),
     Feature.value('email_domain', True),
+    Feature.value('self_hosted', True),
     Feature.value('support', 'Email & Phone'),
 ], is_hidden=True),
 
