@@ -14,7 +14,8 @@
 
     <p>
         For additional safety, please encrypt the security report to the PGP
-        key of Briefmetrics' founder, Andrey Petrov. KeyID:
+        key of Briefmetrics' founder, Andrey Petrov:
+        <a href="https://keybase.io/shazow">shazow@keybase.io</a> or 
         <a href="https://briefmetrics.com/static/pgp_public_key.txt">7E81FD68</a>.
     </p>
 </div>
