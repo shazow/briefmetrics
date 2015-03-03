@@ -3,6 +3,11 @@
 <div class="container">
     <h2>Privacy Policy</h2>
 
+    <p>
+        Welcome to Briefmetrics, the website and online service that is owned
+        and operated by Zowic LLC. Please refer to our <a href="/terms">Terms
+        of Service</a> for the details of our agreement together.
+    </p>
 
     <h3>Website</h3>
     <ul>
