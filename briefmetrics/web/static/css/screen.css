@@ -244,6 +244,7 @@ footer {
   overflow: hidden;
   *zoom: 1;
   font-size: 0.8em;
+  line-height: 2em;
   border-top: 5px solid #dae0d4;
   text-align: center;
   margin-bottom: 1em;

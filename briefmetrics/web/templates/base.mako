@@ -75,7 +75,9 @@ ${next.body()}
         <a href="${login_url}">Try it now</a> with 10 free emails!
     </p>
 % endif
-Questions? Send an email to <a href="mailto:support@briefmetrics.com">support@briefmetrics.com</a>
+    <p>
+        Questions? Send an email to <a href="mailto:support@briefmetrics.com">support@briefmetrics.com</a>
+    </p>
 </footer>
 </%block>
 
