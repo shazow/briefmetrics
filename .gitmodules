@@ -1,0 +1,3 @@
+[submodule "external/foundation"]
+	path = external/foundation
+	url = https://github.com/zurb/foundation
