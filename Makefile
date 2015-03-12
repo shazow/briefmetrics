@@ -82,11 +82,11 @@ model_upgrade: $(ALEMBIC_OUT)
 
 ## CSS:
 
-css_watch:
-	compass watch briefmetrics/web/compass
+CSS_OUT = briefmetrics/web/static/css/screen.css
+SCSS_LIBS = $(wildcard briefmetrics/web/scss/libs/*/)
+SCSS_LIBS += briefmetrics/web/scss/libs/ 
 
-css:
-	compass compile briefmetrics/web/compass
+$(CSS_OUT): briefmetrics/web/scss/**.scss $(SCSS_LIBS)
+	sassc --style compressed $(addprefix -I ,$(SCSS_LIBS)) briefmetrics/web/scss/screen.scss $(CSS_OUT)
 
-css_production:
-	compass compile briefmetrics/web/compass --output-style compressed --force
+scss: $(CSS_OUT)
