@@ -1,6 +1,3 @@
-[submodule "external/foundation"]
-	path = external/foundation
-	url = https://github.com/zurb/foundation
 [submodule "external/bourbon"]
 	path = external/bourbon
 	url = https://github.com/thoughtbot/bourbon
