@@ -4,26 +4,26 @@
         <label>
             Card Number
             <div>
-                <input type="text" size="20" autocomplete="off" class="card-number" data-stripe="number" autocompletetype="cc-number" required />
+                <input type="text" maxlength="20" size="20" autocomplete="off" class="card-number" data-stripe="number" autocompletetype="cc-number" required />
             </div>
         </label>
         <label>
             CVC
             <div>
-                <input type="text" size="4" autocomplete="off" class="card-cvc" data-stripe="cvc" autocomplete="off" required />
+                <input type="text" maxlength="4" size="4" autocomplete="off" class="card-cvc" data-stripe="cvc" autocomplete="off" required />
             </div>
         </label>
     </div>
     <div>
         <label>Month
             <div>
-                <input type="text" size="2" class="card-date card-expiry-month" placeholder="MM" data-stripe="exp-month" autocompletetype="cc-month" required />
+                <input type="text" maxlength="2" size="2" class="card-date card-expiry-month" placeholder="MM" data-stripe="exp-month" autocompletetype="cc-month" required />
                 <span class="card-expiry-sep">/</span>
             </div>
         </label>
         <label>Year
             <div>
-                <input type="text" size="4" class="card-date card-expiry-year" placeholder="YYYY" data-stripe="exp-year" autocompletetype="cc-year" required />
+                <input type="text" maxlength="4" size="4" class="card-date card-expiry-year" placeholder="YYYY" data-stripe="exp-year" autocompletetype="cc-year" required />
             </div>
         </label>
         <label>

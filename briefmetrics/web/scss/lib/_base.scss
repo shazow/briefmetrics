@@ -1,4 +1,6 @@
 @import "normalize";
+@import "bourbon/bourbon";
+@import "neat/neat";
 
 $margin-small: 10px;
 $margin: $margin-small * 2;
@@ -13,21 +15,34 @@ $color-emphasis: rgb(170, 170, 170);
 $color-background: #f4faed;
 $color-shadow: rgba(20, 20, 20, 0.6);
 $color-border: darken(desaturate($color-background, 20%), 10%);
-
 $border-width: 1px;
 
 
-// Blueprint configuration:
+// Bitters configuration:
 
-$link-color: $color-link;
-$link-hover-color: lighten($link-color, 10%);
-$body-font-color: $color-text;
+$mobile: new-breakpoint(max-width 40em 4);
 
-$font-font-family: "Nunito", "Helvetica Neue", Arial, Helvetica, sans-serif !default;
+$base-border-color: $color-border;
+$base-border: $border-width solid $base-border-color;
 
-@import "bourbon/css3/linear-gradient";
-@import "foundation/components/type";
-@import "foundation/components/grid";
+$base-background-color: #fff;
+$base-font-size: 1em;
+$action-color: $color-link;
+$base-font-color: $color-text;
+$base-font-family: "Nunito", "Helvetica Neue", Arial, Helvetica, sans-serif !default;
+$heading-font-family: $base-font-family;
+
+$form-box-shadow: inset 0 1px 3px rgba(#000, 0.06);
+$form-box-shadow-focus: $form-box-shadow, 0 0 5px adjust-color($action-color, $lightness: -5%, $alpha: -0.3);
+
+$base-line-height: 1.5;
+$heading-line-height: 1.2;
+$base-border-radius: 3px;
+$base-spacing: $base-line-height * 1em;
+$small-spacing: $base-spacing / 2;
+$base-z-index: 0;
+
+@import "bitters/typography";
 
 
 body {
@@ -38,7 +53,7 @@ body {
 
 
 footer {
-    @include grid-row();
+    @include row();
     font-size: 0.9em;
     color: lighten($color-text, 20%);
     line-height: 2em;
@@ -73,6 +88,7 @@ code, pre.code {
 
 h1, h2 {
     font-size: 1.6em;
+    font-weight: normal;
     color: $color-header;
     line-height: 26px;
 
@@ -96,11 +112,13 @@ h1 {
 
 h2 {
     color: #40413e;
+    margin: 1em 0 0.5em 0;
 }
 
 h3 {
     line-height: 1.3em;
     margin: 1em 0 0.5em 0;
+    font-weight: normal;
 }
 
 strong {
@@ -140,7 +158,7 @@ input {
     font-size: 1.2em;
     line-height: 1.5em;
 
-    @include radius(3px);
+    border-radius: 3px;
 
     &[type="submit"] {
         border-color: rgba(0, 0, 0, 0.25);
@@ -175,7 +193,7 @@ pre {
 }
 
 .container {
-    @include grid-row();
+    @include outer-container(710px);
     margin: 0 auto $margin auto;
     overflow: inherit;
 }

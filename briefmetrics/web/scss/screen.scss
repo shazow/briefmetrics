@@ -1,7 +1,7 @@
 @import "_base";
 
 @mixin boxed() {
-    @include radius(10px);
+    border-radius: 10px;
     border: 2px solid $color-border;
     background: #fff;
 }
@@ -53,7 +53,7 @@ iframe {
 
 a.button {
     display: inline-block;
-    @include radius(3px);
+    border-radius: 3px;
     background: darken($color-border, 10%);
     color: rgba(0, 0, 0, 0.5);
     padding: 2px 1em;
@@ -129,12 +129,12 @@ blockquote {
 }
 
 .flash-messages {
-    @include grid-row();
+    @include row();
     overflow: inherit;
     margin: 1em auto 2em auto;
 
     ul {
-        @include radius(10px);
+        border-radius: 10px;
         background: $color-border;
         padding: 0.5em 2em;
         list-style: none;
@@ -148,7 +148,7 @@ blockquote {
 
 // Admin stuff:
 .status {
-    @include radius(3px);
+    border-radius: 3px;
     background: #999;
     color: white;
     padding: 0px 4px;
@@ -197,13 +197,14 @@ blockquote {
 
 
 nav.header {
+    @include outer-container(710px);
     padding: 1em 0;
     margin-bottom: 1em;
 
     ul {
         margin: 0;
         padding: 0;
-        @include grid-row();
+        @include row();
     }
 
     li {
@@ -211,11 +212,23 @@ nav.header {
         padding: 0.5em 1em;
         display: inline-block;
         list-style: none;
+
+        @include media($mobile) {
+            margin: 0;
+            font-size: 0.8em;
+        }
     }
     li.logo {
         padding: 0;
         margin-left: 0;
         margin-right: 1.5em;
+
+        @include media($mobile) {
+            text-align: center;
+            font-size: 1.2em;
+            display: block;
+            margin-right: 0;
+        }
     }
     .menu {
         font-size: 0.9em;
@@ -223,7 +236,7 @@ nav.header {
         letter-spacing: 0.1em;
     }
     .menu.active, .menu:hover {
-        @include radius(1em);
+        border-radius: 1em;
         background: white;
     }
 
@@ -239,34 +252,53 @@ nav.header {
 
 .intro, .feature {
     .signup {
-        @include grid-row(6);
+        padding: 0 2em;
         margin: 3em auto;
+        overflow: hidden;
 
         .cta {
-            @include grid-column($columns: 4, $push: 4);
+            float: left;
+            margin-right: 1em;
+            width: 60%;
         }
 
         .details {
-            @include grid-column($push: 4);
+            padding: 0;
+            float: left;
+        }
+
+        @include media($mobile) {
+            padding: 0 0.5em;
+            .cta {
+                width: 100%;
+            }
+            .details {
+                width: 100%;
+                text-align: center;
+            }
         }
     }
 
     .cta {
         font-size: 1.5em;
         padding: 5px 20px;
-        @include radius(7px);
+        border-radius: 7px;
     }
 }
 
 .closer {
     text-align: center;
     margin: 3em;
+
+    @include media($mobile) {
+        margin: 3em 1em;
+    }
 }
 
 .cta.signup {
     font-size: 1.5em;
     padding: 5px 20px;
-    @include radius(7px);
+    border-radius: 7px;
 }
 
 .intro {
@@ -274,7 +306,7 @@ nav.header {
         line-height: 1.25em;
         margin: 1.5em 0;
         letter-spacing: 0.05em;
-        font-size: 2.4em;
+        font-size: 2em;
         text-align: center;
 
         a {
@@ -282,7 +314,7 @@ nav.header {
             background: desaturate(lighten($color-header, 40%), 5%);
             padding: 0 0.2em;
             margin-right: -0.2em;
-            @include radius(3px);
+            border-radius: 3px;
         }
     }
 
@@ -293,10 +325,8 @@ nav.header {
     }
 
     .details {
-        display: table-cell;
         font-size: 0.8em;
         list-style: none;
-        margin: 0;
     }
 
     .features {
@@ -316,7 +346,7 @@ nav.header {
             height: 100px;
             border: 2px solid $color-border;
             overflow: hidden;
-            @include radius(5px);
+            border-radius: 5px;
         }
         a img {
             border-color: darken($color-border, 20%);
@@ -371,26 +401,28 @@ nav.header {
 ul.questions {
     overflow: hidden;
     list-style: none;
-    padding: 0;
     font-size: 0.9em;
+    padding: 0;
+
+    li {
+        width: 45%;
+        float: left;
+        margin-right: 1em;
+
+        @include media($mobile) {
+            width: 100%;
+            margin: 0;
+        }
+    }
 
     h3 {
         font-size: 1em;
         font-weight: bold;
-        margin-right: 1.5em;
-    }
-    p {
-        margin-right: 1.5em;
-    }
-
-    li {
-        width: 50%;
-        float: left;
     }
 }
 
 a.cta, input.cta {
-    @include radius(3px);
+    border-radius: 3px;
     @include linear-gradient(#f8a915, #ea9613);
     border: 1px solid #d28811;
     display: inline-block;
@@ -446,6 +478,10 @@ a.cta, input.cta {
         padding-left: 1px; // FIXME: ...?
         float: left;
     }
+    input {
+        padding: 0 0.5em;
+        min-width: 3em;
+    }
     input[type="text"] {
         display: inline-block;
         font-size: 23px;
@@ -453,7 +489,8 @@ a.cta, input.cta {
     input[type="submit"] {
         margin-top: 22px;
         line-height: 33px;
-        width: span(4) + 10px;
+        width: 12.5em;
+        font-weight: bold;
     }
     .card-expiry-month {
         margin-right: 0;
@@ -465,6 +502,22 @@ a.cta, input.cta {
     }
     .card-date {
         text-align: center;
+    }
+
+    @include media($mobile) {
+        width: 100%;
+        border-radius: 0;
+        border-width: 2px 0 2px 0;
+
+        input {
+            display: block;
+        }
+        label {
+            float: none;
+        }
+        .card-expiry-sep {
+            display: none;
+        }
     }
 }
 
@@ -518,7 +571,7 @@ a.cta, input.cta {
 }
 
 .combine-summary {
-    @include radius(3px);
+    border-radius: 3px;
     line-height: 1em;
     background: rgba(0, 0, 0, 0.1);
     padding: 0.5em 0.25em;
@@ -532,7 +585,7 @@ a.cta, input.cta {
     }
 
     .button.symbol {
-        @include radius(2px);
+        border-radius: 2px;
         margin: 0em 0.25em 0em 0.1em;
         padding: 0 0.3em;
         background: rgba(255, 255, 255, 0.7);
@@ -583,24 +636,33 @@ form.add-recipient {
 }
 
 .pricing {
+    display: table;
     margin: 2em auto;
     text-align: center;
-    overflow: hidden;
+
+    & > div {
+        display: table-cell;
+        vertical-align: top;
+        padding: 0 0.5em;
+
+        @include media($mobile) {
+            display: block;
+        }
+    }
 }
 
+
 .pricing-plan {
-    @include radius(5px);
-    vertical-align: top;
+    padding: 0 1em;
     border: 2px solid $color-border;
+    border-radius: 5px;
     background: #fff;
     text-align: left;
-    @include grid-column(3);
-    margin-right: 1em;
 
     h3 {
+        font-size: 1.5em;
         text-align: center;
         margin: 0.5em;
-        line-height: 2em;
     }
 
     .value {
@@ -692,17 +754,15 @@ form.add-recipient {
     }
 }
 
-@media only screen and (max-width: 40em) {
-    .intro .signup {
-        .cta, .details {
-            @include grid-column($columns: 10, $push: 1);
-        }
-    }
+iframe.video {
+    width: 640px;
+    height: 440px;
 
-    .pricing-plan {
-        @include grid-column(4);
-        margin-right: inherit;
+    @include media($mobile) {
+        padding: 0;
+        margin: 2em 0;
+        width: 340px;
+        height: 220px;
     }
 
 }
-

@@ -4,3 +4,9 @@
 [submodule "external/bourbon"]
 	path = external/bourbon
 	url = https://github.com/thoughtbot/bourbon
+[submodule "external/neat"]
+	path = external/neat
+	url = https://github.com/thoughtbot/neat
+[submodule "external/bitters"]
+	path = external/bitters
+	url = https://github.com/thoughtbot/bitters

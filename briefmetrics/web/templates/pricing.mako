@@ -16,11 +16,17 @@
     % endif
 
     <div class="pricing">
-        ${forms.pricing_plan(c.plan_individual, user=c.user)}
+        <div>
+            ${forms.pricing_plan(c.plan_individual, user=c.user)}
+        </div>
 
-        ${forms.pricing_plan(c.plan_agency, user=c.user)}
+        <div>
+            ${forms.pricing_plan(c.plan_agency, user=c.user)}
+        </div>
 
-        ${forms.pricing_plan(c.plan_enterprise, user=c.user)}
+        <div>
+            ${forms.pricing_plan(c.plan_enterprise, user=c.user)}
+        </div>
     </div>
 
     <div id="faq">

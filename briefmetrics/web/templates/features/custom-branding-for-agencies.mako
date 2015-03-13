@@ -64,6 +64,6 @@
 
 <h3>Get started in 60 seconds</h3>
 
-<iframe width="640" height="440" src="https://www.youtube.com/embed/1WRFZ5AfGoA" frameborder="0" allowfullscreen></iframe>
+<iframe class="video" src="https://www.youtube.com/embed/1WRFZ5AfGoA" frameborder="0" allowfullscreen></iframe>
 
 <p>It's just 5 clicks to schedule your first report, and a few more to customize your own branding. Give it a try, you won't regret it.</p>

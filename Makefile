@@ -78,15 +78,3 @@ model_save:
 	@read message; alembic -c $(INI_FILE) revision --autogenerate -m "$$message"
 
 model_upgrade: $(ALEMBIC_OUT)
-
-
-## CSS:
-
-CSS_OUT = briefmetrics/web/static/css/screen.css
-SCSS_LIBS = $(wildcard briefmetrics/web/scss/libs/*/)
-SCSS_LIBS += briefmetrics/web/scss/libs/ 
-
-$(CSS_OUT): briefmetrics/web/scss/**.scss $(SCSS_LIBS)
-	sassc --style compressed $(addprefix -I ,$(SCSS_LIBS)) briefmetrics/web/scss/screen.scss $(CSS_OUT)
-
-scss: $(CSS_OUT)
