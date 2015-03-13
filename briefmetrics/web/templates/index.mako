@@ -56,7 +56,7 @@
 
     <div class="screenshot preview">
         <h3>Sample Report</h3>
-        <img src="/static/images/screenshot.png?1" alt="Sample Report Screenshot" height="851px"/>
+        <img src="/static/images/screenshot.png?1" alt="Sample Report Screenshot" />
         <p>
             ... and much more!
         </p>
