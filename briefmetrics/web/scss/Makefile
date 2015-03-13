@@ -5,6 +5,6 @@ SCSS_LIBS = ./lib/
 #SCSS_LIBS = $(wildcard briefmetrics/web/scss/lib/*/)
 
 $(CSS_OUT): **.scss $(SCSS_LIBS)
-	sassc --style compressed $(addprefix -I ,$(SCSS_LIBS)) screen.scss $(CSS_OUT)
+	sassc --style nested $(addprefix -I ,$(SCSS_LIBS)) screen.scss $(CSS_OUT)
 
 scss: $(CSS_OUT)

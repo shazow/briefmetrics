@@ -196,5 +196,9 @@ pre {
     @include outer-container(710px);
     margin: 0 auto $margin auto;
     overflow: inherit;
+
+    @include media($mobile) {
+        margin: 0 0.5em 0 0.5em;
+    }
 }
 
