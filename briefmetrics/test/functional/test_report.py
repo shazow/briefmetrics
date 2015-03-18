@@ -145,7 +145,7 @@ class TestReport(test.TestWeb):
         tasks.report.celery.request = self.request
 
         # Add credit card
-        with mock.patch('briefmetrics.api.account.stripe') as stripe:
+        with mock.patch('briefmetrics.lib.payment.stripe.stripe') as stripe:
             stripe.Customer.create().id = 'TEST'
             update_subscription = stripe.Customer.retrieve().update_subscription
 

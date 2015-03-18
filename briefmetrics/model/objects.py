@@ -6,7 +6,7 @@ from unstdlib import random_string, now
 from sqlalchemy import orm, types
 from sqlalchemy import Column, ForeignKey, Index
 
-from briefmetrics.lib import pricing
+from briefmetrics.lib import pricing, payment
 from . import meta, _types
 
 
@@ -50,6 +50,7 @@ class User(meta.Model): # Email address / login
     num_remaining = Column(types.Integer)
 
     stripe_customer_id = Column(types.String)
+    payment_token = Column(types.String)
 
     config = Column(_types.MutationDict.as_mutable(_types.JSONEncodedDict), default=dict) # Whitelabel settings, features, etc.
     ''' Example config:
@@ -72,6 +73,22 @@ class User(meta.Model): # Email address / login
     @property
     def plan(self):
         return pricing.PLANS_LOOKUP[self.plan_id or 'trial']
+
+    @property
+    def payment(self):
+        if not self.payment_token and not self.stripe_customer_id:
+            return
+
+        if self.payment_token:
+            key, token = self.payment_token.split(':', 1)
+        else:
+            # Fallback
+            key, token = self.stripe_customer_id and "stripe", self.stripe_customer_id
+
+        return payment.registry[key](self, token)
+
+    def set_payment(self, key, token):
+        self.payment_token = "%s:%s" % (key, token)
 
     def get_feature(self, feature_id, default=None):
         """
