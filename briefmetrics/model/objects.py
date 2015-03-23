@@ -132,7 +132,7 @@ class Account(meta.Model): # OAuth Service Account (such as Google Analytics)
     __tablename__ = 'account'
     __json_whitelist__ = ['id', 'user_id', 'display_name', 'service', 'remote_id']
 
-    SERVICES = ['google', 'stripe']
+    SERVICES = ['google', 'stripe', 'namecheap']
 
     id = Column(types.Integer, primary_key=True)
     time_created = Column(types.DateTime, default=now, nullable=False)
@@ -149,6 +149,8 @@ class Account(meta.Model): # OAuth Service Account (such as Google Analytics)
     remote_id = Column(types.String)
     remote_data = Column(_types.MutationDict.as_mutable(_types.JSONEncodedDict), default=dict) # Profile info
     config = Column(_types.MutationDict.as_mutable(_types.JSONEncodedDict), default=dict) # Funnel settings
+
+    time_revive = Column(types.DateTime, index=True)
 
     @property
     def service_api(self):

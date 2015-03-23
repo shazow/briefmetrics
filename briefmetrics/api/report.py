@@ -151,7 +151,7 @@ def send(request, report, since_time=None, pretend=False):
     messages = []
 
     if not pretend and owner.num_remaining is not None and owner.num_remaining <= 0:
-        if not owner.stripe_customer_id:
+        if not owner.payment:
             log.info('User [%d] expired, deleting report: %s' % (owner.id, report.display_name))
             report.delete()
             model.Session.commit()
@@ -177,7 +177,7 @@ def send(request, report, since_time=None, pretend=False):
                 Please visit <a href="https://briefmetrics.com/settings">briefmetrics.com/settings</a> to add a new credit card and resume your reports.
             '''.strip().format(message=e.message)))
 
-    elif not owner.stripe_customer_id and owner.num_remaining == 1:
+    elif not owner.payment and owner.num_remaining == 1:
         messages.append(h.literal('''
             <strong>This is your final report. </strong><br />
             Please <a href="https://briefmetrics.com/settings">add a credit card now</a> to continue receiving Briefmetrics reports.
@@ -238,9 +238,11 @@ def send(request, report, since_time=None, pretend=False):
     subject = report_context.get_subject()
     template = report_context.template
 
+    time_revive = None
     if not report_context.data:
         send_users = [report.account.user]
         template = 'email/error_empty.mako'
+        time_revive = report_context.next_preferred(report_context.date_end + datetime.timedelta(days=30))
 
     log.info('Sending %s report to [%d] users: %s' % (report.type, len(send_users), report.display_name))
 
@@ -288,6 +290,6 @@ def send(request, report, since_time=None, pretend=False):
         owner.num_remaining -= 1
 
     report.time_last = now()
-    report.time_next = report_context.next_preferred(report_context.date_end + datetime.timedelta(days=7)) # XXX: Generalize
+    report.time_next = time_revive or report_context.next_preferred(report_context.date_end + datetime.timedelta(days=7)) # XXX: Generalize
 
     model.Session.commit()

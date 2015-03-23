@@ -49,7 +49,7 @@ def dry_run(num_extra=5, async=True):
     all_reports = model.Session.query(model.Report).options(orm.joinedload_all('account.user')).all()
 
     # Start with all paying customers
-    report_queue = [r for r in all_reports if r.account.user.stripe_customer_id]
+    report_queue = [r for r in all_reports if r.account.user.payment]
 
     # Add some extra random customers
     while num_extra:

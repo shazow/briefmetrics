@@ -5,6 +5,13 @@
 </p>
 
 <p>
+    If your site is brand new, then no worries. Briefmetrics will try again in a few weeks when there is more data available.
+</p>
+
+
+<h2>Troubleshooting</h2>
+
+<p>
     Do you see any data in
     <a href="${h.ga_permalink('report/content-pages', c.report.report)}">your Google Analytics report here</a>?
 </p>

@@ -5,7 +5,7 @@
 <div class="container">
 
 <section id="plan">
-    ${widgets.plan_summary(has_card=c.user.stripe_customer_id, num_remaining=c.user.num_remaining)}
+    ${widgets.plan_summary(has_card=c.user.payment, num_remaining=c.user.num_remaining)}
 </section>
 
 <section id="new-report">

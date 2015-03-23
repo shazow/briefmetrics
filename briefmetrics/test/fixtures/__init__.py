@@ -22,3 +22,10 @@ def populate_dev():
         subscribe_user_id=user.id,
         remote_data=remote_data,
     )
+
+    api.account.get_or_create(
+        email=u'shazow+namecheap@gmail.com',
+        display_name=u'Andrey Petrov',
+        service='namecheap',
+        email_token='namecheap',
+    )
