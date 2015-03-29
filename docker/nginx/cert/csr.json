@@ -1,0 +1,19 @@
+{
+    "hosts": [
+        "briefmetrics.com",
+        "www.briefmetrics.com",
+        "staging.briefmetrics.com"
+    ],
+    "CN": "briefmetrics.com",
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [{
+        "C": "US",
+        "L": "San Jose",
+        "O": "Zowic LLC",
+        "OU": "Briefmetrics",
+        "ST": "California"
+    }]
+}
