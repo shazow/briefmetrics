@@ -8,4 +8,6 @@
 /*.dbm*
 /*.log
 /celerybeat-*
+/uploads
 /data
+/docker/nginx/certs
