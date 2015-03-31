@@ -1,0 +1,36 @@
+#  docker run --name=nginx -d -p 80:80 -p 443:443 \
+#    --volume ~/volumes/nginx/sites:/etc/nginx/sites-enabled:ro \
+#    --volume ~/volumes/nginx/certs:/etc/nginx/certs:ro \
+#    --volume ~/volumes/nginx/www:/var/www \
+#    --link briefmetrics-uwsgi:briefmetrics-uwsgi
+#    shazow/nginx
+nginx:
+    image: shazow/nginx
+    ports:
+    - "80:80"
+    - "433:433"
+    volumes:
+    - ~/volumes/nginx/sites:/etc/nginx/sites-enabled:ro
+    - ~/volumes/nginx/certs:/etc/nginx/certs:ro
+    - ~/volumes/nginx/www:/var/www
+    links:
+    - briefmetrics:briefmetrics
+
+
+#  docker run --name=briefmetrics-uwsgi -d \
+#    --volume ~/volumes/briefmetrics/src:/app/src \
+#    --link postgresql:db
+#    shazow/uwsgi-python
+briefmetrics:
+    image: shazow/python-uwsgi
+    volumes:
+    - ~/src/briefmetrics:app/src
+    expose:
+    - "8001"
+    links:
+    - db:db
+
+
+#  docker run --name=db -d shazow/postgresql
+db:
+    image: shazow/postgresql

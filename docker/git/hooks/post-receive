@@ -1,0 +1,101 @@
+#!/bin/bash
+# post-receive hook to push-deploy into a git repo.
+#
+# Deploy by pushing $DEPLOY_BRANCH
+# Rollback by force-pushing a new reference to $OVERRIDE_TAG
+#
+# 1. Setup your git repo:
+#
+#       git init --bare
+#
+# 2. Put this hook script in hooks/post-receive
+# 3. Make as many worktree target dirs as you want and configure
+#    `which_worktree` and `deploy` below accordingly. Such as...
+#
+#       mkdir -p ../branches/{master,staging}/src
+#
+# 4. Push to the repo and the appropriate worktree will be deployed.
+#
+# Enjoy.
+
+##
+# Override these:
+
+function which_worktree() {
+    # Given a branch name, print the expected path of the worktree.
+    # If the path does not exist, deployment will be skipped for the branch.
+    branch="$1"
+    if [ "$branch" == "master" ]; then
+        echo "$HOME/volumes/briefmetrics/src"
+    fi
+}
+
+function deploy() {
+    # Given a branch name and worktree path, perform desired deployment steps.
+    branch="$1"
+    worktree="$2"
+
+    container_id="briefmetrics"
+    docker exec "${container_id}" bash -c "source env/bin/activate && cd src && make INI_FILE='$INI_FILE' && touch .reload"
+
+    if docker ps | grep -q "${container_id}"; then
+        echo -e "${CGREEN}Server is happy. :)${CNONE}"
+    else
+        echo -e "${CRED}SERVER IS DOWN! Recent log:${CYELLOW}"
+        docker logs "${container_id}" | tail -n 40
+        echo -en "$CNONE"}
+    fi
+}
+
+##
+# The meaty logic that shouldn't need touching:
+
+# Symbol and color shortcuts, borrowed from Gitolite-Hooks <3
+BLANK=$(echo -e "\e[1G        ")
+ARROW=$(echo -e "\e[1G------> ")
+CNONE=$(echo -e "\e[00m")
+CBLACK=$(echo -e "\e[1;30m")
+CWHITE=$(echo -e "\e[0;37m")
+CGREEN=$(echo -e "\e[1;32m")
+CBLUE=$(echo -e "\e[1;34m")
+CRED=$(echo -e "\e[1;31m")
+CYELLOW=$(echo -e "\e[1;33m")
+
+function prefix() {
+    sed "s/^/$@/"
+}
+
+if [ "$1" ]; then
+    branch="$1"
+    worktree="$(which_worktree $branch)"
+
+    echo -e "${ARROW}${CBLUE}Manual deploy on branch:${CNONE} ${branch}"
+    if [ ! -d "$worktree" ]; then
+        echo -e "${BLANK}Worktree does not exist, skipping: ${worktree}"
+        exit 1;
+    fi
+
+    git --work-tree="$worktree" checkout -q -f "$branch"
+
+    echo -en "${CWHITE}"
+    deploy "$branch" "$worktree" | prefix "${BLANK}"
+    echo -en "${CNONE}"
+
+    exit 0;
+fi
+
+while read oldrev newrev ref; do
+    branch="$(echo $ref | cut -d '/' -f3)"
+    echo "${ARROW}Received branch: ${branch}"
+    worktree="$(which_worktree $branch)"
+
+    if [ "$worktree" ] && [ -d "$worktree" ]; then
+        echo "${ARROW}${CBLUE}Deploying branch:${CNONE} ${branch}"
+        cd "$GIT_DIR"
+        git --work-tree="$worktree" checkout -q -f "$branch"
+
+        echo -en "${CWHITE}"
+        deploy "$branch" "$worktree" | prefix "${BLANK}"
+        echo -en "${CNONE}"
+    fi
+done
