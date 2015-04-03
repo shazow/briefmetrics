@@ -51,9 +51,51 @@ def handle_stripe(request, data):
     log.info('stripe webhook: Queued %d funnels for account: %s' % (count, a.id))
 
 
+def handle_namecheap(request, data):
+    event_token = data.get('event_token')
+    if not event_token:
+        return
+
+    nc_api = service_registry['namecheap'].instance
+
+    # Get event details
+    r = nc_api.request('GET', '/v1/saas/saas/event/{token}'.format(event_token))
+
+    data = r.json()
+    event_id = data['event']['id']
+    return_uri = data['event']['returnURI']
+    subscription_id = data['event']['subscription_id']
+
+    email, first_name, last_name, remote_id = get_many(data['event']['user'], ['email', 'first_name', 'last_name', 'id'])
+    display_name = [first_name, last_name].join(' ')
+
+    user = api.account.get_or_create(
+        email=email,
+        service='namecheap',
+        display_name=display_name,
+        remote_id=remote_id,
+        remote_data=data['event']['user'],
+    )
+    account = user.accounts[0]
+
+    # Confirm event, activate subscription
+    ack = {
+        'type': 'subscription_create_resp',
+        'id': event_id,
+        'response': {
+            'state': 'Active',
+            'provider_id': nc_api.config['client_id'],
+        }
+    }
+    r = nc.session.request('PUT', return_uri, json=ack)
+
+    log.info('namecheap webhook: Provisioned %s' % user)
+
+
 # TODO: Should this live in lib.service?
 webhook_handlers = {
     'stripe': handle_stripe,
+    'namecheap': handle_namecheap,
 }
 
 

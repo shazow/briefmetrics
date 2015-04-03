@@ -6,7 +6,7 @@ from briefmetrics.model.meta import Session
 registry = {}
 
 
-class OAuth2API(object):
+class Service(object):
     __metaclass__ = registry_metaclass(registry)
     config = {}  # Extend and override this.
 
@@ -17,6 +17,8 @@ class OAuth2API(object):
     default_report = None
     is_autocreate = False
 
+
+class OAuth2API(Service):
     def __init__(self, request, token=None, state=None):
         self.request = request
 

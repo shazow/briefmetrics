@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 
 # Request helpers
 
-def connect_user(request, oauth, user_required=False):
+def connect_oauth(request, oauth, user_required=False):
     user, account = get_account(request, service=oauth.id, user_required=user_required)
 
     code = request.params.get('code')
@@ -68,8 +68,8 @@ def connect_user(request, oauth, user_required=False):
         account.oauth_token = token
         account.remote_id = remote_id
         account.remote_data = remote_data
-        has_report = Session.query(model.Report).filter_by(account_id=account.id).limit(1).count()
-        if has_report:
+        force_skip = oauth.is_autocreate and Session.query(model.Report).filter_by(account_id=account.id).limit(1).count()
+        if force_skip:
             # Already exists, skip autocreate.
             oauth.is_autocreate = False
 

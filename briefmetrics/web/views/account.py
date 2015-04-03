@@ -41,7 +41,7 @@ class AccountController(Controller):
         oauth = service_registry[service](self.request)
 
         try:
-            account = api.account.connect_user(self.request, oauth)
+            account = api.account.connect_oauth(self.request, oauth)
         except APIError, e:
             raise APIControllerError(e.message)
 

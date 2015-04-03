@@ -18,7 +18,7 @@ pyramid_mako==1.0.2
 pytz==2014.9
 pyyaml==3.11
 requests-oauthlib==0.4.2
-requests==2.4.3
+requests==2.6.0
 stripe==1.19.1
 unstdlib==1.7
 

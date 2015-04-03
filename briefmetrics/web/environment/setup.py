@@ -23,6 +23,7 @@ def _setup_api(settings):
 
     from briefmetrics.lib.service.namecheap import NamecheapAPI
     NamecheapAPI.config.update(_dict_view_prefixed(settings, 'api.namecheap.'))
+    NamecheapAPI.instance = NamecheapAPI()
 
     import stripe
     stripe.api_key = settings['api.stripe.client_secret']
