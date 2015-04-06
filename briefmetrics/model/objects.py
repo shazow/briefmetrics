@@ -51,6 +51,7 @@ class User(meta.Model): # Email address / login
 
     stripe_customer_id = Column(types.String)
     payment_token = Column(types.String)
+    time_next_payment = Column(types.DateTime)
 
     config = Column(_types.MutationDict.as_mutable(_types.JSONEncodedDict), default=dict) # Whitelabel settings, features, etc.
     ''' Example config:

@@ -50,14 +50,11 @@ class StripePayment(Payment):
 
     def delete(self):
         user = self.user
-        if user.stripe_customer_id:
+        if self.token:
             customer = stripe.Customer.retrieve(self.token)
             customer.delete()
             user.stripe_customer_id = None
             user.payment_token = None
-
-        if not user.num_remaining:
-            user.num_remaining = 0
 
 
 # Old helpers, do something with them?

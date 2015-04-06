@@ -78,6 +78,9 @@ def handle_namecheap(request, data):
     )
     account = user.accounts[0]
 
+    user.set_payment('namecheap', subscription_id)
+    model.Session.commit()
+
     # Confirm event, activate subscription
     ack = {
         'type': 'subscription_create_resp',
