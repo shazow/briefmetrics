@@ -62,10 +62,14 @@ class Plan(Singleton):
         Feature.value('support', 'Email'),
     ]
 
-    def __init__(self, id, name, summary=None, price_monthly=None, features=None, is_hidden=False):
+    def __init__(self, id, name, summary=None, price_monthly=None, price_yearly=None, features=None, is_hidden=False):
         self.id = id
         self.name = name
         self.summary = summary
+        self.price_yearly = price_yearly
+        if price_yearly and not price_monthly:
+            price_monthly = round(price_yearly / 12.0)
+
         self.price_monthly = price_monthly
         self.features = OrderedDict()
         self.is_hidden = is_hidden
@@ -87,11 +91,14 @@ class Plan(Singleton):
         if not self.price_monthly:
             return 'Free'
 
+        if self.price_yearly:
+            return '${0:g}/year'.format(self.price_yearly / 100.0)
+
         return '${0:g}/month'.format(self.price_monthly / 100.0)
 
     @property
     def option_str(self):
-        return '{plan.name} for {plan.price_monthly_str}/month: {plan.summary}'.format(plan=self)
+        return '{plan.name} for {plan.price_str}: {plan.summary}'.format(plan=self)
 
     def iter_features(self):
         for key, value in self.features.iteritems():

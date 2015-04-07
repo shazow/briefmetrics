@@ -49,7 +49,7 @@
 
         <ul class="details">
             <li>No credit card required to get started.</li>
-            <li><a href="/pricing">Plans</a> start at ${pricing.PLAN_PAID.price_monthly_str}/month.</li>
+            <li><a href="/pricing">Plans</a> start at ${pricing.PLAN_PAID.price_str}.</li>
             <li>Please read our simple <a href="/privacy">Privacy Policy</a>.</li>
         </ul>
     </div>

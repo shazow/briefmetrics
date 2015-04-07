@@ -291,7 +291,7 @@
             % if plan.is_group:
                 Starting at
             % endif
-            <span class="value">${plan.price_monthly_str}/month</span>
+            <span class="value">${plan.price_str}</span>
         </p>
 
         % if user:

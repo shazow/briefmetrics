@@ -15,12 +15,12 @@ class TestPricing(test.TestCase):
         f1 = TestFeature.new('foo', 'Foo')
         f2 = TestFeature.new('baz')
 
-        p1 = TestPlan.new('p1', 'Plan 1', features={
+        p1 = TestPlan.new('p1', 'Plan 1', price_monthly=4200, features={
             'foo': 'bar',
             'baz': True,
         })
 
-        p2 = TestPlan.new('p2', 'Plan 2', features=[
+        p2 = TestPlan.new('p2', 'Plan 2', price_yearly=12000, features=[
             TestFeature.value('foo', 'bar'),
             TestFeature.value('baz', True),
         ])
@@ -30,3 +30,7 @@ class TestPricing(test.TestCase):
         self.assertRaises(KeyError, TestPlan.get, 'foo')
         self.assertEqual(TestFeature.get('foo'), f1)
         self.assertRaises(KeyError, TestFeature.get, p1)
+
+        self.assertEqual(p1.price_str, "$42/month")
+        self.assertEqual(p2.price_str, "$120/year")
+        self.assertEqual(p2.price_monthly_str, "$10")
