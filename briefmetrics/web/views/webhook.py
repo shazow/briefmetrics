@@ -1,16 +1,12 @@
 import logging
-import operator
 
-from sqlalchemy import orm
-from unstdlib import get_many, groupby_count
-from datetime import date, timedelta
+from unstdlib import get_many
 
 from briefmetrics import api, model, tasks
+from briefmetrics.lib.http import assert_response
 from briefmetrics.lib.controller import Controller
 from briefmetrics.lib.service import registry as service_registry
 from briefmetrics.web.environment import httpexceptions, Response
-
-from .api import expose_api
 
 
 log = logging.getLogger(__name__)
@@ -59,7 +55,7 @@ def handle_namecheap(request, data):
     nc_api = service_registry['namecheap'].instance
 
     # Get event details
-    r = nc_api.request('GET', '/v1/saas/saas/event/{token}'.format(event_token))
+    r = nc_api.request('GET', '/v1/saas/saas/event/{token}'.format(token=event_token))
 
     data = r.json()
     event_id = data['event']['id']
@@ -67,7 +63,7 @@ def handle_namecheap(request, data):
     subscription_id = data['event']['subscription_id']
 
     email, first_name, last_name, remote_id = get_many(data['event']['user'], ['email', 'first_name', 'last_name', 'id'])
-    display_name = [first_name, last_name].join(' ')
+    display_name = ' '.join([first_name, last_name])
 
     user = api.account.get_or_create(
         email=email,
@@ -76,7 +72,6 @@ def handle_namecheap(request, data):
         remote_id=remote_id,
         remote_data=data['event']['user'],
     )
-    account = user.accounts[0]
 
     user.set_payment('namecheap', subscription_id)
     model.Session.commit()
@@ -90,7 +85,8 @@ def handle_namecheap(request, data):
             'provider_id': nc_api.config['client_id'],
         }
     }
-    r = nc.session.request('PUT', return_uri, json=ack)
+    r = nc_api.session.request('PUT', return_uri, json=ack) # Bypass our wrapper
+    assert_response(r)
 
     log.info('namecheap webhook: Provisioned %s' % user)
 

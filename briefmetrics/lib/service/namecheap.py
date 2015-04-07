@@ -1,12 +1,6 @@
-import time
-import datetime
-
 from .base import Service
 
-from briefmetrics.lib import helpers as h
 from briefmetrics.lib.http import assert_response
-from unstdlib import get_many
-
 from requests import Session
 from requests_hawk import HawkAuth
 
@@ -112,6 +106,6 @@ class NamecheapAPI(Service):
         })
 
     def request(self, method, resource, **kw):
-        r = self.session.request(method, prefix+resource, **kw)
+        r = self.session.request(method, self.url_prefix+resource, **kw)
         assert_response(r)
         return r
