@@ -956,17 +956,22 @@ form.add-recipient {
   .articles h3 {
     font-size: 1.4em; }
 
-.pricing {
+.pricing .toggle {
+  text-align: center;
+  line-height: 2em; }
+  .pricing .toggle select {
+    width: auto; }
+.pricing .plans {
   display: table;
   margin: 2em auto;
   text-align: center; }
-  .pricing > div {
-    display: table-cell;
-    vertical-align: top;
-    padding: 0 0.5em; }
-    @media screen and (max-width: 40em)  {
-      .pricing > div {
-        display: block; } }
+.pricing .plan {
+  display: table-cell;
+  vertical-align: top;
+  padding: 0 0.5em; }
+  @media screen and (max-width: 40em)  {
+    .pricing .plan {
+      display: block; } }
 
 .pricing-plan {
   padding: 0 1em;

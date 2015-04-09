@@ -16,17 +16,26 @@
     % endif
 
     <div class="pricing">
-        <div>
-            ${forms.pricing_plan(c.plan_individual, user=c.user)}
-        </div>
 
-        <div>
-            ${forms.pricing_plan(c.plan_agency, user=c.user)}
+        % if len(c.plans) > 1:
+        <div class="toggle">
+            <select onchange="toggle(this)">
+                % for id, description, _ in c.plans:
+                <option value="${id}">${description}</option>
+                % endfor
+            </select>
         </div>
+        % endif
 
-        <div>
-            ${forms.pricing_plan(c.plan_enterprise, user=c.user)}
+        % for i, (id, _, plans) in enumerate(c.plans):
+        <div class="plans" id="${id}" ${h.text_if(i>0, 'style="display: none;"')}>
+            % for plan in plans:
+            <div class="plan">
+                ${forms.pricing_plan(plan, user=c.user)}
+            </div>
+            % endfor
         </div>
+        % endfor
     </div>
 
     <div id="faq">
@@ -80,3 +89,17 @@
         </p>
     </div>
 </div>
+
+
+<%block name="tail">
+<script type="text/javascript">
+    function toggle(s) {
+        var plans = document.getElementsByClassName("plans");
+        for (var i=0; i<plans.length; i++) {
+            var style = "none";
+            if (plans[i].id == s.value) style = "table";
+            plans[i].style.display = style;
+        }
+    };
+</script>
+</%block>

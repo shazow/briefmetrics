@@ -1,0 +1,74 @@
+@mixin toggle($start-color: white, $end-color: #477DCA, $knob-color: #37b89a) {
+    $switch-width: 52px;
+    $switch-padding: 2px;
+    $switch-height: 32px;
+    $switch-radius: $switch-height;
+    $knob-size: $switch-height - ($switch-padding * 2);
+    $knob-radius: $switch-height - ($switch-padding * 2);
+    $knob-width: $knob-size;
+    $switch-background: $start-color;
+    $switch-border-background: desaturate(lighten($knob-color, 20%), 5%);
+
+    border-radius: $switch-radius;
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    height: $switch-height;
+    width: $switch-width;
+
+    input[type="checkbox"] {
+        display: none;
+
+        + label {
+            @include transition(all 0.3s ease);
+            background: $switch-border-background;
+            border-radius: $switch-radius;
+            border: none;
+            cursor: pointer;
+            height: $switch-height;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            width: $switch-width;
+            z-index: 0;
+
+            &:before {
+                @include position(absolute, 2px 0 0 2px);
+                @include transform(scale(1));
+                @include transition(all 0.3s ease);
+                background: $switch-background;
+                border-radius: $switch-radius;
+                content: "";
+                height: $knob-radius;
+                width: $switch-width - ($switch-padding * 2);
+                z-index: 1;
+            }
+
+            &:after {
+                @include position(absolute, 2px 0 0 2px);
+                @include transition(all 0.3s ease);
+                @include size($knob-size - 4);
+                background: $knob-color;
+                border-radius: $knob-radius;
+                content: "";
+                z-index: 2;
+                top: 4px;
+                left: 4px;
+            }
+        }
+
+        &:checked {
+            + label {
+                background: $end-color;
+
+                &:before {
+                    @include transform(scale(0));
+                }
+
+                &:after {
+                    left: $switch-width - $knob-width - ($switch-padding);
+                }
+            }
+        }
+    }
+}

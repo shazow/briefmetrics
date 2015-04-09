@@ -24,9 +24,26 @@ class IndexController(Controller):
     def pricing(self):
         self.c.user = api.account.get_user(self.request)
 
-        self.c.plan_individual = Plan.get('starter')
-        self.c.plan_agency = PlanGroup.get('agency-10')
-        self.c.plan_enterprise = PlanGroup.get('enterprise')
+        monthly = ('monthly', 'Pay Monthly', [
+            Plan.get('starter'),
+            PlanGroup.get('agency-10'),
+            PlanGroup.get('enterprise'),
+        ])
+        yearly = ('yearly', 'Pay Yearly (2 month discount)', [
+            Plan.get('starter-yr'),
+            PlanGroup.get('agency-10-yr'),
+            PlanGroup.get('enterprise-yr'),
+        ])
+
+        self.c.plans = []
+
+        if self.c.user and self.c.user.payment and self.c.user.payment.id == 'namecheap':
+            self.c.plans.append(yearly)
+        else:
+            self.c.plans.append(monthly)
+
+        if 'yearly' in self.request.params:
+            self.c.plans = [yearly, monthly]
 
         return self._render('pricing.mako')
 

@@ -104,16 +104,22 @@ class Plan(Singleton):
         for key, value in self.features.iteritems():
             yield Feature.get(key), value
 
+    def __repr__(self):
+        return 'Plan("{plan.id}", price="{plan.price_str}")'.format(plan=self)
+
 
 class PlanGroup(Plan):
     # Similar to a Plan but with overrides for display purposes
     _singleton = {}
     is_group = True
 
-    def __init__(self, id, name, summary=None, price_monthly=None, features=None, is_hidden=False, plans=None):
+    def __init__(self, id, name, summary=None, price_monthly=None, price_yearly=None, features=None, is_hidden=False, plans=None):
         self.id = id
         self.name = name
         self.summary = summary
+        self.price_yearly = price_yearly if price_yearly else plans and plans[0].price_yearly
+        if price_yearly and not price_monthly:
+            price_monthly = round(price_yearly / 12.0)
         self.price_monthly = price_monthly if price_monthly else plans and plans[0].price_monthly
         self.features = OrderedDict(self.default_features)
         self.is_hidden = is_hidden
@@ -125,10 +131,6 @@ class PlanGroup(Plan):
                 p.in_group = self
 
         self.features.update(features)
-
-    @property
-    def price_str(self):
-        return 'Starting at ${0:g}/month'.format(self.price_monthly / 100.0)
 
 
 PLANS = [
@@ -150,9 +152,19 @@ PLANS = [
         Feature.value('num_sites', 5),
     ]),
 
+    Plan.new('starter-yr', 'Starter', price_yearly=8000, features=[
+        Feature.value('num_sites', 5),
+    ]),
+
     # Agency plans
 
     Plan.new('agency-10', 'Agency (10 sites)', price_monthly=3500, features=[
+        Feature.value('num_sites', 10),
+        Feature.value('custom_branding', True),
+        Feature.value('combine_reports', True),
+    ]),
+
+    Plan.new('agency-10-yr', 'Agency (10 sites)', price_yearly=35000, features=[
         Feature.value('num_sites', 10),
         Feature.value('custom_branding', True),
         Feature.value('combine_reports', True),
@@ -164,7 +176,19 @@ PLANS = [
         Feature.value('combine_reports', True),
     ]),
 
+    Plan.new('agency-25-yr', 'Agency (25 sites)', price_yearly=85000, features=[
+        Feature.value('num_sites', 25),
+        Feature.value('custom_branding', True),
+        Feature.value('combine_reports', True),
+    ]),
+
     Plan.new('agency-50', 'Agency (50 sites)', price_monthly=15000, features=[
+        Feature.value('num_sites', 50),
+        Feature.value('custom_branding', True),
+        Feature.value('combine_reports', True),
+    ]),
+
+    Plan.new('agency-50-yr', 'Agency (50 sites)', price_yearly=150000, features=[
         Feature.value('num_sites', 50),
         Feature.value('custom_branding', True),
         Feature.value('combine_reports', True),
@@ -198,6 +222,14 @@ PlanGroup.new('agency-10', 'Agency', features=[
     Plan.get('agency-50'),
 ])
 
+PlanGroup.new('agency-10-yr', 'Agency', features=[
+    Feature.value('num_sites', '10+'),
+], plans=[
+    Plan.get('agency-10-yr'),
+    Plan.get('agency-25-yr'),
+    Plan.get('agency-50-yr'),
+])
+
 PlanGroup.new('enterprise', 'Enterprise', price_monthly=27500, features=[
     Feature.value('custom_branding', True),
     Feature.value('combine_reports', True),
@@ -206,6 +238,13 @@ PlanGroup.new('enterprise', 'Enterprise', price_monthly=27500, features=[
     Feature.value('support', 'Email & Phone'),
 ], is_hidden=True),
 
+PlanGroup.new('enterprise-yr', 'Enterprise', price_yearly=275000, features=[
+    Feature.value('custom_branding', True),
+    Feature.value('combine_reports', True),
+    Feature.value('email_domain', True),
+    Feature.value('self_hosted', True),
+    Feature.value('support', 'Email & Phone'),
+], is_hidden=True),
 
 
 PLANS_LOOKUP = dict((p.id, p) for p in PLANS)

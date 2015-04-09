@@ -636,11 +636,21 @@ form.add-recipient {
 }
 
 .pricing {
-    display: table;
-    margin: 2em auto;
-    text-align: center;
+    .toggle {
+        text-align: center;
+        line-height: 2em;
+        select {
+            width: auto;
+        }
+    }
 
-    & > div {
+    .plans {
+        display: table;
+        margin: 2em auto;
+        text-align: center;
+    }
+
+    .plan {
         display: table-cell;
         vertical-align: top;
         padding: 0 0.5em;
