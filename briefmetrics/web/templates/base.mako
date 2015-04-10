@@ -76,9 +76,38 @@ ${next.body()}
         <a href="${login_url}">Try it now</a> with 10 free emails!
     </p>
 % endif
-    <p>
-        Questions? Send an email to <a href="mailto:support@briefmetrics.com">support@briefmetrics.com</a>
-    </p>
+
+    <div class="container">
+        <ul>
+            <li>
+                <a href="${request.route_path('about')}">About</a>
+            </li>
+            <li>
+                <a href="${request.route_path('pricing')}">Plans &amp; Pricing</a>
+            </li>
+        </ul>
+
+        <ul>
+            <li>
+                <a href="${request.route_path('terms')}">Terms of Service</a>
+            </li>
+            <li>
+                <a href="${request.route_path('privacy')}">Privacy Policy</a>
+            </li>
+            <li>
+                <a href="${request.route_path('security')}">Security Policy</a>
+            </li>
+        </ul>
+
+        <ul>
+            <li>
+                Questions? Please email <a href="mailto:support@briefmetrics.com">support@briefmetrics.com</a>
+            </li>
+            <li>
+                Briefmetrics is operated by <a href="http://zowic.com/">Zowic LLC</a>
+            </li>
+        </ul>
+    </div>
 </footer>
 </%block>
 

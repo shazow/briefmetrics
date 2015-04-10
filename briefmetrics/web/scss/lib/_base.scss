@@ -52,23 +52,6 @@ body {
 }
 
 
-footer {
-    @include row();
-    font-size: 0.9em;
-    color: lighten($color-text, 20%);
-    line-height: 2em;
-    border-top: 5px solid desaturate(darken($color-background, 10%), 40%);
-    text-align: center;
-    margin-top: 4em;
-    padding-top: 1em;
-
-    a {
-        background: rgba(60, 30, 10, 0.05);
-        padding: 0 2px;
-        color: #AA6A46;
-    }
-}
-
 a {
     text-decoration: none;
 }

@@ -776,3 +776,42 @@ iframe.video {
     }
 
 }
+
+footer {
+    @include row();
+    $_background: desaturate(darken($color-background, 75%), 60%);
+    background: $_background;
+    @include linear-gradient(darken($_background, 5%), $_background);
+    border-top: 5px solid darken($_background, 10%);
+
+    color: lighten($color-text, 20%);
+    margin-top: 4em;
+    padding-top: 1em;
+
+    a { 
+        color: darken($color-header, 5%);
+
+        &:hover {
+            color: lighten($color-header, 25%);
+        }
+    }
+
+    .container {
+        display: table;
+        table-layout: fixed;
+        width: 100%;
+    }
+
+    ul {
+        display: table-cell;
+        width: 100%;
+        list-style: none;
+        padding: 0 1em;
+        vertical-align: top;
+
+        @include media($mobile) {
+            display: block;
+        }
+    }
+}
+
