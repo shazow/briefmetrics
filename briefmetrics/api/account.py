@@ -277,7 +277,7 @@ def set_payments(user, plan_id=None, card_token=None, metadata=None, payment_typ
 
 
 def delete_payments(user):
-    self.user.time_next_payment = None
+    user.time_next_payment = None
     if not user.num_remaining:
         user.num_remaining = 0
 

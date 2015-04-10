@@ -84,7 +84,7 @@ def combine(report_ids, is_replace=False, account_id=None, subscribe_user_id=Non
 
     if is_replace:
         for r in reports:
-            Session.delete(r)
+            model.Session.delete(r)
 
     model.Session.commit()
     return report

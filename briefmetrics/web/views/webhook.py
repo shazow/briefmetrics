@@ -58,6 +58,9 @@ def handle_namecheap(request, data):
     r = nc_api.request('GET', '/v1/saas/saas/event/{token}'.format(token=event_token))
 
     data = r.json()
+    assert data['type'] == 'subscription_create'
+    # TODO: Handle subscription_cancel?
+
     event_id = data['event']['id']
     return_uri = data['event']['returnURI']
     subscription_id = data['event']['subscription_id']

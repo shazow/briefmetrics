@@ -15,6 +15,7 @@ pyramid_exclog==0.7
 pyramid_handlers==0.5
 pyramid_mailer==0.13
 pyramid_mako==1.0.2
+python-dateutil==2.4.2
 pytz==2014.9
 pyyaml==3.11
 requests-oauthlib==0.4.2
