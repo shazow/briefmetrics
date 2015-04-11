@@ -138,7 +138,36 @@ def render(request, template, context=None):
     return Controller(request, context=context)._render_template(template)
 
 
-def send(request, report, since_time=None, pretend=False):
+def check_trial(request, report, has_data=True, pretend=False):
+    messages = []
+
+    owner = report.account.user
+    if owner.num_remaining is None or owner.num_remaining > 1:
+        return messages
+
+
+    if not owner.payment:
+        messages.append(h.literal('''
+            <strong>This is your final report. </strong><br />
+            Please <a href="https://briefmetrics.com/settings">add a credit card now</a> to continue receiving Briefmetrics reports.
+        '''.strip()))
+
+        return messages
+
+    try:
+        # Create subscription for customer
+        api_account.start_subscription(owner)
+        owner.num_remaining = None
+    except APIError as e:
+        messages.append(h.literal('''
+            <strong>{message}</strong><br />
+            Please visit <a href="https://briefmetrics.com/settings">briefmetrics.com/settings</a> to add a new credit card and resume your reports.
+        '''.strip().format(message=e.message)))
+
+    return messages
+
+
+def send(request, report, since_time=None, pretend=False, session=model.Session):
     t = time.time()
 
     since_time = since_time or now()
@@ -148,41 +177,15 @@ def send(request, report, since_time=None, pretend=False):
         return
 
     owner = report.account.user
-    messages = []
-
-    if not pretend and owner.num_remaining is not None and owner.num_remaining <= 0:
-        if not owner.payment:
-            log.info('User [%d] expired, deleting report: %s' % (owner.id, report.display_name))
-            report.delete()
-            model.Session.commit()
-
-            subject = u"Your Briefmetrics trial is over"
-            html = render(request, 'email/error_trial_end.mako')
-            message = api_email.create_message(request,
-                to_email=owner.email,
-                subject=subject,
-                html=html,
-            )
-            api_email.send_message(request, message)
-
+    if not pretend and report.time_expire and report.time_expire < since_time:
+        if owner.num_remaining is None:
+            # Started paying, un-expire.
+            report.time_expire = None
+        else:
+            log.info('Deleting expired report for %s: %s' % (owner, report))
+            session.delete(report)
+            session.commit()
             return
-
-        try:
-            # Create subscription for customer
-            api_account.start_subscription(owner)
-            owner.num_remaining = None
-        except APIError as e:
-            messages.append(h.literal('''
-                <strong>{message}</strong><br />
-                Please visit <a href="https://briefmetrics.com/settings">briefmetrics.com/settings</a> to add a new credit card and resume your reports.
-            '''.strip().format(message=e.message)))
-
-    elif not owner.payment and owner.num_remaining == 1:
-        messages.append(h.literal('''
-            <strong>This is your final report. </strong><br />
-            Please <a href="https://briefmetrics.com/settings">add a credit card now</a> to continue receiving Briefmetrics reports.
-        '''.strip()))
-
 
     send_users = report.users
     if not send_users:
@@ -206,7 +209,7 @@ def send(request, report, since_time=None, pretend=False):
         if not pretend:
             api_email.send_message(request, message)
             report.delete()
-            model.Session.commit()
+            session.commit()
 
         log.warn('Invalid token, removed report: %s' % report)
         return
@@ -234,6 +237,8 @@ def send(request, report, since_time=None, pretend=False):
         return
 
 
+    messages = check_trial(request, report, has_data=report_context.data, pretend=pretend)
+
     report_context.messages += messages
     subject = report_context.get_subject()
     template = report_context.template
@@ -244,7 +249,7 @@ def send(request, report, since_time=None, pretend=False):
         template = 'email/error_empty.mako'
         time_revive = report_context.next_preferred(report_context.date_end + datetime.timedelta(days=30))
 
-    log.info('Sending %s report to [%d] users: %s' % (report.type, len(send_users), report.display_name))
+    log.info('Sending report to [%d] subscribers: %s' % (len(send_users), report))
 
     debug_sample = float(request.registry.settings.get('mail.debug_sample', 1))
     debug_bcc = not report.time_next or random.random() < debug_sample
@@ -283,13 +288,29 @@ def send(request, report, since_time=None, pretend=False):
     )
 
     if pretend:
-        model.Session.commit()
+        session.commit()
         return
 
-    if report_context.data and owner.num_remaining:
-        owner.num_remaining -= 1
+    if report_context.data:
+        if owner.num_remaining == 1:
+            subject = u"Your Briefmetrics trial is over"
+            html = render(request, 'email/error_trial_end.mako')
+            message = api_email.create_message(request,
+                to_email=owner.email,
+                subject=subject,
+                html=html,
+            )
+            log.info('Sending trial expiration: %s' % owner)
+            if not pretend:
+                api_email.send_message(request, message)
+
+        if owner.num_remaining:
+            owner.num_remaining -= 1
 
     report.time_last = now()
     report.time_next = time_revive or report_context.next_preferred(report_context.date_end + datetime.timedelta(days=7)) # XXX: Generalize
 
-    model.Session.commit()
+    if owner.num_remaining == 0:
+        report.time_expire = report.time_next
+
+    session.commit()

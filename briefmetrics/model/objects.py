@@ -190,6 +190,7 @@ class Report(meta.Model): # Property within an account (such as a website)
 
     time_last = Column(types.DateTime)
     time_next = Column(types.DateTime, index=True)
+    time_expire = Column(types.DateTime)
 
     # Owner
     account_id = Column(types.Integer, ForeignKey(Account.id, ondelete='CASCADE'), index=True)

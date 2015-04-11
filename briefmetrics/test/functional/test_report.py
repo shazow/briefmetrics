@@ -99,6 +99,15 @@ class TestReport(test.TestWeb):
         with mock.patch('briefmetrics.api.email.send_message') as send_message:
             tasks.report.send_all(async=False)
             self.assertTrue(send_message.called)
+            self.assertEqual(len(send_message.call_args_list), 2)
+
+            call = send_message.call_args_list[0]
+            message = call[0][1]
+            self.assertEqual(message['subject'], u"Report for example.com (Mar 29-Apr 4)")
+
+            call = send_message.call_args_list[1]
+            message = call[0][1]
+            self.assertEqual(message['subject'], u"Your Briefmetrics trial is over")
 
         self.assertEqual(model.Report.count(), 1)
 
@@ -118,15 +127,12 @@ class TestReport(test.TestWeb):
 
         # Reset time and send again
         report.time_next = None
+        report.time_expire = datetime.datetime(2010, 1, 1) # Sometime in the past
         Session.commit()
 
         with mock.patch('briefmetrics.api.email.send_message') as send_message:
             tasks.report.send_all(async=False)
-            self.assertTrue(send_message.called)
-
-            call, = send_message.call_args_list
-            message = call[0][1]
-            self.assertEqual(message['subject'], u"Your Briefmetrics trial is over")
+            self.assertFalse(send_message.called)
 
         # Report should be deleted.
         self.assertEqual(model.Report.count(), 0)

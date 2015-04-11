@@ -17,7 +17,8 @@ log = get_task_logger(__name__)
 @celery.task(ignore_result=True)
 def send(report_id, since_time=None, pretend=False):
     """Task to send a specific weekly report (gets created by send_all)."""
-    report = model.Session.query(model.Report).options(
+    session = model.Session()
+    report = session.query(model.Report).options(
         orm.joinedload(model.Report.account),
         orm.joinedload(model.Report.users),
     ).get(report_id)
@@ -25,7 +26,7 @@ def send(report_id, since_time=None, pretend=False):
         log.warn('Invalid report id, skipping: %s' % report_id)
         return
 
-    api.report.send(celery.request, report, pretend=pretend)
+    api.report.send(celery.request, report, pretend=pretend, session=session)
 
 
 @celery.task(ignore_result=True)

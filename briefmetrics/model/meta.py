@@ -23,6 +23,8 @@ class _Base(object):
     __json_whitelist__ = None
     __mapper_args__ = {'confirm_deleted_rows': False} # XXX: Remove this ASAP.
 
+    query = Session.query_property()
+
     @classmethod
     def get(cls, id):
         return Session.query(cls).get(id)
