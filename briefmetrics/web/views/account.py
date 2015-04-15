@@ -14,7 +14,8 @@ def account_login(request):
     is_force, token, save_redirect, service = get_many(request.params, optional=['force', 'token', 'next', 'service'])
     service = service or request.matchdict.get('service', 'google')
 
-    if service != 'google':
+    if service == 'stripe':
+        # We don't do native auth with Stripe.
         if not api.account.get_user_id(request):
             # Not logged in? Force Google first.
             save_redirect  = request.route_url('account_login', service=service, _query={'next': save_redirect})

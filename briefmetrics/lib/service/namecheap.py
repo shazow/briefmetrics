@@ -1,8 +1,11 @@
 from .base import Service
 
 from briefmetrics.lib.http import assert_response
-from requests import Session
+
+import requests
 from requests_hawk import HawkAuth
+from urllib import urlencode
+from unstdlib import random_string
 
 
 class NamecheapAPI(Service):
@@ -86,8 +89,9 @@ class NamecheapAPI(Service):
     """
     id = 'namecheap'
     url_prefix = 'https://api.sandbox.partners.namecheap.com'
+
     config = {
-        'auth_url': 'XXX',
+        'auth_url': 'http://www.sandbox.namecheap.com/apps/sso/authorize', # TODO: Replace with https://www.namecheap.com/apps/sso/authorize
         'token_url': 'XXX',
         'scope': ['read_only'],
 
@@ -97,8 +101,12 @@ class NamecheapAPI(Service):
     }
     instance = None # Replaced during init
 
-    def __init__(self):
-        self.session = Session()
+    def __init__(self, request, token=None, state=None):
+        self.request = request
+        self.token = token
+        self.state = state
+
+        self.session = requests.Session()
         self.session.auth = HawkAuth(credentials={
             'id': self.config['client_id'],
             'key': self.config['client_secret'],
@@ -109,3 +117,19 @@ class NamecheapAPI(Service):
         r = self.session.request(method, self.url_prefix+resource, **kw)
         assert_response(r)
         return r
+
+    def auth_url(self, **extra_kw):
+        params = {
+            'response_type': 'id_token token',
+            'client_id': self.config['client_id'],
+            'redirect_uri': self.request.route_url('account_connect', service=self.id),
+            'nonce': random_string(8),
+        }
+        if extra_kw:
+            params.update(extra_kw)
+
+        return self.config['auth_url'] + '?' + urlencode(params), extra_kw.get('state')
+
+    def auth_token(self, response_url):
+        # XXX: Do nothing? :/
+        return
