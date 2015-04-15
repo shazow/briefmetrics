@@ -151,8 +151,6 @@ class Account(meta.Model): # OAuth Service Account (such as Google Analytics)
     remote_data = Column(_types.MutationDict.as_mutable(_types.JSONEncodedDict), default=dict) # Profile info
     config = Column(_types.MutationDict.as_mutable(_types.JSONEncodedDict), default=dict) # Funnel settings
 
-    time_revive = Column(types.DateTime, index=True)
-
     @property
     def service_api(self):
         # TODO: Get rid of this?
