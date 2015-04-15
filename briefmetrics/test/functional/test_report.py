@@ -103,7 +103,7 @@ class TestReport(test.TestWeb):
 
             call = send_message.call_args_list[0]
             message = call[0][1]
-            self.assertEqual(message['subject'], u"Report for example.com (Mar 29-Apr 4)")
+            self.assertIn(u"Report for example.com", message['subject'])
 
             call = send_message.call_args_list[1]
             message = call[0][1]
