@@ -15,6 +15,13 @@ def init(settings):
         CELERY_POOL_RESTARTS = True
         CELERY_DISABLE_RATE_LIMITS = True
         CELERY_TIMEZONE = 'US/Eastern'
+        # TODO: Nuke celery before enabling this.
+        # CELERY_ACCEPT_CONTENT = ['json']
+        CELERYD_CONCURRENCY = 1
+        CELERY_TASK_RESULT_EXPIRES = 3600
+
+        if 'celery.result' in settings:
+            CELERY_RESULT_BACKEND = settings['celery.result']
 
         if settings.get('mail.enabled', 'false') != 'false':
             CELERY_SEND_TASK_ERROR_EMAILS = True

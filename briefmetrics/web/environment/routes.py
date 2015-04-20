@@ -38,6 +38,7 @@ def add_routes(config):
 
     with handler_routes(config, views.admin.AdminController) as route:
         route('admin', '/admin', action='index')
+        route('admin_health', '/admin/health', action='health')
         route('admin_user', '/admin/user/{id}', action='user')
         route('admin_report_log', '/admin/report_log/{id}', action='report_log')
         route('admin_explore_api', '/admin/explore_api', action='explore_api')

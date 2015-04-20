@@ -1,5 +1,5 @@
 from sqlalchemy import orm
-from unstdlib import get_many, groupby_count
+from unstdlib import get_many, groupby_count, now
 from datetime import date, timedelta
 
 from briefmetrics.web.environment import Response
@@ -160,3 +160,17 @@ class AdminController(Controller):
         tasks.admin.test_errors.delay("This is a test.")
 
         raise Exception("This is a test.")
+
+    def health(self):
+        errors = []
+
+        cutoff = now() - timedelta(hours=1)
+        report = api.report.get_pending(since_time=cutoff, max_num=1, include_new=False).first()
+        if report:
+            errors.append('Report delivery lagged by {}: {}'.format(
+                now() - report.time_next, report))
+
+        if errors:
+            raise Exception('\n'.join(errors))
+
+        return Response(':)')

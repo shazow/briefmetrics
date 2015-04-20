@@ -101,13 +101,14 @@ def add_subscriber(report_id, email, display_name, invited_by_user_id=None):
     return u
 
 
-def get_pending(since_time=None, max_num=None):
+def get_pending(since_time=None, max_num=None, include_new=True):
     since_time = since_time or now()
 
-    q = model.Session.query(model.Report).filter(
-        (model.Report.time_next <= since_time) | (model.Report.time_next == None)
-    )
+    f = (model.Report.time_next <= since_time)
+    if include_new:
+        f |= (model.Report.time_next == None)
 
+    q = model.Session.query(model.Report).filter(f)
     if max_num:
         q = q.limit(max_num)
 
