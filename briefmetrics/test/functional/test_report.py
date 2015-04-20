@@ -165,14 +165,32 @@ class TestReport(test.TestWeb):
             self.assertEqual(update_subscription.call_args[1]['plan'], 'briefmetrics_starter')
 
 
-    def test_oauth_error(self):
+    def test_auth_error(self):
         tasks.report.celery.request = self.request
 
-        report = self._create_report()
+        self._create_report()
 
         def raise_error(*args, **kw):
             from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
             raise InvalidGrantError()
+
+        with mock.patch('briefmetrics.api.report.fetch', raise_error):
+            with mock.patch('briefmetrics.api.email.send_message') as send_message:
+                tasks.report.send_all(async=False)
+                self.assertTrue(send_message.called)
+
+                call, = send_message.call_args_list
+                message = call[0][1]
+                self.assertEqual(message['subject'], u"Problem with your Briefmetrics")
+
+        self.assertEqual(model.Report.count(), 0)
+
+        self._create_report()
+
+        def raise_error(*args, **kw):
+            from briefmetrics.lib.exceptions import APIError
+            message = "User does not have sufficient permissions for this profile."
+            raise APIError("API call failed: %s" % message, 400)
 
         with mock.patch('briefmetrics.api.report.fetch', raise_error):
             with mock.patch('briefmetrics.api.email.send_message') as send_message:

@@ -22,5 +22,5 @@ def assert_response(r):
                 message = error['message']
 
             raise APIError("API call failed: %s" % message, e.response.status_code, response=e.response)
-        except ValueError, KeyError:
+        except (ValueError, KeyError):
             raise APIError("API call failed.", e.response.status_code, response=e.response)

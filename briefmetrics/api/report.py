@@ -208,8 +208,31 @@ def send(request, report, since_time=None, pretend=False):
             report.delete()
             model.Session.commit()
 
-        log.warn('Invalid token, skipping report: %s' % report.id)
+        log.warn('Invalid token, removed report: %s' % report)
         return
+    except APIError as e:
+        if not 'User does not have sufficient permissions for this profile' in e.message:
+            raise
+
+        subject = u"Problem with your Briefmetrics"
+        html = render(request, 'email/error_permission.mako', Context({
+            'report': report,
+        }))
+
+        message = api_email.create_message(request,
+            to_email=owner.email,
+            subject=subject,
+            html=html,
+        )
+
+        if not pretend:
+            api_email.send_message(request, message)
+            report.delete()
+            model.Session.commit()
+
+        log.warn('Lost permission to profile, removed report: %s' % report)
+        return
+
 
     report_context.messages += messages
     subject = report_context.get_subject()
