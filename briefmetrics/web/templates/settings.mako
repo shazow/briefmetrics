@@ -5,7 +5,7 @@
 <div class="container">
 
     <section id="credit-card">
-    % if c.user.stripe_customer_id:
+    % if c.user.payment:
         <h2>Plan</h2>
 
         <p>
@@ -75,7 +75,7 @@
             Member of the Briefmetrics family since ${h.human_date(c.user.time_created, max_unit='year')}.
         </p>
 
-        % if c.user.stripe_customer_id:
+        % if c.user.payment:
             ${forms.payment_cancel()}
         % endif
 

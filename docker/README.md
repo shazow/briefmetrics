@@ -35,6 +35,7 @@ $ service rsyslog restart
 
 ```
 docker run --name=db -d \
+  --restart=always \
   --log-driver=syslog \
   shazow/postgresql
 ```
@@ -44,10 +45,11 @@ docker run --name=db -d \
 
 ```
 docker run --name=briefmetrics -d \
+  --restart=always \
   --log-driver=syslog \
-  --volume=~/volumes/briefmetrics/src:/app/src \
-  --link=postgresql:db \
-  shazow/uwsgi-python
+  --volume=$HOME/volumes/briefmetrics/src:/app/src \
+  --link=db:db \
+  shazow/python-uwsgi
 ```
 
 
@@ -55,10 +57,11 @@ docker run --name=briefmetrics -d \
 
 ```
 docker run --name=nginx -d -p 80:80 -p 443:443 \
+  --restart=always \
   --log-driver=syslog \
-  --volume=~/volumes/nginx/sites:/etc/nginx/sites-enabled:ro \
-  --volume=~/volumes/nginx/certs:/etc/nginx/certs:ro \
-  --volume=~/volumes/nginx/www:/var/www:ro \
+  --volume=$HOME/volumes/nginx/sites:/etc/nginx/sites-enabled:ro \
+  --volume=$HOME/volumes/nginx/certs:/etc/nginx/certs:ro \
+  --volume=$HOME/volumes/nginx/www:/var/www:ro \
   --link=briefmetrics:briefmetrics \
   shazow/nginx
 ```
