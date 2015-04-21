@@ -23,6 +23,8 @@ def init(settings):
         if 'celery.result' in settings:
             CELERY_RESULT_BACKEND = settings['celery.result']
 
+        """
+        # FIXME: Remove this if logging-based error mailing works?
         if settings.get('mail.enabled', 'false') != 'false':
             CELERY_SEND_TASK_ERROR_EMAILS = True
             EMAIL_HOST = settings.get('mail.host')
@@ -33,6 +35,7 @@ def init(settings):
             EMAIL_TIMEOUT = 10
             ADMINS = [('Briefmetrics Celery', 'shazow+briefmetrics+errors@gmail.com')]
             SERVER_EMAIL = 'service+celery@briefmetrics.com'
+        """
 
         CELERYBEAT_SCHEDULE = {
             'send-reports': {
