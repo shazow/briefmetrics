@@ -18,6 +18,7 @@
 ```
 
 */etc/rsyslog.d/docker.conf*
+
 ```
 # Split out 0123456789abc out of docker/0123456789abc[123456]
 $template DockerPath,"/var/log/docker/%syslogtag:7:19%.log"
@@ -25,6 +26,7 @@ $template DockerPath,"/var/log/docker/%syslogtag:7:19%.log"
 ```
 
 Run:
+
 ```
 $ service rsyslog restart
 ```
@@ -49,6 +51,7 @@ docker run --name=briefmetrics -d \
   --log-driver=syslog \
   --volume=$HOME/volumes/briefmetrics/src:/app/src \
   --link=db:db \
+  --env=INI_FILE=staging.ini \
   shazow/python-uwsgi
 ```
 

@@ -27,6 +27,10 @@ def init(settings):
             CELERY_SEND_TASK_ERROR_EMAILS = True
             EMAIL_HOST = settings.get('mail.host')
             EMAIL_PORT = settings.get('mail.port')
+            EMAIL_HOST_USER = settings.get('mail.username')
+            EMAIL_HOST_PASSWORD = settings.get('mail.password')
+            EMAIL_USE_SSL = bool(settings.get('mail.ssl'))
+            EMAIL_TIMEOUT = 10
             ADMINS = [('Briefmetrics Celery', 'shazow+briefmetrics+errors@gmail.com')]
             SERVER_EMAIL = 'service+celery@briefmetrics.com'
 
