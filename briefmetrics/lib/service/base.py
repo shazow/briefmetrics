@@ -1,7 +1,6 @@
 from requests_oauthlib import OAuth2Session
 
 from briefmetrics.lib.registry import registry_metaclass
-from briefmetrics.model.meta import Session
 
 registry = {}
 
@@ -32,7 +31,7 @@ class OAuth2API(Service):
                 'client_id': self.config['client_id'],
                 'client_secret': self.config['client_secret'],
             },
-            token_updater=_token_updater(token),
+            token_updater=_token_updater(token, request.db),
             token=token,
             state=state,
         )
@@ -53,9 +52,9 @@ class OAuth2API(Service):
         return token
 
 
-def _token_updater(old_token):
+def _token_updater(old_token, db):
     def wrapped(new_token):
         old_token.update(new_token)
-        Session.commit()
+        db.commit()
 
     return wrapped

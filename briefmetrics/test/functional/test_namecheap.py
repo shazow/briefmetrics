@@ -1,7 +1,8 @@
 from briefmetrics import test
 from briefmetrics import api
 from briefmetrics import model
-from briefmetrics.lib.service.namecheap import NamecheapAPI
+from briefmetrics.lib.service import registry as service_registry
+from briefmetrics.lib.payment import registry as payment_registry
 
 import mock
 import json
@@ -34,6 +35,9 @@ class FakeNamecheapAPI(object):
 @mock.patch('briefmetrics.lib.service.namecheap.NamecheapAPI.instance', FakeNamecheapAPI())
 class TestNamecheap(test.TestWeb):
     def test_webhook_provison(self):
+        self.assertIn('namecheap', service_registry)
+        self.assertIn('namecheap', payment_registry)
+
         self.app.post('/webhook/namecheap', params=RESPONSES['webhook'], content_type='application/json')
 
         # Check that user was provisioned

@@ -6,8 +6,7 @@ __all__ = ['Request']
 
 def _teardown_session(request):
     # Reset the in-memory SQLAlchemy Session cache after each request.
-    from briefmetrics.model.meta import Session
-    Session.remove()
+    request.db.remove()
 
 
 class Request(_Request):
@@ -22,6 +21,8 @@ class Request(_Request):
         self.messages = {}
 
         # FIXME: Is there a cleaner place to put this?
+        from briefmetrics.model.meta import Session
+        self.db = Session
         self.add_finished_callback(_teardown_session)
 
     # For debugging

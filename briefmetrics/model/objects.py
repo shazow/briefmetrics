@@ -6,7 +6,8 @@ from unstdlib import random_string, now
 from sqlalchemy import orm, types
 from sqlalchemy import Column, ForeignKey, Index
 
-from briefmetrics.lib import pricing, payment
+from briefmetrics.lib import pricing
+from briefmetrics.lib.payment import registry as payment_registry
 from . import meta, _types
 
 
@@ -86,7 +87,7 @@ class User(meta.Model): # Email address / login
             # Fallback
             key, token = self.stripe_customer_id and "stripe", self.stripe_customer_id
 
-        return payment.registry[key](self, token)
+        return payment_registry[key](self, token)
 
     def set_payment(self, key, token):
         self.payment_token = "%s:%s" % (key, token)

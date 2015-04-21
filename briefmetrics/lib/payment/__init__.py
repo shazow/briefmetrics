@@ -1,3 +1,3 @@
 from .base import registry, PaymentError
-from . import namecheap
-from . import stripe
+from .namecheap import NamecheapPayment
+from .stripe import StripePayment
