@@ -66,6 +66,10 @@ ALEMBIC_OUT=alembic.log
 $(ALEMBIC_OUT): $(ALEMBIC_VERSIONS)
 	alembic -c $(INI_FILE) upgrade head 2>&1 | tee -a $(ALEMBIC_OUT)
 
+model_create:
+	echo "model.create_all();" | pshell $(INI_FILE) -p python
+	alembic -c $(INI_FILE) stamp head 2>&1 | tee -a $(ALEMBIC_OUT)
+
 model_stamp:
 	alembic -c $(INI_FILE) stamp head 2>&1 | tee -a $(ALEMBIC_OUT)
 
