@@ -49,12 +49,21 @@ docker run --name=db -d \
 docker run --name=briefmetrics -d \
   --restart=always \
   --log-driver=syslog \
-  --volume=$HOME/volumes/briefmetrics/src:/app/src \
+  --volume=$HOME/volumes/briefmetrics/src:/home/app/src \
   --link=db:db \
   --env=INI_FILE=staging.ini \
   shazow/python-uwsgi
 ```
 
+
+```
+docker run --rm -it \
+  --volumes-from=briefmetrics \
+  --link=db:db \
+  --env=INI_FILE=staging.ini \
+  shazow/python-uwsgi bash
+
+```
 
 ## nginx
 
