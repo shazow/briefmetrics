@@ -98,7 +98,7 @@ class NamecheapAPI(Service):
     }
     instance = None # Replaced during init
 
-    def __init__(self):
+    def __init__(self, request=None):
         self.session = Session()
         self.session.auth = HawkAuth(credentials={
             'id': self.config['client_id'],
@@ -120,3 +120,5 @@ class NamecheapAPI(Service):
         }
         if extra_kw:
             params.update(extra_kw)
+
+        
