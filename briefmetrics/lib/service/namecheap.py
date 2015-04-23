@@ -3,6 +3,7 @@ from .base import Service
 from briefmetrics.lib.http import assert_response
 from requests import Session
 from requests_hawk import HawkAuth
+from urllib import urlencode
 
 
 class NamecheapAPI(Service):
@@ -88,7 +89,7 @@ class NamecheapAPI(Service):
     url_prefix = 'https://api.sandbox.partners.namecheap.com'
 
     config = {
-        'auth_url': 'http://www.sandbox.namecheap.com/sso/authorize', # TODO: Replace with https://namecheap.com/marketplace/sso/authorize
+        'auth_url': 'https://www.sandbox.namecheap.com/apps/sso/authorize', # TODO: Replace with https://namecheap.com/marketplace/sso/authorize
         'token_url': 'XXX',
         'scope': ['read_only'],
 
@@ -121,4 +122,5 @@ class NamecheapAPI(Service):
         if extra_kw:
             params.update(extra_kw)
 
-        
+        url = self.config['auth_url'] + '?' + urlencode(params)
+        return url, params.get('state')
