@@ -5,7 +5,6 @@ alembic==0.6.7
 celery==3.1.17
 dogpile.cache==0.5.6
 mock==1.0.1
-mohawk==0.2.2
 oauthlib<0.7 # Breaks scope change
 pillow==2.6.1
 pyramid==1.5.1
@@ -18,6 +17,7 @@ pyramid_mako==1.0.2
 python-dateutil==2.4.2
 pytz==2015.2
 pyyaml==3.11
+requests-hawk==0.1.2
 requests-oauthlib==0.4.2
 requests==2.6.0
 stripe==1.22.2

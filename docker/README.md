@@ -73,6 +73,7 @@ docker run --name=nginx -d -p 80:80 -p 443:443 \
   --volume=$HOME/volumes/nginx/sites:/etc/nginx/sites-enabled:ro \
   --volume=$HOME/volumes/nginx/certs:/etc/nginx/certs:ro \
   --volume=$HOME/volumes/nginx/www:/var/www:ro \
+  --volume=$HOME/volumes/briefmetrics/src/briefmetrics/web/static:$/var/www/staging.briefmetrics.com/static:ro \
   --link=briefmetrics:briefmetrics \
   shazow/nginx
 ```
