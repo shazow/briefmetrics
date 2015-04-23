@@ -46,7 +46,7 @@ docker run --name=db -d \
 ## uwsgi
 
 ```
-docker run --name=briefmetrics -d \
+docker run --name=briefmetrics -d --expose 8001 \
   --restart=always \
   --log-driver=syslog \
   --volume=$HOME/volumes/briefmetrics/src:/home/app/src \
@@ -62,7 +62,6 @@ docker run --rm -it \
   --link=db:db \
   --env=INI_FILE=staging.ini \
   shazow/python-uwsgi bash
-
 ```
 
 ## nginx
