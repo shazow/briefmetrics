@@ -1,9 +1,10 @@
 from .base import Service
 
 from briefmetrics.lib.http import assert_response
+from unstdlib import random_string
 from requests import Session
 from requests_hawk import HawkAuth
-from urllib import urlencode
+from urllib import quote
 
 
 class NamecheapAPI(Service):
@@ -91,7 +92,7 @@ class NamecheapAPI(Service):
     config = {
         'auth_url': 'https://www.sandbox.namecheap.com/apps/sso/authorize', # TODO: Replace with https://namecheap.com/marketplace/sso/authorize
         'token_url': 'XXX',
-        'scope': ['read_only'],
+        'scope': ['openid', 'namecheap'],
 
         # Populate these during init:
         # 'client_id': ...,
@@ -100,6 +101,7 @@ class NamecheapAPI(Service):
     instance = None # Replaced during init
 
     def __init__(self, request=None):
+        self.request = request
         self.session = Session()
         self.session.auth = HawkAuth(credentials={
             'id': self.config['client_id'],
@@ -114,13 +116,19 @@ class NamecheapAPI(Service):
 
     def auth_url(self, **extra_kw):
         params = {
-            'response_type': 'id_token token',
-            'client_id': self.config['client_id'], # TODO: Should this be briefmetrics@namecheap.com?
-            'redirect_uri': '...',
-            'nonce': '...',
+            'response_type': 'id_token%20token',
+            'client_id': '231CBFE8-F16E-4C79-82E4-A3DECE1F3AEC',
+            'scope': ' '.join(self.config['scope']),
+            'redirect_uri': self.request.route_url('account_connect', service=self.id),
+            'nonce': random_string(6),
         }
         if extra_kw:
             params.update(extra_kw)
 
-        url = self.config['auth_url'] + '?' + urlencode(params)
+        # Can't use urllib.urlencode because %20 instead of +.
+        encoded = '&'.join('='.join((k, quote(v, safe=''))) for k, v in params.iteritems())
+        url = self.config['auth_url'] + '?' + encoded
         return url, params.get('state')
+
+    # http%3A%2F%2Flocalhost%3A5000%2Faccount%2Fconnect%2Fnamecheap
+    # http%3A%2F%2Flocalhost%3A5000%2Faccount%2Fconnect%2Fnamecheap
