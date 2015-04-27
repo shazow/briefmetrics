@@ -97,6 +97,7 @@ class NamecheapAPI(Service):
         # Populate these during init:
         # 'client_id': ...,
         # 'client_secret': ...,
+        # 'sso_client_id': ...,
     }
     instance = None # Replaced during init
 
@@ -117,7 +118,7 @@ class NamecheapAPI(Service):
     def auth_url(self, **extra_kw):
         params = {
             'response_type': 'id_token%20token',
-            'client_id': '231CBFE8-F16E-4C79-82E4-A3DECE1F3AEC',
+            'client_id': self.config['sso_client_id'],
             'scope': ' '.join(self.config['scope']),
             'redirect_uri': self._request.route_url('account_connect', service=self.id),
             'nonce': random_string(6),

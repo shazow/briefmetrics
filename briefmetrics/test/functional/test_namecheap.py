@@ -12,7 +12,7 @@ Session = model.Session
 
 RESPONSES = {
     'webhook': '{"event_token": "foo"}',
-    'subscription_create': '{"type": "subscription_create", "event": {"returnURI": "https://api.sandbox.partners.namecheap.com/v1/saas/saas/eventResponse/67e2b7f7dcad46cfa4e2013f224fcead", "id": "b17055ca229140309e0a54df7804fb85", "user": {"username": "testuser", "id": "fooid", "email": "foo@localhost", "first_name": "bar", "last_name": "baz"}, "subscription_id": "308", "configuration": {}, "order": {"product_id": 17}}}',
+    'subscription_create': '{"type": "subscription_create", "event": {"returnURI": "https://api.sandbox.partners.namecheap.com/v1/saas/saas/eventResponse/67e2b7f7dcad46cfa4e2013f224fcead", "id": "b17055ca229140309e0a54df7804fb85", "user": {"username": "testuser", "email": "foo@localhost", "first_name": "bar", "last_name": "baz"}, "subscription_id": "308", "configuration": {}, "order": {"pricing_plan_sku": "starter-yr"}}}',
 }
 
 class FakeNamecheapAPI(object):
@@ -53,4 +53,4 @@ class TestNamecheap(test.TestWeb):
         self.assertEqual(p.token, '308')
 
         a = u.get_account(service='namecheap')
-        self.assertEqual(a.remote_id, 'fooid')
+        self.assertEqual(a.remote_id, 'testuser')

@@ -1,5 +1,6 @@
 import logging
 
+from sqlalchemy import orm
 from unstdlib import get_many
 
 from briefmetrics import api, model, tasks
@@ -58,14 +59,26 @@ def handle_namecheap(request, data):
     r = nc_api.request('GET', '/v1/saas/saas/event/{token}'.format(token=event_token))
 
     data = r.json()
-    assert data['type'] == 'subscription_create'
-    # TODO: Handle subscription_cancel?
+    fn = {
+        'subscription_create': _namecheap_subscription_create,
+        'subscription_alter': _namecheap_subscription_alter,
+        'subscription_cancel': _namecheap_subscription_cancel,
+    }.get(data['type'])
+
+    if not fn:
+        raise httpexceptions.HTTPBadRequest('Invalid event type: %s' % data['type'])
+
+    return fn(request, data)
+
+
+def _namecheap_subscription_create(request, data):
+    nc_api = service_registry['namecheap'].instance
 
     event_id = data['event']['id']
-    return_uri = data['event']['returnURI']
+    return_uri = data['event'].get('returnURI')
     subscription_id = data['event']['subscription_id']
 
-    email, first_name, last_name, remote_id = get_many(data['event']['user'], ['email', 'first_name', 'last_name', 'id'])
+    email, first_name, last_name, remote_id = get_many(data['event']['user'], ['email', 'first_name', 'last_name', 'username'])
     display_name = ' '.join([first_name, last_name])
 
     user = api.account.get_or_create(
@@ -79,19 +92,87 @@ def handle_namecheap(request, data):
     user.set_payment('namecheap', subscription_id)
     model.Session.commit()
 
-    # Confirm event, activate subscription
-    ack = {
-        'type': 'subscription_create_resp',
-        'id': event_id,
-        'response': {
-            'state': 'Active',
-            'provider_id': nc_api.config['client_id'],
+    if return_uri:
+        # Confirm event, activate subscription
+        ack = {
+            'type': 'subscription_create_resp',
+            'id': event_id,
+            'response': {
+                'state': 'Active',
+                'provider_id': user.id,
+            }
         }
-    }
-    r = nc_api.session.request('PUT', return_uri, json=ack) # Bypass our wrapper
-    assert_response(r)
+        r = nc_api.session.request('PUT', return_uri, json=ack) # Bypass our wrapper
+        assert_response(r)
 
     log.info('namecheap webhook: Provisioned %s' % user)
+
+
+def _namecheap_subscription_cancel(request, data):
+    nc_api = service_registry['namecheap'].instance
+
+    event_id = data['event']['id']
+    return_uri = data['event'].get('returnURI')
+    remote_id = data['event']['user']['username']
+
+    q = model.Session.query(model.Account).filter_by(service='namecheap', remote_id=remote_id)
+    q = q.options(orm.joinedload('user'))
+
+    account = q.first()
+    if not account:
+        raise httpexceptions.HTTPBadRequest('Invalid remote id.')
+
+    user = account
+    api.account.delete_payments(account.user)
+
+    if return_uri:
+        # Confirm event, activate subscription
+        ack = {
+            'type': 'subscription_cancel_resp',
+            'id': event_id,
+            'response': {
+                'state': 'Inactive',
+            }
+        }
+        r = nc_api.session.request('PUT', return_uri, json=ack) # Bypass our wrapper
+        assert_response(r)
+
+    log.info('namecheap webhook: Cancelled %s' % user)
+
+
+def _namecheap_subscription_alter(request, data):
+    nc_api = service_registry['namecheap'].instance
+
+    event_id = data['event']['id']
+    return_uri = data['event'].get('returnURI')
+    remote_id = data['event']['user']['username']
+    order = data['event']['order']
+
+    q = model.Session.query(model.Account).filter_by(service='namecheap', remote_id=remote_id)
+    q = q.options(orm.joinedload('user'))
+
+    account = q.first()
+    if not account:
+        raise httpexceptions.HTTPBadRequest('Invalid remote id.')
+
+    user = account
+    api.account.set_plan(account.user, order['pricing_plan_sku'])
+    # XXX: Make sure pro-rating happens?
+
+    if return_uri:
+        # Confirm event, activate subscription
+        ack = {
+            'type': 'subscription_alter_resp',
+            'id': event_id,
+            'response': {
+                'state': 'Active',
+            }
+        }
+        r = nc_api.session.request('PUT', return_uri, json=ack) # Bypass our wrapper
+        assert_response(r)
+
+    log.info('namecheap webhook: Altered %s' % user)
+
 
 
 # TODO: Should this live in lib.service?
