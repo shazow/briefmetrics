@@ -14,12 +14,12 @@ class NamecheapAPI(Service):
     prefix = 'https://api.sandbox.partners.namecheap.com'
 
     # Create fake event
-    r = nc.session.request('POST', prefix + '/v1/saas/saas/subscription/mock')
+    r = nc.request('POST', '/v1/saas/saas/subscription/mock')
     data = r.json()
     token = data['event']['event_token']
 
     # Get event details
-    r = nc.session.request('GET', prefix + '/v1/saas/saas/event/%s' % token)
+    r = nc.request('GET', '/v1/saas/saas/event/%s' % token)
     data = r.json()
     return_uri = data['event']['returnURI']
     subscription_id = data['event']['subscription_id']
@@ -101,7 +101,7 @@ class NamecheapAPI(Service):
     instance = None # Replaced during init
 
     def __init__(self, request=None):
-        self.request = request
+        self._request = request
         self.session = Session()
         self.session.auth = HawkAuth(credentials={
             'id': self.config['client_id'],
@@ -119,7 +119,7 @@ class NamecheapAPI(Service):
             'response_type': 'id_token%20token',
             'client_id': '231CBFE8-F16E-4C79-82E4-A3DECE1F3AEC',
             'scope': ' '.join(self.config['scope']),
-            'redirect_uri': self.request.route_url('account_connect', service=self.id),
+            'redirect_uri': self._request.route_url('account_connect', service=self.id),
             'nonce': random_string(6),
         }
         if extra_kw:
