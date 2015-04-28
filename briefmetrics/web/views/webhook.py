@@ -72,7 +72,11 @@ def handle_namecheap(request, data):
     if not fn:
         raise httpexceptions.HTTPBadRequest('Invalid event type: %s' % data['type'])
 
-    return fn(request, data)
+    try:
+        return fn(request, data)
+    except:
+        log.error('namecheap webhook: Failed %s: %s' % (data['type'], event_token))
+        raise
 
 
 def _namecheap_subscription_create(request, data):
@@ -96,6 +100,8 @@ def _namecheap_subscription_create(request, data):
     user.set_payment('namecheap', subscription_id)
     model.Session.commit()
 
+    log.info('namecheap webhook: Provisioned %s' % user)
+
     if return_uri:
         # Confirm event, activate subscription
         ack = {
@@ -108,8 +114,6 @@ def _namecheap_subscription_create(request, data):
         }
         r = nc_api.session.request('PUT', return_uri, json=ack) # Bypass our wrapper
         assert_response(r)
-
-    log.info('namecheap webhook: Provisioned %s' % user)
 
 
 def _namecheap_subscription_cancel(request, data):
@@ -129,6 +133,8 @@ def _namecheap_subscription_cancel(request, data):
     user = account
     api.account.delete_payments(account.user)
 
+    log.info('namecheap webhook: Cancelled %s' % user)
+
     if return_uri:
         # Confirm event, activate subscription
         ack = {
@@ -140,8 +146,6 @@ def _namecheap_subscription_cancel(request, data):
         }
         r = nc_api.session.request('PUT', return_uri, json=ack) # Bypass our wrapper
         assert_response(r)
-
-    log.info('namecheap webhook: Cancelled %s' % user)
 
 
 def _namecheap_subscription_alter(request, data):
@@ -163,6 +167,8 @@ def _namecheap_subscription_alter(request, data):
     api.account.set_plan(account.user, order['pricing_plan_sku'])
     # XXX: Make sure pro-rating happens?
 
+    log.info('namecheap webhook: Altered %s' % user)
+
     if return_uri:
         # Confirm event, activate subscription
         ack = {
@@ -174,9 +180,6 @@ def _namecheap_subscription_alter(request, data):
         }
         r = nc_api.session.request('PUT', return_uri, json=ack) # Bypass our wrapper
         assert_response(r)
-
-    log.info('namecheap webhook: Altered %s' % user)
-
 
 
 # TODO: Should this live in lib.service?
