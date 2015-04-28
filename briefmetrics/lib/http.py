@@ -16,10 +16,12 @@ def assert_response(r):
 
         try:
             error = r.json()['error']
-            if 'errors' in error:
+            if isinstance(error, basestring):
+                message = error
+            elif isinstance(error, dict) and 'errors' in error:
                 message = '; '.join(e['message'] for e in error['errors'])
             else:
-                message = error['message']
+                message = str(error)
 
             raise APIError("API call failed: %s" % message, e.response.status_code, response=e.response)
         except (ValueError, KeyError):
