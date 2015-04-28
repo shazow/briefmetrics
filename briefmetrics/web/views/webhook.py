@@ -56,7 +56,11 @@ def handle_namecheap(request, data):
     nc_api = service_registry['namecheap'].instance
 
     # Get event details
-    r = nc_api.request('GET', '/v1/saas/saas/event/{token}'.format(token=event_token))
+    try:
+        r = nc_api.request('GET', '/v1/saas/saas/event/{token}'.format(token=event_token))
+    except:
+        log.error('namecheap webhook: Failed token lookup: %s' % event_token)
+        raise
 
     data = r.json()
     fn = {
