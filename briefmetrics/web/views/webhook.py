@@ -72,6 +72,8 @@ def handle_namecheap(request, data):
     if not fn:
         raise httpexceptions.HTTPBadRequest('Invalid event type: %s' % data['type'])
 
+    log.debug("namecheap webhook: Processing %s: %s" % (data['type'], data['event']))
+
     try:
         return fn(request, data)
     except:
