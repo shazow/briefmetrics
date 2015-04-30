@@ -5,7 +5,48 @@
 <div class="container">
 
     <section id="credit-card">
-    % if c.user.payment:
+    <%
+        payment = c.user.payment
+    %>
+    % if not payment:
+        <h2>Add a credit card</h2>
+
+        % if c.user.num_remaining:
+        <p>
+            You will be charged only when your free emails run out.
+        </p>
+        % endif
+
+        ${forms.payment_form(plan=c.selected_plan)}
+
+        % if c.selected_plan.in_group:
+            ${forms.pricing_plan_group(c.selected_plan.in_group, c.selected_plan.id)}
+        % endif
+    % elif payment.id == 'namecheap':
+        <h2>Plan</h2>
+
+        <p>
+            <strong>${c.user.plan.name}</strong> at ${c.user.plan.price_str}.
+            <a href="${request.route_path('pricing')}" class="button">Manage Plan</a>
+        </p>
+
+        % if c.user.num_remaining:
+        <p>
+            You have ${c.user.num_remaining} free emails remaining.
+        </p>
+        % endif
+        % if not c.user.time_next_payment:
+        <p>
+            You must activate your subscription to continue receiving reports after the trial.
+        </p>
+        <form action="${request.route_path('account_delete')}">
+            <input type="submit" value="Activate Subscription" />
+            % if c.user.num_remaining:
+                <span class="button-note">You will only be charged when your free emails run out.</span>
+            % endif
+        </form>
+        % endif
+    % else:
         <h2>Plan</h2>
 
         <p>
@@ -30,20 +71,6 @@
             ${forms.payment_form()}
         </div>
 
-    % else:
-        <h2>Add a credit card</h2>
-
-        % if c.user.num_remaining:
-        <p>
-            You will be charged only when your free emails run out.
-        </p>
-        % endif
-
-        ${forms.payment_form(plan=c.selected_plan)}
-
-        % if c.selected_plan.in_group:
-            ${forms.pricing_plan_group(c.selected_plan.in_group, c.selected_plan.id)}
-        % endif
     % endif
     </section>
 

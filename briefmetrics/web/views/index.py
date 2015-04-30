@@ -24,6 +24,10 @@ class IndexController(Controller):
     def pricing(self):
         self.c.user = api.account.get_user(self.request)
 
+        p = self.c.user and self.c.user.payment
+        if p and p.id == 'namecheap':
+            return httpexceptions.HTTPSeeOther('https://www.namecheap.com/apps/subscriptions')
+
         monthly = ('monthly', 'Pay Monthly', [
             Plan.get('starter'),
             PlanGroup.get('agency-10'),

@@ -337,7 +337,7 @@ body {
   -ms-font-feature-settings: "kern", "liga", "pnum";
   font-feature-settings: "kern", "liga", "pnum";
   -webkit-font-smoothing: antialiased;
-  color: #616666;
+  color: #666666;
   font-family: "Nunito", "Helvetica Neue", Arial, Helvetica, sans-serif;
   font-size: 1em;
   line-height: 1.5; }
@@ -415,7 +415,7 @@ h3 {
   font-weight: normal; }
 
 strong {
-  color: #6d2727; }
+  color: #267373; }
 
 ul, ol {
   margin: 0 0 1em 0; }
@@ -507,7 +507,7 @@ input.negative, .button.negative {
     background: #dd4b58; }
 
 small {
-  color: #949999; }
+  color: #999999; }
 
 iframe {
   margin: auto 1em auto 2em;
@@ -546,7 +546,7 @@ a.button {
 
 .button-note, .note {
   font-size: 0.8em;
-  color: #949999; }
+  color: #999999; }
 
 section {
   margin-bottom: 3em; }
@@ -565,7 +565,7 @@ blockquote {
   blockquote cite {
     font-size: 0.7em;
     font-style: normal;
-    color: #555959;
+    color: #595959;
     font-weight: bold; }
     blockquote cite:before {
       content: "- "; }
@@ -1039,7 +1039,7 @@ footer {
   background-image: -webkit-linear-gradient(#272629, #343236);
   background-image: linear-gradient(#272629, #343236);
   border-top: 5px solid #1b1a1c;
-  color: #949999;
+  color: #999999;
   margin-top: 4em;
   padding-top: 1em; }
   footer::after {
