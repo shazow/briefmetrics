@@ -1,7 +1,7 @@
 from unstdlib import get_many
 
 from briefmetrics import api, model
-from briefmetrics.lib.exceptions import APIError, APIControllerError, LoginRequired
+from briefmetrics.lib.exceptions import APIControllerError, LoginRequired
 from briefmetrics.lib.image import save_logo
 from briefmetrics.lib.service import registry as service_registry
 
@@ -27,7 +27,6 @@ def settings_payments(request):
         subject = 'Payment updated: [%s] %s'
 
     api.account.set_payments(user, plan_id=plan_id, card_token=stripe_token, metadata=metadata)
-
     api.email.notify_admin(request, subject % (user.id, user.display_name), 'plan_id=%s' % user.plan_id)
 
     request.flash('Payment information is set.')

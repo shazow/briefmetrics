@@ -58,7 +58,7 @@ def handle_namecheap(request, data):
     # Get event details
     try:
         r = nc_api.request('GET', '/v1/saas/saas/event/{token}'.format(token=event_token))
-    except:
+    except Exception as e:
         log.error('namecheap webhook: Failed token lookup: %s' % event_token)
         raise
 
@@ -76,8 +76,8 @@ def handle_namecheap(request, data):
 
     try:
         return fn(request, data)
-    except:
-        log.error('namecheap webhook: Failed %s: %s' % (data['type'], event_token))
+    except Exception as e:
+        log.error('namecheap webhook: Failed %s (%s): %s' % (data['type'], e, event_token))
         raise
 
 
@@ -90,6 +90,7 @@ def _namecheap_subscription_create(request, data):
 
     email, first_name, last_name, remote_id = get_many(data['event']['user'], ['email', 'first_name', 'last_name', 'username'])
     display_name = ' '.join([first_name, last_name])
+    plan_id = data['event']['order'].get('pricing_plan_sku')
 
     user = api.account.get_or_create(
         email=email,
@@ -97,6 +98,7 @@ def _namecheap_subscription_create(request, data):
         display_name=display_name,
         remote_id=remote_id,
         remote_data=data['event']['user'],
+        plan_id=plan_id,
     )
 
     user.set_payment('namecheap', subscription_id)

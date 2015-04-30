@@ -21,19 +21,20 @@ class NamecheapPayment(Payment):
         if not self.token:
             raise PaymentError("Cannot start subscription for user without a payment method: %s" % self.user.id)
 
-        if not self.plan_id:
+        if not self.user.plan_id:
             raise PaymentError("Cannot start subscription for user without a confirmed plan: %s" % self.user.id)
 
-        if self.user.time_next_payment and self.user.time_next_payment < now():
+        if not self.user.time_next_payment or self.user.time_next_payment < now():
             # Too early to charge, skip the rest.
             return
 
-        amount = self.plan.price_yearly or self.plan.price_monthly
-        description = "Briefmetrics: %s" % self.plan.option_str
+        plan = self.user.plan
+        amount = plan.price_yearly or plan.price_monthly
+        description = "Briefmetrics: %s" % plan.option_str
         self.invoice(amount, description)
 
         next_payment = self.user.time_next_payment or now()
-        if self.plan.price_yearly:
+        if plan.price_yearly:
             next_payment += relativedelta(years=1)
         else:
             next_payment += relativedelta(months=1)
