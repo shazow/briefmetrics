@@ -39,7 +39,11 @@
         <p>
             You must activate your subscription to continue receiving reports after the trial.
         </p>
-        <form action="${request.route_path('account_delete')}">
+        <form action="${request.route_path('api')}" method="post" >
+            <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
+            <input type="hidden" name="method" value="settings.payments_set" />
+            <input type="hidden" name="format" value="redirect" />
+
             <input type="submit" value="Activate Subscription" />
             % if c.user.num_remaining:
                 <span class="button-note">You will only be charged when your free emails run out.</span>

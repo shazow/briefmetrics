@@ -254,17 +254,17 @@ def set_payments(user, plan_id=None, card_token=None, metadata=None, payment_typ
         except KeyError:
             raise APIError('Invalid plan: %s' % plan_id)
 
-    if not card_token:  # For testing
-        log.warn('Skipping interfacing set_payments for user_id: %s' % user.id)
-        Session.commit()
-        return user
-
     p = user.payment
     if p and p.id != payment_type:
-        raise APIError('Incompatible payment type for user_di: %s' % user.id)
+        raise APIError('Incompatible payment type user: %s' % user)
 
     if not p:
         p = payment.registry[payment_type](user)
+
+    if p.id == 'stripe' and not card_token:  # For testing
+        log.warn('Skipping interfacing set_payments for user: %s' % user)
+        Session.commit()
+        return user
 
     p.set(card_token, metadata=metadata)
     Session.commit()

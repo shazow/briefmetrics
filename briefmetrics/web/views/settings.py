@@ -15,7 +15,10 @@ def settings_payments(request):
     user = api.account.get_user(request, required=True)
     stripe_token, plan_id, ga_cid = get_many(request.params, optional=['stripe_token', 'plan_id', 'ga_cid'])
 
-    if not stripe_token and not request.registry.settings.get('testing'):
+    payment_type = 'stripe'
+    if user.payment and user.payment.id == 'namecheap':
+        payment_type = 'namecheap'
+    elif not stripe_token and not request.registry.settings.get('testing'):
         raise APIControllerError('Missing Stripe card token.')
 
     metadata = {}
@@ -26,7 +29,7 @@ def settings_payments(request):
     if user.payment:
         subject = 'Payment updated: [%s] %s'
 
-    api.account.set_payments(user, plan_id=plan_id, card_token=stripe_token, metadata=metadata)
+    api.account.set_payments(user, plan_id=plan_id, card_token=stripe_token, metadata=metadata, payment_type=payment_type)
     api.email.notify_admin(request, subject % (user.id, user.display_name), 'plan_id=%s' % user.plan_id)
 
     request.flash('Payment information is set.')

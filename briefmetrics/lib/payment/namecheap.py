@@ -16,6 +16,8 @@ class NamecheapPayment(Payment):
     def set(self, new_token=None, metadata=None):
         if new_token:
             self.user.set_payment('namecheap', new_token)
+        if not self.user.time_next_payment:
+            self.user.time_next_payment = now()
 
     def start(self):
         if not self.token:
