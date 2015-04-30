@@ -24,7 +24,7 @@ def settings_payments(request):
 
     api.account.set_payments(user, plan_id=plan_id, card_token=stripe_token, metadata=metadata)
 
-    api.email.notify_admin(request, 'Payment added: [%s] %s' % (user.id, user.display_name), 'plan_id=%s' % plan_id)
+    api.email.notify_admin(request, 'Payment added: [%s] %s' % (user.id, user.display_name), 'plan_id=%s' % user.plan_id)
 
     request.flash('Payment information is set.')
 
@@ -56,8 +56,11 @@ def settings_plan(request):
         request.flash('The Enterprise plan is only available in limited access at the moment. We will reach out to you when a slot becomes available. You are welcome to choose another plan for now.')
         return
 
+    old_plan_id = user.plan_id
     api.account.set_plan(user, plan_id=plan_id)
     request.flash('Plan updated.')
+
+    api.email.notify_admin(request, 'Plan changed: [%s] %s' % (user.id, user.display_name), '%s -> %s' % (old_plan_id, user.plan_id))
 
 
 @expose_api('settings.branding')
