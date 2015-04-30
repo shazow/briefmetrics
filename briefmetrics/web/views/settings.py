@@ -22,9 +22,13 @@ def settings_payments(request):
     if ga_cid:
         metadata['ga_cid'] = ga_cid
 
+    subject = 'Payment added: [%s] %s'
+    if user.payment:
+        subject = 'Payment updated: [%s] %s'
+
     api.account.set_payments(user, plan_id=plan_id, card_token=stripe_token, metadata=metadata)
 
-    api.email.notify_admin(request, 'Payment added: [%s] %s' % (user.id, user.display_name), 'plan_id=%s' % user.plan_id)
+    api.email.notify_admin(request, subject % (user.id, user.display_name), 'plan_id=%s' % user.plan_id)
 
     request.flash('Payment information is set.')
 
