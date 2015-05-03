@@ -44,15 +44,12 @@ def account_connect(request):
     decode_options = {}
     if request.registry.settings.get('testing'):
         decode_options = {
-           'verify_signature': False,
            'verify_exp': False,
-           'verify_nbf': False,
-           'verify_iat': False,
            'verify_aud': False
         }
 
     try:
-        decoded = jwt.decode(id_token, secret=service.config['sso_client_secret'], options=decode_options)
+        decoded = jwt.decode(id_token, service.config['sso_client_secret'], options=decode_options)
     except jwt.DecodeError as e:
         raise APIControllerError('Failed to verify id token: %s' % e)
 
