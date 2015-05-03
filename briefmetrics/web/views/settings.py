@@ -120,7 +120,7 @@ class SettingsController(Controller):
 
         available_services = set(['google', 'stripe'])
         for a in user.accounts:
-            available_services.remove(a.service)
+            available_services.discard(a.service)
 
         # TODO: Merge with plan level/features?
         self.c.extra_services = get_many(service_registry, available_services)
