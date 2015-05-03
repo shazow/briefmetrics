@@ -121,7 +121,7 @@ class NamecheapAPI(Service):
             'response_type': 'id_token token',
             'client_id': self.config['sso_client_id'],
             'scope': ' '.join(self.config['scope']),
-            'redirect_uri': self._request.route_url('account_login', service=self.id),
+            'redirect_uri': self._request.route_url('account_connect', service=self.id),
             'nonce': random_string(6),
         }
         if extra_kw:
