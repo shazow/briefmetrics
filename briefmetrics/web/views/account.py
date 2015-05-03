@@ -41,10 +41,28 @@ def account_connect(request):
 
     p = parse_qs(payload)
     id_token, = p['id_token']
+    decode_options = {}
+    if request.registry.settings.get('testing'):
+        decode_options = {
+           'verify_signature': False,
+           'verify_exp': False,
+           'verify_nbf': False,
+           'verify_iat': False,
+           'verify_aud': False
+        }
+
     try:
-        decoded = jwt.decode(id_token, secret=service.config['sso_client_secret'])
-    except jwt.DecodeError:
-        raise APIControllerError('Failed to verify id token.')
+        decoded = jwt.decode(id_token, secret=service.config['sso_client_secret'], options=decode_options)
+    except jwt.DecodeError as e:
+        raise APIControllerError('Failed to verify id token: %s' % e)
+
+    remote_id = decoded['sub']
+    account = model.Session.query(model.Account).filter_by(remote_id=remote_id, service=service_id).first()
+    if not account:
+        # TODO: Create on demand?
+        raise APIControllerError('Account does not exist.')
+
+    api.account.login_user_id(request, account.user_id)
 
     redirect_to = '/reports'
     return {'redirect': redirect_to, 'decoded': decoded}

@@ -19,7 +19,7 @@
             msg(data["messages"].join("<br />"));
         }
         if (data["result"] && data["result"]["redirect"]) {
-            window.location.pathname =  data["result"]["redirect"];
+            window.location = data["result"]["redirect"];
         }
     };
 
