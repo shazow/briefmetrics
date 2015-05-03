@@ -1,3 +1,4 @@
+from briefmetrics import api
 from briefmetrics import test
 from briefmetrics import model
 from briefmetrics.lib.service import registry as service_registry
@@ -68,6 +69,14 @@ class TestNamecheap(test.TestWeb):
         self.assertEqual(u.time_next_payment, None)
 
     def test_connect_decode(self):
+        api.account.get_or_create(
+            email=u'foo@localhost',
+            display_name=u'Foo',
+            plan_id=u'starter-yr',
+            service=u'namecheap',
+            remote_id=u'shazow',
+        )
+
         payload = '''id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vd3d3LnNhbmRib3gubmFtZWNoZWFwLmNvbS9hcHBzL3NzbyIsInN1YiI6InNoYXpvdyIsImF1ZCI6IjIzMUNCRkU4LUYxNkUtNEM3OS04MkU0LUEzREVDRTFGM0FFQyIsImV4cCI6MTQzMDY4MTY2MCwiaWF0IjoxNDMwNjc4MDYwLCJub25jZSI6IkVtQVJFUyIsImh0X2hhc2giOiJIMUFRSG10TktRSkxJeFpwQXlVQ0tRIn0.wPtPkJB1Y8AVe-u348qirxxjekz4olfXgyLjQx5VlLo&access_token=4a4422c8a3e3a95126d84131c6c1161f&token_type=Bearer&expires_in=3600&sid=s%3ao7GVoAsXfx8xAqe0X2BW6vQV5OrPNuOz.lRekL22%2fj673SlRu283JS9riFEDDx5cpoCXpb9cyou0'''
         r = self.call_api('account.connect', service='namecheap', payload=payload)
         self.assertEqual(r['result']['decoded'], {

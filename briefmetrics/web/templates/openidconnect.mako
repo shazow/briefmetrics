@@ -46,7 +46,7 @@
     };
 
     if (!window.location.hash) {
-        msg("Error: Missing auth token.");
+        window.location = '/account/login/${c.service}';
     } else {
         $(function() {
             sendHash(window.location.hash.substr(1))
