@@ -4,6 +4,8 @@ from briefmetrics import api, model
 from briefmetrics.lib.exceptions import LoginRequired, APIError, APIControllerError
 from briefmetrics.lib.service import registry as service_registry
 
+import jwt
+from urlparse import parse_qs
 from unstdlib import get_many
 
 from .api import expose_api
@@ -28,6 +30,26 @@ def account_login(request):
     return {'user': u}
 
 
+@expose_api('account.connect')
+def account_connect(request):
+    # TODO: Move /account/*/connect logic in here too?
+    payload, service_id = get_many(request.params, ["payload", "service"])
+    service = service_registry[service_id]
+
+    if service.protocol != 'openidconnect':
+        raise APIControllerError('OpenID Connect not supported for service.')
+
+    p = parse_qs(payload)
+    id_token, = p['id_token']
+    try:
+        decoded = jwt.decode(id_token, secret=service.config['sso_client_secret'])
+    except jwt.DecodeError:
+        raise APIControllerError('Failed to verify id token.')
+
+    redirect_to = '/reports'
+    return {'redirect': redirect_to, 'decoded': decoded}
+
+
 class AccountController(Controller):
 
     DEFAULT_NEXT = '/reports'
@@ -40,6 +62,10 @@ class AccountController(Controller):
     def connect(self):
         service = self.request.matchdict.get('service', 'google')
         oauth = service_registry[service](self.request)
+
+        if oauth.protocol == 'oauth2connect':
+            self.c.service = service.id
+            return self._render('oauth2connect.mako')
 
         try:
             account = api.account.connect_oauth(self.request, oauth)

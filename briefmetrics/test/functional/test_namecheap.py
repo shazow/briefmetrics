@@ -66,3 +66,16 @@ class TestNamecheap(test.TestWeb):
         u = users[0] 
         self.assertEqual(u.plan_id, 'agency-10-yr')
         self.assertEqual(u.time_next_payment, None)
+
+    def test_connect_decode(self):
+        payload = '''id_token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vd3d3LnNhbmRib3gubmFtZWNoZWFwLmNvbS9hcHBzL3NzbyIsInN1YiI6ImRjdGVzdDAyIiwiYXVkIjoiMjMxQ0JGRTgtRjE2RS00Qzc5LTgyRTQtQTNERUNFMUYzQUVDIiwiZXhwIjoxNDMwMzMxNDgwLCJpYXQiOjE0MzAzMjc4ODAsIm5vbmNlIjoiTi0zNDU2Nzc2NTQzNDU2IiwiaHRfaGFzaCI6ImJTTW5FQkl0UjN0bUhpNHFFeFVuVmcifQ.j5uhaOsXhEoAGwOZFrLnoh5CNJtq7IZLCfDILJ8Qzhc&access_token=00138cea3b28d495ebca715ea47301cf&token_type=Bearer&expires_in=3600&sid=s%3aeeneT5DZTnXLhWmR-hGtsq-wqT-puM-z.gGwM1WIwrKYBCmZcNer%2bh%2b2MkY9yJdQjfdmVOyxIChc'''
+        r = self.call_api('account.connect', service='namecheap', payload=payload)
+        self.assertEqual(r['result']['decoded'], {
+            'iss': 'http://www.sandbox.namecheap.com/apps/sso',
+            'sub': 'dchambers',
+            'aud': '231CBFE8-F16E-4C79-82E4-A3DECE1F3AEC',
+            'exp': 1429846851,
+            'iat': 1429843251,
+            'nonce': 'N-3456776543456',
+            'ht_hash': 'ChhqVgtXJWpcdCcAUDUqbw',
+        })

@@ -12,12 +12,15 @@ class Service(object):
     id = None
     label = 'ACME Api'
     description = ''
+    protocol = ''
 
     default_report = None
     is_autocreate = False
 
 
 class OAuth2API(Service):
+    protocol = 'oauth2'
+
     def __init__(self, request, token=None, state=None):
         self.request = request
 
