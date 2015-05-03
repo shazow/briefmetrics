@@ -63,9 +63,9 @@ class AccountController(Controller):
         service = self.request.matchdict.get('service', 'google')
         oauth = service_registry[service](self.request)
 
-        if oauth.protocol == 'oauth2connect':
-            self.c.service = service.id
-            return self._render('oauth2connect.mako')
+        if oauth.protocol == 'openidconnect':
+            self.c.service = oauth.id
+            return self._render('openidconnect.mako')
 
         try:
             account = api.account.connect_oauth(self.request, oauth)

@@ -28,7 +28,7 @@
 
         var params = {
             "payload": payload,
-            "service": c.service,
+            "service": "${c.service}",
             "csrf_token": "${session.get_csrf_token()}",
             "method": "account.connect",
             "format": "json"
