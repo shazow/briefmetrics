@@ -7,7 +7,7 @@ from sqlalchemy import orm
 from unstdlib import now, get_many
 from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
 
-from briefmetrics.lib.controller import Controller, Context
+from briefmetrics.lib.controller import Context
 from briefmetrics.lib.report import get_report, EmptyReportError
 from briefmetrics.lib.exceptions import APIError
 from briefmetrics.lib import helpers as h
@@ -135,10 +135,6 @@ def fetch(request, report, since_time, api_query=None, service='google'):
     return r
 
 
-def render(request, template, context=None):
-    return Controller(request, context=context)._render_template(template)
-
-
 def check_trial(request, report, has_data=True, pretend=False):
     messages = []
 
@@ -197,7 +193,7 @@ def send(request, report, since_time=None, pretend=False, session=model.Session)
         report_context = fetch(request, report, since_time)
     except InvalidGrantError:
         subject = u"Problem with your Briefmetrics"
-        html = render(request, 'email/error_auth.mako', Context({
+        html = api_email.render(request, 'email/error_auth.mako', Context({
             'report': report,
         }))
 
@@ -219,7 +215,7 @@ def send(request, report, since_time=None, pretend=False, session=model.Session)
             raise
 
         subject = u"Problem with your Briefmetrics"
-        html = render(request, 'email/error_permission.mako', Context({
+        html = api_email.render(request, 'email/error_permission.mako', Context({
             'report': report,
         }))
 
@@ -263,7 +259,7 @@ def send(request, report, since_time=None, pretend=False, session=model.Session)
         email_kw['reply_to'] = reply_to
 
     for user in report.users:
-        html = render(request, template, Context({
+        html = api_email.render(request, template, Context({
             'user': user,
             'report': report_context,
         }))
@@ -295,7 +291,7 @@ def send(request, report, since_time=None, pretend=False, session=model.Session)
     if report_context.data:
         if owner.num_remaining == 1:
             subject = u"Your Briefmetrics trial is over"
-            html = render(request, 'email/error_trial_end.mako')
+            html = api_email.render(request, 'email/error_trial_end.mako')
             message = api_email.create_message(request,
                 to_email=owner.email,
                 subject=subject,

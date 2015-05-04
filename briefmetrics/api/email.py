@@ -2,6 +2,7 @@ import requests
 import json
 import logging
 
+from briefmetrics.lib.controller import Controller
 from briefmetrics.lib.http import assert_response
 
 log = logging.getLogger(__name__)
@@ -9,6 +10,10 @@ log = logging.getLogger(__name__)
 http_session = requests.session()
 
 API_URL = 'https://mandrillapp.com/api/1.0/'
+
+
+def render(request, template, context=None):
+    return Controller(request, context=context)._render_template(template)
 
 
 def create_message(request, to_email, subject, html=None, text=None, from_name=None, from_email=None, reply_to=None, debug_bcc=None):

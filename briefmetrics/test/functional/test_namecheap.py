@@ -40,7 +40,15 @@ class TestNamecheap(test.TestWeb):
         self.assertIn('namecheap', service_registry)
         self.assertIn('namecheap', payment_registry)
 
-        self.app.post('/webhook/namecheap', params='{"event_token": "fakecreate"}', content_type='application/json')
+        with mock.patch('briefmetrics.api.email.send_message') as send_message:
+            self.app.post('/webhook/namecheap', params='{"event_token": "fakecreate"}', content_type='application/json')
+
+            self.assertTrue(send_message.called)
+            self.assertEqual(len(send_message.call_args_list), 1)
+
+            call = send_message.call_args_list[0]
+            message = call[0][1]
+            self.assertIn(u"Welcome to Briefmetrics", message['subject'])
 
         # Check that user was provisioned
         users = model.User.all()

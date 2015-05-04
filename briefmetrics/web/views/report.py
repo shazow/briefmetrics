@@ -279,7 +279,7 @@ class ReportController(Controller):
         if not report_context.data:
             template = 'email/error_empty.mako'
 
-        html = api.report.render(self.request, template, Context({
+        html = api.email.render(self.request, template, Context({
             'report': report_context,
             'user': user,
         }))

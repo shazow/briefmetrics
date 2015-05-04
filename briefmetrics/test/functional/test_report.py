@@ -62,7 +62,7 @@ class TestReport(test.TestWeb):
         self.assertEqual(context.date_next, datetime.date(2013, 1, 21))
         self.assertEqual(context.get_subject(), u'Report for example.com (Jan 6-12)')
 
-        html = api.report.render(self.request, context.template, Context({
+        html = api.email.render(self.request, context.template, Context({
             'report': context,
             'user': context.owner,
         }))
@@ -78,7 +78,7 @@ class TestReport(test.TestWeb):
         self.assertFalse(context.data)
 
         # TODO: Test send.
-        html = api.report.render(self.request, 'email/error_empty.mako', Context({
+        html = api.email.render(self.request, 'email/error_empty.mako', Context({
             'report': context,
             'user': context.owner,
         }))

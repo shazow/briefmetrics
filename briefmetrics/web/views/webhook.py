@@ -119,6 +119,16 @@ def _namecheap_subscription_create(request, data):
         r = nc_api.session.request('PUT', return_uri, json=ack) # Bypass our wrapper
         assert_response(r)
 
+    subject = u"Welcome to Briefmetrics"
+    html = api.email.render(request, 'email/welcome_namecheap.mako')
+    message = api.email.create_message(request,
+        to_email=email,
+        subject=subject,
+        html=html,
+    )
+    api.email.send_message(request, message)
+
+
 
 def _namecheap_subscription_cancel(request, data):
     nc_api = service_registry['namecheap'].instance
