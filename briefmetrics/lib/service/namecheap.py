@@ -82,7 +82,6 @@ class NamecheapAPI(Service):
     payment_id = data['result']['id']
 
     # Get payment info
-    # XXX: Not working?
     r = nc.session.request('GET', prefix + '/v1/payments/{payment_id}'.format(payment_id=payment_id))
 
     """
@@ -91,8 +90,7 @@ class NamecheapAPI(Service):
     protocol = 'openidconnect'
 
     config = {
-        'auth_url': 'https://www.sandbox.namecheap.com/apps/sso/authorize', # TODO: Replace with https://namecheap.com/marketplace/sso/authorize
-        'token_url': 'XXX',
+        'auth_url': 'https://namecheap.com/marketplace/sso/authorize',
         'scope': ['openid', 'namecheap'],
 
         # Populate these during init:
