@@ -1,7 +1,7 @@
 import logging
 
 from sqlalchemy import orm
-from unstdlib import get_many
+from unstdlib import get_many, now
 
 from briefmetrics import api, model, tasks
 from briefmetrics.lib.http import assert_response
@@ -102,6 +102,8 @@ def _namecheap_subscription_create(request, data):
     )
 
     user.set_payment('namecheap', subscription_id)
+    if user.payment.auto_charge:
+        user.time_next_payment = now() + user.payment.auto_charge
     model.Session.commit()
 
     log.info('namecheap webhook: Provisioned %s' % user)

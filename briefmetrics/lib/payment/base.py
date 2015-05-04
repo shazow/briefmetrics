@@ -11,6 +11,7 @@ class Payment(object):
     __metaclass__ = registry_metaclass(registry)
     id = None
     is_charging = True
+    auto_charge = False
 
     def __init__(self, user, token=None):
         self.user = user

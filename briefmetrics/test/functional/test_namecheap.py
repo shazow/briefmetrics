@@ -6,6 +6,7 @@ from briefmetrics.lib.payment import registry as payment_registry
 
 import mock
 import json
+from unstdlib import now
 
 Session = model.Session
 
@@ -40,6 +41,9 @@ class TestNamecheap(test.TestWeb):
         self.assertIn('namecheap', service_registry)
         self.assertIn('namecheap', payment_registry)
 
+        # Disable auto-charge
+        restore_auto_charge, payment_registry['namecheap'].auto_charge = payment_registry['namecheap'].auto_charge, False
+
         with mock.patch('briefmetrics.api.email.send_message') as send_message:
             self.app.post('/webhook/namecheap', params='{"event_token": "fakecreate"}', content_type='application/json')
 
@@ -59,6 +63,7 @@ class TestNamecheap(test.TestWeb):
         self.assertEqual(u.display_name, 'bar baz')
         self.assertEqual(u.plan_id, 'starter-yr')
         self.assertEqual(u.time_next_payment, None)
+        self.assertEqual(u.payment.is_charging, False)
 
         p = u.payment
         self.assertEqual(p.id, 'namecheap')
@@ -75,6 +80,13 @@ class TestNamecheap(test.TestWeb):
         u = users[0] 
         self.assertEqual(u.plan_id, 'agency-10-yr')
         self.assertEqual(u.time_next_payment, None)
+
+        u.time_next_payment = now()
+        self.assertEqual(u.payment.is_charging, True)
+
+        # Restore auto-charge
+        payment_registry['namecheap'].auto_charge = restore_auto_charge
+
 
     def test_connect_decode(self):
         api.account.get_or_create(

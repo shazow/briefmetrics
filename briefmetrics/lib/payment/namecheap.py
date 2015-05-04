@@ -4,6 +4,7 @@ from .base import Payment, PaymentError
 
 from unstdlib import now
 from briefmetrics.lib.service import registry as service_registry
+from dateutil.relativedelta import relativedelta
 
 
 log = logging.getLogger(__name__)
@@ -11,6 +12,7 @@ log = logging.getLogger(__name__)
 
 class NamecheapPayment(Payment):
     id = "namecheap"
+    auto_charge = relativedelta(seconds=1) # Truthy.
 
     @property
     def is_charging(self):
