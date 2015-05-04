@@ -78,7 +78,7 @@ class AdminController(Controller):
         self.c.active_users, self.c.inactive_users, self.c.active_trials = [], [], []
         for u in users:
             account_reports = [a.reports for a in u.accounts]
-            if u.is_active and (u.subscriptions or account_reports or u.stripe_customer_id):
+            if u.is_active and (u.subscriptions or account_reports or u.payment):
                 self.c.active_users.append(u)
                 if u.plan_id == 'trial':
                     self.c.active_trials.append(u)
@@ -86,8 +86,8 @@ class AdminController(Controller):
                 self.c.inactive_users.append(u)
 
         self.c.num_users = len(users)
-        self.c.num_credit_cards = len([u for u in users if u.stripe_customer_id])
-        self.c.num_mrr = sum([(u.plan.price_monthly or 0) for u in users if u.stripe_customer_id])
+        self.c.num_credit_cards = len([u for u in users if u.payment])
+        self.c.num_mrr = sum([(u.plan.price_monthly or 0) for u in users if u.payment])
 
         self.c.by_plan = groupby_count(users, key=lambda u: u.plan_id)
 

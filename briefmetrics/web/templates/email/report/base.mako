@@ -229,7 +229,7 @@
 ${next.body()}
 
 <p>
-    % if c.report.owner.num_remaining is None or c.report.owner.stripe_customer_id or c.report.owner != c.user:
+    % if c.report.owner.num_remaining is None or c.report.owner.payment or c.report.owner != c.user:
         You can look forward to your next report on <span class="highlight">${h.human_date(c.report.date_next)}</span>.
     % elif c.report.owner.num_remaining <= 1:
         <strong>This is your final report. :(</strong><br />
