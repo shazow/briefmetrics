@@ -796,7 +796,26 @@ footer {
         }
     }
 
-    .container {
+    .slogan {
+        border-radius: 3px;
+        width: 100%;
+        line-height: 1.8em;
+        text-align: center;
+        color: lighten($color-text, 25%);
+    }
+
+    a.cta {
+        margin-top: 1em;
+        background: lighten($_background, 5%);
+        border-color: lighten($_background, 50%);
+
+        &:hover {
+            color: #fff;
+            background: lighten($_background, 20%);
+        }
+    }
+
+    .menu {
         display: table;
         table-layout: fixed;
         width: 100%;

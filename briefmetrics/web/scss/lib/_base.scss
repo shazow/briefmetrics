@@ -49,8 +49,11 @@ body {
     background-color: $color-background;
     font-size: $font-size;
     font-weight: 300;
-}
 
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
 
 a {
     text-decoration: none;
@@ -185,3 +188,6 @@ pre {
     }
 }
 
+.content {
+    flex: 1;
+}

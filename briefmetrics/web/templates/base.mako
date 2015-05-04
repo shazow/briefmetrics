@@ -71,42 +71,45 @@ ${next.body()}
 
 <%block name="footer">
 <footer>
-% if not is_logged_in and not current_route == request.route_path('index'):
-    <p><a href="/">Briefmetrics</a> emails you weekly summaries of your Google Analytics.
-        <a href="${login_url}">Try it now</a> with 10 free emails!
-    </p>
-% endif
-
     <div class="container">
-        <ul>
-            <li>
-                <a href="${request.route_path('about')}">About</a>
-            </li>
-            <li>
-                <a href="${request.route_path('pricing')}">Plans &amp; Pricing</a>
-            </li>
-        </ul>
+        % if not is_logged_in and not current_route == request.route_path('index'):
+            <p class="slogan">Briefmetrics emails you weekly summaries of your Google Analytics.
+                <br />
+                <a class="cta" href="${login_url}">Try it now with 10 free emails!</a>
+            </p>
+        % endif
 
-        <ul>
-            <li>
-                <a href="${request.route_path('terms')}">Terms of Service</a>
-            </li>
-            <li>
-                <a href="${request.route_path('privacy')}">Privacy Policy</a>
-            </li>
-            <li>
-                <a href="${request.route_path('security')}">Security Policy</a>
-            </li>
-        </ul>
+        <div class="menu">
+            <ul>
+                <li>
+                    <a href="${request.route_path('about')}">About</a>
+                </li>
+                <li>
+                    <a href="${request.route_path('pricing')}">Plans &amp; Pricing</a>
+                </li>
+            </ul>
 
-        <ul>
-            <li>
-                Questions? Please email <a href="mailto:support@briefmetrics.com">support@briefmetrics.com</a>
-            </li>
-            <li>
-                Briefmetrics is operated by <a href="http://zowic.com/">Zowic LLC</a>
-            </li>
-        </ul>
+            <ul>
+                <li>
+                    <a href="${request.route_path('terms')}">Terms of Service</a>
+                </li>
+                <li>
+                    <a href="${request.route_path('privacy')}">Privacy Policy</a>
+                </li>
+                <li>
+                    <a href="${request.route_path('security')}">Security Policy</a>
+                </li>
+            </ul>
+
+            <ul>
+                <li>
+                    Questions? Please email <a href="mailto:support@briefmetrics.com">support@briefmetrics.com</a>
+                </li>
+                <li>
+                    Briefmetrics is operated by <a href="http://zowic.com/">Zowic LLC</a>
+                </li>
+            </ul>
+        </div>
     </div>
 </footer>
 </%block>

@@ -374,7 +374,10 @@ img, picture {
 body {
   background-color: #f4faed;
   font-size: 15px;
-  font-weight: 300; }
+  font-weight: 300;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column; }
 
 a {
   text-decoration: none; }
@@ -480,6 +483,9 @@ pre {
   @media screen and (max-width: 40em)  {
     .container {
       margin: 0 0.5em 0 0.5em; } }
+
+.content {
+  flex: 1; }
 
 form {
   margin-bottom: 1em; }
@@ -1050,7 +1056,20 @@ footer {
     color: #31a48a; }
     footer a:hover {
       color: #91decc; }
-  footer .container {
+  footer .slogan {
+    border-radius: 3px;
+    width: 100%;
+    line-height: 1.8em;
+    text-align: center;
+    color: #a6a6a6; }
+  footer a.cta {
+    margin-top: 1em;
+    background: #413f43;
+    border-color: #b4b1b6; }
+    footer a.cta:hover {
+      color: #fff;
+      background: #67646b; }
+  footer .menu {
     display: table;
     table-layout: fixed;
     width: 100%; }
