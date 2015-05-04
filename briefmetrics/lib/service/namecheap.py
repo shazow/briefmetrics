@@ -90,7 +90,7 @@ class NamecheapAPI(Service):
     protocol = 'openidconnect'
 
     config = {
-        'auth_url': 'https://namecheap.com/marketplace/sso/authorize',
+        'auth_url': 'https://www.namecheap.com/apps/sso/authorize',
         'scope': ['openid', 'namecheap'],
 
         # Populate these during init:
