@@ -229,11 +229,25 @@
 ${next.body()}
 
 <p>
-    % if c.report.owner.num_remaining is None or c.report.owner.payment or c.report.owner != c.user:
+    % if c.report.owner.num_remaining is None or c.report.owner != c.user:
         You can look forward to your next report on <span class="highlight">${h.human_date(c.report.date_next)}</span>.
+    % elif c.report.owner.payment:
+        % if c.report.owner.payment.is_charging and c.report.owner.num_remaining > 1:
+            You have <span class="highlight">${c.report.owner.num_remaining-1} free reports</span> remaining before your paid subscription begins.
+            Your next report is scheduled for ${h.human_date(c.report.date_next)}.
+        % elif c.report.owner.num_remaining > 1:
+            You have <span class="highlight">${c.report.owner.num_remaining-1} free reports</span> remaining in your trial. 
+            <a href="https://briefmetrics.com/settings">Activate your paid subscription</a> to continue receiving reports.
+            Your next report is scheduled for ${h.human_date(c.report.date_next)}.
+        % elif c.report.owner.payment.is_charging and c.report.owner.num_remaining <= 1:
+            This is your final free report. Your paid subscription will begin after this report.
+        % elif c.report.owner.num_remaining <= 1:
+            <strong>This is your final report. :(</strong><br />
+            Please <a href="https://briefmetrics.com/settings">activate your paid subscription</a> to continue receiving Briefmetrics reports.
+        % endif
     % elif c.report.owner.num_remaining <= 1:
         <strong>This is your final report. :(</strong><br />
-        Please <a href="https://briefmetrics.com/settings">add a credit card now</a> to keep receiving Briefmetrics reports.
+        Please <a href="https://briefmetrics.com/settings">add a credit card now</a> to continue receiving Briefmetrics reports.
     % elif c.report.owner.num_remaining > 1:
         <strong>You have <span class="highlight">${c.report.owner.num_remaining-1} free reports</span> remaining.</strong>
         <a href="https://briefmetrics.com/settings">Add a credit card now</a> to
