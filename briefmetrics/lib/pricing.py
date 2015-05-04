@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from dateutil.relativedelta import relativedelta
 
 
 class Singleton(object):
@@ -73,6 +74,12 @@ class Plan(Singleton):
         self.price_monthly = price_monthly
         self.features = OrderedDict()
         self.is_hidden = is_hidden
+
+        self.price = price_monthly
+        self.interval = relativedelta(months=1)
+        if price_yearly:
+            self.price = price_yearly
+            self.interval = relativedelta(years=1)
 
         self.features.update(self.default_features)
         self.features.update(features)

@@ -2,7 +2,6 @@ import logging
 
 from .base import Payment, PaymentError
 
-from dateutil.relativedelta import relativedelta
 from unstdlib import now
 from briefmetrics.lib.service import registry as service_registry
 
@@ -12,6 +11,10 @@ log = logging.getLogger(__name__)
 
 class NamecheapPayment(Payment):
     id = "namecheap"
+
+    @property
+    def is_charging(self):
+        return bool(self.user.time_next_payment)
 
     def set(self, new_token=None, metadata=None):
         if new_token:
@@ -31,15 +34,12 @@ class NamecheapPayment(Payment):
             return
 
         plan = self.user.plan
-        amount = plan.price_yearly or plan.price_monthly
+        amount = plan.price
         description = "Briefmetrics: %s" % plan.option_str
         self.invoice(amount, description)
 
         next_payment = self.user.time_next_payment or now()
-        if plan.price_yearly:
-            next_payment += relativedelta(years=1)
-        else:
-            next_payment += relativedelta(months=1)
+        next_payment += plan.interval
 
         self.user.time_next_payment = next_payment
 
