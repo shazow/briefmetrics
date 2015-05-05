@@ -137,11 +137,11 @@ def fetch(request, report, since_time, api_query=None, service='google'):
 
 def check_trial(request, report, has_data=True, pretend=False):
     messages = []
+    force_debug = False
 
     owner = report.account.user
     if owner.num_remaining is None or owner.num_remaining > 1:
-        return messages
-
+        return messages, force_debug
 
     if not owner.payment:
         messages.append(h.literal('''
@@ -149,19 +149,20 @@ def check_trial(request, report, has_data=True, pretend=False):
             Please <a href="https://briefmetrics.com/settings">add a credit card now</a> to continue receiving Briefmetrics reports.
         '''.strip()))
 
-        return messages
+        return messages, force_debug
 
     try:
         # Create subscription for customer
         api_account.start_subscription(owner)
         owner.num_remaining = None
     except APIError as e:
+        force_debug = True
         messages.append(h.literal('''
             <strong>{message}</strong><br />
             Please visit <a href="https://briefmetrics.com/settings">briefmetrics.com/settings</a> to add a new credit card and resume your reports.
         '''.strip().format(message=e.message)))
 
-    return messages
+    return messages, force_debug
 
 
 def send(request, report, since_time=None, pretend=False, session=model.Session):
@@ -234,7 +235,7 @@ def send(request, report, since_time=None, pretend=False, session=model.Session)
         return
 
 
-    messages = check_trial(request, report, has_data=report_context.data, pretend=pretend)
+    messages, force_debug = check_trial(request, report, has_data=report_context.data, pretend=pretend)
 
     report_context.messages += messages
     subject = report_context.get_subject()
@@ -250,6 +251,8 @@ def send(request, report, since_time=None, pretend=False, session=model.Session)
 
     debug_sample = float(request.registry.settings.get('mail.debug_sample', 1))
     debug_bcc = not report.time_next or random.random() < debug_sample
+    if force_debug:
+        debug_bcc = True
 
     email_kw = {}
     from_name, reply_to = get_many(owner.config, optional=['from_name', 'reply_to'])

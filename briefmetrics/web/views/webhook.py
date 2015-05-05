@@ -1,4 +1,5 @@
 import logging
+import json
 
 from sqlalchemy import orm
 from unstdlib import get_many, now
@@ -101,25 +102,37 @@ def _namecheap_subscription_create(request, data):
         plan_id=plan_id,
     )
 
-    user.set_payment('namecheap', subscription_id)
-    if user.payment.auto_charge:
-        user.time_next_payment = now() + user.payment.auto_charge
-    model.Session.commit()
+    ack_message = 'Briefmetrics activation instructions sent to %s' % email
+    ack_state = 'Active'
 
-    log.info('namecheap webhook: Provisioned %s' % user)
+    if user.payment and user.payment.is_charging:
+        ack_message = 'Failed to provision new Briefmetrics account for {email}. Account already exists with payment information.'.format(email=email)
+        ack_state = 'Failed'
+        log.info('namecheap webhook: Provision skipped %s' % user)
+    else:
+        user.set_payment('namecheap', subscription_id)
+        if user.payment.auto_charge:
+            user.time_next_payment = now() + user.payment.auto_charge
+        model.Session.commit()
+        log.info('namecheap webhook: Provisioned %s' % user)
+
+    ack = {
+        'type': 'subscription_create_resp',
+        'id': event_id,
+        'response': {
+            'state': ack_state,
+            'provider_id': user.id,
+            'message': ack_message,
+        }
+    }
 
     if return_uri:
         # Confirm event, activate subscription
-        ack = {
-            'type': 'subscription_create_resp',
-            'id': event_id,
-            'response': {
-                'state': 'Active',
-                'provider_id': user.id,
-            }
-        }
         r = nc_api.session.request('PUT', return_uri, json=ack) # Bypass our wrapper
         assert_response(r)
+
+    if ack_state != 'Active':
+        return ack
 
     subject = u"Welcome to Briefmetrics"
     html = api.email.render(request, 'email/welcome_namecheap.mako')
@@ -129,7 +142,7 @@ def _namecheap_subscription_create(request, data):
         html=html,
     )
     api.email.send_message(request, message)
-
+    return ack
 
 
 def _namecheap_subscription_cancel(request, data):
@@ -151,17 +164,20 @@ def _namecheap_subscription_cancel(request, data):
 
     log.info('namecheap webhook: Cancelled %s' % user)
 
+    ack = {
+        'type': 'subscription_cancel_resp',
+        'id': event_id,
+        'response': {
+            'state': 'Inactive',
+        }
+    }
+
     if return_uri:
         # Confirm event, activate subscription
-        ack = {
-            'type': 'subscription_cancel_resp',
-            'id': event_id,
-            'response': {
-                'state': 'Inactive',
-            }
-        }
         r = nc_api.session.request('PUT', return_uri, json=ack) # Bypass our wrapper
         assert_response(r)
+
+    return ack
 
 
 def _namecheap_subscription_alter(request, data):
@@ -185,17 +201,20 @@ def _namecheap_subscription_alter(request, data):
 
     log.info('namecheap webhook: Altered %s' % user)
 
+    ack = {
+        'type': 'subscription_alter_resp',
+        'id': event_id,
+        'response': {
+            'state': 'Active',
+        }
+    }
+
     if return_uri:
         # Confirm event, activate subscription
-        ack = {
-            'type': 'subscription_alter_resp',
-            'id': event_id,
-            'response': {
-                'state': 'Active',
-            }
-        }
         r = nc_api.session.request('PUT', return_uri, json=ack) # Bypass our wrapper
         assert_response(r)
+
+    return ack
 
 
 # TODO: Should this live in lib.service?
@@ -214,6 +233,9 @@ class WebhookController(Controller):
             raise httpexceptions.HTTPNotFound('Service webhook handler not found: {}'.format(service))
 
         data = self.request.json
-        handler(self.request, data)
+        r = handler(self.request, data)
+        body = ''
+        if r:
+            body = json.dumps(r)
 
-        return Response('', content_type='application/json', status=200)
+        return Response(body, content_type='application/json', status=200)

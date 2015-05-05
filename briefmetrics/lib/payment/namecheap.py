@@ -57,6 +57,7 @@ class NamecheapPayment(Payment):
         self.user.payment_token = None
 
     def invoice(self, amount, description):
+        amount_dollars = '%0.2f' % round(amount / 100, 2)
         # Make payment
         nc = service_registry['namecheap'].instance
 
@@ -65,12 +66,12 @@ class NamecheapPayment(Payment):
             'subscription_id': self.token,
         })
         data = r.json()
-        invoice_id = data['result']['id']
+        invoice_id = data['id']
 
         # Add line item
         item = {
             'description' : description,
-            'amount': amount,
+            'amount': amount_dollars,
             'taxable': 0,
         }
         r = nc.request('POST', '/v1/billing/invoice/{invoice_id}/line_items'.format(invoice_id=invoice_id), json=item)
@@ -78,6 +79,8 @@ class NamecheapPayment(Payment):
         # Submit payment
         r = nc.request('POST', '/v1/billing/invoice/{invoice_id}/payments'.format(invoice_id=invoice_id), json={})
         data = r.json()
-        payment_id = data['result']['id']
 
-        log.debug("Namecheap invoiced: {user}; amount={amount}; payment_id={payment_id}".format(user=self.user, amount=amount, payment_id=payment_id))
+        log.info("Namecheap invoice ${amount}: {user}; {data}".format(user=self.user, amount=amount_dollars, data=data))
+
+        if data['status'] == 'failed':
+            raise PaymentError('Failed to invoice')
