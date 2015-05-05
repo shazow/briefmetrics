@@ -86,6 +86,7 @@ class NamecheapAPI(Service):
 
     """
     id = 'namecheap'
+    label = 'Namecheap'
     url_prefix = 'https://api.partners.namecheap.com'
     protocol = 'openidconnect'
 
