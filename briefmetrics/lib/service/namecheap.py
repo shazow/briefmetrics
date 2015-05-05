@@ -86,7 +86,7 @@ class NamecheapAPI(Service):
 
     """
     id = 'namecheap'
-    url_prefix = 'https://api.sandbox.partners.namecheap.com'
+    url_prefix = 'https://api.partners.namecheap.com'
     protocol = 'openidconnect'
 
     config = {
@@ -108,6 +108,7 @@ class NamecheapAPI(Service):
             'key': self.config['client_secret'],
             'algorithm': 'sha256',
         })
+        self.url_prefix = self.config.get('api_url', self.url_prefix)
 
     def request(self, method, resource, **kw):
         r = self.session.request(method, self.url_prefix+resource, **kw)
