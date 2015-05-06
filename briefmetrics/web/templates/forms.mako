@@ -81,10 +81,12 @@
             <strong>Briefmetrics was unable to load a list of your Google Analytics properties.</strong> Are you sure you signed in with the correct Google account? 
         </p>
         <p>
-            You can <a href="/account/delete">delete this account</a> and try signing in again with a different account.
+            You can <a href="/account/login/google?force=1">try signing in again</a> with a different account.
         </p>
         <p>
-            If you don't have any Google Analytics accounts, then Briefmetrics won't be useful for you yet. :)
+            If you don't have any Google Analytics accounts, then Briefmetrics
+            won't be useful for you yet. You can <a href="https://analytics.google.com/">create a Google Analytics account</a>, setup your website, and check back here once it's
+            ready.
         </p>
         <% return '' %>
     % endif

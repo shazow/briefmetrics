@@ -64,7 +64,7 @@ def report_combine(request):
     r = model.Report.get(report_ids[0])
     account = user.get_account(id=r.account_id)
     if not account:
-        raise APIControllerError('Report [%s] does not belong to user: %s' % (r.id, user_id))
+        raise APIControllerError('Report [%s] does not belong to user: %s' % (r.id, user.id))
 
     subscribe_user_id = None
     if not with_subscribers:
@@ -179,7 +179,7 @@ def funnel_clear(request):
     user_id = api.account.get_user_id(request, required=True)
     account_id, = get_many(request.params, required=['account_id'])
 
-    account = model.Account.get(account_id)
+    account = model.Account.get_by(id=account_id, user_id=user_id)
     if not account:
         raise APIControllerError("Invalid account: %s", account_id)
 
