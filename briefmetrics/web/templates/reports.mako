@@ -5,16 +5,21 @@
 <div class="container">
 
 <section id="plan">
-    ${widgets.plan_summary(has_card=c.user.payment, num_remaining=c.user.num_remaining)}
+    ${widgets.plan_summary(payment=c.user.payment, num_remaining=c.user.num_remaining)}
 </section>
 
 <section id="new-report">
     <h2>New report</h2>
 
-    % if c.available_profiles:
+    % if 'google' in c.accounts_by_service:
         ${forms.report_new(c.available_profiles, report_types=c.report_types, account_id=c.google_account.id)}
     % else:
-        <a href="${login_url}?force=1">Connect your Google Analytics account</a>
+        <p>
+            Briefmetrics requires access to your Google Analytics data to create reports.
+        </p>
+        <p>
+            <a href="${login_url}?force=1" class="button">Connect your Google Analytics account</a>
+        </p>
     % endif
 </section>
 

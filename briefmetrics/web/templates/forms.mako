@@ -78,15 +78,15 @@
 <%def name="report_new(available_profiles, report_types, account_id='')">
     % if not available_profiles:
         <p>
-            <strong>Briefmetrics was unable to load a list of your Google Analytics properties.</strong> Are you sure you signed in with the correct Google account? 
+            Briefmetrics was unable to load a list of your Google Analytics properties.
+            Are you sure you signed in with the correct Google account? 
         </p>
         <p>
-            You can <a href="/account/login/google?force=1">try signing in again</a> with a different account.
+            <a href="${login_url}?force=1" class="button">Connect a different Google Analytics account</a>
         </p>
         <p>
             If you don't have any Google Analytics accounts, then Briefmetrics
-            won't be useful for you yet. You can <a href="https://analytics.google.com/">create a Google Analytics account</a>, setup your website, and check back here once it's
-            ready.
+            won't be useful for you yet. Now is a good time to <a href="https://analytics.google.com/">create a Google Analytics account</a>, follow the instructions to setup your website and then check back here again.
         </p>
         <% return '' %>
     % endif

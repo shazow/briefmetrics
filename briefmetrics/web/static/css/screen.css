@@ -588,7 +588,13 @@ blockquote {
     border-radius: 10px;
     background: #dbe8cc;
     padding: 0.5em 2em;
-    list-style: none; }
+    list-style: none;
+    -webkit-transition: background-color 500ms, opacity 500ms;
+    -moz-transition: background-color 500ms, opacity 500ms;
+    transition: background-color 500ms, opacity 500ms; }
+  .flash-messages ul.ping {
+    opacity: 0.7;
+    background: #eaf186; }
 
 .highlight {
   background: #fce09b;

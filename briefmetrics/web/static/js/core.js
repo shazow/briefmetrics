@@ -35,6 +35,8 @@ $(document).ready(function() {
 
         return false;
     });
+
+    $('.flash-messages ul').removeClass('ping');
 });
 
 

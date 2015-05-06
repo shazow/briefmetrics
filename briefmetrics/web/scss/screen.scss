@@ -138,6 +138,11 @@ blockquote {
         background: $color-border;
         padding: 0.5em 2em;
         list-style: none;
+        @include transition(background-color 500ms, opacity 500ms);
+    }
+    ul.ping {
+        opacity: 0.7;
+        background: #eaf186;
     }
 }
 

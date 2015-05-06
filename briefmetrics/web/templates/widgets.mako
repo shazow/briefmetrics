@@ -1,7 +1,7 @@
 <%def name="flash_messages(messages)">
 % if messages:
-    <div class="flash-messages">
-        <ul>
+    <div class="flash-messages container">
+        <ul class="ping">
         % for m in messages:
             <li>${m}</li>
         % endfor
@@ -11,12 +11,27 @@
 </%def>
 
 
-<%def name="plan_summary(has_card, num_remaining)">
-% if has_card:
-    % if num_remaining:
+<%def name="plan_summary(payment, num_remaining)">
+% if payment and num_remaining:
+    % if payment.is_charging:
         <p>
             Free emails until subscription starts: <strong>${c.user.num_remaining}</strong>
         </p>
+    % else:
+        <p>
+            Free emails until trial ends: <strong>${c.user.num_remaining}</strong>
+        </p>
+        <ul>
+            <li>
+                <a class="highlight" href="${request.route_path('api', _query={
+                    'method': 'settings.payments_set',
+                    'format': 'redirect',
+                    'next': request.route_path('settings'),
+                    'csrf_token': session.get_csrf_token(),
+                })}">Activate Subscription</a>
+                to continue receiving reports after the trial.
+            </li>
+        </ul>
     % endif
 % elif num_remaining:
     <p>
