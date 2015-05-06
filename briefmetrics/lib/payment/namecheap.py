@@ -38,12 +38,51 @@ class NamecheapPayment(Payment):
         plan = self.user.plan
         amount = plan.price
         description = "Briefmetrics: %s" % plan.option_str
-        self.invoice(amount, description)
+        self.invoice(amount, description=description)
 
         next_payment = self.user.time_next_payment or now()
         next_payment += plan.interval
 
         self.user.time_next_payment = next_payment
+
+    def prorate(self, old_plan=None, new_plan=None, since_time=None, time_next_payment=None):
+        if not since_time:
+            since_time = now()
+
+        if not time_next_payment:
+            time_next_payment = self.user.time_next_payment
+        if not time_next_payment:
+            return 0.0
+
+        if not old_plan:
+            old_plan = self.user.plan
+        if not old_plan:
+            return 0.0
+
+        amount = (new_plan or old_plan).price
+        if time_next_payment < since_time:
+            return amount
+
+        last_payment = time_next_payment - old_plan.interval
+        days_paid = (since_time - last_payment).days
+        days_total = (time_next_payment - last_payment).days
+        used = (float(days_paid) / float(days_total)) * old_plan.price
+
+        amount = used - old_plan.price
+        if new_plan:
+            amount = new_plan.price - used
+
+        log.debug("prorate (user_id={user_id}): {old_price} -> {new_price} over {days_paid}/{days_total} = {amount}".format(
+            user_id=self.user and self.user.id,
+            old_price=old_plan.price,
+            new_price=new_plan and new_plan.price,
+            days_paid=days_paid,
+            days_total=days_total,
+            amount=amount
+        ))
+
+        return amount
+
 
     def delete(self):
         p = self.user.payment

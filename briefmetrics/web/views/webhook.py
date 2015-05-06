@@ -159,9 +159,13 @@ def _namecheap_subscription_cancel(request, data):
     if not account:
         raise httpexceptions.HTTPBadRequest('Invalid remote id.')
 
-    user = account
-    api.account.delete_payments(account.user)
+    user = account.user
 
+    amount = user.payment.prorate()
+    if amount:
+        user.payment.invoice(amount=amount, description='Briefmetrics: Prorated refund')
+
+    api.account.delete_payments(user)
     log.info('namecheap webhook: Cancelled %s' % user)
 
     ack = {
@@ -195,9 +199,18 @@ def _namecheap_subscription_alter(request, data):
     if not account:
         raise httpexceptions.HTTPBadRequest('Invalid remote id.')
 
-    user = account
-    api.account.set_plan(account.user, order['pricing_plan_sku'])
-    # XXX: Make sure pro-rating happens?
+    user = account.user
+    old_plan = user.plan
+
+    api.account.set_plan(user, order['pricing_plan_sku'], update_subscription=False)
+    amount = user.payment.prorate(old_plan=old_plan, new_plan=user.plan)
+    if amount:
+        try:
+            user.payment.invoice(amount=amount, description='Briefmetrics: %s (Prorated)' % user.plan.option_str)
+        except:
+            log.error('Namecheap prorate invoice failed, reverting plan to %s: %s' % (old_plan.id, user))
+            api.account.set_plan(user, old_plan.id)
+            raise
 
     log.info('namecheap webhook: Altered %s' % user)
 

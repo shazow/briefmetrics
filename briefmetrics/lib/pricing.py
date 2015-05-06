@@ -105,7 +105,7 @@ class Plan(Singleton):
 
     @property
     def option_str(self):
-        return '{plan.name} for {plan.price_str}: {plan.summary}'.format(plan=self)
+        return '{plan.name} for {plan.price_str}'.format(plan=self)
 
     def iter_features(self):
         for key, value in self.features.iteritems():

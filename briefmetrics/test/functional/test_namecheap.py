@@ -8,6 +8,7 @@ from dateutil.relativedelta import relativedelta
 import mock
 import json
 import logging
+import datetime
 from unstdlib import now
 
 Session = model.Session
@@ -150,23 +151,76 @@ class TestNamecheap(test.TestWeb):
             self.assertTrue(r['type'], 'subscription_create_resp')
             self.assertTrue(r['response']['state'], 'Failed')
 
+    def test_prorate(self):
+        base_time = datetime.datetime(2000, 1, 1)
+
+        u = model.User()
+        u.set_payment('namecheap', 'test')
+        u.time_next_payment = base_time - relativedelta(months=1)
+        u.plan_id = 'starter-yr'
+        starter_plan = u.plan
+
+        self.assertEqual(u.payment.prorate(since_time=base_time), starter_plan.price)
+
+        u.time_next_payment = base_time + relativedelta(days=183)
+        self.assertEqual(u.payment.prorate(since_time=base_time), -starter_plan.price/2)
+
+        u.plan_id = 'agency-10-yr'
+        agency_plan = u.plan
+        self.assertEqual(u.payment.prorate(since_time=base_time, old_plan=starter_plan, new_plan=agency_plan), agency_plan.price-starter_plan.price/2)
+
+        self.assertEqual(u.payment.prorate(since_time=base_time, old_plan=agency_plan, new_plan=None), -(agency_plan.price/2))
+
+
     def test_prorate_plan(self):
         with mock.patch('briefmetrics.api.email.send_message') as send_message:
             self.assertFalse(send_message.called)
             resp = self.app.post('/webhook/namecheap', params='{"event_token": "fakecreate"}', content_type='application/json')
             self.assertTrue(resp.json['response']['state'], 'Active')
 
-        # TODO: Test time_next_payment in the past (should not prorate)
+        nc = service_registry['namecheap'].instance
+
+        # Next payment in the past
 
         u = model.User.all()[0]
-        u.time_next_payment = now() + relativedelta(months=6)
+        u.time_next_payment = now() - relativedelta(months=6)
+        Session.commit()
 
+        old_plan = u.plan
         self.app.post('/webhook/namecheap', params='{"event_token": "fakealter"}', content_type='application/json')
+        new_plan = model.User.get(u.id).plan
 
-        nc = service_registry['namecheap'].instance
         payments = nc.query(url='/v1/billing/invoice/123/payments')
         self.assertTrue(payments)
 
-        line_item, = nc.query(url='/v1/billing/invoice/123/line_items')
+        line_items = nc.query(url='/v1/billing/invoice/123/line_items')
+        print line_items
+        line_item = line_items[0]
+
         params = line_item[-1]['json']
-        self.assertEqual(params['amount'], '175.00')
+        self.assertEqual(params['amount'], '%0.2f' % (new_plan.price/100.0))
+
+        # Next payment in the future
+
+        nc.calls[:] = [] # Reset call log
+
+        u = model.User.all()[0]
+        u.time_next_payment = now() + relativedelta(months=6)
+        Session.commit()
+
+        old_plan = u.plan
+        self.app.post('/webhook/namecheap', params='{"event_token": "fakealter2"}', content_type='application/json')
+        new_plan = model.User.get(u.id).plan
+
+        payments = nc.query(url='/v1/billing/invoice/123/payments')
+        self.assertTrue(payments)
+
+        line_items = nc.query(url='/v1/billing/invoice/123/line_items')
+        print line_items
+        line_item = line_items[0]
+
+        params = line_item[-1]['json']
+        expected_amount = (new_plan.price - (old_plan.price / 2.0))/100.0
+        self.assertLess(expected_amount, 0)
+        delta = float(params['amount']) - expected_amount
+        self.assertTrue(abs(delta) < 2, '%s !~= %s' % (params['amount'], expected_amount)) # This will vary by year, so we only approximate
