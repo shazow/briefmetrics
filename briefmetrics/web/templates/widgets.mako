@@ -12,15 +12,17 @@
 
 
 <%def name="plan_summary(payment, num_remaining)">
-% if payment and num_remaining:
-    % if payment.is_charging:
+% if payment:
+    % if payment.is_charging and num_remaining:
         <p>
             Free emails until subscription starts: <strong>${c.user.num_remaining}</strong>
         </p>
-    % else:
+    % elif not payment.is_charging:
+        % if num_remaining:
         <p>
             Free emails until trial ends: <strong>${c.user.num_remaining}</strong>
         </p>
+        % endif
         <ul>
             <li>
                 <a class="highlight" href="${request.route_path('api', _query={
@@ -29,7 +31,11 @@
                     'next': request.route_path('settings'),
                     'csrf_token': session.get_csrf_token(),
                 })}">Activate Subscription</a>
-                to continue receiving reports after the trial.
+                % if num_remaining:
+                    to continue receiving reports after the trial.
+                % else:
+                    to resume your reports.
+                % endif
             </li>
         </ul>
     % endif
