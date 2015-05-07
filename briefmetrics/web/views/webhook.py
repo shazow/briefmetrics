@@ -102,6 +102,10 @@ def _namecheap_subscription_create(request, data):
         plan_id=plan_id,
     )
 
+    if user.num_remaining != 10:
+        log.warning('Resetting num_remaining from %s: %s' % (user.num_remaining, user))
+    user.num_remaining = 10
+
     ack_message = 'Briefmetrics activation instructions sent to %s' % email
     ack_state = 'Active'
 
