@@ -223,6 +223,7 @@ def _namecheap_subscription_alter(request, data):
         'id': event_id,
         'response': {
             'state': 'Active',
+            'message': 'Changed plan to %s' % user.plan.option_str,
         }
     }
 
