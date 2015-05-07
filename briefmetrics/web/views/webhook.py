@@ -105,7 +105,7 @@ def _namecheap_subscription_create(request, data):
     ack_message = 'Briefmetrics activation instructions sent to %s' % email
     ack_state = 'Active'
 
-    if user.payment and user.payment.is_charging:
+    if user.payment:
         ack_message = 'Failed to provision new Briefmetrics account for {email}. Account already exists with payment information.'.format(email=email)
         ack_state = 'Failed'
         log.info('namecheap webhook: Provision skipped %s' % user)
