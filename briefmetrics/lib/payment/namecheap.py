@@ -107,7 +107,11 @@ class NamecheapPayment(Payment):
         })
         assert_response(r)
         data = r.json()
-        invoice_id = data['id']
+        try:
+            invoice_id = data['id']
+        except KeyError:
+            log.error('Invalid namecheap billing response: %s' % data)
+            raise
 
         # Add line item
         item = {
