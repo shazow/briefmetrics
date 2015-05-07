@@ -183,6 +183,7 @@ class TestNamecheap(test.TestWeb):
         # Next payment in the past
 
         u = model.User.all()[0]
+        u.num_remaining = None
         u.time_next_payment = now() - relativedelta(months=6)
         Session.commit()
 
@@ -205,9 +206,11 @@ class TestNamecheap(test.TestWeb):
         nc.calls[:] = [] # Reset call log
 
         u = model.User.all()[0]
+        u.num_remaining = None
         u.time_next_payment = now() + relativedelta(months=6)
         Session.commit()
 
+        log.info('XXX')
         old_plan = u.plan
         self.app.post('/webhook/namecheap', params='{"event_token": "fakealter2"}', content_type='application/json')
         new_plan = model.User.get(u.id).plan

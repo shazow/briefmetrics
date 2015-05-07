@@ -161,7 +161,9 @@ def _namecheap_subscription_cancel(request, data):
 
     user = account.user
 
-    amount = user.payment.prorate()
+    amount = 0
+    if not user.num_remaining:
+        amount = user.payment.prorate()
     if amount:
         user.payment.invoice(amount=amount, description='Briefmetrics: Prorated refund')
 
@@ -203,7 +205,9 @@ def _namecheap_subscription_alter(request, data):
     old_plan = user.plan
 
     api.account.set_plan(user, order['pricing_plan_sku'], update_subscription=False)
-    amount = user.payment.prorate(old_plan=old_plan, new_plan=user.plan)
+    amount = 0
+    if not user.num_remaining:
+        amount = user.payment.prorate(old_plan=old_plan, new_plan=user.plan)
     if amount:
         try:
             user.payment.invoice(amount=amount, description='Briefmetrics: %s (Prorated)' % user.plan.option_str)

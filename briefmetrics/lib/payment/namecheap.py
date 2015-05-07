@@ -3,6 +3,7 @@ import logging
 from .base import Payment, PaymentError
 
 from unstdlib import now
+from briefmetrics.lib.http import assert_response
 from briefmetrics.lib.service import registry as service_registry
 from dateutil.relativedelta import relativedelta
 
@@ -104,6 +105,7 @@ class NamecheapPayment(Payment):
         r = nc.request('POST', '/v1/billing/invoice', data={
             'subscription_id': self.token,
         })
+        assert_response(r)
         data = r.json()
         invoice_id = data['id']
 
@@ -114,9 +116,11 @@ class NamecheapPayment(Payment):
             'taxable': 0,
         }
         r = nc.request('POST', '/v1/billing/invoice/{invoice_id}/line_items'.format(invoice_id=invoice_id), json=item)
+        assert_response(r)
 
         # Submit payment
         r = nc.request('POST', '/v1/billing/invoice/{invoice_id}/payments'.format(invoice_id=invoice_id), json={})
+        assert_response(r)
         data = r.json()
 
         log.info("Namecheap invoice ${amount}: {user}; {data}".format(user=self.user, amount=amount_dollars, data=data))
