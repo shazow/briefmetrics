@@ -28,9 +28,9 @@ class FakeNamecheapAPI(object):
         ('GET', '/v1/saas/saas/event/fakecreate'): RESPONSES['subscription_create'],
         ('GET', '/v1/saas/saas/event/fakealter'): RESPONSES['subscription_alter'] % dict(pricing_plan_sku='agency-10-yr'),
         ('GET', '/v1/saas/saas/event/fakealter2'): RESPONSES['subscription_alter'] % dict(pricing_plan_sku='starter-yr'),
-        ('POST', '/v1/billing/invoice'): '{"id": "123"}',
+        ('POST', '/v1/billing/invoice'): '{"result": {"status": "open", "status_id": "1", "created_at": "2015-05-07T01:30:29.923Z", "amount_due": null, "subscription_id": 1206, "id": "123"}}',
         ('POST', '/v1/billing/invoice/123/line_items'): '{}',
-        ('POST', '/v1/billing/invoice/123/payments'): '{"status": "success"}',
+        ('POST', '/v1/billing/invoice/123/payments'): '{"result": {"status": "success"}}',
     }
     session = mock.Mock()
 
