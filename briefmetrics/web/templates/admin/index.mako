@@ -32,14 +32,22 @@
     <section>
         <h2>Plans</h2>
 
-        <p><strong>${c.num_credit_cards}</strong>
-            users with credit cards,
+        <p><strong>${c.num_active_customers}</strong>
+            active customers
             expected to pay
             <strong>${h.human_dollar(c.num_mrr)}/mo</strong>.</p>
 
         <ul class="vertical">
         % for count, plan_id in sorted(c.by_plan, reverse=True):
             <li><strong style="display: inline-block; min-width: 8em;">${count}</strong> ${plan_id}</li>
+        % endfor
+        </ul>
+
+        <h2>Payment providers</h3>
+
+        <ul class="vertical">
+        % for count, payment_id in sorted(c.by_payment, reverse=True):
+            <li><strong style="display: inline-block; min-width: 8em;">${count}</strong> ${payment_id}</li>
         % endfor
         </ul>
     </section>

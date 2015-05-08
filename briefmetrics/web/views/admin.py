@@ -85,12 +85,15 @@ class AdminController(Controller):
             else:
                 self.c.inactive_users.append(u)
 
-        credit_cards = [u for u in users if u.payment and u.payment.is_charging and u.num_remaining is None]
+        payment_info = [u for u in users if u.payment]
+        active_customers = [u for u in payment_info if u.payment.is_charging and u.num_remaining is None]
         self.c.num_users = len(users)
-        self.c.num_credit_cards = len(credit_cards)
-        self.c.num_mrr = sum((u.plan.price_monthly or 0) for u in credit_cards)
+        self.c.num_payment_info = len(payment_info)
+        self.c.num_active_customers = len(active_customers)
+        self.c.num_mrr = sum((u.plan.price_monthly or 0) for u in active_customers)
 
-        self.c.by_plan = groupby_count(users, key=lambda u: u.plan_id)
+        self.c.by_plan = groupby_count(active_customers, key=lambda u: u.plan_id)
+        self.c.by_payment = groupby_count(payment_info, key=lambda u: u.payment.id)
 
         self.c.expiring_trials = []
         for u in self.c.active_trials:
