@@ -85,9 +85,10 @@ class AdminController(Controller):
             else:
                 self.c.inactive_users.append(u)
 
+        credit_cards = [u for u in users if u.payment and u.payment.is_charging and u.num_remaining is None]
         self.c.num_users = len(users)
-        self.c.num_credit_cards = len([u for u in users if u.payment])
-        self.c.num_mrr = sum([(u.plan.price_monthly or 0) for u in users if u.payment])
+        self.c.num_credit_cards = len(credit_cards)
+        self.c.num_mrr = sum((u.plan.price_monthly or 0) for u in credit_cards)
 
         self.c.by_plan = groupby_count(users, key=lambda u: u.plan_id)
 
