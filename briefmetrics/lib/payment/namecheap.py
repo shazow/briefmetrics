@@ -92,8 +92,6 @@ class NamecheapPayment(Payment):
             return
 
         assert p.id == 'namecheap'
-
-        # TODO: Issue pro-rated refund?
         self.user.payment_token = None
 
     def invoice(self, amount, description):

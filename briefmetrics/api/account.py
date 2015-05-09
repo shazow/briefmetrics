@@ -281,6 +281,10 @@ def delete_payments(user):
     if not user.num_remaining:
         user.num_remaining = 0
 
+    is_free_plan = user.plan and not user.plan.price and not user.plan.features.get('num_emails')
+    if is_free_plan:
+        user.num_remaining = None
+
     if user.payment:
         user.payment.delete()
 
