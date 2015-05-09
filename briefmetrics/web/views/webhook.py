@@ -167,7 +167,7 @@ def _namecheap_subscription_cancel(request, data):
 
     amount = 0
     if not user.num_remaining:
-        amount = user.payment.prorate()
+        amount = user.payment and user.payment.prorate()
     if amount:
         user.payment.invoice(amount=amount, description='Briefmetrics: Prorated refund')
 
