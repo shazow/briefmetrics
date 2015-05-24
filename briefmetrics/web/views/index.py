@@ -16,7 +16,7 @@ class IndexController(Controller):
     def index(self):
         user_id = api.account.get_user_id(self.request)
 
-        if user_id:
+        if user_id and not 'landing' in self.request.params:
             return self._redirect(self.request.route_path('reports'))
 
         return self._render('index.mako')
