@@ -69,7 +69,7 @@
 
         <ul class="vertical">
             <li>
-                <h4>
+                <h4 id="customer-runscope">
                     <a href="https://runscope.com/"><img src="/static/images/customer-runscope.png" alt="Runscope" /></a>
                 </h4>
                 <blockquote>
@@ -78,7 +78,7 @@
                 </blockquote>
             </li>
             <li>
-                <h4>
+                <h4 id="customer-namecheap">
                     <a href="https://namecheap.com/"><img src="/static/images/customer-namecheap.png" alt="Namecheap"/></a>
                 </h4>
                 <blockquote>
@@ -87,7 +87,7 @@
                 </blockquote>
             </li>
             <li>
-                <h4>
+                <h4 id="customer-delapp">
                     <a href="http://www.delappdesign.com/"><img src="/static/images/customer-delapp.png" alt="DeLapp Design"/></a>
                 </h4>
                 <blockquote>
@@ -96,7 +96,7 @@
                 </blockquote>
             </li>
             <li>
-                <h4>
+                <h4 id="customer-builtio">
                     <a href="https://www.built.io/"><img src="/static/images/customer-builtio.png" alt="built.io"/></a>
                 </h4>
                 <blockquote>&ldquo;Briefmetrics has enabled our team of 160+ employees to understand what our web traffic means and how our efforts correlate with our results.
