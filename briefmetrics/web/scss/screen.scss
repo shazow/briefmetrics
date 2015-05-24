@@ -123,7 +123,7 @@ blockquote {
         color: darken($color-text, 5%);
         font-weight: bold;
         &:before {
-            content: "- ";
+            content: "• ";
         }
     }
 }

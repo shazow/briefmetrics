@@ -27,14 +27,29 @@ body {
  * and Firefox.
  * Correct `block` display not defined for `main` in IE 11.
  */
-article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary {
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+menu,
+nav,
+section,
+summary {
   display: block; }
 
 /**
  * 1. Correct `inline-block` display not defined in IE 8/9.
  * 2. Normalize vertical alignment of `progress` in Chrome, Firefox, and Opera.
  */
-audio, canvas, progress, video {
+audio,
+canvas,
+progress,
+video {
   display: inline-block;
   /* 1 */
   vertical-align: baseline;
@@ -52,7 +67,8 @@ audio:not([controls]) {
  * Address `[hidden]` styling not present in IE 8/9/10.
  * Hide the `template` element in IE 8/9/11, Safari, and Firefox < 22.
  */
-[hidden], template {
+[hidden],
+template {
   display: none; }
 
 /* Links
@@ -66,7 +82,8 @@ a {
 /**
  * Improve readability when focused and also mouse hovered in all browsers.
  */
-a:active, a:hover {
+a:active,
+a:hover {
   outline: 0; }
 
 /* Text-level semantics
@@ -80,7 +97,8 @@ abbr[title] {
 /**
  * Address style set to `bolder` in Firefox 4+, Safari, and Chrome.
  */
-b, strong {
+b,
+strong {
   font-weight: bold; }
 
 /**
@@ -113,7 +131,8 @@ small {
 /**
  * Prevent `sub` and `sup` affecting `line-height` in all browsers.
  */
-sub, sup {
+sub,
+sup {
   font-size: 75%;
   line-height: 0;
   position: relative;
@@ -164,7 +183,10 @@ pre {
 /**
  * Address odd `em`-unit font size rendering in all browsers.
  */
-code, kbd, pre, samp {
+code,
+kbd,
+pre,
+samp {
   font-family: monospace, monospace;
   font-size: 1em; }
 
@@ -180,7 +202,11 @@ code, kbd, pre, samp {
  * 2. Correct font properties not being inherited.
  * 3. Address margins set differently in Firefox 4+, Safari, and Chrome.
  */
-button, input, optgroup, select, textarea {
+button,
+input,
+optgroup,
+select,
+textarea {
   color: inherit;
   /* 1 */
   font: inherit;
@@ -200,7 +226,8 @@ button {
  * Correct `button` style inheritance in Firefox, IE 8/9/10/11, and Opera.
  * Correct `select` style inheritance in Firefox.
  */
-button, select {
+button,
+select {
   text-transform: none; }
 
 /**
@@ -210,7 +237,9 @@ button, select {
  * 3. Improve usability and consistency of cursor style between image-type
  *    `input` and others.
  */
-button, html input[type="button"], input[type="reset"], input[type="submit"] {
+button,
+html input[type="button"], input[type="reset"],
+input[type="submit"] {
   -webkit-appearance: button;
   /* 2 */
   cursor: pointer;
@@ -219,13 +248,15 @@ button, html input[type="button"], input[type="reset"], input[type="submit"] {
 /**
  * Re-set default cursor for disabled elements.
  */
-button[disabled], html input[disabled] {
+button[disabled],
+html input[disabled] {
   cursor: default; }
 
 /**
  * Remove inner padding and border in Firefox 4+.
  */
-button::-moz-focus-inner, input::-moz-focus-inner {
+button::-moz-focus-inner,
+input::-moz-focus-inner {
   border: 0;
   padding: 0; }
 
@@ -243,7 +274,8 @@ input {
  * 1. Address box sizing set to `content-box` in IE 8/9/10.
  * 2. Remove excess padding in IE 8/9/10.
  */
-input[type="checkbox"], input[type="radio"] {
+input[type="checkbox"],
+input[type="radio"] {
   box-sizing: border-box;
   /* 1 */
   padding: 0;
@@ -254,7 +286,8 @@ input[type="checkbox"], input[type="radio"] {
  * `font-size` values of the `input`, it causes the cursor style of the
  * decrement button to change from `default` to `text`.
  */
-input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button {
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
   height: auto; }
 
 /**
@@ -275,7 +308,8 @@ input[type="search"] {
  * Safari (but not Chrome) clips the cancel button when the search input has
  * padding (and `textfield` appearance).
  */
-input[type="search"]::-webkit-search-cancel-button, input[type="search"]::-webkit-search-decoration {
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
   -webkit-appearance: none; }
 
 /**
@@ -318,7 +352,8 @@ table {
   border-collapse: collapse;
   border-spacing: 0; }
 
-td, th {
+td,
+th {
   padding: 0; }
 
 html {
@@ -326,7 +361,9 @@ html {
   -moz-box-sizing: border-box;
   box-sizing: border-box; }
 
-*, *:before, *:after {
+*,
+*:before,
+*:after {
   -webkit-box-sizing: inherit;
   -moz-box-sizing: inherit;
   box-sizing: inherit; }
@@ -342,7 +379,12 @@ body {
   font-size: 1em;
   line-height: 1.5; }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: "Nunito", "Helvetica Neue", Arial, Helvetica, sans-serif;
   font-size: 1em;
   line-height: 1.2;
@@ -355,9 +397,12 @@ a {
   color: #f37934;
   text-decoration: none;
   transition: color 0.1s linear; }
-  a:active, a:focus, a:hover {
+  a:active,
+  a:focus,
+  a:hover {
     color: #ce520c; }
-  a:active, a:focus {
+  a:active,
+  a:focus {
     outline: none; }
 
 hr {
@@ -367,7 +412,8 @@ hr {
   border-top: none;
   margin: 1.5em 0; }
 
-img, picture {
+img,
+picture {
   margin: 0;
   max-width: 100%; }
 
@@ -418,7 +464,7 @@ h3 {
   font-weight: normal; }
 
 strong {
-  color: #267373; }
+  color: #4d4d4d; }
 
 ul, ol {
   margin: 0 0 1em 0; }
@@ -480,7 +526,7 @@ pre {
     clear: both;
     content: "";
     display: table; }
-  @media screen and (max-width: 40em)  {
+  @media screen and (max-width: 40em) {
     .container {
       margin: 0 0.5em 0 0.5em; } }
 
@@ -495,7 +541,7 @@ input[type="submit"] {
   line-height: 2em;
   background-color: #fafafa;
   background-image: -webkit-linear-gradient(#fafafa, #ddd);
-  background-image: linear-gradient(#fafafa, #ddd);
+  background-image: linear-gradient(#fafafa, #ddd, , , , , , , , );
   color: #555; }
   input[type="submit"]:hover {
     background: #ddd; }
@@ -563,7 +609,7 @@ dd {
 blockquote {
   font-size: 1.3em;
   font-style: normal;
-  color: #7f7074; }
+  color: #777777; }
   blockquote em {
     font-style: normal;
     color: #47756a;
@@ -574,7 +620,7 @@ blockquote {
     color: #595959;
     font-weight: bold; }
     blockquote cite:before {
-      content: "- "; }
+      content: "• "; }
 
 .flash-messages {
   display: block;
@@ -654,7 +700,7 @@ nav.header {
     padding: 0.5em 1em;
     display: inline-block;
     list-style: none; }
-    @media screen and (max-width: 40em)  {
+    @media screen and (max-width: 40em) {
       nav.header li {
         margin: 0;
         font-size: 0.8em; } }
@@ -662,7 +708,7 @@ nav.header {
     padding: 0;
     margin-left: 0;
     margin-right: 1.5em; }
-    @media screen and (max-width: 40em)  {
+    @media screen and (max-width: 40em) {
       nav.header li.logo {
         text-align: center;
         font-size: 1.2em;
@@ -692,7 +738,7 @@ nav.header {
   .intro .signup .details, .feature .signup .details {
     padding: 0;
     float: left; }
-  @media screen and (max-width: 40em)  {
+  @media screen and (max-width: 40em) {
     .intro .signup, .feature .signup {
       padding: 0 0.5em; }
       .intro .signup .cta, .feature .signup .cta {
@@ -700,6 +746,7 @@ nav.header {
       .intro .signup .details, .feature .signup .details {
         width: 100%;
         text-align: center; } }
+
 .intro .cta, .feature .cta {
   font-size: 1.5em;
   padding: 5px 20px;
@@ -708,7 +755,7 @@ nav.header {
 .closer {
   text-align: center;
   margin: 3em; }
-  @media screen and (max-width: 40em)  {
+  @media screen and (max-width: 40em) {
     .closer {
       margin: 3em 1em; } }
 
@@ -729,13 +776,16 @@ nav.header {
     padding: 0 0.2em;
     margin-right: -0.2em;
     border-radius: 3px; }
+
 .intro h3, .intro h4 {
   font-size: 1.8em;
   margin-top: 2em;
   text-align: center; }
+
 .intro .details {
   font-size: 0.8em;
   list-style: none; }
+
 .intro .features {
   margin: 2em 0;
   padding: 0;
@@ -767,6 +817,7 @@ nav.header {
 
 .feature h3 {
   margin-top: 1.5em; }
+
 .feature .testimonials {
   width: 95%;
   margin: 0 auto;
@@ -776,8 +827,10 @@ nav.header {
   margin-bottom: 0.5em;
   margin-top: 2em;
   text-align: center; }
+
 .testimonials blockquote {
   margin: 0; }
+
 .testimonials img {
   margin: 0 auto;
   height: 45px; }
@@ -791,7 +844,7 @@ ul.questions {
     width: 45%;
     float: left;
     margin-right: 1em; }
-    @media screen and (max-width: 40em)  {
+    @media screen and (max-width: 40em) {
       ul.questions li {
         width: 100%;
         margin: 0; } }
@@ -803,7 +856,7 @@ a.cta, input.cta {
   border-radius: 3px;
   background-color: #f8a915;
   background-image: -webkit-linear-gradient(#f8a915, #ea9613);
-  background-image: linear-gradient(#f8a915, #ea9613);
+  background-image: linear-gradient(#f8a915, #ea9613, , , , , , , , );
   border: 1px solid #d28811;
   display: inline-block;
   vertical-align: middle;
@@ -866,7 +919,7 @@ a.cta, input.cta {
     font-size: 1.5em; }
   .payment .card-date {
     text-align: center; }
-  @media screen and (max-width: 40em)  {
+  @media screen and (max-width: 40em) {
     .payment {
       width: 100%;
       border-radius: 0;
@@ -896,6 +949,7 @@ a.cta, input.cta {
     white-space: nowrap; }
     .report nav .controls input {
       border: none; }
+
 .report .details {
   width: 100%;
   display: table;
@@ -955,15 +1009,17 @@ form.add-recipient {
   line-height: 2em; }
   .pricing .toggle select {
     width: auto; }
+
 .pricing .plans {
   display: table;
   margin: 2em auto;
   text-align: center; }
+
 .pricing .plan {
   display: table-cell;
   vertical-align: top;
   padding: 0 0.5em; }
-  @media screen and (max-width: 40em)  {
+  @media screen and (max-width: 40em) {
     .pricing .plan {
       display: block; } }
 
@@ -1006,6 +1062,7 @@ form.add-recipient {
   margin-bottom: 2em; }
   #credit-card .pricing-plan-group ul {
     margin: 0; }
+
 #credit-card .pricing-plan {
   margin-bottom: 2em; }
   #credit-card .pricing-plan h3 {
@@ -1022,10 +1079,13 @@ form.add-recipient {
   line-height: 1.5em;
   width: 28em;
   margin-bottom: 1em; }
+
 #branding label {
   margin-bottom: 1em; }
+
 #branding textarea {
   width: 560px; }
+
 #branding blockquote {
   width: 560px;
   padding: 1em 0.3em;
@@ -1037,7 +1097,7 @@ form.add-recipient {
 iframe.video {
   width: 640px;
   height: 440px; }
-  @media screen and (max-width: 40em)  {
+  @media screen and (max-width: 40em) {
     iframe.video {
       padding: 0;
       margin: 2em 0;
@@ -1046,11 +1106,11 @@ iframe.video {
 
 footer {
   display: block;
-  background: #343236;
-  background-color: #272629;
-  background-image: -webkit-linear-gradient(#272629, #343236);
-  background-image: linear-gradient(#272629, #343236);
-  border-top: 5px solid #1b1a1c;
+  background: #343434;
+  background-color: #272727;
+  background-image: -webkit-linear-gradient(#272727, #343434);
+  background-image: linear-gradient(#272727, #343434, , , , , , , , );
+  border-top: 5px solid #1b1b1b;
   color: #999999;
   margin-top: 4em;
   padding-top: 1em; }
@@ -1070,11 +1130,11 @@ footer {
     color: #a6a6a6; }
   footer a.cta {
     margin-top: 1em;
-    background: #413f43;
-    border-color: #b4b1b6; }
+    background: #414141;
+    border-color: #b4b4b4; }
     footer a.cta:hover {
       color: #fff;
-      background: #67646b; }
+      background: #676767; }
   footer .menu {
     display: table;
     table-layout: fixed;
@@ -1085,6 +1145,6 @@ footer {
     list-style: none;
     padding: 0 1em;
     vertical-align: top; }
-    @media screen and (max-width: 40em)  {
+    @media screen and (max-width: 40em) {
       footer ul {
         display: block; } }
