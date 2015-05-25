@@ -29,7 +29,7 @@
             ${_user_status('Token', u.account and u.account.oauth_token and u.account.oauth_token.get('refresh_token', False))}
             ${_user_status(u.plan.name, u.plan_id)}
             ${_user_status(('%s Remaining' % u.num_remaining) if u.num_remaining is not None else 'Paid', u.num_remaining != 0)}
-            ${_user_status('Card', u.payment)}
+            ${_user_status(u.payment and u.payment.id.title() or 'Card', u.payment)}
             ${_user_status(('%s Subscriptions' % len(u.subscriptions)), is_enabled=False)}
 
             ${_user_status('Ghost', link=request.route_path('admin_login_as', _query={'id': u.id}), on_hover=True)}

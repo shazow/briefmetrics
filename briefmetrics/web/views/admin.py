@@ -123,7 +123,7 @@ class AdminController(Controller):
         if self.c.user.invited_by_user_id:
             self.c.invited_by = model.User.get(self.c.user.invited_by_user_id)
 
-        q = Session.query(model.ReportLog).join(model.Account).filter_by(user_id=self.c.user.id) # XXX: accounts
+        q = Session.query(model.ReportLog).join(model.Account).filter_by(user_id=self.c.user.id)
         q = q.order_by(model.ReportLog.id.desc()).limit(10)
         self.c.recent_reports = q.all()
 
