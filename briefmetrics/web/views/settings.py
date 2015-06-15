@@ -1,3 +1,4 @@
+import logging
 from unstdlib import get_many
 
 from briefmetrics import api, model
@@ -8,6 +9,9 @@ from briefmetrics.lib.service import registry as service_registry
 from .api import expose_api, handle_api
 from briefmetrics.lib.controller import Controller
 from briefmetrics.lib.pricing import PLAN_DEFAULT
+
+
+log = logging.getLogger(__name__)
 
 
 @expose_api('settings.payments_set')
@@ -92,7 +96,8 @@ def settings_branding(request):
                 prefix=prefix,
                 pretend=request.registry.settings.get('testing'),
             )
-        except ValueError:
+        except (ValueError, OSError) as e:
+            log.error('settings.branding: Failed to save logo: %r' % e)
             raise APIControllerError("Failed to read image '%s'. Please re-save the image as a PNG and try again." % header_logo.filename)
 
     user.config['email_intro_text'] = header_text
