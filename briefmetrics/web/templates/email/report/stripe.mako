@@ -13,11 +13,11 @@
         so far this month</span>,
     % endif
     % if is_last_day:
-        compared to <span class="chartBottom">${previous_date_start.strftime('%B')}'s total of ${h.human_int(last)}</span>.
+        compared to <span class="chartBottom">${previous_date_start.strftime('%B')}'s total of ${h.human_dollar(last)}</span>.
     % elif current >= last_relative and last != last_relative:
         compared to last month's ${h.human_dollar(last_relative)} at this time.
         % if current > last:
-            You're already ahead of <span class="chartBottom">last months's total of ${h.human_int(last)}</span>!
+            You're already ahead of <span class="chartBottom">last months's total of ${h.human_dollar(last)}</span>!
         % else:
             You're on your way to beat <span class="chartBottom">last months's total of ${h.human_dollar(last)}</span>.
         % endif
