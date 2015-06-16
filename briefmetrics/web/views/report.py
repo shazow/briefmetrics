@@ -38,7 +38,7 @@ def report_create(request):
 
     config = {}
     if pace:
-        config['historic_interval'] = pace
+        config['pace'] = pace
 
     report_type = report_type or api_query.oauth.default_report
     try:
@@ -275,9 +275,12 @@ class ReportController(Controller):
         if not report:
             raise httpexceptions.HTTPNotFound()
 
+        config_options = ['pace', 'intro']
+        config = dict((k, v) for k, v in self.request.params.iteritems() if k in config_options and v)
+
         # Last Sunday
         since_time = now()
-        report_context = api.report.fetch(self.request, report, since_time)
+        report_context = api.report.fetch(self.request, report, since_time, config=config)
 
         template = report_context.template
         if not report_context.data:

@@ -118,12 +118,12 @@ def get_pending(since_time=None, max_num=None, include_new=True):
 
 # Reporting tasks:
 
-def fetch(request, report, since_time, api_query=None, service='google'):
+def fetch(request, report, since_time, api_query=None, service='google', config=None):
     if not api_query:
         api_query = api_account.query_service(request, account=report.account)
 
     ReportCls = get_report(report.type)
-    r = ReportCls(report, since_time)
+    r = ReportCls(report, since_time, config=config)
 
     try:
         r.fetch(api_query)

@@ -128,13 +128,18 @@ class Report(object):
     template = 'email/report/daily.mako'
     frequency = 'day'
 
-    def __init__(self, report, since_time):
+    def __init__(self, report, since_time, config=None):
         self.data = {}
         self.tables = {}
         self.report = report
         self.owner = report.account and report.account.user
         self.remote_id = report.remote_id
         self.messages = []
+        self.config = {}
+        if report.config:
+            self.config.update(report.config)
+        if config:
+            self.config.update(config)
 
         self.since_time = since_time
         self.previous_date_start, self.date_start, self.date_end, self.date_next = self.get_date_range(since_time)

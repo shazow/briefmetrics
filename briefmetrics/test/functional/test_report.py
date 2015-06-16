@@ -221,7 +221,7 @@ class TestReport(test.TestWeb):
         report = r['result']['report']
         self.assertEqual(report['display_name'], u'example.com')
         self.assertEqual(model.Report.count(), 1)
-        self.assertEqual(model.Report.get(report['id']).config, {u'historic_interval': u'year'})
+        self.assertEqual(model.Report.get(report['id']).config, {u'pace': u'year'})
 
         r = self.app.get('/reports')
         self.assertIn('Active reports', r)

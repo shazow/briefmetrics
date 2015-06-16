@@ -257,8 +257,8 @@ def _cast_title(v):
 # TODO: Rename ids to GA-specific
 
 class GAReport(Report):
-    def __init__(self, report, since_time, remote_data=None, display_name=None):
-        super(GAReport, self).__init__(report, since_time)
+    def __init__(self, report, since_time, remote_data=None, display_name=None, config=None):
+        super(GAReport, self).__init__(report, since_time, config=config)
         if remote_data:
             self.remote_id = str(remote_data.get('id', self.remote_id))
 
@@ -485,7 +485,7 @@ class ActivityReport(WeeklyMixin, GAReport):
 
         # Historic
         historic_start_date = last_month_date_start
-        compare_interval = self.report.config.get('historic_interval', 'month')
+        compare_interval = self.config.get('pace', 'month')
         if compare_interval == 'year':
             historic_start_date = self.date_end - datetime.timedelta(days=self.date_end.day-1)
             historic_start_date = historic_start_date.replace(year=historic_start_date.year-1)
@@ -506,10 +506,10 @@ class ActivityReport(WeeklyMixin, GAReport):
             ],
         )
 
-        intro_config = self.report.config.get('intro')
+        intro_config = self.config.get('intro')
         if intro_config:
             # For John Sheehan
-            historic_table.set_visible('ga:month', intro_config)
+            historic_table.set_visible('ga:yearMonth', intro_config)
 
         iter_historic = historic_table.iter_visible()
         _, views_column = next(iter_historic)
@@ -545,8 +545,8 @@ class ActivityConcatReport(ActivityReport):
 
     template = 'email/report/weekly-concat.mako'
 
-    def __init__(self, report, since_time):
-        super(ActivityConcatReport, self).__init__(report, since_time)
+    def __init__(self, report, since_time, config=None):
+        super(ActivityConcatReport, self).__init__(report, since_time, config=config)
 
         remote_data = report.remote_data['combined']
         contexts = []
@@ -636,10 +636,10 @@ class TrendsReport(MonthlyMixin, GAReport):
                 'ids': 'ga:%s' % self.remote_id,
                 'start-date': last_month_date_start, # Extra month
                 'end-date': self.date_end,
-                'sort': '-ga:month',
+                'sort': '-ga:yearMonth',
             },
             dimensions=[
-                Column('ga:month'),
+                Column('ga:yearMonth'),
             ],
             metrics=summary_metrics + [Column('ga:visits', type_cast=int)],
         )
@@ -701,7 +701,7 @@ class TrendsReport(MonthlyMixin, GAReport):
             },
             dimensions=[
                 Column('ga:date'),
-                Column('ga:month', visible=0),
+                Column('ga:yearMonth', visible=0),
             ],
             metrics=[
                 Column('ga:pageviews', label='Views', type_cast=int, visible=1),
@@ -709,10 +709,10 @@ class TrendsReport(MonthlyMixin, GAReport):
             ],
         )
 
-        intro_config = self.report.config.get('intro')
+        intro_config = self.config.get('intro')
         if intro_config:
             # For John Sheehan
-            historic_table.set_visible('ga:month', intro_config)
+            historic_table.set_visible('ga:yearMonth', intro_config)
 
         iter_historic = historic_table.iter_visible()
         _, views_column = next(iter_historic)
