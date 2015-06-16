@@ -484,16 +484,21 @@ class ActivityReport(WeeklyMixin, GAReport):
 
 
         # Historic
+        historic_start_date = last_month_date_start
+        compare_interval = self.report.config.get('historic-interval', 'month')
+        if compare_interval == 'year':
+            historic_start_date = self.date_end - datetime.timedelta(days=self.date_end.day-1)
+            historic_start_date = historic_start_date.replace(year=historic_start_date.year-1)
 
         historic_table = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
-                'start-date': last_month_date_start,
+                'start-date': historic_start_date,
                 'end-date': self.date_end,
             },
             dimensions=[
                 Column('ga:date'),
-                Column('ga:month', visible=0),
+                Column('ga:yearMonth', visible=0),
             ],
             metrics=[
                 Column('ga:pageviews', label='Views', type_cast=int, visible=1),
@@ -508,15 +513,20 @@ class ActivityReport(WeeklyMixin, GAReport):
 
         iter_historic = historic_table.iter_visible()
         _, views_column = next(iter_historic)
+
+        if compare_interval == 'year':
+            mo_filter = u'{d.month:02d}'.format(d=historic_start_date)
+            iter_historic = ((mo, v) for mo, v in iter_historic if mo.endswith(mo_filter))
+
         monthly_data, max_value = cumulative_by_month(iter_historic)
-        last_month, current_month = monthly_data
+        last_month, current_month = monthly_data[-2:]
 
         self.data['historic_data'] = encode_rows(monthly_data, max_value)
         self.data['total_units'] = '{:,} %s' % views_column.label.lower().rstrip('s')
         self.data['total_current'] = current_month[-1]
         self.data['total_last'] = last_month[-1]
         self.data['total_last_relative'] = last_month[min(len(current_month), len(last_month))-1]
-        self.data['total_last_date_start'] = last_month_date_start
+        self.data['total_last_date_start'] = historic_start_date
 
         social_search_table = self._get_social_search(google_query, self.date_start, self.date_end, summary_metrics, max_results=25)
         last_social_search = self._get_social_search(google_query, self.previous_date_start, self.previous_date_end, summary_metrics, max_results=100)

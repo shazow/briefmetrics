@@ -26,10 +26,10 @@ class TestReportWidgets(test.TestApp):
         data = [
             # current, last, last_relative, week_interval, expected
             (123, 234, 42, week_interval,
-                u"Your site had 123 views so far this month, compared to last month's 42 views at this time. You're on your way to beat last months's total of 234.",
+                u"Your site had 123 views so far this month, compared to last month's 42 views at this time. You're on your way to beat last month's total of 234.",
             ),
             (300, 234, 42, week_interval,
-                u"Your site had 300 views so far this month, compared to last month's 42 views at this time. You're already ahead of last months's total of 234!",
+                u"Your site had 300 views so far this month, compared to last month's 42 views at this time. You're already ahead of last month's total of 234!",
             ),
             (20, 234, 42, week_interval,
                 u"Your site had 20 views so far this month, compared to last month's 42 views at this time and 234 by the end of last month.",

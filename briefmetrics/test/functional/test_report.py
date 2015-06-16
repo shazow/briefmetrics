@@ -51,7 +51,7 @@ class TestReport(test.TestWeb):
         self.assertEqual(t.get('ga:pageviews').max_row[0], 1999)
 
         t = q.get_table({'max-results': 7}, dimensions=[Column('ga:month')])
-        self.assertEqual([list(m) for m in t.iter_rows()], [[1]]*6 + [[2]]) 
+        self.assertEqual([list(m) for m in t.iter_rows()], [[u'01']]*6 + [[u'02']]) 
 
     def test_fetch(self):
         report = self._create_report()

@@ -114,6 +114,9 @@
     <%
         previous_date_start, date_start, date_end = interval
         is_last_day = (date_end + h.timedelta(days=1)).month != date_end.month
+        last_period = "last month"
+        if previous_date_start.year != date_start.year:
+            last_period = "last {}".format(previous_date_start.strftime('%B'))
     %>
     Your site had <span class="chartTop">${h.format_int(current, units)}
     % if is_last_day:
@@ -124,13 +127,15 @@
     % if is_last_day:
         compared to <span class="chartBottom">${previous_date_start.strftime('%B')}'s total of ${h.human_int(last)}</span>.
     % elif current >= last_relative and last != last_relative:
-        compared to last month's ${h.format_int(last_relative, units)} at this time.
+        compared to ${last_period}'s ${h.format_int(last_relative, units)} at this time.
         % if current > last:
-            You're already ahead of <span class="chartBottom">last months's total of ${h.human_int(last)}</span>!
+            You're already ahead of <span class="chartBottom">${last_period}'s total of ${h.human_int(last)}</span>!
         % else:
-            You're on your way to beat <span class="chartBottom">last months's total of ${h.human_int(last)}</span>.
+            You're on your way to beat <span class="chartBottom">${last_period}'s total of ${h.human_int(last)}</span>.
         % endif
     % else:
-        compared to <span class="chartBottom">last month's ${h.format_int(last_relative, units)}</span> at this time and ${h.human_int(last)} by the end of last month.
+        compared to <span class="chartBottom">${last_period}'s
+            ${h.format_int(last_relative, units)}</span> at this time and
+        ${h.human_int(last)} by the end of ${last_period}.
     % endif
 </%def>
