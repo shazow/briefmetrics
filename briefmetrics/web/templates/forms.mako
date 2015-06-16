@@ -129,6 +129,12 @@
                 % endfor
                 </select>
             % endif
+            % if request.features.get('historic_pace'):
+                <select name="pace" style="width: auto;">
+                    <option value="month" selected>Monthly Pace</option>
+                    <option value="year">Yearly Pace</option>
+                </select>
+            % endif
         </p>
     </form>
 </%def>

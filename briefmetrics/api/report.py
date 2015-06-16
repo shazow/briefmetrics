@@ -17,7 +17,7 @@ from . import email as api_email, account as api_account
 
 log = logging.getLogger(__name__)
 
-def create(account_id, remote_data=None, remote_id=None, display_name=None, subscribe_user_id=None, type=None):
+def create(account_id, remote_data=None, remote_id=None, display_name=None, subscribe_user_id=None, type=None, config=None):
     remote_id = remote_id or str(remote_data['id'])
     type = type or 'week'
 
@@ -32,6 +32,9 @@ def create(account_id, remote_data=None, remote_id=None, display_name=None, subs
 
     if display_name:
         report.display_name = display_name
+
+    if config:
+        report.config = config
 
     if subscribe_user_id:
         model.Subscription.create(user_id=subscribe_user_id, report=report)

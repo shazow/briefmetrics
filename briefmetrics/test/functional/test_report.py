@@ -217,10 +217,11 @@ class TestReport(test.TestWeb):
         self.assertIn('New report', r)
         self.assertNotIn('Active reports', r)
 
-        r = self.call_api('report.create', remote_id=u'200001')
+        r = self.call_api('report.create', remote_id=u'200001', pace='year')
         report = r['result']['report']
         self.assertEqual(report['display_name'], u'example.com')
         self.assertEqual(model.Report.count(), 1)
+        self.assertEqual(model.Report.get(report['id']).config, {u'historic_interval': u'year'})
 
         r = self.app.get('/reports')
         self.assertIn('Active reports', r)

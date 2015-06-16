@@ -485,7 +485,7 @@ class ActivityReport(WeeklyMixin, GAReport):
 
         # Historic
         historic_start_date = last_month_date_start
-        compare_interval = self.report.config.get('historic-interval', 'month')
+        compare_interval = self.report.config.get('historic_interval', 'month')
         if compare_interval == 'year':
             historic_start_date = self.date_end - datetime.timedelta(days=self.date_end.day-1)
             historic_start_date = historic_start_date.replace(year=historic_start_date.year-1)
