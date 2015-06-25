@@ -138,7 +138,7 @@ class Query(object):
     def get_profile(self, remote_id=None):
         r = self.get_profiles()
         if remote_id is None:
-            return next(iter(r, None))
+            return next(iter(r), None)
 
         return next((item for item in r if item['id'] == remote_id), None)
 
