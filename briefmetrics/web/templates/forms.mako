@@ -86,7 +86,7 @@
         </p>
         <p>
             If you don't have any Google Analytics accounts, then Briefmetrics
-            won't be useful for you yet. Now is a good time to <a href="https://analytics.google.com/">create a Google Analytics account</a>, follow the instructions to setup your website and then check back here again.
+            won't be useful for you yet. Now is a good time to <a href="https://www.google.com/analytics/">create a Google Analytics account</a>, follow the instructions to setup your website and then check back here again.
         </p>
         <% return '' %>
     % endif
