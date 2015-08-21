@@ -255,7 +255,12 @@ class WebhookController(Controller):
             raise httpexceptions.HTTPNotFound('Service webhook handler not found: {}'.format(service))
 
         data = self.request.json
-        r = handler(self.request, data)
+        try:
+            r = handler(self.request, data)
+        except Exception as e:
+            log.error("webhook handling [%s] failed: %s\n> %s" % (service, e, data))
+            raise
+
         body = ''
         if r:
             body = json.dumps(r)

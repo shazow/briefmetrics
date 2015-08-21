@@ -26,6 +26,7 @@ class FakeNamecheapAPI(object):
     id = 'fake-namecheap'
     resp = {
         ('GET', '/v1/saas/saas/event/fakecreate'): RESPONSES['subscription_create'],
+        ('GET', '/v1/saas/saas/event/badevent'): '["wtf?"]',
         ('GET', '/v1/saas/saas/event/fakealter'): RESPONSES['subscription_alter'] % dict(pricing_plan_sku='agency-10-yr'),
         ('GET', '/v1/saas/saas/event/fakealter2'): RESPONSES['subscription_alter'] % dict(pricing_plan_sku='starter-yr'),
         ('POST', '/v1/billing/invoice'): '{"result": {"status": "open", "status_id": "1", "created_at": "2015-05-07T01:30:29.923Z", "amount_due": null, "subscription_id": 1206, "id": "123"}}',
@@ -210,7 +211,6 @@ class TestNamecheap(test.TestWeb):
         u.time_next_payment = now() + relativedelta(months=6)
         Session.commit()
 
-        log.info('XXX')
         old_plan = u.plan
         self.app.post('/webhook/namecheap', params='{"event_token": "fakealter2"}', content_type='application/json')
         new_plan = model.User.get(u.id).plan
@@ -227,3 +227,7 @@ class TestNamecheap(test.TestWeb):
         self.assertLess(expected_amount, 0)
         delta = float(params['amount']) - expected_amount
         self.assertTrue(abs(delta) < 2, '%s !~= %s' % (params['amount'], expected_amount)) # This will vary by year, so we only approximate
+
+    def test_webhook_fail(self):
+        with self.assertRaises(AttributeError):
+            self.app.post('/webhook/namecheap', params='["wtf"]', content_type='application/json')
