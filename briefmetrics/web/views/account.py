@@ -51,6 +51,8 @@ def account_connect(request):
         decoded = jwt.decode(id_token, service.config['sso_client_secret'], audience=service.config['sso_client_id'], options=decode_options)
     except jwt.DecodeError as e:
         raise APIControllerError('Failed to verify id token: %s' % e)
+    except jwt.InvalidTokenError as e:
+        raise APIControllerError('Invalid token: %s' % e)
 
     remote_id = decoded['sub']
     account = model.Session.query(model.Account).filter_by(remote_id=remote_id, service=service_id).first()

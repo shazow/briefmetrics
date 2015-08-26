@@ -50,6 +50,10 @@ def handle_stripe(request, data):
 
 
 def handle_namecheap(request, data):
+    if isinstance(data, list):
+        # Stupid hack for Namecheap's broken QA code.
+        data = data[0]
+
     event_token = data.get('event_token')
     if not event_token:
         return
