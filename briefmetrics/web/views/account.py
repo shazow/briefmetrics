@@ -51,7 +51,7 @@ def account_connect(request):
         decoded = jwt.decode(id_token, service.config['sso_client_secret'], audience=service.config['sso_client_id'], options=decode_options)
     except jwt.DecodeError as e:
         raise APIControllerError('Failed to verify id token: %s' % e)
-    except jwt.InvalidTokenError as e:
+    except (jwt.InvalidTokenError, jwt.InvalidIssuedAtError) as e:
         raise APIControllerError('Invalid token: %s' % e)
 
     remote_id = decoded['sub']
