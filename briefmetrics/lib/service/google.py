@@ -338,13 +338,15 @@ class ActivityReport(WeeklyMixin, GAReport):
         goals_api = 'https://www.googleapis.com/analytics/v3/management/accounts/{accountId}/webproperties/{webPropertyId}/profiles/{profileId}/goals'
         r = google_query.get(goals_api.format(profileId=self.remote_data['id'], **self.remote_data))
         has_goals = r.get('items') or []
-        metrics = [
-                Column('ga:goal{id}ConversionRate'.format(id=g['id']), label=g['name'], type_cast=float) for g in has_goals if g.get('active')
+        goal_metrics = [
+            Column('ga:goal{id}Completions'.format(id=g['id']), label=g['name'], type_cast=float)
+            for g in has_goals if g.get('active')
         ]
 
-        if not metrics:
+        if not goal_metrics:
             return
 
+        metrics = [Column('ga:sessions', type_cast=int)] + goal_metrics
         raw_table = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
@@ -352,13 +354,14 @@ class ActivityReport(WeeklyMixin, GAReport):
                 'end-date': self.date_end,
                 'sort': '-{}'.format(interval_field),
             },
-            metrics=metrics[-10:],
+            metrics=metrics[-11:],
             dimensions=[
                 Column(interval_field),
             ],
         )
 
         if len(raw_table.rows) != 2:
+            # Less than 2 weeks of data available
             return
 
         t = Table(columns=[
@@ -366,9 +369,11 @@ class ActivityReport(WeeklyMixin, GAReport):
             Column('completions', label='Converts', visible=0, type_cast=_cast_percent, type_format=_format_percent, threshold=0),
         ])
 
+        num_sessions, num_sessions_last = [next(v) for v in raw_table.iter_rows('ga:sessions')]
+
         this_week, last_week = raw_table.rows
-        col_compare = t.columns[1]
-        col_compare_delta = Column('%s:delta' % col_compare.id, label='Conversions', type_cast=float, type_format=h.human_delta, threshold=0)
+        col_compare = t.get('completions')
+        col_compare_delta = Column('%s:delta' % col_compare.id, label='Events', type_cast=float, type_format=h.human_delta, threshold=0)
         has_completions = False
         for col_id, pos in raw_table.column_to_index.items():
             col = raw_table.columns[pos]
@@ -376,12 +381,19 @@ class ActivityReport(WeeklyMixin, GAReport):
                 continue
 
             completions, completions_last = this_week.values[pos], last_week.values[pos]
-            row = t.add([col.label, completions])
+            percent_completions, percent_completions_last = completions*100/num_sessions, completions_last*100/num_sessions_last
+            row = t.add([col.label, percent_completions])
 
-            if completions > 0.1:
+            if completions > 0:
+                row.tag(type='events', value=h.human_int(completions), is_prefixed=True)
+
+            if completions + completions_last > 0:
                 has_completions = True
-                delta = (completions - completions_last) / 100.0 # / float(completions)
-                if abs(delta) > 0.01:
+                # Old method:
+                # delta = (percent_completions - percent_completions_last) / 100.0
+                # New method (same as GA shows):
+                delta = completions / completions_last - 1 if completions_last > 0.0 else 1.0
+                if abs(delta) > 0.001:
                     row.tag(type='delta', value=h.human_percent(delta, signed=True), column=col_compare_delta, is_prefixed=True, is_positive=delta>0)
 
         if not has_completions:
