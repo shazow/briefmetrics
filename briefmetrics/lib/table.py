@@ -155,14 +155,12 @@ class RowTag(object):
     def __str__(self):
         parts = []
 
-        if self.column:
-            parts.append(self.column.format(self.value))
-            parts.append(self.column.label)
-        else:
-            if self.is_prefixed:
-                parts.append(str(self.value))
+        if self.is_prefixed:
+            parts.append(str(self.value))
+        elif self.value is not None:
+            parts.append(str(self.column and self.column.format(self.value) or self.value))
 
-            parts.append(self.type.title())
+        parts.append(self.type.title())
 
         return ' '.join(parts)
 
@@ -189,7 +187,10 @@ class Row(object):
         self.tags.append(RowTag(type, column=column, value=value, **kw))
 
     def __repr__(self):
-        return '{class_name}(values={self.values!r})'.format(class_name=self.__class__.__name__, self=self)
+        fmt = '{class_name}(values={self.values!r})'
+        if self.tags:
+            fmt = '{class_name}(values={self.values!r}, tags={self.tags!r})'
+        return fmt.format(class_name=self.__class__.__name__, self=self)
 
 
 class Table(object):
@@ -197,12 +198,15 @@ class Table(object):
 
     def __init__(self, columns):
         # Columns must be in the same order as the rows that get added.
-        self.columns = columns
+        self.columns = [col for col in columns]
         self.rows = []
-        self.column_to_index = {s.id: i for i, s in enumerate(columns)}
+        self.column_to_index = {s.id: i for i, s in enumerate(self.columns)}
 
-        for column in columns:
+        for column in self.columns:
             column.table = self
+
+    def new(self):
+        return Table(col.new() for col in self.columns)
 
     def add(self, row, is_measured=True):
         values = []

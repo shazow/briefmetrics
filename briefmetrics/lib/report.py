@@ -65,7 +65,44 @@ def sparse_cumulative(iterable, final_date=None):
     return cumulated.values(), max(last_amount, max_value)
 
 
+# TODO: Move this into lib/table.py
+def split_table_delta(t, split_column, join_column, compare_column):
+    """
+    Split rows in table `t` between different `split_column` values.
 
+    Must be sorted by `split_column`.
+    """
+    if not t.rows:
+        return
+
+    idx_split = t.column_to_index[split_column]
+    idx_join = t.column_to_index[join_column]
+    idx_compare = t.column_to_index[compare_column]
+    col_compare = t.get(compare_column)
+
+    split_val = t.rows[0].values[idx_split]
+    num = next(i for i, row in enumerate(t.rows) if row.values[idx_split] != split_val)
+
+    last_rows = t.rows[num:]
+    last_lookup = dict((row.values[idx_join], row) for row in last_rows)
+    t.rows = t.rows[:num]  # Truncate split rows
+
+    for row in t.rows:
+        cmp = row.values[idx_join]
+        last_row = last_lookup.get(cmp)
+        if not last_row:
+            continue
+
+        val = row.values[idx_compare]
+        last_val = last_row.values[idx_compare]
+        delta = val-last_val
+        if not delta or abs(delta) < col_compare._threshold:
+            continue
+
+        row.tag(type=col_compare.label, value=delta)
+
+
+# TODO: Move this into lib/table.py
 def inject_table_delta(a, b, join_column, compare_column='ga:pageviews', num_normal=10, num_missing=5):
     """
     Annotate rows in table `a` with deltas from table `b`.

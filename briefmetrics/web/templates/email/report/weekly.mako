@@ -86,6 +86,14 @@ ${widgets.render_table(
         h.ga_permalink('report/conversions-goals-overview', r.report, date_start=r.date_start, date_end=r.date_end),
     )}
 % endif
+
+% if r.tables.get('ecommerce'):
+    ${widgets.render_table(
+        r.tables['ecommerce'],
+        'Ecommerce',
+        h.ga_permalink('report/conversions-ecommerce-overview', r.report, date_start=r.date_start, date_end=r.date_end),
+    )}
+% endif
 </%def>
 
 

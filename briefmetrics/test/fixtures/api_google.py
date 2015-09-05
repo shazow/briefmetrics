@@ -50,7 +50,9 @@ data['ga:country'] = ['United States', 'Canada', 'Germany']
 data['ga:deviceCategory'] = ['mobile', 'tablet', 'desktop']
 data['ga:browser'] = ['Chrome', 'Firefox', 'Internet Explorer']
 data['ga:goalConversionRateAll'] = [0.0, 0.123, 0.0]
-
+data['ga:productName'] = ['Product A', 'Product B']
+data['ga:itemRevenue'] = [0.0, 23.2, 42]
+data['ga:itemQuantity'] = [0, 3, 11]
 
 skip_state = set(['ga:month'])
 

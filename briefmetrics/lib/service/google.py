@@ -1,6 +1,7 @@
 import datetime
 import uuid
 import requests
+import functools
 from urllib import urlencode
 from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
 
@@ -8,7 +9,7 @@ from briefmetrics.lib import helpers as h
 from briefmetrics.lib.cache import ReportRegion
 from briefmetrics.lib.gcharts import encode_rows
 from briefmetrics.lib.http import assert_response
-from briefmetrics.lib.report import Report, EmptyReportError, MonthlyMixin, WeeklyMixin, DailyMixin, inject_table_delta, cumulative_by_month
+from briefmetrics.lib.report import Report, EmptyReportError, MonthlyMixin, WeeklyMixin, DailyMixin, inject_table_delta, cumulative_by_month, split_table_delta
 from briefmetrics.lib.table import Table, Column
 from briefmetrics.lib.exceptions import APIError
 
@@ -237,6 +238,9 @@ def _cast_percent(v):
 def _format_percent(f):
     return h.human_percent(f, denominator=100.0)
 
+def _format_dollars(v):
+    return h.human_dollar(v * 100.0)
+
 def _cast_time(v):
     v = float(v or 0.0)
     if v:
@@ -334,6 +338,35 @@ class ActivityReport(WeeklyMixin, GAReport):
         t.sort(reverse=True)
         return t
 
+    def _get_ecommerce(self, google_query, interval_field):
+        t = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                #'start-date': self.previous_date_start, # Extra week
+                'start-date': self.date_start,
+                'end-date': self.date_end,
+                'sort': '-{}'.format(interval_field),
+            },
+            dimensions=[
+                Column(interval_field),
+                Column('ga:productName', label="Product", visible=1),
+            ],
+            metrics=[
+                Column('ga:itemRevenue', label="Revenue", type_cast=float, type_format=_format_dollars, visible=0),
+                Column('ga:itemQuantity', label="Sales", type_cast=int, type_format=h.human_int),
+            ],
+        )
+        t.sort(reverse=True)
+
+        idx_sales = t.column_to_index['ga:itemQuantity']
+        for row in t.rows:
+            v = row.values[idx_sales]
+            row.tag(h.format_int(v, u"{:,} Sale"))
+
+        #split_table_delta(t, interval_field, 'ga:productName', 'ga:itemRevenue')
+
+        return t
+
     def _get_goals(self, google_query, interval_field):
         goals_api = 'https://www.googleapis.com/analytics/v3/management/accounts/{accountId}/webproperties/{webPropertyId}/profiles/{profileId}/goals'
         r = google_query.get(goals_api.format(profileId=self.remote_data['id'], **self.remote_data))
@@ -385,7 +418,7 @@ class ActivityReport(WeeklyMixin, GAReport):
             row = t.add([col.label, percent_completions])
 
             if completions > 0:
-                row.tag(type='events', value=h.human_int(completions), is_prefixed=True)
+                row.tag(h.format_int(completions, u"{:,} Event"))
 
             if completions + completions_last > 0:
                 has_completions = True
@@ -491,9 +524,11 @@ class ActivityReport(WeeklyMixin, GAReport):
 
         self.tables['referrers'] = current_referrers
 
-        # Goals?
+        # Goals
         self.tables['goals'] = self._get_goals(google_query, interval_field)
 
+        # Ecommerce
+        self.tables['ecommerce'] = self._get_ecommerce(google_query, interval_field)
 
         # Historic
         historic_start_date = last_month_date_start

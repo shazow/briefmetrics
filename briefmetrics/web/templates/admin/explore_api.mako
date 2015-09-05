@@ -8,8 +8,8 @@
         <input type="hidden" name="format" value="json" />
         <input type="hidden" name="pretty" value="2" />
 
-        <input type="text" name="date_start" placeholder="Date Start" value="${c.date_end}" /> -
-        <input type="text" name="date_end" placeholder="Date End" value="${c.date_start}" />
+        <input type="text" name="date_start" placeholder="Date Start" value="${c.date_start}" /> -
+        <input type="text" name="date_end" placeholder="Date End" value="${c.date_end}" />
 
         <select name="report_id">
         % for report in c.reports:

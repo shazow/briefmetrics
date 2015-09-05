@@ -32,8 +32,7 @@ def explore_api(request):
         raise APIControllerError("Invalid report id: %s" % report_id)
 
     cache_keys = ('admin/explore_api',)
-    google_oauth2 = api.google.OAuth2(request, token=a.oauth_token)
-    google_query = api.google.create_query(request, google_oauth2.session, cache_keys=cache_keys)
+    google_query = api.account.query_service(request, report.account, cache_keys=cache_keys)
 
     date_end = date_end or date.today()
     date_start = date_start or date_end - timedelta(days=7)

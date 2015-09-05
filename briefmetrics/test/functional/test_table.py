@@ -1,5 +1,6 @@
 from briefmetrics import test
 from briefmetrics.lib.table import Column, Table
+from briefmetrics.lib.report import split_table_delta
 
 
 class TestTable(test.TestCase):
@@ -68,3 +69,29 @@ class TestTable(test.TestCase):
 
         t.tag_rows()
         self.assertFalse(t.rows[-1].tags)
+
+class TestSplitTableDelta(test.TestCase):
+    def test_join(self):
+        t = Table([
+            Column('value'),
+            Column('joincol'),
+            Column('splitcol'),
+        ])
+        expected = t.new()
+
+        t.add((1, 'foo', 'a'))
+        t.add((2, 'bar', 'a'))
+        t.add((3, 'baz', 'a'))
+        t.add((8, 'bar', 'b'))
+        t.add((7, 'baz', 'b'))
+        t.add((6, 'quux', 'b'))
+
+        expected.add((1, 'foo', 'a'))
+        expected.add((2, 'bar', 'a')).tag('Value', -6)
+        expected.add((3, 'baz', 'a')).tag('Value', -4)
+
+        split_table_delta(t, 'splitcol', 'joincol', 'value')
+        self.assertEqual(dump(t), dump(expected))
+
+def dump(table):
+    return [repr(row) for row in table.rows]
