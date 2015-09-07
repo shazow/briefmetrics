@@ -352,7 +352,7 @@ class ActivityReport(WeeklyMixin, GAReport):
                 Column('ga:productName', label="Product", visible=1),
             ],
             metrics=[
-                Column('ga:itemRevenue', label="Revenue", type_cast=float, type_format=_format_dollars, visible=0),
+                Column('ga:itemRevenue', label="Revenue", type_cast=float, type_format=_format_dollars, visible=0, threshold=0),
                 Column('ga:itemQuantity', label="Sales", type_cast=int, type_format=h.human_int),
             ],
         )
@@ -363,6 +363,13 @@ class ActivityReport(WeeklyMixin, GAReport):
             v = row.values[idx_sales]
             row.tag(h.format_int(v, u"{:,} Sale"))
 
+        # Add total row
+        #row = t.rows[-1].values[:]
+        #row[t.column_to_index['ga:itemRevenue']] = t.get('ga:itemRevenue').sum
+        #row[t.column_to_index['ga:productName']] = '(total)'
+        #t.add(row)
+
+        # Old work from extra week mode
         #split_table_delta(t, interval_field, 'ga:productName', 'ga:itemRevenue')
 
         return t
@@ -451,7 +458,8 @@ class ActivityReport(WeeklyMixin, GAReport):
             Column('ga:visitors', label='Uniques', type_cast=int, type_format=h.human_int),
             Column('ga:avgTimeOnSite', label='Time On Site', type_cast=_cast_time, type_format=h.human_time, threshold=0),
             Column('ga:visitBounceRate', label='Bounce Rate', type_cast=_cast_percent, type_format=_format_percent, reverse=True, threshold=0),
-            Column('ga:goalConversionRateAll', label='Conversion', type_cast=float, type_format=_format_percent, threshold=0.1)
+            Column('ga:goalConversionRateAll', label='Conversion', type_cast=float, type_format=_format_percent, threshold=0.1),
+            Column('ga:itemRevenue', label="Revenue", type_cast=float, type_format=_format_dollars),
         ]
         self.tables['summary'] = summary_table = google_query.get_table(
             params={
@@ -466,8 +474,7 @@ class ActivityReport(WeeklyMixin, GAReport):
             metrics=summary_metrics + [Column('ga:visits', type_cast=int)],
         )
 
-        has_pageviews = any(next(row) for row in summary_table.iter_rows('ga:pageviews'))
-        if not has_pageviews:
+        if not summary_table.has_value('ga:pageviews'):
             raise EmptyReportError()
 
         # Pages
@@ -524,11 +531,13 @@ class ActivityReport(WeeklyMixin, GAReport):
 
         self.tables['referrers'] = current_referrers
 
-        # Goals
-        self.tables['goals'] = self._get_goals(google_query, interval_field)
+        if summary_table.has_value('ga:goalConversionRateAll'):
+            # Goals
+            self.tables['goals'] = self._get_goals(google_query, interval_field)
 
-        # Ecommerce
-        self.tables['ecommerce'] = self._get_ecommerce(google_query, interval_field)
+        if summary_table.has_value('ga:itemRevenue'):
+            # Ecommerce
+            self.tables['ecommerce'] = self._get_ecommerce(google_query, interval_field)
 
         # Historic
         historic_start_date = last_month_date_start

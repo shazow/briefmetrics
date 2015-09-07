@@ -284,6 +284,9 @@ class Table(object):
         for row in rows:
             yield (row.values[i] for i in column_positions)
 
+    def has_value(self, column_id):
+        return any(next(row) for row in self.iter_rows(column_id))
+
     def limit(self, num):
         "Truncate rows to `num`."
         self.rows = self.rows[:num]
@@ -296,7 +299,7 @@ class Table(object):
             THEAD(
                 TR(TD(col.label, attrs={'class': col.type_class}) for col in columns)
             ) +
-            TBODY (
+            TBODY(
                 TR(
                     TD(col.format(v), attrs={'class': col.type_class}) for col, v in izip(columns, row)
                 ) for row in rows

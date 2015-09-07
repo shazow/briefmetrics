@@ -80,11 +80,7 @@
         column = table.get(column_id)
         last_val, cur_val = table.rows[1].get(column_id), table.rows[0].get(column_id)
 
-        if is_percent:
-            denominator = 1.0 if is_percent is True else is_percent
-            formatted_val = h.human_percent(cur_val, denominator=denominator)
-        else:
-            formatted_val = h.human_int(cur_val)
+        formatted_val = column.type_format(cur_val)
 
         delta = 0
         if last_val and cur_val:

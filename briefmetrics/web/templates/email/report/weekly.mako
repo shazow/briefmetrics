@@ -35,6 +35,9 @@ ${h.chart(r.data['historic_data'], width=560, height=200)}
         <tr>
             ${widgets.overview_cell(r.tables['summary'], 'ga:visitBounceRate', is_percent=100.0)}
             ${widgets.overview_cell(r.tables['summary'], 'ga:pageviews')}
+            % if r.tables['summary'].has_value('ga:itemRevenue'):
+                ${widgets.overview_cell(r.tables['summary'], 'ga:itemRevenue')}
+            % endif
         </tr>
     </table>
     <%
