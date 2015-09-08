@@ -406,7 +406,7 @@ class ActivityReport(WeeklyMixin, GAReport):
 
         t = Table(columns=[
             Column('goal', label='Goals', visible=1, type_cast=_cast_title),
-            Column('completions', label='Converts', visible=0, type_cast=_cast_percent, type_format=_format_percent, threshold=0),
+            Column('completions', label='Events', visible=0, type_cast=int, type_format=h.human_int, threshold=0),
         ])
 
         num_sessions, num_sessions_last = [next(v) for v in raw_table.iter_rows('ga:sessions')]
@@ -421,11 +421,11 @@ class ActivityReport(WeeklyMixin, GAReport):
                 continue
 
             completions, completions_last = this_week.values[pos], last_week.values[pos]
-            percent_completions, percent_completions_last = completions*100/num_sessions, completions_last*100/num_sessions_last
-            row = t.add([col.label, percent_completions])
+            percent_completions, percent_completions_last = completions*100.0/num_sessions, completions_last*100.0/num_sessions_last
+            row = t.add([col.label, completions])
 
             if completions > 0:
-                row.tag(h.format_int(completions, u"{:,} Event"))
+                row.tag(type="Conversion", value=_format_percent(percent_completions))
 
             if completions + completions_last > 0:
                 has_completions = True
@@ -434,7 +434,7 @@ class ActivityReport(WeeklyMixin, GAReport):
                 # New method (same as GA shows):
                 delta = completions / completions_last - 1 if completions_last > 0.0 else 1.0
                 if abs(delta) > 0.001:
-                    row.tag(type='delta', value=h.human_percent(delta, signed=True), column=col_compare_delta, is_prefixed=True, is_positive=delta>0)
+                    row.tag(type='delta', value=delta, column=col_compare_delta, is_positive=delta>0)
 
         if not has_completions:
             return
