@@ -452,6 +452,9 @@ class ActivityReport(WeeklyMixin, GAReport):
         if (self.date_end - self.date_start).days > 6:
             interval_field = 'ga:nthMonth'
 
+        # XXX: Unhardcode this
+        include_ads = False
+
         # Summary
         summary_metrics = [
             Column('ga:pageviews', label='Views', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
@@ -461,6 +464,14 @@ class ActivityReport(WeeklyMixin, GAReport):
             Column('ga:goalConversionRateAll', label='Conversion', type_cast=float, type_format=_format_percent, threshold=0.1),
             Column('ga:itemRevenue', label="Revenue", type_cast=float, type_format=_format_dollars),
         ]
+
+        if include_ads:
+            summary_metrics += [
+                Column('ga:adCost', label="Ad Spend", type_cast=float, type_format=_format_dollars),
+                Column('ga:impressions', label="Ad Impressions", type_cast=int, type_format=h.human_int),
+                Column('ga:adClicks', label="Ad Clicks", type_cast=int, type_format=h.human_int),
+            ]
+
         self.tables['summary'] = summary_table = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,

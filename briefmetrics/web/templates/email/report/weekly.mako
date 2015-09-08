@@ -61,6 +61,16 @@ ${h.chart(r.data['historic_data'], width=560, height=200)}
         % endif
     </p>
     % endif
+
+    % if r.tables['summary'].has_value('ga:adCost'):
+    <table class="overview">
+        <tr>
+            ${widgets.overview_cell(r.tables['summary'], 'ga:adCost', is_percent=100.0)}
+            ${widgets.overview_cell(r.tables['summary'], 'ga:impressions')}
+            ${widgets.overview_cell(r.tables['summary'], 'ga:adClicks')}
+        </tr>
+    </table>
+    % endif
 % endif
 
 ${widgets.render_table(

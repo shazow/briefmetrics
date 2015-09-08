@@ -4,6 +4,7 @@ from unstdlib import html
 
 TABLE, THEAD, TBODY, TR, TD, SPAN = html.tag_builder(['table', 'thead', 'tbody', 'tr', 'td', 'span'])
 
+Default = object()
 
 class Column(object):
     def __init__(self, id, label=None, type_cast=None, type_format=None, type_class=None, visible=None, reverse=False, average=None, threshold=None, nullable=False):
@@ -232,9 +233,14 @@ class Table(object):
         column_pos = sorted((col.visible, self.column_to_index[col.id]) for col in visible_columns)
         self.rows.sort(key=lambda r: tuple(r.values[pos] for _, pos in column_pos), reverse=reverse)
 
-    def get(self, id):
+    def get(self, id, default=Default):
         "Return the column"
-        return self.columns[self.column_to_index[id]]
+        try:
+            return self.columns[self.column_to_index[id]]
+        except KeyError:
+            if default is Default:
+                raise
+            return default
 
     def get_visible(self):
         visible_columns = (c for c in self.columns if c.visible is not None)
@@ -285,6 +291,8 @@ class Table(object):
             yield (row.values[i] for i in column_positions)
 
     def has_value(self, column_id):
+        if column_id not in self.column_to_index:
+            return False
         return any(next(row) for row in self.iter_rows(column_id))
 
     def limit(self, num):

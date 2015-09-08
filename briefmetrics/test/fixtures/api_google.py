@@ -53,6 +53,9 @@ data['ga:goalConversionRateAll'] = [0.0, 0.123, 0.0]
 data['ga:productName'] = ['Product A', 'Product B']
 data['ga:itemRevenue'] = [0.0, 23.2, 42]
 data['ga:itemQuantity'] = [0, 3, 11]
+data['ga:adCost'] = [0.0, 23.2, 42]
+data['ga:impressions'] = [0, 450, 9011]
+data['ga:adClicks'] = [0, 30, 400]
 
 skip_state = set(['ga:month'])
 
