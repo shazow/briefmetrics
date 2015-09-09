@@ -67,8 +67,8 @@ ${h.chart(r.data['historic_data'], width=560, height=200)}
         col_ids = 'ga:adCost', 'ga:impressions', 'ga:adClicks'
         adcost, adimpressions, adclicks = next(r.tables['ads'].iter_formatted(*col_ids))
         adcost_num, adimpressions_num, adclicks_num = next(r.tables['ads'].iter_rows(*col_ids))
-        cpm = "%s CPM" % h.human_dollar(adimpressions_num / (adcost_num * 100000.0 or 1.0))
-        cpc = "%s CPC" % h.human_dollar(adcost_num / (adclicks_num * 100.0 or 1.0))
+        cpm = "%s CPM" % h.human_dollar((adcost_num * 0.1) / (adimpressions_num or 1.0))
+        cpc = "%s CPC" % h.human_dollar((adcost_num * 100.0) / (adclicks_num or 1.0))
     %>
     <table class="overview">
         <tr>
