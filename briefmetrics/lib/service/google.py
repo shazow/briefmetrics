@@ -440,9 +440,18 @@ class ActivityReport(WeeklyMixin, GAReport):
             interval_field = 'ga:nthMonth'
 
         # XXX: Unhardcode this
-        include_ads = False
+        include_ads = self.config.get('ads')
 
         # Summary
+        summary_params = {
+            'ids': 'ga:%s' % self.remote_id,
+            'start-date': self.previous_date_start, # Extra week
+            'end-date': self.date_end,
+            'sort': '-{}'.format(interval_field),
+        }
+        summary_dimensions = [
+            Column(interval_field),
+        ]
         summary_metrics = [
             Column('ga:pageviews', label='Views', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
             Column('ga:users', label='Uniques', type_cast=int, type_format=h.human_int),
@@ -451,29 +460,27 @@ class ActivityReport(WeeklyMixin, GAReport):
             Column('ga:goalConversionRateAll', label='Conversion', type_cast=float, type_format=_format_percent, threshold=0.1),
             Column('ga:itemRevenue', label="Revenue", type_cast=float, type_format=_format_dollars),
         ]
-
-        if include_ads:
-            summary_metrics += [
-                Column('ga:adCost', label="Ad Spend", type_cast=float, type_format=_format_dollars),
-                Column('ga:impressions', label="Ad Impressions", type_cast=int, type_format=h.human_int),
-                Column('ga:adClicks', label="Ad Clicks", type_cast=int, type_format=h.human_int),
-            ]
-
         self.tables['summary'] = summary_table = google_query.get_table(
-            params={
-                'ids': 'ga:%s' % self.remote_id,
-                'start-date': self.previous_date_start, # Extra week
-                'end-date': self.date_end,
-                'sort': '-{}'.format(interval_field),
-            },
-            dimensions=[
-                Column(interval_field),
-            ],
+            params=summary_params,
+            dimensions=summary_dimensions,
             metrics=summary_metrics + [Column('ga:sessions', type_cast=int)],
         )
 
         if not summary_table.has_value('ga:pageviews'):
             raise EmptyReportError()
+
+        # Ads
+        # FIXME: Merge this with summary_metrics once https://code.google.com/p/analytics-issues/issues/detail?id=693 is fixed.
+        if include_ads:
+            self.tables['ads'] = google_query.get_table(
+                params=summary_params,
+                dimensions=[col.new() for col in summary_dimensions],
+                metrics=[
+                    Column('ga:adCost', label="Ad Spend", type_cast=float, type_format=_format_dollars),
+                    Column('ga:impressions', label="Ad Impressions", type_cast=int, type_format=h.human_int),
+                    Column('ga:adClicks', label="Ad Clicks", type_cast=int, type_format=h.human_int),
+                ],
+            )
 
         # Pages
         self.tables['pages'] = google_query.get_table(

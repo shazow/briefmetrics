@@ -91,13 +91,13 @@
         <span>${column.label}</span>
         % if is_percent:
             % if delta <= 0:
-                <small>${h.human_percent(delta)} decrease</small>
+                <small class="pos">${h.human_percent(delta)} decrease</small>
             % else:
                 <small class="neg">${h.human_percent(delta)} increase</small>
             % endif
         % else:
             % if delta > 0:
-                <small>+${h.human_percent(delta)}</small>
+                <small class="pos">+${h.human_percent(delta)}</small>
             % else:
                 <small class="neg">${h.human_percent(delta)}</small>
             % endif
@@ -105,6 +105,27 @@
     </td>
 </%def>
 
+<%def name="summary_cell(label, value, delta=None, is_positive=None, alt=None)">
+    % if alt:
+    <td title="${alt}">
+    % else:
+    <td>
+    % endif
+        <strong>${value}</strong>
+        <span>${label}</span>
+        % if delta:
+            % if is_positive is None:
+            <small>${delta}</small>
+            % elif is_positive:
+            <small class="pos">${delta}</small>
+            % else:
+            <small>${delta}</small>
+            % endif
+        % else:
+            <small>&nbsp;</small>
+        % endif
+    </td>
+</%def>
 
 <%def name="render_intro(current, last, last_relative, units, interval)">
     <%

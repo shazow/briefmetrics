@@ -281,6 +281,14 @@ class Table(object):
         for row in self.rows:
             yield (row.values[i] for i in column_positions)
 
+    def iter_formatted(self, *column_ids):
+        if not column_ids:
+            column_ids = [col.id for col in self.columns]
+
+        column_positions = [self.column_to_index[id] for id in column_ids]
+        for row in self.rows:
+            yield (self.columns[i].format(row.values[i]) for i in column_positions)
+
     def iter_visible(self, reverse=False):
         ordered_columns = self.get_visible()
         yield ordered_columns

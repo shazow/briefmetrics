@@ -36,13 +36,13 @@ ${h.chart(r.data['historic_data'], width=560, height=200)}
             ${widgets.overview_cell(r.tables['summary'], 'ga:bounceRate', is_percent=100.0)}
             ${widgets.overview_cell(r.tables['summary'], 'ga:pageviews')}
             % if r.tables['summary'].has_value('ga:itemRevenue'):
-                ${widgets.overview_cell(r.tables['summary'], 'ga:itemRevenue')}
+                ${widgets.summary_cell('Revenue', next(next(r.tables['summary'].iter_formatted('ga:itemRevenue'))))}
             % endif
         </tr>
     </table>
     <%
-        columns = 'ga:pageviews', 'ga:users', 'ga:avgSessionDuration', 'ga:bounceRate', 'ga:sessions', 'ga:goalConversionRateAll'
-        rows = r.tables['summary'].iter_rows(*columns)
+        col_ids = 'ga:pageviews', 'ga:users', 'ga:avgSessionDuration', 'ga:bounceRate', 'ga:sessions', 'ga:goalConversionRateAll'
+        rows = r.tables['summary'].iter_rows(*col_ids)
         pageviews, uniques, seconds, bounces, visits, conversion = next(rows)
     %>
 
@@ -62,12 +62,21 @@ ${h.chart(r.data['historic_data'], width=560, height=200)}
     </p>
     % endif
 
-    % if r.tables['summary'].has_value('ga:adCost'):
+    % if r.tables.get('ads'):
+    <%
+        col_ids = 'ga:adCost', 'ga:impressions', 'ga:adClicks'
+        adcost, adimpressions, adclicks = next(r.tables['ads'].iter_formatted(*col_ids))
+        adcost_num, adimpressions_num, adclicks_num = next(r.tables['ads'].iter_rows(*col_ids))
+        cpm = "%s CPM" % h.human_dollar(adimpressions_num / (adcost_num * 100000.0 or 1.0))
+        cpc = "%s CPC" % h.human_dollar(adcost_num / (adclicks_num * 100.0 or 1.0))
+    %>
     <table class="overview">
         <tr>
-            ${widgets.overview_cell(r.tables['summary'], 'ga:adCost', is_percent=100.0)}
-            ${widgets.overview_cell(r.tables['summary'], 'ga:impressions')}
-            ${widgets.overview_cell(r.tables['summary'], 'ga:adClicks')}
+            ${widgets.summary_cell('Ad Spend', adcost)}
+            <td class="arrow">►</td>
+            ${widgets.summary_cell('Impressions', adimpressions, cpm, alt="Advertising impressions and cost per thousand")}
+            <td class="arrow">►</td>
+            ${widgets.summary_cell('Ad Clicks', adclicks, cpc, alt="Advertising clicks and cost per click")}
         </tr>
     </table>
     % endif

@@ -85,6 +85,12 @@
     td {
         padding: 2px 4px 2px 4px;
     }
+    td.arrow {
+        width: 1px;
+        color: #ffd69b;
+        vertical-align: top;
+        line-height: 2em;
+    }
     td.number {
         padding-right: 0.5em;
         text-align: right;
@@ -131,13 +137,16 @@
         line-height: 1em;
         font-weight: normal;
     }
-    .overview small{
-        color: green;
+    .overview small {
+        color: #999;
         display: block;
         font-weight: normal;
     }
     .overview small.neg {
         color: red;
+    }
+    .overview small.pos {
+        color: green;
     }
 
     .footer {
