@@ -288,7 +288,7 @@ class ActivityReport(WeeklyMixin, GAReport):
                 'ids': 'ga:%s' % self.remote_id,
                 'start-date': date_start,
                 'end-date': date_end,
-                'filters': 'ga:medium==organic;ga:socialNetwork==(not set)',
+                'filters': 'ga:medium!=referral;ga:medium!=(not set);ga:socialNetwork==(not set)',
                 'sort': '-ga:pageviews',
                 'max-results': str(max_results),
             },
@@ -313,7 +313,7 @@ class ActivityReport(WeeklyMixin, GAReport):
         )
 
         t = Table(columns=[
-            Column('source', label='Social & Search', visible=1, type_cast=_cast_title),
+            Column('source', label='Social & Search & Campaigns', visible=1, type_cast=_cast_title),
         ] + [col.new() for col in summary_metrics])
 
         for cells in social_table.iter_rows():
@@ -452,11 +452,13 @@ class ActivityReport(WeeklyMixin, GAReport):
         summary_dimensions = [
             Column(interval_field),
         ]
-        summary_metrics = [
+        basic_metrics = [
             Column('ga:pageviews', label='Views', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
             Column('ga:users', label='Uniques', type_cast=int, type_format=h.human_int),
             Column('ga:avgSessionDuration', label='Time On Site', type_cast=_cast_time, type_format=h.human_time, threshold=0),
             Column('ga:bounceRate', label='Bounce Rate', type_cast=_cast_percent, type_format=_format_percent, reverse=True, threshold=0),
+        ]
+        summary_metrics = basic_metrics + [
             Column('ga:goalConversionRateAll', label='Conversion', type_cast=float, type_format=_format_percent, threshold=0.1),
             Column('ga:itemRevenue', label="Revenue", type_cast=float, type_format=_format_dollars),
             Column('ga:itemQuantity', label="Sales", type_cast=int, type_format=h.human_int),
@@ -474,7 +476,12 @@ class ActivityReport(WeeklyMixin, GAReport):
         # FIXME: Merge this with summary_metrics once https://code.google.com/p/analytics-issues/issues/detail?id=693 is fixed.
         if include_ads:
             self.tables['ads'] = google_query.get_table(
-                params=summary_params,
+                params={
+                    'ids': 'ga:%s' % self.remote_id,
+                    'start-date': self.previous_date_start, # Extra week
+                    'end-date': self.date_end,
+                    'sort': '-{}'.format(interval_field),
+                },
                 dimensions=[col.new() for col in summary_dimensions],
                 metrics=[
                     Column('ga:adCost', label="Ad Spend", type_cast=float, type_format=_format_dollars),
@@ -495,7 +502,7 @@ class ActivityReport(WeeklyMixin, GAReport):
             dimensions=[
                 Column('ga:pagePath', label='Pages', visible=1, type_cast=_prune_abstract),
             ],
-            metrics=[col.new() for col in summary_metrics[:-1]] + [
+            metrics=[col.new() for col in basic_metrics] + [
                 Column('ga:avgPageLoadTime', label='Page Load', type_cast=float, type_format=h.human_time, reverse=True, threshold=0)
             ],
         )

@@ -185,7 +185,9 @@ class Row(object):
         return self.values[self.table.column_to_index[id]]
 
     def tag(self, type, value=None, column=None, **kw):
-        self.tags.append(RowTag(type, column=column, value=value, **kw))
+        tag = RowTag(type, column=column, value=value, **kw)
+        self.tags.append(tag)
+        return tag
 
     def __repr__(self):
         fmt = '{class_name}(values={self.values!r})'
@@ -272,6 +274,15 @@ class Table(object):
 
             if min_row and column.is_interesting(min_value):
                 min_row.tag(type='min', value=min_value, column=column)
+
+            """
+            if column._threshold is False:
+                col_idx = self.column_to_idx[column.id]
+                for row in self.rows:
+                    if row in (min_row, max_row):
+                        continue
+                    row.tag(value=row.values[col_idx]), column=column)
+                    """
 
     def iter_rows(self, *column_ids):
         if not column_ids:
