@@ -33,8 +33,8 @@ ${h.chart(r.data['historic_data'], width=560, height=200)}
 % if r.tables.get('summary'):
     <table class="overview">
         <tr>
-            ${widgets.overview_cell(r.tables['summary'], 'ga:bounceRate', is_percent=100.0)}
             ${widgets.overview_cell(r.tables['summary'], 'ga:pageviews')}
+            ${widgets.overview_cell(r.tables['summary'], 'ga:bounceRate', is_percent=100.0)}
             % if r.tables['summary'].has_value('ga:itemRevenue'):
                 <%
                     revenue, sales = next(r.tables['summary'].iter_formatted('ga:itemRevenue', 'ga:itemQuantity'))
