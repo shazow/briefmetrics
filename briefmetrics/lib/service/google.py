@@ -459,6 +459,7 @@ class ActivityReport(WeeklyMixin, GAReport):
             Column('ga:bounceRate', label='Bounce Rate', type_cast=_cast_percent, type_format=_format_percent, reverse=True, threshold=0),
             Column('ga:goalConversionRateAll', label='Conversion', type_cast=float, type_format=_format_percent, threshold=0.1),
             Column('ga:itemRevenue', label="Revenue", type_cast=float, type_format=_format_dollars),
+            Column('ga:itemQuantity', label="Sales", type_cast=int, type_format=h.human_int),
         ]
         self.tables['summary'] = summary_table = google_query.get_table(
             params=summary_params,
