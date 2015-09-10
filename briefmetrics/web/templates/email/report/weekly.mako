@@ -65,24 +65,52 @@ ${h.chart(r.data['historic_data'], width=560, height=200)}
     </p>
     % endif
 
-    % if r.tables.get('ads'):
+    % if r.tables.get('ads') and r.tables['ads'].has_value('ga:adCost'):
     <%
-        col_ids = 'ga:adCost', 'ga:impressions', 'ga:adClicks'
-        adcost, adimpressions, adclicks = next(r.tables['ads'].iter_formatted(*col_ids))
-        adcost_num, adimpressions_num, adclicks_num = next(r.tables['ads'].iter_rows(*col_ids))
-        cpm = "%s CPM" % h.human_dollar((adcost_num * 100.0 * 1000.0) / (adimpressions_num or 1.0))
-        cpc = "%s CPC" % h.human_dollar((adcost_num * 100.0) / (adclicks_num or 1.0))
-        25.07 * 10 / 26844
+        t = r.tables['ads']
+        col_ids = 'ga:adCost', 'ga:impressions', 'ga:adClicks', 'ga:itemRevenue', 'ga:itemQuantity'
+        ad_cost, ad_impressions, ad_clicks, revenue, sales = [t.get(id).sum for id in col_ids]
+        cpm = "%s CPM" % h.human_dollar((ad_cost * 100.0 * 1000.0) / (ad_impressions or 1.0))
+        cpc = "%s CPC" % h.human_dollar((ad_cost * 100.0) / (ad_clicks or 1.0))
+
+        col_ids = 'ga:adGroup', 'ga:adCost', 'ga:itemRevenue', 'ga:itemQuantity'
+        group_idx, cost_idx, revenue_idx, sales_idx = [t.column_to_index[id] for id in col_ids]
+        ad_revenue = revenue
+        ad_sales = sales
+        not_set = next((r for r in t.rows if r.values[group_idx] == '(not set)'), None)
+        if not_set:
+            ad_revenue -= not_set.values[revenue_idx]
+            ad_sales -= not_set.values[sales_idx]
+
+        cac = 1.0 * ad_cost / (ad_sales or 1.0)
+        ad_avg_sale = ad_revenue / (ad_sales or 1.0)
     %>
     <table class="overview">
         <tr>
-            ${widgets.summary_cell('Ad Spend', adcost)}
+            ${widgets.summary_cell('Ad Spend', t.get('ga:adCost').format(ad_cost))}
             <td class="arrow">►</td>
-            ${widgets.summary_cell('Impressions', adimpressions, cpm, alt="Advertising impressions and cost per thousand")}
+            ${widgets.summary_cell('Impressions', t.get('ga:impressions').format(ad_impressions), cpm, alt="Advertising impressions and cost per thousand")}
             <td class="arrow">►</td>
-            ${widgets.summary_cell('Ad Clicks', adclicks, cpc, alt="Advertising clicks and cost per click")}
+            ${widgets.summary_cell('Ad Clicks', t.get('ga:adClicks').format(ad_clicks), cpc, alt="Advertising clicks and cost per click")}
         </tr>
     </table>
+
+        % if ad_revenue > 0:
+        <p style="margin-bottom: 2em;">
+            <span class="highlight">${h.human_dollar(ad_revenue * 100.0)} revenue</span>
+            is attributed to advertising campaigns across
+            <span class="highlight">${h.format_int(ad_sales, u"{:,} sale")}</span>.
+            Cost of acquisition is
+            <span class="highlight">${h.human_dollar(cac * 100.0)} per sale</span>
+            which yields
+            <span class="highlight">${h.human_dollar(ad_avg_sale * 100.0)} revenue</span>
+            on average.
+        </p>
+        % elif revenue > 0:
+        <p style="margin-bottom: 2em;">
+            None of the revenue is attributed to an advertising campaign.
+        </p>
+        % endif
     % endif
 % endif
 

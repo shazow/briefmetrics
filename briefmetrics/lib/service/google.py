@@ -478,17 +478,38 @@ class ActivityReport(WeeklyMixin, GAReport):
             self.tables['ads'] = google_query.get_table(
                 params={
                     'ids': 'ga:%s' % self.remote_id,
-                    'start-date': self.previous_date_start, # Extra week
+                    'start-date': self.date_start,
                     'end-date': self.date_end,
-                    'sort': '-{}'.format(interval_field),
                 },
-                dimensions=[col.new() for col in summary_dimensions],
+                dimensions=[Column('ga:adGroup')],
                 metrics=[
-                    Column('ga:adCost', label="Ad Spend", type_cast=float, type_format=_format_dollars),
-                    Column('ga:impressions', label="Ad Impressions", type_cast=int, type_format=h.human_int),
-                    Column('ga:adClicks', label="Ad Clicks", type_cast=int, type_format=h.human_int),
+                    Column('ga:adCost', label="Ad Spend", type_cast=float, type_format=_format_dollars, threshold=0),
+                    Column('ga:impressions', label="Ad Impressions", type_cast=int, type_format=h.human_int, threshold=0),
+                    Column('ga:adClicks', label="Ad Clicks", type_cast=int, type_format=h.human_int, threshold=0),
+                    Column('ga:itemRevenue', label="Revenue", type_cast=float, type_format=_format_dollars, threshold=0),
+                    Column('ga:itemQuantity', label="Sales", type_cast=int, type_format=h.human_int, threshold=0),
                 ],
             )
+
+            """
+            # Hardcoded for testing
+            self.tables['ads'] = self.tables['ads'].new()
+
+            fake_rows = [[u'(not set)', 0.0, 0, 0, 770927.93, 422],
+                 [u'All Visitors- Banners', 22.56, 43941, 51, 0.0, 0],
+                 [u'All Visitors- Text', 762.42, 716293, 1874, 334.9, 1],
+                 [u'Bear Lake Condo', 8.69, 29, 9, 0.0, 0],
+                 [u'Bear Lake Condos #1', 1309.33, 96261, 4925, 0.0, 0],
+                 [u'Bear Lake Lodging', 183.7, 1069, 185, 425.11, 1],
+                 [u'Bear Lake View', 1495.68, 68545, 2586, 0.0, 0],
+                 [u'Cabin Rentals', 3704.830086, 973350, 21863, 28402.42, 11],
+                 [u'Sunrise - hotel', 203.6, 4046, 168, 0.0, 0],
+                 [u'Sunrise - whole building & floors', 905.55, 57815, 864, 0.0, 0],
+                 [u'Vacation Rentals', 866.44, 107449, 1259, 11951.6, 5]] 
+
+            for row in fake_rows:
+                self.tables['ads'].add(row)
+            """
 
         # Pages
         self.tables['pages'] = google_query.get_table(

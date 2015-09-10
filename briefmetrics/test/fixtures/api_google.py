@@ -67,6 +67,7 @@ data['ga:itemQuantity'] = [0, 3, 11]
 data['ga:adCost'] = [0.0, 23.2, 42]
 data['ga:impressions'] = [0, 450, 9011]
 data['ga:adClicks'] = [0, 30, 400]
+data['ga:adGroup'] = ['Ad A', 'Ad B']
 
 skip_state = set(['ga:month'])
 
