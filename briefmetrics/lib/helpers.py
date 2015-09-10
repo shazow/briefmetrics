@@ -140,7 +140,7 @@ def human_delta(f):
 
 def human_dollar(cents, currency=None):
     precision = min(cents % 100, 2)
-    f = u'${:0.%df}' % precision
+    f = u'${:,.%df}' % precision
     if currency:
         # TODO: Localize $?
         f += ' %s' % currency.upper()
