@@ -108,7 +108,8 @@ ${h.chart(r.data['historic_data'], width=560, height=200)}
         </p>
         % elif revenue > 0:
         <p style="margin-bottom: 2em;">
-            None of the revenue is attributed to an advertising campaign.
+            <span class="highlight">$0 revenue</span>
+            is attributed to advertising.
         </p>
         % endif
     % endif
