@@ -410,6 +410,9 @@ class ActivityReport(WeeklyMixin, GAReport):
             completions, completions_last = this_week.values[pos], last_week.values[pos]
             percent_completions, percent_completions_last = completions*100.0/num_sessions, completions_last*100.0/num_sessions_last
             row = t.add([col.label, completions])
+            if not row:
+                # Boring
+                continue
 
             if completions > 0:
                 row.tag(type="Conversion", value=_format_percent(percent_completions))
