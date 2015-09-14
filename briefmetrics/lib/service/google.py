@@ -373,7 +373,8 @@ class ActivityReport(WeeklyMixin, GAReport):
         if not goal_metrics:
             return
 
-        metrics = [Column('ga:sessions', type_cast=int)] + goal_metrics
+        # Note: max 10 metrics allowed
+        metrics = goal_metrics[-9:] + [Column('ga:sessions', type_cast=int)]
         raw_table = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
@@ -381,7 +382,7 @@ class ActivityReport(WeeklyMixin, GAReport):
                 'end-date': self.date_end,
                 'sort': '-{}'.format(interval_field),
             },
-            metrics=metrics[-11:],
+            metrics=metrics,
             dimensions=[
                 Column(interval_field),
             ],
