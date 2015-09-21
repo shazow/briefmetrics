@@ -275,7 +275,7 @@ class ReportController(Controller):
         if not report:
             raise httpexceptions.HTTPNotFound()
 
-        config_options = ['pace', 'intro']
+        config_options = ['pace', 'intro', 'ads']
         config = dict((k, v) for k, v in self.request.params.iteritems() if k in config_options and v)
 
         # Last Sunday
