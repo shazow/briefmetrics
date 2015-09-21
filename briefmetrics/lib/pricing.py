@@ -87,6 +87,18 @@ class Plan(Singleton):
         self.set(id, self)
 
     @property
+    def stripe_interval(self):
+        if self.price_yearly:
+            return 'year'
+        return 'month'
+
+    @property
+    def stripe_amount(self):
+        if self.price_yearly:
+            return int(self.price_yearly)
+        return int(self.price_monthly)
+
+    @property
     def price_monthly_str(self):
         if not self.price_monthly:
             return 'Free'

@@ -1,8 +1,10 @@
 import string
 import time
+import stripe
 from sqlalchemy import orm
 
 from briefmetrics import model, lib
+from briefmetrics.lib import payment, pricing
 from . import account as api_account
 
 
@@ -99,3 +101,90 @@ def backfill_stripe_to_google(request, stripe_account, ga_tracking_id, since_dat
         lib.service.registry['google'].inject_transaction(ga_tracking_id, t, pretend=pretend)
 
     print "Backfilled {} Stripe ecommerce transactions to GA.".format(len(items))
+
+
+
+def sync_plans(pretend=True, include_hidden=False):
+    if pretend:
+        print "(Running in pretend mode)"
+
+    local_plans = set(key for key, plan in pricing.Plan.all() if not plan.is_hidden)
+
+    r = stripe.Plan.all()
+    for plan in r.data:
+        try:
+            local_plan_id = plan.id.split('briefmetrics_', 1)[1]
+        except IndexError:
+            print "Invalid plan prefix: %s" % plan.id
+            continue
+
+        if local_plan_id not in local_plans:
+            print "Plan missing locally: {}".format(local_plan_id)
+            continue
+
+        local_plans.remove(local_plan_id)
+        local_plan = pricing.Plan.get(local_plan_id)
+
+        if plan.amount != local_plan.stripe_amount or plan.interval != local_plan.stripe_interval:
+            print "Plan discrepency for '{stripe.id}': Remote {stripe.amount}/{stripe.interval}, local {plan.stripe_amount}/{plan.stripe_interval}".format(
+                plan=local_plan,
+                stripe=plan,
+            )
+
+    for plan_id in local_plans:
+        print "Plan missing remotely: {}".format(plan_id)
+        if pretend:
+            continue
+
+        plan = pricing.Plan.get(plan_id)
+        stripe.Plan.create(
+            id=payment.StripePayment._plan_key(plan_id),
+            amount=plan.stripe_amount,
+            interval=plan.stripe_interval,
+            name='Briefmetrics: %s' % plan.name,
+            currency='usd',
+            statement_description='Briefmetrics',
+        )
+
+
+def sync_customers(pretend=True, only_plan=False):
+    if pretend:
+        print "(Running in pretend mode)"
+
+    stripe_users = [u for u in model.User.all() if u.stripe_customer_id]
+
+    for user in stripe_users:
+        description = 'Briefmetrics User: %s' % user.email
+        metadata = {'user_id': user.id}
+        customer = stripe.Customer.retrieve(user.stripe_customer_id)
+        customer.description = description
+        customer.metadata = metadata
+        customer.email = user.email
+
+        set_plan = False
+        if user.num_remaining is None:
+            subscriptions = customer.subscriptions.all()
+            set_plan = user.plan_id
+            if not subscriptions.count:
+                print "Plan missing: %r -> %s" % (user, user.plan_id)
+            elif subscriptions.count > 1:
+                print "Too many plans: %r -> %s -> %s" % (user, user.plan_id, ', '.join(d.plan.id for d in subscriptions.data))
+            elif subscriptions.data[0].plan.id != payment.StripePayment._plan_key(user.plan_id):
+                print "Wrong plan: %r -> %s -> %s" % (user, user.plan_id, ', '.join(d.plan.id for d in subscriptions.data))
+            else:
+                set_plan = False
+
+        if pretend:
+            continue
+
+        print "Setting customer: {}".format(description)
+        if set_plan:
+            print "  Updating plan: {}".format(user.plan_id)
+            customer.update_subscription(plan=payment.StripePayment._plan_key(user.plan_id))
+
+        if only_plan:
+            continue
+
+        customer.save()
+
+    print "Updated {} users.".format(len(stripe_users))
