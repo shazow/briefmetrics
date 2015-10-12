@@ -325,7 +325,7 @@ class ActivityReport(WeeklyMixin, GAReport):
         t.sort(reverse=True)
         return t
 
-    def _get_ecommerce(self, google_query, interval_field):
+    def _get_ecommerce(self, google_query, interval_field, limit=10):
         t = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
@@ -344,6 +344,18 @@ class ActivityReport(WeeklyMixin, GAReport):
             ],
         )
         t.sort(reverse=True)
+
+        # Add a limit row
+        sum_columns = t.column_to_index['ga:itemRevenue'], t.column_to_index['ga:itemQuantity']
+        if len(t.rows) > limit:
+            extra, t.rows = t.rows[limit-1:], t.rows[:limit-1]
+            values = extra[0].values[:]
+            for row in extra[1:]:
+                for col_idx in sum_columns:
+                    values[col_idx] += row.values[col_idx]
+
+            values[t.column_to_index['ga:productName']] = "(%s)" % h.format_int(len(extra), u"{:,} other product")
+            t.add(values)
 
         idx_sales = t.column_to_index['ga:itemQuantity']
         for row in t.rows:
