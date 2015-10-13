@@ -62,6 +62,8 @@ def human_link(href, label=None, attrs=None, max_length=None):
         href = 'http:' + href
     elif href.startswith('/'):
         return href
+    elif ' ' in href:
+        return href
     elif '://' not in href:
         if '.' in href:
             href = 'http://' + href

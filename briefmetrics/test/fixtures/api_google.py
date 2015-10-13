@@ -44,29 +44,30 @@ profile_item_template = {
 }
 
 data = {}
-data['ga:pageviews'] = data['ga:users'] = data['ga:sessions'] = [1000, 1001, 1884, 1999, 1399, 890, 1011]
-data['ga:sessionDuration'] = [0.0, 0.123, 123.0, 0.5]
-data['ga:avgSessionDuration'] = [0.0, 0.123, 123.0, 0.5]
-data['ga:avgPageLoadTime'] = [0.0, 0.123, 123.0, 0.5]
+data['ga:pageviews'] = [16012, 15001, 14884, 12043, 16399, 15890, 19011]
+data['ga:users'] = data['ga:sessions'] = [int(v * 0.6) for v in data['ga:pageviews']]
+data['ga:sessionDuration'] = [0.123, 123.0, 0.5, 0.0]
+data['ga:avgSessionDuration'] = [44.3, 123.0, 0.5, 0.0]
+data['ga:avgPageLoadTime'] = [0.123, 123.0, 0.5, 0.0]
 data['ga:nthWeek'] = [1, 2]
 data['ga:month'] = ['01'] * 6 + ['02'] * 4
 data['ga:yearMonth'] = ['201501'] * 6 + ['201502'] * 4
-data['ga:bounceRate'] = [0.1234, 0.2, 0.6999]
+data['ga:bounceRate'] = [32.34, 40.0, 0.6999]
 data['ga:date'] = ['2013-01-01', '2013-01-02']
-data['ga:source'] = ['google', 'wordpress']
-data['ga:socialNetwork'] = ['Facebook', 'Reddit']
-data['ga:fullReferrer'] = ['example.com/foo', 'example.com/bar']
-data['ga:pagePath'] = ['/foo', '/bar', '/baz']
+data['ga:source'] = ['google', 'wordpress', 'bing', 'yahoo']
+data['ga:socialNetwork'] = ['Facebook', 'Reddit', 'Twitter', 'Myspace']
+data['ga:fullReferrer'] = ['example.com/great-website', 'example.com/blog/try-this', 'reddit.com/r/amazing', 'techcrunch.com/best-services', 'producthunt.com/tech/briefmetrics']
+data['ga:pagePath'] = ['/index', '/shopping', '/blog', '/search', '/about']
 data['ga:country'] = ['United States', 'Canada', 'Germany']
 data['ga:deviceCategory'] = ['mobile', 'tablet', 'desktop']
 data['ga:browser'] = ['Chrome', 'Firefox', 'Internet Explorer']
 data['ga:goalConversionRateAll'] = [0.0, 0.123, 0.0]
 data['ga:productName'] = ['Product A', 'Product B']
-data['ga:itemRevenue'] = [0.0, 23.2, 42]
-data['ga:itemQuantity'] = [0, 3, 11]
-data['ga:adCost'] = [0.0, 23.2, 42]
-data['ga:impressions'] = [0, 450, 9011]
-data['ga:adClicks'] = [0, 30, 400]
+data['ga:itemRevenue'] = [143.2, 92, 0.0]
+data['ga:itemQuantity'] = [8, 11, 0]
+data['ga:adCost'] = [11.2, 4.20, 0.0]
+data['ga:impressions'] = [0, 450, 2021]
+data['ga:adClicks'] = [30, 120, 0]
 data['ga:adGroup'] = ['Ad A', 'Ad B']
 
 skip_state = set(['ga:month'])
@@ -76,7 +77,7 @@ class FakeQuery(Query):
     def __init__(self, *args, **kw):
         super(FakeQuery, self).__init__(*args, **kw)
         self.num_profiles = kw.get('_num_profiles', 5)
-        self.num_rows = kw.get('_num_rows', 10)
+        self.num_rows = kw.get('_num_rows', 7)
 
         self.cycles = {}
 

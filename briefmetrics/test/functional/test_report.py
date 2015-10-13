@@ -46,9 +46,9 @@ class TestReport(test.TestWeb):
             Column('ga:nthWeek'),
         ])
         self.assertEqual(len(t.rows), 5)
-        self.assertEqual(t.rows[1].get('ga:pagePath'), '/bar')
-        self.assertEqual(t.rows[1].get('ga:pageviews'), 1001)
-        self.assertEqual(t.get('ga:pageviews').max_row[0], 1999)
+        self.assertEqual(t.rows[1].get('ga:pagePath'), '/shopping')
+        self.assertEqual(t.rows[1].get('ga:pageviews'), 15001)
+        self.assertEqual(t.get('ga:pageviews').max_row[0], 16399)
 
         t = q.get_table({'max-results': 7}, dimensions=[Column('ga:month')])
         self.assertEqual([list(m) for m in t.iter_rows()], [[u'01']]*6 + [[u'02']]) 
