@@ -28,6 +28,7 @@ class TestHelpers(test.TestCase):
             ('//google.com/', '<a href="http://google.com/">google.com</a>'),
             ('google.com', '<a href="http://google.com">google.com</a>'),
             ('google.com is great', 'google.com is great'),
+            ('google.com/is+great', '<a href="http://google.com/is+great">google.com/is+great</a>'),
         ]
 
         for input, href in data:

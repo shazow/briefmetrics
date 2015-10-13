@@ -213,11 +213,9 @@ def _prune_abstract(v):
     return v
 
 def _prune_referrer(v):
-    if v.startswith('('):
+    if not v or v.startswith('('):
         return
-    if v.startswith('semalt.semalt.com'):
-        return
-    return v
+    return v.replace(' ', '+')
 
 def _cast_percent(v):
     return float(v or 0.0)
