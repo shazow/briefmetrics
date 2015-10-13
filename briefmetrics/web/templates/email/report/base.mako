@@ -131,7 +131,7 @@
         font-weight: bold;
     }
     .overview strong {
-        font-size: 2em;
+        font-size: 1.8em;
         color: #ffad39;
         display: block;
         line-height: 1em;
