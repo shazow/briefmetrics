@@ -53,9 +53,10 @@ def create_message(request, to_email, subject, html=None, text=None, from_name=N
     return message
 
 
-def send_message(request, message):
+def send_message(request, message, settings=None):
+    settings = settings or request.registry.settings
     params = {
-        'key': request.registry.settings['api.mandrill.key'],
+        'key': settings['api.mandrill.key'],
         'async': True,
         'message': message,
     }

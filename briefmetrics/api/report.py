@@ -256,11 +256,17 @@ def send(request, report, since_time=None, pretend=False, session=model.Session)
         debug_bcc = True
 
     email_kw = {}
-    from_name, reply_to = get_many(owner.config, optional=['from_name', 'reply_to'])
+    from_name, from_email, reply_to, api_mandrill_key = get_many(owner.config, optional=['from_name', 'from_email', 'reply_to', 'api_mandrill_key'])
     if from_name:
         email_kw['from_name'] = from_name
+    if from_email:
+        email_kw['from_email'] = from_email
     if reply_to:
         email_kw['reply_to'] = reply_to
+    if api_mandrill_key:
+        email_kw['settings'] = {
+            'api.mandrill.key': api_mandrill_key,
+        }
 
     for user in report.users:
         html = api_email.render(request, template, Context({
