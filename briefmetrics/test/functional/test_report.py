@@ -297,6 +297,39 @@ class TestReport(test.TestWeb):
 
         r = self.app.get('/reports/%s' % r['result']['report']['id'])
 
+    def test_whitelabel(self):
+        report = self._create_report()
+        user = report.account.user
+        user.config = {
+            "email_intro_text": "foo bar",
+            "email_header_image": "localhost.gif",
+            "reply_to": "support@localhost.com",
+            "from_link": "http://www.localhost.com/",
+            "from_name": "Local Host Design",
+            "from_email": "from@localhost.com",
+            "style_a_color": "#7688c9",
+            "style_permalink_color": "#7688c9",
+            "style_thead_background": "#eeeeee",
+            "hide_briefmetrics": True,
+            "api_mandrill_key": "XXX",
+        }
+        user.num_remaining = 10
+        Session.commit()
+
+        tasks.report.celery.request = self.request
+
+        with mock.patch('briefmetrics.api.email.send_message') as send_message:
+            tasks.report.send_all(async=False)
+            self.assertTrue(send_message.called)
+            self.assertEqual(len(send_message.call_args_list), 1)
+
+            call = send_message.call_args_list[0]
+            message = call[0][1]
+            self.assertIn(u"Report for example.com", message['subject'])
+            self.assertNotIn(u'<a href="https://briefmetrics.com">Briefmetrics</a>', message['html'])
+            self.assertEqual(u"from@localhost.com", message['from_email'])
+
+        self.assertEqual(model.Report.count(), 1)
 
 
 class TestReportModel(test.TestCase):

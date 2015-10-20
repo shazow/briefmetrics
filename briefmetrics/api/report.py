@@ -263,8 +263,10 @@ def send(request, report, since_time=None, pretend=False, session=model.Session)
         email_kw['from_email'] = from_email
     if reply_to:
         email_kw['reply_to'] = reply_to
+
+    send_kw = {}
     if api_mandrill_key:
-        email_kw['settings'] = {
+        send_kw['settings'] = {
             'api.mandrill.key': api_mandrill_key,
         }
 
@@ -285,7 +287,7 @@ def send(request, report, since_time=None, pretend=False, session=model.Session)
         if pretend:
             continue
 
-        api_email.send_message(request, message)
+        api_email.send_message(request, message, **send_kw)
 
     model.ReportLog.create_from_report(report,
         body=html,

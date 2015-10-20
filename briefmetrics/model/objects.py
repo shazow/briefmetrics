@@ -62,9 +62,13 @@ class User(meta.Model): # Email address / login
             "reply_to": "support@delappdesign.com",
             "from_link": "http://www.delappdesign.com/",
             "from_name": "DeLapp Design",
+            "from_email": "support@delappdesign.com",
             "style_a_color": "#7688c9",
             "style_permalink_color": "#7688c9",
             "style_thead_background": "#eeeeee",
+
+            "hide_briefmetrics": True,
+            "api_mandrill_key": "XXX",
         }
     '''
 
