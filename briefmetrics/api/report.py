@@ -261,7 +261,7 @@ def send(request, report, since_time=None, pretend=False, session=model.Session)
         email_kw['from_name'] = from_name
     if from_email:
         email_kw['from_email'] = from_email
-    if reply_to:
+    if reply_to and reply_to != from_email:
         email_kw['reply_to'] = reply_to
 
     send_kw = {}

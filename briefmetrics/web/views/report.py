@@ -100,7 +100,7 @@ def report_delete(request):
     display_name = report.display_name
     model.Session.delete(report)
     model.Session.commit()
-    request.flash("Report removed: %s" % display_name) 
+    request.flash("Report removed: %s" % display_name)
 
 
 @expose_api('subscription.create')
@@ -275,7 +275,7 @@ class ReportController(Controller):
         if not report:
             raise httpexceptions.HTTPNotFound()
 
-        config_options = ['pace', 'intro', 'ads']
+        config_options = ['pace', 'intro', 'ads', 'bcc']
         config = dict((k, v) for k, v in self.request.params.iteritems() if k in config_options and v)
 
         # Last Sunday
@@ -295,20 +295,31 @@ class ReportController(Controller):
         if is_send:
             owner = report_context.owner
             email_kw = {}
-            from_name, reply_to = get_many(owner.config, optional=['from_name', 'reply_to'])
+            debug_bcc = config.get('bcc')
+            from_name, from_email, reply_to, api_mandrill_key = get_many(owner.config, optional=['from_name', 'from_email', 'reply_to', 'api_mandrill_key'])
             if from_name:
                 email_kw['from_name'] = from_name
-            if reply_to:
+            if from_email:
+                email_kw['from_email'] = from_email
+            if reply_to and reply_to != from_email:
                 email_kw['reply_to'] = reply_to
+            if debug_bcc:
+                email_kw['debug_bcc'] = debug_bcc
+
+            send_kw = {}
+            if api_mandrill_key:
+                send_kw['settings'] = {
+                    'api.mandrill.key': api_mandrill_key,
+                }
 
             to_email = user.email
             message = api.email.create_message(self.request,
                 to_email=to_email,
-                subject=report_context.get_subject(), 
+                subject=report_context.get_subject(),
                 html=html,
                 **email_kw
             )
-            api.email.send_message(self.request, message)
+            api.email.send_message(self.request, message, **send_kw)
             self.request.session.flash('Sent report for [%s] to: %s' % (report.display_name, to_email))
             return self._redirect(self.request.route_path('reports'))
 
