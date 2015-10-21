@@ -310,6 +310,7 @@ class TestReport(test.TestWeb):
             "style_a_color": "#7688c9",
             "style_permalink_color": "#7688c9",
             "style_thead_background": "#eeeeee",
+            "style_sub_a_color": "#ccc",
             "hide_briefmetrics": True,
             "api_mandrill_key": "XXX",
         }

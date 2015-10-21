@@ -56,6 +56,11 @@
         font-size: 0.8em;
         padding-right: 0.5em;
     }
+    % if c.report.owner.config.get('style_sub_a_color'):
+    .sub a {
+        color: ${c.report.owner.config.get('style_sub_a_color', '#25ad83')};
+    }
+    % endif
     p, ul, table {
         margin-top: 0.5em;
         margin-bottom: 1.5em;
@@ -301,12 +306,12 @@ ${next.body()}
     </p>
 
     % if c.report.owner == c.user:
-        <p>
+        <p class="sub">
             You can <a href="https://briefmetrics.com/reports">change your subscription</a> or
             <a href="https://briefmetrics.com/account/delete?token=${c.user.unsubscribe_token}">delete your account</a>.
         </p>
     % else:
-        <p>
+        <p class="sub">
             You can <a href="https://briefmetrics.com/account/delete?token=${c.user.unsubscribe_token}">unsubscribe here</a>.
         </p>
     % endif
