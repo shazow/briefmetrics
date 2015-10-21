@@ -99,9 +99,9 @@
                 <h4 id="customer-builtio">
                     <a href="https://www.built.io/"><img src="/static/images/customer-builtio.png" alt="built.io"/></a>
                 </h4>
-                <blockquote>&ldquo;Briefmetrics has enabled our team of 160+ employees to understand what our web traffic means and how our efforts correlate with our results.
+                <blockquote>&ldquo;Briefmetrics has enabled our team of 200+ employees to understand what our web traffic means and how our efforts correlate with our results.
                     <em>Having that kind of insight in an easily digestible format has been great for the company.</em>&rdquo;
-                    <cite>Elizabeth Katzki, Marketing Manager at built.io</cite>
+                    <cite>Elizabeth Katzki, Marketing Manager at Built.io</cite>
                 </blockquote>
             </li>
         <ul>
