@@ -274,14 +274,14 @@ ${next.body()}
     <p style="margin-bottom: 2em;">
         % if c.report.owner.config.get('hide_briefmetrics'):
             % if prepared_name:
-            This report was prepared for ${c.user.display_name or 'you'}
-            <strong>${
+                This report was prepared for ${c.user.display_name or 'you'} by
+                <strong>${
                 h.human_link(
                     c.user.config.get('from_link'),
                     prepared_name,
                 )}</strong>.
             % else:
-            This report was prepared for ${c.user.display_name or 'you'}.
+                This report was prepared for ${c.user.display_name or 'you'}.
             % endif
         % else:
             This report was prepared for ${c.user.display_name or 'you'} by
