@@ -312,7 +312,7 @@ class TestReport(test.TestWeb):
             "style_thead_background": "#eeeeee",
             "style_sub_a_color": "#ccc",
             "hide_briefmetrics": True,
-            "api_mandrill_key": "XXX",
+            "api_mandrill_key": "YYY",
         }
         user.num_remaining = 10
         Session.commit()

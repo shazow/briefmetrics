@@ -68,7 +68,7 @@ class User(meta.Model): # Email address / login
             "style_thead_background": "#eeeeee",
 
             "hide_briefmetrics": True,
-            "api_mandrill_key": "XXX",
+            "api_mandrill_key": "YYY",
         }
     '''
 
