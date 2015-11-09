@@ -174,12 +174,14 @@ class Row(object):
         'values',
         'table',
         'tags',
+        'inline',
     ]
 
     def __init__(self, table, values):
         self.table = table
         self.values = values
         self.tags = []
+        self.inline = {}
 
     def get(self, id):
         return self.values[self.table.column_to_index[id]]

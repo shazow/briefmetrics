@@ -28,7 +28,7 @@
 % endfor
 </%def>
 
-<%def name="render_table(t, title, report_link, prefix_links=None)">
+<%def name="render_table(t, title=None, report_link=None, prefix_links=None, include_head=True)">
 <% 
     if not t.rows:
         return ''
@@ -36,6 +36,7 @@
     columns = t.get_visible()
 %>
 <table>
+    % if include_head:
     <thead>
         <tr>
             <td class="number">
@@ -44,10 +45,13 @@
             <td>
                 ${columns[1].label}
 
+                % if report_link:
                 <a class="permalink" target="_blank" href="${report_link}">Full report</a>
+                % endif
             </td>
         </tr>
     </thead>
+    % endif
     <tbody>
     % for row in t.rows:
     <%
@@ -57,13 +61,18 @@
             link = h.human_link(prefix_links + url, url, max_length=100)
         else:
             link = h.human_link(url, max_length=100)
+
+        inline_table = row.inline and row.inline.get(columns[1].id)
     %>
         <tr>
             <td class="number">${columns[0].format(views)}</td>
             <td>
                 ${link}
-
                 ${render_tags(row.tags)}
+                <%
+                    if inline_table:
+                        render_table(inline_table, include_header=False)
+                %>
             </td>
         </tr>
     % endfor
