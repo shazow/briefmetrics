@@ -643,8 +643,9 @@ class ActivityReport(WeeklyMixin, GAReport):
         inject_table_delta(social_search_table, last_social_search, join_column='source')
 
         self.tables['social_search'] = social_search_table
-        self.tables['keywords'] = self._get_search_keywords(google_query, interval_field=interval_field)
-        self.tables['keywords'].tag_rows()
+        if self.config.get('search_keywords'):
+            self.tables['keywords'] = self._get_search_keywords(google_query, interval_field=interval_field)
+            self.tables['keywords'].tag_rows()
 
         self.tables['social_search'].tag_rows()
         self.tables['referrers'].tag_rows()
