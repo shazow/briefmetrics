@@ -302,8 +302,8 @@ class ActivityReport(WeeklyMixin, GAReport):
         )
         t.set_visible('ga:sessions', 'ga:keyword')
         #split_table_delta(t, split_column=interval_field, join_column='ga:keyword', compare_column='ga:sessions')
-        t.sort(reverse=True)
-        t.limit(10)
+        #t.sort(reverse=True)
+        #t.limit(10)
         return t
 
     def _get_social_search(self, google_query, date_start, date_end, summary_metrics, max_results=10):
@@ -644,8 +644,25 @@ class ActivityReport(WeeklyMixin, GAReport):
 
         self.tables['social_search'] = social_search_table
         if self.config.get('search_keywords'):
-            self.tables['keywords'] = self._get_search_keywords(google_query, interval_field=interval_field)
-            self.tables['keywords'].tag_rows()
+            self.tables['search_keywords'] = self._get_search_keywords(google_query, interval_field=interval_field)
+            self.tables['search_keywords'].tag_rows()
+
+        if self.config.get('geo'):
+            self.tables['geo'] = google_query.get_table(
+                params={
+                    'ids': 'ga:%s' % self.remote_id,
+                    'start-date': self.date_start,
+                    'end-date': self.date_end,
+                    'sort': '-ga:pageviews',
+                    'max-results': '5',
+                },
+                dimensions=[
+                    Column('ga:country', label='Country', visible=1, type_cast=_prune_abstract),
+                ],
+                metrics=[col.new() for col in summary_metrics],
+            )
+            self.tables['geo'].tag_rows()
+
 
         self.tables['social_search'].tag_rows()
         self.tables['referrers'].tag_rows()

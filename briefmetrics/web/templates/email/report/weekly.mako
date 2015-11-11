@@ -134,11 +134,19 @@ ${widgets.render_table(
     h.ga_permalink('report/social-sources', r.report, date_start=r.date_start, date_end=r.date_end),
 )}
 
-% if r.tables.get('keywords'):
+% if r.tables.get('search_keywords'):
     ${widgets.render_table(
-        r.tables['keywords'],
+        r.tables['search_keywords'],
         'Search Keywords',
         h.ga_permalink('report/trafficsources-organic', r.report, date_start=r.date_start, date_end=r.date_end),
+    )}
+% endif
+
+% if r.tables.get('geo'):
+    ${widgets.render_table(
+        r.tables['geo'],
+        'Countries',
+        h.ga_permalink('report/visitors-geo', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
     )}
 % endif
 
