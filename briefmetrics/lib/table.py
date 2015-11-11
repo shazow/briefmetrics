@@ -286,6 +286,13 @@ class Table(object):
                     row.tag(value=row.values[col_idx]), column=column)
                     """
 
+    def _filter_rows(self, **kw):
+        # Note: Unused
+        for row in self.rows:
+            if not all(row.get(id) == val for id, val in kw.iteritems()):
+                continue
+            yield row
+
     def iter_rows(self, *column_ids):
         if not column_ids:
             column_ids = [col.id for col in self.columns]

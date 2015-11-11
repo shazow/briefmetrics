@@ -280,7 +280,7 @@ class ActivityReport(WeeklyMixin, GAReport):
             interval=self.data.get('interval_label', 'week'),
         )
 
-    def _get_social_search(self, google_query, date_start, date_end, summary_metrics, max_results=10):
+    def _get_social_search(self, google_query, date_start, date_end, summary_metrics, max_results=10, include_keywords=False):
         organic_table = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
@@ -296,6 +296,31 @@ class ActivityReport(WeeklyMixin, GAReport):
             metrics=[col.new() for col in summary_metrics],
         )
 
+        # Skip keywords if there are no organic results anyways
+        include_keywords = include_keywords and organic_table.has_value('ga:pageviews')
+
+        keywords_table = None
+        if include_keywords:
+            keywords_table = google_query.get_table(
+                params={
+                    'ids': 'ga:%s' % self.remote_id,
+                    'start-date': date_start,
+                    'end-date': date_end,
+                    'sort': '-ga:pageviews',
+                    'filters': 'ga:keyword!=(not provided);ga:medium==organic',
+                    'max-results': str(max_results),
+                },
+                dimensions=[
+                    Column('ga:source', type_cast=_cast_title),
+                    Column('ga:keyword', type_cast=_prune_abstract, visible=1),
+                ],
+                metrics=[
+                    Column('ga:pageviews', label='Views', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
+                    ]
+                # TODO: Do full metrics?
+                #metrics=[col.new() for col in summary_metrics],
+            )
+
         social_table = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
@@ -310,15 +335,29 @@ class ActivityReport(WeeklyMixin, GAReport):
             metrics=[col.new() for col in summary_metrics],
         )
 
+        source_col = Column('source', label='Social & Search & Campaigns', visible=1, type_cast=_cast_title)
         t = Table(columns=[
-            Column('source', label='Social & Search & Campaigns', visible=1, type_cast=_cast_title),
+            source_col,
         ] + [col.new() for col in summary_metrics])
 
         for cells in social_table.iter_rows():
             t.add(cells)
 
         for cells in organic_table.iter_rows():
-            t.add(cells)
+            row = t.add(cells)
+            if not row or not keywords_table:
+                continue
+
+            source_val = source_col.format(row.get(source_col.id))
+            if not source_val:
+                continue
+
+            for i, (val_source, val_keyword, val_views) in enumerate(keywords_table.iter_rows('ga:source', 'ga:keyword', 'ga:pageviews')):
+                if val_source != source_val:
+                    continue
+                if i > 10:
+                    break
+                row.tag(val_keyword, value=val_views, is_prefixed=True)
 
         t.sort(reverse=True)
         return t
@@ -611,7 +650,7 @@ class ActivityReport(WeeklyMixin, GAReport):
         self.data['total_last_relative'] = last_month[min(len(current_month), len(last_month))-1]
         self.data['total_last_date_start'] = historic_start_date
 
-        social_search_table = self._get_social_search(google_query, self.date_start, self.date_end, summary_metrics, max_results=25)
+        social_search_table = self._get_social_search(google_query, self.date_start, self.date_end, summary_metrics, max_results=25, include_keywords=True)
         last_social_search = self._get_social_search(google_query, self.previous_date_start, self.previous_date_end, summary_metrics, max_results=100)
         inject_table_delta(social_search_table, last_social_search, join_column='source')
 

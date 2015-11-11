@@ -71,7 +71,7 @@
                 ${render_tags(row.tags)}
                 <%
                     if inline_table:
-                        render_table(inline_table, include_header=False)
+                        render_table(inline_table, include_head=False)
                 %>
             </td>
         </tr>
