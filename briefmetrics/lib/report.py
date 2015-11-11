@@ -81,7 +81,9 @@ def split_table_delta(t, split_column, join_column, compare_column):
     col_compare = t.get(compare_column)
 
     split_val = t.rows[0].values[idx_split]
-    num = next(i for i, row in enumerate(t.rows) if row.values[idx_split] != split_val)
+    num = next((i for i, row in enumerate(t.rows) if row.values[idx_split] != split_val), None)
+    if num is None:
+        return
 
     last_rows = t.rows[num:]
     last_lookup = dict((row.values[idx_join], row) for row in last_rows)

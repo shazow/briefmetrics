@@ -69,6 +69,7 @@ data['ga:adCost'] = [11.2, 4.20, 0.0]
 data['ga:impressions'] = [0, 450, 2021]
 data['ga:adClicks'] = [30, 120, 0]
 data['ga:adGroup'] = ['Ad A', 'Ad B']
+data['ga:keyword'] = ['my query', 'another query']
 
 skip_state = set(['ga:month'])
 

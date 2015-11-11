@@ -134,6 +134,14 @@ ${widgets.render_table(
     h.ga_permalink('report/social-sources', r.report, date_start=r.date_start, date_end=r.date_end),
 )}
 
+% if r.tables.get('keywords'):
+    ${widgets.render_table(
+        r.tables['keywords'],
+        'Search Keywords',
+        h.ga_permalink('report/trafficsources-organic', r.report, date_start=r.date_start, date_end=r.date_end),
+    )}
+% endif
+
 % if r.tables.get('goals'):
     ${widgets.render_table(
         r.tables['goals'],
