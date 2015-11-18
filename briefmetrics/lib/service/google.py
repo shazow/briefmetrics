@@ -532,6 +532,12 @@ class ActivityReport(WeeklyMixin, GAReport):
             )
 
         # Pages
+        pages_metrics = [col.new() for col in basic_metrics]
+        if self.config.get('pageloadtime', True):
+            pages_metrics += [
+                Column('ga:avgPageLoadTime', label='Page Load', type_cast=float, type_format=h.human_time, reverse=True, threshold=0),
+            ]
+
         self.tables['pages'] = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
@@ -543,9 +549,7 @@ class ActivityReport(WeeklyMixin, GAReport):
             dimensions=[
                 Column('ga:pagePath', label='Pages', visible=1, type_cast=_prune_abstract),
             ],
-            metrics=[col.new() for col in basic_metrics] + [
-                Column('ga:avgPageLoadTime', label='Page Load', type_cast=float, type_format=h.human_time, reverse=True, threshold=0)
-            ],
+            metrics=pages_metrics,
         )
 
         # Referrers
