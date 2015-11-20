@@ -10,6 +10,10 @@
         </p>
 
         <p>
+            <strong>How can we improve Briefmetrics for customers like yourself? All feedback is optional but very much appreciated.</strong>
+        </p>
+
+        <p>
             <label>
                 Why are you leaving Briefmetrics?
                 <textarea name="why" placeholder=""></textarea>

@@ -109,6 +109,16 @@ def settings_branding(request):
     request.flash('Branding updated.')
 
 
+@expose_api('settings.feedback')
+def settings_feedback(request):
+    user = api.account.get_user(request, required=True)
+    body, subject, extend_trial = get_many(request.params, optional=['body', 'subject', 'extend_trial'])
+
+    text = "From user_id=%s:\n%s\n%s\n\n===\n\n%s" % (user.id, user.email_to, " [extend_trial=%d]" % user.num_remaining if extend_trial else "", body)
+    api.email.notify_admin(request, subject, text=text)
+    request.flash('Feedback submitted. We\'ll be in touch shortly!')
+
+
 class SettingsController(Controller):
 
     @handle_api(['settings.payments_set', 'settings.payments_cancel', 'settings.plan', 'settings.branding'])

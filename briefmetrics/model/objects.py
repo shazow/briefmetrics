@@ -27,7 +27,7 @@ log = logging.getLogger(__name__)
 
 class User(meta.Model): # Email address / login
     __tablename__ = 'user'
-    __json_whitelist__ = ['id', 'email']
+    __json_whitelist__ = ['id', 'display_name', 'email']
 
     id = Column(types.Integer, primary_key=True)
     time_created = Column(types.DateTime, default=now, nullable=False)

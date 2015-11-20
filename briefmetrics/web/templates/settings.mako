@@ -82,13 +82,45 @@
         <h2>Custom Branding</h2>
 
         % if not c.user.get_feature('custom_branding'):
-            <p>Configure your emails to look consistent with your company.
+            <p>Configure your emails to look consistent with your corporate branding.
                 <a href="${request.route_path('pricing')}">Upgrade your plan</a> to unlock this feature.
             </p>
         % else:
             ${forms.custom_branding(c.user, enable_logo=request.features.get('upload_logo'))}
         % endif
+    </section>
 
+    <section id="custom">
+        <h2>Request Customization</h2>
+
+        <form action="${request.route_path('api')}" method="post">
+            <p>
+                All Briefmetrics features are built specifically for the needs of
+                our customers. If you need something special, we'll work with you to make your reports perfect!
+            </p>
+
+            <p>
+                <textarea name="body" placeholder=""></textarea>
+            </p>
+
+            % if c.user.num_remaining:
+            <p>
+                <label>
+                    <input type="checkbox" name="extend_trial" value="true" checked="checked" />
+                    Extend trial until I'm satisfied with the changes.
+                </label>
+            </p>
+            % endif
+
+            <p>
+                <input type="submit" value="Send Request" />
+            </p>
+
+            <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
+            <input type="hidden" name="subject" value="Customization request from ${c.user.display_name}" />
+            <input type="hidden" name="format" value="redirect" />
+            <input type="hidden" name="method" value="settings.feedback" />
+    </form>
     </section>
 
     % if request.features.get('connected_services'):
