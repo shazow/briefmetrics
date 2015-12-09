@@ -19,7 +19,7 @@
         <h2>Recent Reports</h2>
         <ol>
         % for report_log in c.recent_reports:
-            <li value="${report_log.report_id}">
+            <li value="${report_log.report_id}" title="${report_log.time_created}">
                 ${report_log.time_sent or '(Not sent)'}
                 <a href="${request.route_path('admin_report_log', id=report_log.id)}">
                     ${report_log.subject}
