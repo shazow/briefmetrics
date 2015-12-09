@@ -23,7 +23,7 @@ def dry_run(request):
         num_extra = 10
 
     tasks.report.dry_run.delay(num_extra=num_extra, filter_account=filter_account)
-    request.flash('Dry run queued.')
+    request.flash('Dry run queued: num_extra=%s filter_account=%s' % num_extra, filter_account)
 
 
 @expose_api('admin.explore_api')
