@@ -15,8 +15,12 @@ from .api import expose_api
 @expose_api('admin.dry_run')
 def dry_run(request):
     api.account.get_admin(request)
-    num_extra = int(request.params.get('num_extra', 10))
-    tasks.report.dry_run.delay(num_extra=num_extra)
+
+    num_extra, filter_account = get_many(request.params, optional=['num_extra', 'filter_account'])
+    if num_extra is not None:
+        num_extra = int(num_extra)
+
+    tasks.report.dry_run.delay(num_extra=num_extra, filter_account=filter_account)
     request.flash('Dry run queued.')
 
 

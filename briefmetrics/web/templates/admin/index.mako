@@ -8,7 +8,8 @@
         <input type="hidden" name="format" value="redirect" />
 
         <p>
-            <input type="text" size="3" value="10" />
+            <input type="text" size="4" value="" name="num_extra"  placeholder="extra" />
+            <input type="text" size="4" value="" name="filter_account" placeholder="filter" />
             <input type="submit" value="Dry Run" />
         </p>
     </form>

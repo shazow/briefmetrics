@@ -46,11 +46,17 @@ def send_all(since_time=None, async=True, pretend=False, max_num=None):
 
 
 @celery.task(ignore_result=True)
-def dry_run(num_extra=5, async=True):
-    all_reports = model.Session.query(model.Report).options(orm.joinedload_all('account.user')).all()
+def dry_run(num_extra=5, filter_account=None, async=True):
+    q = model.Session.query(model.Report).options(orm.joinedload_all('account.user'))
+    if filter_account:
+        q = q.filter(model.Report.account_id==filter_account)
 
+    all_reports = q.all()
+
+    report_queue = all_reports
     # Start with all paying customers
-    report_queue = [r for r in all_reports if r.account.user.payment]
+    if not filter_account:
+        report_queue = [r for r in all_reports if r.account.user.payment]
 
     # Add some extra random customers
     while num_extra:
