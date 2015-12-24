@@ -34,7 +34,7 @@
     </p>
     <p>
         You probably dread signing into Google Analytics, just like I do.
-        It is hard work finding important data about your website websites, and
+        It is hard work finding important data about your websites, and
         it shouldn't be.
     </p>
     <p>
