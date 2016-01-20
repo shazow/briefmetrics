@@ -9,7 +9,7 @@ from briefmetrics.lib import helpers as h
 from briefmetrics.lib.cache import ReportRegion
 from briefmetrics.lib.gcharts import encode_rows
 from briefmetrics.lib.http import assert_response
-from briefmetrics.lib.report import Report, EmptyReportError, MonthlyMixin, WeeklyMixin, DailyMixin, inject_table_delta, cumulative_by_month, split_table_delta
+from briefmetrics.lib.report import Report, EmptyReportError, YearlyMixin, MonthlyMixin, WeeklyMixin, DailyMixin, inject_table_delta, cumulative_by_month, split_table_delta
 from briefmetrics.lib.table import Table, Column
 from briefmetrics.lib.exceptions import APIError
 
@@ -264,6 +264,7 @@ class GAReport(Report):
 class ActivityReport(WeeklyMixin, GAReport):
     id = 'week'
     label = 'Weekly'
+    is_default = True
 
     template = 'email/report/weekly.mako'
 
@@ -732,10 +733,21 @@ class ActivityConcatReport(ActivityReport):
 class ActivityMonthlyReport(MonthlyMixin, ActivityReport):
     "Monthly report"
     id = 'activity-month'
+    label = 'Monthly'
 
     def build(self):
         super(ActivityMonthlyReport, self).build()
         self.data['interval_label'] = 'month'
+
+
+class ActivityYearlyReport(YearlyMixin, ActivityReport):
+    "Yearly report"
+    id = 'activity-year'
+    label = 'Yearly'
+
+    def build(self):
+        super(ActivityYearlyReport, self).build()
+        self.data['interval_label'] = 'year'
 
 
 class DailyReport(DailyMixin, GAReport):

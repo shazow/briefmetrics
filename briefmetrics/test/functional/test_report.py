@@ -368,6 +368,13 @@ class TestReportModel(test.TestCase):
         self.assertEqual(r.next_preferred(datetime.date(2013, 2, 1)), datetime.datetime(2013, 3, 1, 13))
         self.assertEqual(r.next_preferred(datetime.date(2013, 2, 28)), datetime.datetime(2013, 3, 1, 13))
 
+        now = datetime.datetime(2013, 2, 5, 7, 35, 15) # Tuesday, Jan 2013
+
+        r = get_report('activity-year')(model.Report(), now)
+        self.assertEqual(r.next_preferred(now), datetime.datetime(2014, 1, 1, 13, 0, 0))
+        self.assertEqual(r.next_preferred(datetime.date(2013, 1, 1)), datetime.datetime(2014, 1, 1, 13))
+        self.assertEqual(r.next_preferred(datetime.date(2012, 12, 28)), datetime.datetime(2013, 1, 1, 13))
+
 
 class TestReportLib(test.TestCase):
     def _create_report_model(self, type='day'):
@@ -422,6 +429,19 @@ class TestReportLib(test.TestCase):
         self.assertEqual(r.date_next, datetime.date(2013, 3, 1)) # First day of next month
 
         self.assertEqual(r.get_subject(), u"Report for example.com (January)")
+
+        # Yearly activity report
+        since_time = datetime.datetime(2013, 2, 5)
+        report = self._create_report_model('activity-year')
+        r = get_report('activity-year')(report, since_time)
+
+        self.assertEqual(r.report.type, 'activity-year')
+        self.assertEqual(r.date_start, datetime.date(2012, 1, 1)) # Start of the month
+        self.assertEqual(r.date_end, datetime.date(2012, 12, 31)) # End of the month
+        self.assertEqual(r.date_next, datetime.date(2014, 1, 1)) # First day of next month
+
+        self.assertEqual(r.get_subject(), u"Report for example.com (2012)")
+
 
     def test_trends_report(self):
         report = self._create_report_model('month')

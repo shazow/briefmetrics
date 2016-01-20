@@ -164,6 +164,9 @@ def get_report(id):
 class Report(object):
     __metaclass__ = registry_metaclass(registry)
 
+    id = None
+    label = ''
+    is_default = False
     template = 'email/report/daily.mako'
     frequency = 'day'
 
@@ -209,6 +212,7 @@ class Report(object):
         time_preferred = self.report.time_preferred or self.report.encode_preferred_time()
         datetime_tuple = now.timetuple()[:3] + time_preferred.timetuple()[3:6]
         now = datetime.datetime(*datetime_tuple)
+        days_offset = 0
 
         # TODO: Break it out into separate member methods per mixin?
         if self.frequency == 'day':
@@ -230,6 +234,14 @@ class Report(object):
                     next_month += datetime.timedelta(days=7 + weekday_offset)
 
             days_offset = (next_month - now).days
+
+        elif self.frequency == 'year':
+            next_year = now.replace(day=1, month=1, year=now.year+1)
+            if time_preferred.day != 1:
+                weekday_offset = time_preferred.weekday() - next_month.weekday()
+                if weekday_offset:
+                    next_month += datetime.timedelta(days=7 + weekday_offset)
+            days_offset = (next_year - now).days
 
         else:
             raise ValueError('Invalid type: %s' % self.frequency)
@@ -274,6 +286,25 @@ class MonthlyMixin(object):
     def get_subject(self):
         return u"Report for {site} ({date})".format(
             date=self.date_start.strftime('%B'),
+            site=self.report.display_name,
+        )
+
+
+class YearlyMixin(object):
+    frequency = 'year'
+
+    def get_date_range(self, since_time):
+        since_start = since_time.date().replace(day=1, month=1)
+        date_start = since_start.replace(year=since_time.year-1)
+        date_end = since_start - datetime.timedelta(days=1) # Last day of the previous year
+        date_next = self.next_preferred(since_start).date()
+        previous_date_start = (date_start - datetime.timedelta(days=1)).replace(day=1, month=1)
+
+        return previous_date_start, date_start, date_end, date_next
+
+    def get_subject(self):
+        return u"Report for {site} ({date})".format(
+            date=self.date_start.strftime('%Y'),
             site=self.report.display_name,
         )
 
