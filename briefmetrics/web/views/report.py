@@ -244,7 +244,7 @@ class ReportController(Controller):
 
         self.c.available_profiles = available_profiles
 
-        enable_reports = set(user.config.get('enable_reports', []) + [model.Report.DEFAULT_TYPE])
+        enable_reports = set(user.config.get('enable_reports', []) + list(model.Report.DEFAULT_ENABLED))
         self.c.report_types = [(id, label, id==model.Report.DEFAULT_TYPE) for id, label in model.Report.TYPES if id in enable_reports]
 
         self.c.google_account = google_account

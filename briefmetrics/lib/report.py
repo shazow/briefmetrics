@@ -166,7 +166,6 @@ class Report(object):
 
     id = None
     label = ''
-    is_default = False
     template = 'email/report/daily.mako'
     frequency = 'day'
 

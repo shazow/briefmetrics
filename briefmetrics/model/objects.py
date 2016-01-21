@@ -187,6 +187,7 @@ class Report(meta.Model): # Property within an account (such as a website)
     ]
 
     DEFAULT_TYPE = 'week'
+    DEFAULT_ENABLED = ('week', 'activity-month')
 
     id = Column(types.Integer, primary_key=True)
     time_created = Column(types.DateTime, default=now, nullable=False)

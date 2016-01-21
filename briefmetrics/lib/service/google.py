@@ -1,7 +1,6 @@
 import datetime
 import uuid
 import requests
-import functools
 from urllib import urlencode
 from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
 
@@ -9,7 +8,7 @@ from briefmetrics.lib import helpers as h
 from briefmetrics.lib.cache import ReportRegion
 from briefmetrics.lib.gcharts import encode_rows
 from briefmetrics.lib.http import assert_response
-from briefmetrics.lib.report import Report, EmptyReportError, YearlyMixin, MonthlyMixin, WeeklyMixin, DailyMixin, inject_table_delta, cumulative_by_month, split_table_delta
+from briefmetrics.lib.report import Report, EmptyReportError, YearlyMixin, MonthlyMixin, WeeklyMixin, DailyMixin, inject_table_delta, cumulative_by_month
 from briefmetrics.lib.table import Table, Column
 from briefmetrics.lib.exceptions import APIError
 
@@ -264,7 +263,6 @@ class GAReport(Report):
 class ActivityReport(WeeklyMixin, GAReport):
     id = 'week'
     label = 'Weekly'
-    is_default = True
 
     template = 'email/report/weekly.mako'
 
@@ -474,11 +472,13 @@ class ActivityReport(WeeklyMixin, GAReport):
 
 
     def fetch(self, google_query):
-        last_month_date_start = self.date_end - datetime.timedelta(days=self.date_end.day)
-        last_month_date_start -= datetime.timedelta(days=last_month_date_start.day - 1)
+        days_delta = (self.date_end - self.date_start).days
+        is_year_delta = days_delta > 360
 
         interval_field = 'ga:nthWeek'
-        if (self.date_end - self.date_start).days > 6:
+        if is_year_delta:
+            interval_field = 'ga:year'
+        elif days_delta > 6:
             interval_field = 'ga:nthMonth'
 
         # Summary
@@ -599,11 +599,25 @@ class ActivityReport(WeeklyMixin, GAReport):
             self.tables['ecommerce'] = self._get_ecommerce(google_query, interval_field)
 
         # Historic
-        historic_start_date = last_month_date_start
+        historic_start_date = self.previous_date_start
+        if not is_year_delta:
+            # Override to just previous month
+            historic_start_date = self.date_end - datetime.timedelta(days=self.date_end.day)
+            historic_start_date -= datetime.timedelta(days=historic_start_date.day-1)
+
+        # Note: Pace is different from interval, as year pace is still month over month whereas year interval is year over year.
         compare_interval = self.config.get('pace', 'month')
-        if compare_interval == 'year':
+        if compare_interval == 'year' and not is_year_delta:
             historic_start_date = self.date_end - datetime.timedelta(days=self.date_end.day-1)
             historic_start_date = historic_start_date.replace(year=historic_start_date.year-1)
+
+        dimensions = [
+            Column('ga:yearMonth', visible=0),
+        ]
+        if not is_year_delta:
+            dimensions += [
+                Column('ga:date'),
+            ]
 
         historic_table = google_query.get_table(
             params={
@@ -611,10 +625,7 @@ class ActivityReport(WeeklyMixin, GAReport):
                 'start-date': historic_start_date,
                 'end-date': self.date_end,
             },
-            dimensions=[
-                Column('ga:date'),
-                Column('ga:yearMonth', visible=0),
-            ],
+            dimensions=dimensions,
             metrics=[
                 Column('ga:pageviews', label='Views', type_cast=int, visible=1),
                 Column('ga:users', label='Uniques', type_cast=int),
@@ -629,7 +640,9 @@ class ActivityReport(WeeklyMixin, GAReport):
         iter_historic = historic_table.iter_visible()
         _, views_column = next(iter_historic)
 
-        if compare_interval == 'year':
+        if is_year_delta:
+            iter_historic = ((mo[:4], v) for mo, v in iter_historic)
+        elif compare_interval == 'year':
             mo_filter = u'{d.month:02d}'.format(d=historic_start_date)
             iter_historic = ((mo, v) for mo, v in iter_historic if mo.endswith(mo_filter))
 

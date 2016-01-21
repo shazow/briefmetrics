@@ -111,7 +111,6 @@
             </select>
         </p>
 
-
         <p class="row">
 
             <input type="hidden" name="csrf_token" value="${session.get_csrf_token()}" />
@@ -125,7 +124,11 @@
             % else:
                 <select name="type" style="width: auto;">
                 % for id, label, is_active in report_types:
-                    <option value="${id}"${h.text_if(is_active, " selected")}>${label}</option>
+                    % if is_active:
+                        <option value="${id}" selected>${label} (Recommended)</option>
+                    % else:
+                        <option value="${id}">${label}</option>
+                    % endif
                 % endfor
                 </select>
             % endif

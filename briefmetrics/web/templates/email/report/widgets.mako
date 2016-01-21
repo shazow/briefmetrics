@@ -140,18 +140,22 @@
     <%
         previous_date_start, date_start, date_end = interval
         is_last_day = (date_end + h.timedelta(days=1)).month != date_end.month
+        period_fmt = '%B'
         last_period = "last month"
+        if (date_end - date_start).days > 360:
+            period_fmt = '%Y'
+            last_period = 'last year'
         if previous_date_start.year != date_start.year:
-            last_period = "last {}".format(previous_date_start.strftime('%B'))
+            last_period = "last {}".format(previous_date_start.strftime(period_fmt))
     %>
     Your site had <span class="chartTop">${h.format_int(current, units)}
     % if is_last_day:
-        in ${date_start.strftime('%B')},</span>
+        in ${date_start.strftime(period_fmt)},</span>
     % else:
         so far this month</span>,
     % endif
     % if is_last_day:
-        compared to <span class="chartBottom">${previous_date_start.strftime('%B')}'s total of ${h.human_int(last)}</span>.
+        compared to <span class="chartBottom">${previous_date_start.strftime(period_fmt)}'s total of ${h.human_int(last)}</span>.
     % elif current >= last_relative and last != last_relative:
         compared to ${last_period}'s ${h.format_int(last_relative, units)} at this time.
         % if current > last:
