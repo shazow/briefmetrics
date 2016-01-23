@@ -178,9 +178,9 @@ class Report(meta.Model): # Property within an account (such as a website)
         ('week', 'Weekly'), # TODO: Activity (Weekly)?
         ('month', 'Trends (Monthly)'),
         ('activity-month', 'Monthly'),
-        ('activity-year', 'Yearly'),
         ('stripe', 'Stripe'),
         ('week-concat', 'Weekly (Combined)'),
+        ('activity-year', 'Yearly'),
        #'quarter',
        #'combine',
        #'alert',
