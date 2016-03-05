@@ -181,6 +181,7 @@ class Report(meta.Model): # Property within an account (such as a website)
         ('stripe', 'Stripe'),
         ('week-concat', 'Weekly (Combined)'),
         ('activity-year', 'Yearly'),
+        # Note: DO NOT CHANGE ORDER, existing data is typed based on index position.
        #'quarter',
        #'combine',
        #'alert',
