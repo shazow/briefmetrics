@@ -49,6 +49,8 @@ def handle_stripe(request, data):
     log.info('stripe webhook: Queued %d funnels for account: %s' % (count, a.id))
 
 
+fail_cache = set()
+
 def handle_namecheap(request, data):
     if isinstance(data, list):
         # Stupid hack for Namecheap's broken QA code.
@@ -82,7 +84,11 @@ def handle_namecheap(request, data):
     try:
         return fn(request, data)
     except Exception as e:
+        if event_token in fail_cache:
+            log.error('namecheap webhook: Failed %s (%s): %s (again, silenced)' % (data['type'], e, event_token))
+            return
         log.error('namecheap webhook: Failed %s (%s): %s' % (data['type'], e, event_token))
+        fail_cache.add(event_token)
         raise
 
 
