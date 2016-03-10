@@ -99,19 +99,21 @@ def _namecheap_subscription_create(request, data):
     return_uri = data['event'].get('returnURI')
     subscription_id = data['event']['subscription_id']
 
-    if 'email' not in data['event']['user']:
-        log.warning("namecheap webhook: Failing due to missing field 'email': %s" % event_id)
+    try:
+        email, first_name, last_name, remote_id = get_many(data['event']['user'], ['email', 'first_name', 'last_name', 'username'])
+    except KeyError as e:
+        k = e.args[0]
+        log.warning("namecheap webhook: Failing due to missing field '%s': %s" % (k, event_id))
         return {
             'type': 'subscription_create_resp',
             'id': event_id,
             'response': {
                 'state': 'failed',
                 'provider_id': '',
-                'message': 'missing field: email',
+                'message': 'missing field: %s' % k,
             }
         }
 
-    email, first_name, last_name, remote_id = get_many(data['event']['user'], ['email', 'first_name', 'last_name', 'username'])
     display_name = ' '.join([first_name, last_name])
     plan_id = data['event']['order'].get('pricing_plan_sku')
 
