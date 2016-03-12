@@ -23,6 +23,7 @@ requests-oauthlib==0.4.2
 requests==2.6.0
 stripe==1.22.2
 unstdlib==1.7
+premailer==2.9.7 # Needs lxml which requires CFLAGS/etc set
 
 # Dev
 IPython==4.0.0
