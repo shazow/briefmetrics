@@ -3,6 +3,8 @@ import json
 import logging
 import premailer
 
+from pyplaintext import converter as pyplaintext_converter
+
 from briefmetrics.lib.controller import Controller
 from briefmetrics.lib.http import assert_response
 
@@ -20,6 +22,9 @@ def prepare_html(html, inline_css=True):
         html = premailer.Premailer(html).transform()
     return html
 
+def textify_html(html):
+    parser = pyplaintext_converter.HTML2PlainParser()
+    return parser.html_to_plain_text(html)
 
 def create_message(request, to_email, subject, html=None, text=None, from_name=None, from_email=None, reply_to=None, debug_bcc=None, inline_css=True):
     MsgClass = DefaultMessage
@@ -110,8 +115,8 @@ class MandrillMessage(object):
 class MailgunMessage(object):
     def __init__(self, request, to_email, subject, html=None, text=None, from_name=None, from_email=None, reply_to=None, debug_bcc=None, inline_css=True):
         self.request = request
-
         settings = request.registry.settings
+
         from_name = from_name or settings['mail.from_name']
         from_email = from_email or settings['mail.from_email']
 
@@ -132,6 +137,8 @@ class MailgunMessage(object):
 
         if text is not None:
             params['text'] = text
+        elif html:
+            params['text'] = textify_html(html)
 
         if debug_bcc or debug_bcc is None:
             debug_bcc = settings.get('mail.debug_bcc')
@@ -142,6 +149,7 @@ class MailgunMessage(object):
         self.params = params
 
     def send(self, settings=None):
+        settings = settings or self.request.registry.settings
         api_key = settings['api.mailgun.key']
         api_url = settings.get('api.mailgun.url', 'https://api.mailgun.net/v3/mg.briefmetrics.com')
         r = requests.post(
@@ -149,6 +157,7 @@ class MailgunMessage(object):
             auth=('api', api_key),
             data=self.params,
         )
+        assert_response(r)
 
         return r.json()
 
