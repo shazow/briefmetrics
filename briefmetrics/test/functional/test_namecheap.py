@@ -98,7 +98,7 @@ class TestNamecheap(test.TestWeb):
             self.assertEqual(len(send_message.call_args_list), 1)
 
             call = send_message.call_args_list[0]
-            message = call[0][1]
+            message = call[0][1].params
             self.assertIn(u"Welcome to Briefmetrics", message['subject'])
 
         # Check that user was provisioned

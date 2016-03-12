@@ -102,11 +102,11 @@ class TestReport(test.TestWeb):
             self.assertEqual(len(send_message.call_args_list), 2)
 
             call = send_message.call_args_list[0]
-            message = call[0][1]
+            message = call[0][1].params
             self.assertIn(u"Report for example.com", message['subject'])
 
             call = send_message.call_args_list[1]
-            message = call[0][1]
+            message = call[0][1].params
             self.assertEqual(message['subject'], u"Your Briefmetrics trial is over")
 
         self.assertEqual(model.Report.count(), 1)
@@ -186,7 +186,7 @@ class TestReport(test.TestWeb):
                 self.assertTrue(send_message.called)
 
                 call, = send_message.call_args_list
-                message = call[0][1]
+                message = call[0][1].params
                 self.assertEqual(message['subject'], u"Problem with your Briefmetrics")
 
         self.assertEqual(model.Report.count(), 0)
@@ -204,7 +204,7 @@ class TestReport(test.TestWeb):
                 self.assertTrue(send_message.called)
 
                 call, = send_message.call_args_list
-                message = call[0][1]
+                message = call[0][1].params
                 self.assertEqual(message['subject'], u"Problem with your Briefmetrics")
 
         self.assertEqual(model.Report.count(), 0)
@@ -325,7 +325,7 @@ class TestReport(test.TestWeb):
             self.assertEqual(len(send_message.call_args_list), 1)
 
             call = send_message.call_args_list[0]
-            message = call[0][1]
+            message = call[0][1].params
             self.assertIn(u"Report for example.com", message['subject'])
             self.assertNotIn(u'<a href="https://briefmetrics.com">Briefmetrics</a>', message['html'])
             self.assertEqual(u"from@localhost.com", message['from_email'])
