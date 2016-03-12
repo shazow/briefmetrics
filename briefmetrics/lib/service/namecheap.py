@@ -104,11 +104,11 @@ class NamecheapAPI(Service):
     def __init__(self, request=None):
         self._request = request
         self.session = Session()
-        self.session.auth = HawkAuth(credentials={
-            'id': self.config['client_id'],
-            'key': self.config['client_secret'],
-            'algorithm': 'sha256',
-        })
+        self.session.auth = HawkAuth(
+            id=self.config['client_id'],
+            key=self.config['client_secret'],
+            algorithm='sha256',
+        )
         self.url_prefix = self.config.get('api_url', self.url_prefix)
 
     def request(self, method, resource, **kw):
