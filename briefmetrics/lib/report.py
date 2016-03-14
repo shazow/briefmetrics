@@ -177,10 +177,14 @@ class Report(object):
         self.remote_id = report.remote_id
         self.messages = []
         self.config = {}
+        if self.owner:
+            self.config.update(self.owner.config)
         if report.config:
             self.config.update(report.config)
         if config:
             self.config.update(config)
+
+        self.include_permalinks = self.config.get('include_permalinks', True)
 
         self.since_time = since_time
         self.previous_date_start, self.date_start, self.date_end, self.date_next = self.get_date_range(since_time)

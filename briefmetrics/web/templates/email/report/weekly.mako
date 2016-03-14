@@ -118,27 +118,27 @@ ${h.chart(r.data['historic_data'], width=560, height=200)}
 ${widgets.render_table(
     r.tables['pages'],
     title='Top Pages',
-    report_link=h.ga_permalink('report/content-pages', r.report, date_start=r.date_start, date_end=r.date_end),
+    report_link=r.include_permalinks and h.ga_permalink('report/content-pages', r.report, date_start=r.date_start, date_end=r.date_end),
     prefix_links=r.base_url,
 )}
 
 ${widgets.render_table(
     r.tables['referrers'],
     title='Referrers',
-    report_link=h.ga_permalink('report/trafficsources-referrals', r.report, date_start=r.date_start, date_end=r.date_end),
+    report_link=r.include_permalinks and h.ga_permalink('report/trafficsources-referrals', r.report, date_start=r.date_start, date_end=r.date_end),
 )}
 
 ${widgets.render_table(
     r.tables['social_search'],
     title='Social & Search',
-    report_link=h.ga_permalink('report/social-sources', r.report, date_start=r.date_start, date_end=r.date_end),
+    report_link=r.include_permalinks and h.ga_permalink('report/social-sources', r.report, date_start=r.date_start, date_end=r.date_end),
 )}
 
 % if r.tables.get('search_keywords'):
     ${widgets.render_table(
         r.tables['search_keywords'],
         title='Search Keywords',
-        report_link=h.ga_permalink('report/trafficsources-organic', r.report, date_start=r.date_start, date_end=r.date_end),
+        report_link=r.include_permalinks and h.ga_permalink('report/trafficsources-organic', r.report, date_start=r.date_start, date_end=r.date_end),
     )}
 % endif
 
@@ -146,7 +146,7 @@ ${widgets.render_table(
     ${widgets.render_table(
         r.tables['geo'],
         title='Countries',
-        report_link=h.ga_permalink('report/visitors-geo', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
+        report_link=r.include_permalinks and h.ga_permalink('report/visitors-geo', r.report, date_start=r.date_start, date_end=r.date_end),
     )}
 % endif
 
@@ -154,7 +154,7 @@ ${widgets.render_table(
     ${widgets.render_table(
         r.tables['goals'],
         title='Goals',
-        report_link=h.ga_permalink('report/conversions-goals-overview', r.report, date_start=r.date_start, date_end=r.date_end),
+        report_link=r.include_permalinks and h.ga_permalink('report/conversions-goals-overview', r.report, date_start=r.date_start, date_end=r.date_end),
     )}
 % endif
 
@@ -162,7 +162,7 @@ ${widgets.render_table(
     ${widgets.render_table(
         r.tables['ecommerce'],
         title='Ecommerce',
-        report_link=h.ga_permalink('report/conversions-ecommerce-overview', r.report, date_start=r.date_start, date_end=r.date_end),
+        report_link=r.include_permalinks and h.ga_permalink('report/conversions-ecommerce-overview', r.report, date_start=r.date_start, date_end=r.date_end),
     )}
 % endif
 </%def>
