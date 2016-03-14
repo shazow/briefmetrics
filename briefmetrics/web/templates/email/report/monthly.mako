@@ -38,22 +38,22 @@ ${h.chart(c.report.data['historic_data'], width=560, height=200)}
 
 ${widgets.render_table(
     c.report.tables['geo'],
-    'Countries',
-    h.ga_permalink('report/visitors-geo', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
+    title='Countries',
+    report_link=h.ga_permalink('report/visitors-geo', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
     prefix_links=c.report.base_url,
 )}
 
 ${widgets.render_table(
     c.report.tables['device'],
-    'Devices',
-    h.ga_permalink('report/visitors-mobile-overview', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
+    title='Devices',
+    report_link=h.ga_permalink('report/visitors-mobile-overview', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
     prefix_links=c.report.base_url,
 )}
 
 ${widgets.render_table(
     c.report.tables['browser'],
-    'Browsers',
-    h.ga_permalink('report/visitors-browser', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
+    title='Browsers',
+    report_link=h.ga_permalink('report/visitors-browser', c.report.report, date_start=c.report.date_start, date_end=c.report.date_end),
     prefix_links=c.report.base_url,
 )}
 
