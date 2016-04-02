@@ -16,7 +16,7 @@ def init(settings):
         CELERY_DISABLE_RATE_LIMITS = True
         CELERY_TIMEZONE = 'US/Eastern'
         # TODO: Nuke celery before enabling this.
-        # CELERY_ACCEPT_CONTENT = ['json']
+        CELERY_ACCEPT_CONTENT = ['json']
         CELERYD_CONCURRENCY = 1
         CELERY_TASK_RESULT_EXPIRES = 3600
 
