@@ -12,6 +12,8 @@ services:
         expose:
             - "80"
             - "443"
+        ports:
+            - "80:8080"
         volumes:
             - ./nginx/vhosts.d:/etc/nginx/sites-enabled:ro
             - ./nginx/certs:/etc/nginx/certs:ro
@@ -25,9 +27,11 @@ services:
     #    --link postgresql:db
     #    shazow/uwsgi-python
     briefmetrics:
+        environment:
+            - INI_FILE=docker.ini
         image: shazow/python-uwsgi
         volumes:
-            - ..:/home/app/src
+            - ..:/home/app/src:rw
         expose:
             - "8001"
         links:
