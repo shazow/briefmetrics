@@ -35,6 +35,7 @@ services:
             - python-env:/home/app/env
         links:
             - db:db
+            - mailserver:mailserver
 
     #  docker run --name=db -d shazow/postgresql
     db:
@@ -44,6 +45,10 @@ services:
             - MASTER_PASSWORD=Vh9zXIxFRVATk73s
         volumes:
             - postgresql-data:/var/lib/postgresql
+
+    mailserver:
+        container_name: mailserver
+        image: namshi/docker-smtp
 
 volumes:
     python-env:
