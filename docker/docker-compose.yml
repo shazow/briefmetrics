@@ -8,36 +8,45 @@ services:
     #    --link briefmetrics-uwsgi:briefmetrics-uwsgi
     #    shazow/nginx
     nginx:
+        container_name: nginx
         image: shazow/nginx
-        expose:
-            - "80"
-            - "443"
         ports:
-            - "80:8080"
+            - "8080:80"
         volumes:
-            - ./nginx/vhosts.d:/etc/nginx/sites-enabled:ro
+            - ./nginx/sites:/etc/nginx/sites-enabled:ro
             - ./nginx/certs:/etc/nginx/certs:ro
-            - ./nginx/www:/var/www
+            - ../briefmetrics/web/static:/var/www/briefmetrics.com/static
+            - ../uploads:/var/www/briefmetrics.com/uploads
         links:
-            - briefmetrics:briefmetrics
+            - briefmetrics-uwsgi:briefmetrics-uwsgi
 
 
     #  docker run --name=briefmetrics-uwsgi -d \
-    #    --volume ~/volumes/briefmetrics/src:/home/app/src \
+    #    --volume ..:/home/app/src \
     #    --link postgresql:db
     #    shazow/uwsgi-python
-    briefmetrics:
+    briefmetrics-uwsgi:
+        container_name: briefmetrics-uwsgi
         environment:
             - INI_FILE=docker.ini
         image: shazow/python-uwsgi
         volumes:
             - ..:/home/app/src:rw
-        expose:
-            - "8001"
+            - python-env:/home/app/env
         links:
             - db:db
 
-
     #  docker run --name=db -d shazow/postgresql
     db:
+        container_name: db
         image: shazow/postgresql
+        environment:
+            - MASTER_PASSWORD=Vh9zXIxFRVATk73s
+        volumes:
+            - postgresql-data:/var/lib/postgresql
+
+volumes:
+    python-env:
+        driver: local
+    postgresql-data:
+        driver: local

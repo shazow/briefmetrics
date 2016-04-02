@@ -3,6 +3,7 @@ Mako==1.0.4
 SQLAlchemy==1.0.12
 WebTest==2.0.20
 alembic==0.8.5
+kombu==3.0.35 # Required by celery
 celery[sqlalchemy]==3.1.23
 dogpile.cache==0.5.7
 mock==1.3.0
@@ -25,6 +26,8 @@ stripe==1.30.0
 unstdlib==1.7
 premailer==2.9.7 # Needs lxml which requires CFLAGS/etc set
 pyplaintext==0.1.1
+
+setuptools==20.6.7
 
 # Dev
 IPython==4.1.2
