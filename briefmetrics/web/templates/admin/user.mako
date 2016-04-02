@@ -19,6 +19,14 @@
         % endif
     </div>
 
+    % if c.user.config:
+<pre>
+% for k, v in c.user.config.iteritems():
+${"config['{:}'] = {}".format(k, v)}
+% endfor
+</pre>
+% endif
+
     % if c.recent_reports:
         <h3>Reports</h3>
         <ol>
