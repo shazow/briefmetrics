@@ -11,3 +11,4 @@
 /uploads
 /data
 /docker/nginx/certs
+/*.pid
