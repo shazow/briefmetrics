@@ -6,6 +6,7 @@ from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
 from briefmetrics.lib.cache import ReportRegion
 from briefmetrics.lib.http import assert_response
 from briefmetrics.lib.exceptions import APIError
+from briefmetrics.lib.table import Table
 
 from ..base import OAuth2API
 
@@ -188,10 +189,24 @@ class Query(object):
 
         return next((item for item in r if item['id'] == remote_id), None)
 
+    def get_properties(self):
+        # Note: Not used
+        try:
+            r = self.get('https://www.googleapis.com/analytics/v3/management/accounts/~all/webproperties')
+        except InvalidGrantError:
+            raise APIError('Insufficient permissions to query Google Analytics. Please re-connect your account.')
+        items = r.get('items')
+        if not items:
+            return {}
+        return dict((item['id'], item['name']) for item in items)
+
     def get_profiles(self):
-        # account_id used for caching, not in query.
         try:
             r = self.get('https://www.googleapis.com/analytics/v3/management/accounts/~all/webproperties/~all/profiles')
         except InvalidGrantError:
             raise APIError('Insufficient permissions to query Google Analytics. Please re-connect your account.')
-        return r.get('items') or []
+        profiles = r.get('items') or []
+        if not profiles:
+            return profiles
+
+        return profiles

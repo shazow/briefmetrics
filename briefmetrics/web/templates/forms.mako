@@ -97,12 +97,14 @@
                 <option />
             % for item in available_profiles:
                 <%
-                    human_url = h.human_url(item.get('websiteUrl')) or item['name']
+                    human_url = h.human_url(item.get('websiteUrl'))
                     name = h.human_url(item['name'])
+                    if human_url in ('--', '-'):
+                        human_url = item.get('displayName', '(Unknown)')
                 %>
                 <option value="${item['id']}">
                     ${human_url}
-                    % if name not in ['All Web Site Data', human_url]:
+                    % if name not in ('All Web Site Data', 'All Mobile App Data', human_url):
                     ${name}
                     % endif
                     [${item['webPropertyId']}]
