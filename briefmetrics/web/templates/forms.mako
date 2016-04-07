@@ -100,7 +100,7 @@
                     human_url = h.human_url(item.get('websiteUrl'))
                     name = h.human_url(item['name'])
                     if human_url in ('--', '-'):
-                        human_url = item.get('displayName', '(Unknown)')
+                        human_url = item.get('displayName', '(Unknown App)')
                 %>
                 <option value="${item['id']}">
                     ${human_url}

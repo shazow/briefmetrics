@@ -25,13 +25,13 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
     id = 'mobile-week'
     label = 'Weekly (Mobile)'
 
-    template = 'email/report/weekly.mako'
+    template = 'email/report/mobile-weekly.mako'
 
     def get_preview(self):
         if len(self.tables['summary'].rows) < 2:
             return u''
 
-        primary_metric = self.report.config.get('intro') or 'ga:pageviews'
+        primary_metric = self.report.config.get('intro') or 'ga:sessions'
         this_week, last_week = (r.get(primary_metric) for r in self.tables['summary'].rows[:2])
         delta = (this_week / float(last_week or 1.0)) - 1
         return u"Your site had {this_week} this {interval} ({delta} over last {interval}).".format(
@@ -73,7 +73,7 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
                 'start-date': date_start,
                 'end-date': date_end,
                 'filters': 'ga:medium!=referral;ga:medium!=(not set);ga:socialNetwork==(not set)',
-                'sort': '-ga:pageviews',
+                'sort': '-ga:sessions',
                 'max-results': str(max_results),
             },
             dimensions=[
@@ -87,7 +87,7 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
                 'ids': 'ga:%s' % self.remote_id,
                 'start-date': date_start,
                 'end-date': date_end,
-                'sort': '-ga:pageviews',
+                'sort': '-ga:sessions',
                 'max-results': str(max_results),
             },
             dimensions=[
@@ -253,8 +253,8 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
             Column(interval_field),
         ]
         basic_metrics = [
-            Column('ga:pageviews', label='Views', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
-            Column('ga:users', label='Uniques', type_cast=int, type_format=h.human_int),
+            Column('ga:sessions', label='Sessions', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
+            Column('ga:users', label='Users', type_cast=int, type_format=h.human_int),
             Column('ga:avgSessionDuration', label='Time On Site', type_cast=_cast_time, type_format=h.human_time, threshold=0),
             Column('ga:bounceRate', label='Bounce Rate', type_cast=_cast_percent, type_format=_format_percent, reverse=True, threshold=0),
         ]
@@ -266,10 +266,10 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
         self.tables['summary'] = summary_table = google_query.get_table(
             params=summary_params,
             dimensions=summary_dimensions,
-            metrics=summary_metrics + [Column('ga:sessions', type_cast=int)],
+            metrics=summary_metrics,
         )
 
-        if not summary_table.has_value('ga:pageviews'):
+        if not summary_table.has_value('ga:sessions'):
             raise EmptyReportError()
 
         include_ads = self.config.get('ads') or summary_table.has_value('ga:itemRevenue')
@@ -305,7 +305,7 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
                 'ids': 'ga:%s' % self.remote_id,
                 'start-date': self.date_start,
                 'end-date': self.date_end,
-                'sort': '-ga:pageviews',
+                'sort': '-ga:sessions',
                 'max-results': '10',
             },
             dimensions=[
@@ -322,7 +322,7 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
                 'start-date': self.date_start,
                 'end-date': self.date_end,
                 'filters': 'ga:medium==referral;ga:socialNetwork==(not set)',
-                'sort': '-ga:pageviews',
+                'sort': '-ga:sessions',
                 'max-results': '25',
             },
             dimensions=[
@@ -337,17 +337,17 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
                 'start-date': self.previous_date_start,
                 'end-date': self.previous_date_end,
                 'filters': 'ga:medium==referral;ga:socialNetwork==(not set)',
-                'sort': '-ga:pageviews',
+                'sort': '-ga:sessions',
                 'max-results': '250',
             },
             dimensions=[
                 Column('ga:fullReferrer', label='Referrer', visible=1, type_cast=_prune_referrer)
             ],
             metrics=[
-                summary_table.get('ga:pageviews').new(),
+                summary_table.get('ga:sessions').new(),
             ],
         )
-        inject_table_delta(current_referrers, last_referrers, join_column='ga:fullReferrer')
+        inject_table_delta(current_referrers, last_referrers, compare_column='ga:sessions', join_column='ga:fullReferrer')
 
         self.tables['referrers'] = current_referrers
 
@@ -388,8 +388,8 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
             },
             dimensions=dimensions,
             metrics=[
-                Column('ga:pageviews', label='Views', type_cast=int, visible=1),
-                Column('ga:users', label='Uniques', type_cast=int),
+                Column('ga:sessions', label='Sessions', type_cast=int, visible=1),
+                Column('ga:users', label='Users', type_cast=int),
             ],
         )
 
@@ -419,7 +419,7 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
 
         social_search_table = self._get_social_search(google_query, self.date_start, self.date_end, summary_metrics, max_results=25)
         last_social_search = self._get_social_search(google_query, self.previous_date_start, self.previous_date_end, summary_metrics, max_results=100)
-        inject_table_delta(social_search_table, last_social_search, join_column='source')
+        inject_table_delta(social_search_table, last_social_search, compare_column='ga:sessions', join_column='source')
 
         self.tables['social_search'] = social_search_table
         if self.config.get('search_keywords'):
@@ -432,7 +432,7 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
                     'ids': 'ga:%s' % self.remote_id,
                     'start-date': self.date_start,
                     'end-date': self.date_end,
-                    'sort': '-ga:pageviews',
+                    'sort': '-ga:sessions',
                     'max-results': '5',
                 },
                 dimensions=[

@@ -13,6 +13,7 @@ from ..base import OAuth2API
 from .activity import ActivityConcatReport, ActivityMonthlyReport, ActivityReport, ActivityYearlyReport
 from .trends import TrendsReport
 from .alerts import DailyReport
+from .mobile import MobileWeeklyReport
 
 COLLECT_URL = 'https://ssl.google-analytics.com/collect'
 COLLECT_SESSION = requests.Session()
@@ -208,5 +209,9 @@ class Query(object):
         profiles = r.get('items') or []
         if not profiles:
             return profiles
+
+        properties = self.get_properties()
+        for profile in profiles:
+            profile['displayName'] = properties.get(profile['webPropertyId']) or ''
 
         return profiles
