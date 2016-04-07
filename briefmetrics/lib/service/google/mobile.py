@@ -31,7 +31,7 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
         if len(self.tables['summary'].rows) < 2:
             return u''
 
-        primary_metric = self.report.config.get('intro') or 'ga:sessions'
+        primary_metric = self.report.config.get('intro') or 'ga:users'
         this_week, last_week = (r.get(primary_metric) for r in self.tables['summary'].rows[:2])
         delta = (this_week / float(last_week or 1.0)) - 1
         return u"Your site had {this_week} this {interval} ({delta} over last {interval}).".format(
@@ -46,7 +46,7 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
                 'ids': 'ga:%s' % self.remote_id,
                 'start-date': self.date_start, # Extra week
                 'end-date': self.date_end,
-                'sort': '-{},-ga:sessions'.format(interval_field),
+                'sort': '-{},-ga:users'.format(interval_field),
                 'filters': 'ga:keyword!=(not provided);ga:medium==organic',
                 'max-results': '5',
             },
@@ -55,59 +55,14 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
                 Column('ga:keyword', label='Search Keywords', type_cast=_prune_abstract, visible=1),
             ],
             metrics=[
-                Column('ga:sessions', label='Visits', type_cast=int, type_format=h.human_int, visible=0, threshold=0),
-                Column('ga:avgSessionDuration', label='Time On Site', type_cast=_cast_time, type_format=h.human_time, threshold=0),
-                Column('ga:bounceRate', label='Bounce Rate', type_cast=_cast_percent, type_format=_format_percent, reverse=True, threshold=0),
+                Column('ga:users', label='Users', type_cast=int, type_format=h.human_int, visible=0, threshold=0),
+                Column('ga:avgSessionDuration', label='Session', type_cast=_cast_time, type_format=h.human_time, threshold=0),
             ],
         )
-        t.set_visible('ga:sessions', 'ga:keyword')
+        t.set_visible('ga:users', 'ga:keyword')
         #split_table_delta(t, split_column=interval_field, join_column='ga:keyword', compare_column='ga:sessions')
         #t.sort(reverse=True)
         #t.limit(10)
-        return t
-
-    def _get_social_search(self, google_query, date_start, date_end, summary_metrics, max_results=10):
-        organic_table = google_query.get_table(
-            params={
-                'ids': 'ga:%s' % self.remote_id,
-                'start-date': date_start,
-                'end-date': date_end,
-                'filters': 'ga:medium!=referral;ga:medium!=(not set);ga:socialNetwork==(not set)',
-                'sort': '-ga:sessions',
-                'max-results': str(max_results),
-            },
-            dimensions=[
-                Column('ga:source', type_cast=_prune_abstract),
-            ],
-            metrics=[col.new() for col in summary_metrics],
-        )
-
-        social_table = google_query.get_table(
-            params={
-                'ids': 'ga:%s' % self.remote_id,
-                'start-date': date_start,
-                'end-date': date_end,
-                'sort': '-ga:sessions',
-                'max-results': str(max_results),
-            },
-            dimensions=[
-                Column('ga:socialNetwork', type_cast=_prune_abstract),
-            ],
-            metrics=[col.new() for col in summary_metrics],
-        )
-
-        source_col = Column('source', label='Social & Search & Campaigns', visible=1, type_cast=_cast_title)
-        t = Table(columns=[
-            source_col,
-        ] + [col.new() for col in summary_metrics])
-
-        for cells in social_table.iter_rows():
-            t.add(cells)
-
-        for cells in organic_table.iter_rows():
-            t.add(cells)
-
-        t.sort(reverse=True)
         return t
 
     def _get_ecommerce(self, google_query, interval_field, limit=10):
@@ -253,10 +208,10 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
             Column(interval_field),
         ]
         basic_metrics = [
-            Column('ga:sessions', label='Sessions', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
+            Column('ga:screenviews', label='Views', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
+            Column('ga:sessions', label='Sessions', type_cast=int, type_format=h.human_int),
             Column('ga:users', label='Users', type_cast=int, type_format=h.human_int),
-            Column('ga:avgSessionDuration', label='Time On Site', type_cast=_cast_time, type_format=h.human_time, threshold=0),
-            Column('ga:bounceRate', label='Bounce Rate', type_cast=_cast_percent, type_format=_format_percent, reverse=True, threshold=0),
+            Column('ga:avgSessionDuration', label='Session', type_cast=_cast_time, type_format=h.human_time, threshold=0),
         ]
         summary_metrics = basic_metrics + [
             Column('ga:goalConversionRateAll', label='Conversion', type_cast=float, type_format=_format_percent, threshold=0.1),
@@ -269,7 +224,7 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
             metrics=summary_metrics,
         )
 
-        if not summary_table.has_value('ga:sessions'):
+        if not summary_table.has_value('ga:users'):
             raise EmptyReportError()
 
         include_ads = self.config.get('ads') or summary_table.has_value('ga:itemRevenue')
@@ -293,64 +248,28 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
                 ],
             )
 
-        # Pages
-        pages_metrics = [col.new() for col in basic_metrics]
+        # Screens
+        screens_metrics = [col.new() for col in basic_metrics]
         if self.config.get('pageloadtime', True):
-            pages_metrics += [
-                Column('ga:avgPageLoadTime', label='Page Load', type_cast=float, type_format=h.human_time, reverse=True, threshold=0),
+            screens_metrics += [
+                Column('ga:avgPageLoadTime', label='Load', type_cast=float, type_format=h.human_time, reverse=True, threshold=0),
             ]
 
-        self.tables['pages'] = google_query.get_table(
+        self.tables['screens'] = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
                 'start-date': self.date_start,
                 'end-date': self.date_end,
-                'sort': '-ga:sessions',
+                'sort': '-ga:screenviews',
                 'max-results': '10',
             },
             dimensions=[
-                Column('ga:pagePath', label='Pages', visible=1, type_cast=_prune_abstract),
+                Column('ga:screenName', label='Screens', visible=1, type_cast=_prune_abstract),
             ],
-            metrics=pages_metrics,
+            metrics=screens_metrics,
         )
 
         # Referrers
-
-        current_referrers = google_query.get_table(
-            params={
-                'ids': 'ga:%s' % self.remote_id,
-                'start-date': self.date_start,
-                'end-date': self.date_end,
-                'filters': 'ga:medium==referral;ga:socialNetwork==(not set)',
-                'sort': '-ga:sessions',
-                'max-results': '25',
-            },
-            dimensions=[
-                Column('ga:fullReferrer', label='Referrer', visible=1, type_cast=_prune_referrer)
-            ],
-            metrics=[col.new() for col in summary_metrics],
-        )
-
-        last_referrers = google_query.get_table(
-            params={
-                'ids': 'ga:%s' % self.remote_id,
-                'start-date': self.previous_date_start,
-                'end-date': self.previous_date_end,
-                'filters': 'ga:medium==referral;ga:socialNetwork==(not set)',
-                'sort': '-ga:sessions',
-                'max-results': '250',
-            },
-            dimensions=[
-                Column('ga:fullReferrer', label='Referrer', visible=1, type_cast=_prune_referrer)
-            ],
-            metrics=[
-                summary_table.get('ga:sessions').new(),
-            ],
-        )
-        inject_table_delta(current_referrers, last_referrers, compare_column='ga:sessions', join_column='ga:fullReferrer')
-
-        self.tables['referrers'] = current_referrers
-
         if summary_table.has_value('ga:goalConversionRateAll'):
             # Goals
             self.tables['goals'] = self._get_goals(google_query, interval_field)
@@ -388,8 +307,8 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
             },
             dimensions=dimensions,
             metrics=[
-                Column('ga:sessions', label='Sessions', type_cast=int, visible=1),
-                Column('ga:users', label='Users', type_cast=int),
+                Column('ga:users', label='Users', type_cast=int, visible=1),
+                Column('ga:sessions', label='Sessions', type_cast=int),
             ],
         )
 
@@ -417,32 +336,23 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
         self.data['total_last_relative'] = last_month[min(len(current_month), len(last_month))-1]
         self.data['total_last_date_start'] = historic_start_date
 
-        social_search_table = self._get_social_search(google_query, self.date_start, self.date_end, summary_metrics, max_results=25)
-        last_social_search = self._get_social_search(google_query, self.previous_date_start, self.previous_date_end, summary_metrics, max_results=100)
-        inject_table_delta(social_search_table, last_social_search, compare_column='ga:sessions', join_column='source')
+        self.tables['search_keywords'] = self._get_search_keywords(google_query, interval_field=interval_field)
+        self.tables['search_keywords'].tag_rows()
 
-        self.tables['social_search'] = social_search_table
-        if self.config.get('search_keywords'):
-            self.tables['search_keywords'] = self._get_search_keywords(google_query, interval_field=interval_field)
-            self.tables['search_keywords'].tag_rows()
-
-        if self.config.get('geo'):
-            self.tables['geo'] = google_query.get_table(
-                params={
-                    'ids': 'ga:%s' % self.remote_id,
-                    'start-date': self.date_start,
-                    'end-date': self.date_end,
-                    'sort': '-ga:sessions',
-                    'max-results': '5',
-                },
-                dimensions=[
-                    Column('ga:country', label='Country', visible=1, type_cast=_prune_abstract),
-                ],
-                metrics=[col.new() for col in summary_metrics],
-            )
-            self.tables['geo'].tag_rows()
+        self.tables['geo'] = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': self.date_start,
+                'end-date': self.date_end,
+                'sort': '-ga:users',
+                'max-results': '5',
+            },
+            dimensions=[
+                Column('ga:country', label='Country', visible=1, type_cast=_prune_abstract),
+            ],
+            metrics=[col.new() for col in summary_metrics],
+        )
+        self.tables['geo'].tag_rows()
 
 
-        self.tables['social_search'].tag_rows()
-        self.tables['referrers'].tag_rows()
-        self.tables['pages'].tag_rows()
+        self.tables['screens'].tag_rows()

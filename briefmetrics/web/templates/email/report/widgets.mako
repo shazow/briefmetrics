@@ -136,7 +136,7 @@
     </td>
 </%def>
 
-<%def name="render_intro(current, last, last_relative, units, interval)">
+<%def name="render_intro(current, last, last_relative, units, interval, type='site')">
     <%
         previous_date_start, date_start, date_end = interval
         is_last_day = (date_end + h.timedelta(days=1)).month != date_end.month
@@ -148,7 +148,7 @@
         if previous_date_start.year != date_start.year:
             last_period = "last {}".format(previous_date_start.strftime(period_fmt))
     %>
-    Your site had <span class="chartTop">${h.format_int(current, units)}
+    Your ${type} had <span class="chartTop">${h.format_int(current, units)}
     % if is_last_day:
         in ${date_start.strftime(period_fmt)},</span>
     % else:

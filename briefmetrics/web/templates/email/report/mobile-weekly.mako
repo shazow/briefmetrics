@@ -9,6 +9,7 @@
         last_relative=r.data['total_last_relative'],
         units=r.data['total_units'],
         interval=(r.data.get('total_last_date_start', r.previous_date_start), r.date_start, r.date_end),
+        type='app',
     )}
 </p>
 
@@ -34,7 +35,6 @@ ${h.chart(r.data['historic_data'], width=560, height=200)}
     <table class="overview">
         <tr>
             ${widgets.overview_cell(r.tables['summary'], 'ga:sessions')}
-            ${widgets.overview_cell(r.tables['summary'], 'ga:bounceRate', is_percent=100.0)}
             % if r.tables['summary'].has_value('ga:itemRevenue'):
                 <%
                     revenue, sales = next(r.tables['summary'].iter_formatted('ga:itemRevenue', 'ga:itemQuantity'))
@@ -44,9 +44,9 @@ ${h.chart(r.data['historic_data'], width=560, height=200)}
         </tr>
     </table>
     <%
-        col_ids = 'ga:sessions', 'ga:users', 'ga:avgSessionDuration', 'ga:bounceRate', 'ga:sessions', 'ga:goalConversionRateAll'
+        col_ids = 'ga:screenviews', 'ga:users', 'ga:avgSessionDuration', 'ga:sessions', 'ga:goalConversionRateAll'
         rows = r.tables['summary'].iter_rows(*col_ids)
-        pageviews, uniques, seconds, bounces, visits, conversion = next(rows)
+        pageviews, uniques, seconds, visits, conversion = next(rows)
     %>
 
     % if uniques and seconds:
@@ -55,7 +55,7 @@ ${h.chart(r.data['historic_data'], width=560, height=200)}
         each spent an average of
         <span class="highlight">${h.human_time(seconds)}</span>
         over
-        <span class="highlight">${'%0.1f' % (float(pageviews or 0.0) / float(visits or 1.0))} pages</span>
+        <span class="highlight">${'%0.1f' % (float(pageviews or 0.0) / float(visits or 1.0))} screens</span>
         % if not conversion or conversion < 0.1:
             per session.
         % else:
@@ -116,22 +116,10 @@ ${h.chart(r.data['historic_data'], width=560, height=200)}
 % endif
 
 ${widgets.render_table(
-    r.tables['pages'],
-    title='Top Pages',
-    report_link=r.include_permalinks and h.ga_permalink('report/content-pages', r.report, date_start=r.date_start, date_end=r.date_end),
+    r.tables['screens'],
+    title='Top Screens',
+    report_link=r.include_permalinks and h.ga_permalink('report/content-pages', r.report, date_start=r.date_start, date_end=r.date_end), # XXX: Update
     prefix_links=r.base_url,
-)}
-
-${widgets.render_table(
-    r.tables['referrers'],
-    title='Referrers',
-    report_link=r.include_permalinks and h.ga_permalink('report/trafficsources-referrals', r.report, date_start=r.date_start, date_end=r.date_end),
-)}
-
-${widgets.render_table(
-    r.tables['social_search'],
-    title='Social & Search',
-    report_link=r.include_permalinks and h.ga_permalink('report/social-sources', r.report, date_start=r.date_start, date_end=r.date_end),
 )}
 
 % if r.tables.get('search_keywords'):
