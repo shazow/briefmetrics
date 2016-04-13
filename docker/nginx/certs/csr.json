@@ -1,4 +1,7 @@
 {
+    "ca": {
+        "expiry": "87600h"
+    },
     "hosts": [
         "briefmetrics.com",
         "www.briefmetrics.com",

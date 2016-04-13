@@ -161,4 +161,4 @@ class MailgunMessage(object):
 
         return r.json()
 
-DefaultMessage = MandrillMessage
+DefaultMessage = MailgunMessage
