@@ -1,7 +1,9 @@
 from briefmetrics.lib import helpers as h
 
 def to_display_name(remote_data):
-    return remote_data.get('displayName') or h.human_url(remote_data.get('websiteUrl')) or remote_data.get('display_name') or remote_data.get('name')
+    # FIXME: This is duplicated in briefmetrics.api.report
+    name = remote_data.get('displayName') or h.human_url(remote_data.get('websiteUrl')) or remote_data.get('display_name') or remote_data.get('name')
+    return h.human_url(name)
 
 
 ## Reports:

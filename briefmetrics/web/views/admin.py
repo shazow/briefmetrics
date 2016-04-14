@@ -163,9 +163,10 @@ class AdminController(Controller):
     def test_errors(self):
         api.account.get_admin(self.request)
 
-        tasks.admin.test_errors.delay("Testing errors. _started: %f" % tasks.admin._started)
+        msg = "Testing errors. _started: %f" % tasks.admin._started
+        tasks.admin.test_errors.delay(msg)
 
-        raise Exception("This is a test.")
+        raise Exception(msg)
 
     def health(self):
         errors = []

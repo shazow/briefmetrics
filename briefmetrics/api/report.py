@@ -28,7 +28,8 @@ def create(account_id, remote_data=None, remote_id=None, display_name=None, subs
     report.remote_id = remote_id
     if remote_data:
         report.remote_data = remote_data
-        report.display_name = remote_data.get('displayName') or h.human_url(remote_data.get('websiteUrl')) or remote_data.get('display_name') or remote_data.get('name')
+        # FIXME: This is duplicated in briefmetrics.lib.service.google.helpers
+        report.display_name = h.human_url(remote_data.get('displayName') or h.human_url(remote_data.get('websiteUrl')) or remote_data.get('display_name') or remote_data.get('name'))
 
     if display_name:
         report.display_name = display_name
