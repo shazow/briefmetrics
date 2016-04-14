@@ -3,7 +3,7 @@ import json
 import logging
 import premailer
 
-from pyplaintext import converter as pyplaintext_converter
+from html2text import html2text
 
 from briefmetrics.lib.controller import Controller
 from briefmetrics.lib.http import assert_response
@@ -23,8 +23,7 @@ def prepare_html(html, inline_css=True):
     return html
 
 def textify_html(html):
-    parser = pyplaintext_converter.HTML2PlainParser()
-    return parser.html_to_plain_text(html)
+    return html2text(html)
 
 def create_message(request, to_email, subject, html=None, text=None, from_name=None, from_email=None, reply_to=None, debug_bcc=None, inline_css=True):
     MsgClass = DefaultMessage

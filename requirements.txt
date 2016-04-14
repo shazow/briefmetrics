@@ -26,7 +26,7 @@ requests==2.9.1
 stripe==1.30.0
 unstdlib==1.7
 premailer==2.9.7 # Needs lxml which requires CFLAGS/etc set
-pyplaintext==0.1.1
+html2text==2016.4.2
 
 setuptools==20.6.7
 

@@ -328,7 +328,17 @@ class TestReport(test.TestWeb):
             message = call[0][1].params
             self.assertIn(u"Report for example.com", message['subject'])
             self.assertNotIn(u'<a href="https://briefmetrics.com">Briefmetrics</a>', message['html'])
-            self.assertEqual(u"from@localhost.com", message['from_email'])
+
+            if 'from_email' in message:
+                # Mandrill
+                self.assertEqual(u"from@localhost.com", message['from_email'])
+            else:
+                # Mailgun
+                self.assertEqual(u"Local Host Design <from@localhost.com>", message['from'])
+
+            self.assertEqual(
+                "Your site had 16,012 views this week (+6.74% over last week).",
+                message['text'].split('\n')[0])
 
         self.assertEqual(model.Report.count(), 1)
 
