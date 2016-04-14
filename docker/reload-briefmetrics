@@ -3,10 +3,10 @@ container_id="briefmetrics-uwsgi"
 
 docker exec "${container_id}" bash -c "source env/bin/activate && cd src && make INI_FILE='$INI_FILE' && touch .reload"
 
-if docker ps | grep -q "${container_id}"; then
-    echo -e "${CGREEN}Server is happy. :)${CNONE}"
+if [[ $(docker inspect -f "{{.State.Running}}" "${container_id}") == "true" ]]; then
+	echo -e "${CGREEN}Server is happy. :)${CNONE}"
 else
-    echo -e "${CRED}SERVER IS DOWN! Recent log:${CYELLOW}"
-    tail -n40 "$(ls -t /var/log/docker/briefmetrics-uwsgi*.log | head -n1)"
-    echo -en "${CNONE}"
+	echo -e "${CRED}SERVER IS DOWN! Recent log:${CYELLOW}"
+	tail -n40 "$(ls -t /var/log/docker/briefmetrics-uwsgi*.log | head -n1)"
+	echo -en "${CNONE}"
 fi
