@@ -163,7 +163,7 @@ class AdminController(Controller):
     def test_errors(self):
         api.account.get_admin(self.request)
 
-        tasks.admin.test_errors.delay("Testing errors. _started: %f" % tasks._started)
+        tasks.admin.test_errors.delay("Testing errors. _started: %f" % tasks.admin._started)
 
         raise Exception("This is a test.")
 
