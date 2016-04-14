@@ -147,8 +147,9 @@ def setup_testing(**settings):
 
 def setup_shell(env):
     """ Called by pshell. """
-    from webtest import TestApp
-    env['testapp'] = TestApp(env['app'])
+    # Commented while too verbose
+    #from webtest import TestApp
+    #env['testapp'] = TestApp(env['app'])
 
     from briefmetrics.tasks.setup import celery
     celery.request = env['request']
