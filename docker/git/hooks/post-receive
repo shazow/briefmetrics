@@ -43,7 +43,7 @@ function deploy() {
     else
         echo -e "${CRED}SERVER IS DOWN! Recent log:${CYELLOW}"
         docker logs "${container_id}" | tail -n 40
-        echo -en "$CNONE"}
+        echo -en "${CNONE}"
     fi
 }
 
