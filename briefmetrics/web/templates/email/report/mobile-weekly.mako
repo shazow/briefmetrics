@@ -106,35 +106,23 @@ ${h.chart(r.data['historic_data'], width=560, height=200)}
             <span class="highlight">${h.human_dollar(ad_avg_sale * 100.0)} revenue</span>
             on average.
         </p>
-        % elif revenue > 0:
-        <p style="margin-bottom: 2em;">
-            <span class="highlight">$0 of revenue</span>
-            is attributed to advertising during this period.
-        </p>
         % endif
     % endif
 % endif
 
-${widgets.render_table(
-    r.tables['screens'],
-    title='Top Screens',
-    report_link=r.include_permalinks and h.ga_permalink('report/content-pages', r.report, date_start=r.date_start, date_end=r.date_end), # XXX: Update
-    prefix_links=r.base_url,
-)}
+% if r.tables.get('ecommerce'):
+    ${widgets.render_table(
+        r.tables['ecommerce'],
+        title='Ecommerce',
+        report_link=r.include_permalinks and h.ga_permalink('report/conversions-ecommerce-overview', r.report, date_start=r.date_start, date_end=r.date_end),
+    )}
+% endif
 
 % if r.tables.get('search_keywords'):
     ${widgets.render_table(
         r.tables['search_keywords'],
         title='Search Keywords',
         report_link=r.include_permalinks and h.ga_permalink('report/trafficsources-organic', r.report, date_start=r.date_start, date_end=r.date_end),
-    )}
-% endif
-
-% if r.tables.get('geo'):
-    ${widgets.render_table(
-        r.tables['geo'],
-        title='Countries',
-        report_link=r.include_permalinks and h.ga_permalink('report/visitors-geo', r.report, date_start=r.date_start, date_end=r.date_end),
     )}
 % endif
 
@@ -146,14 +134,20 @@ ${widgets.render_table(
     )}
 % endif
 
-% if r.tables.get('ecommerce'):
+% if r.tables.get('geo'):
     ${widgets.render_table(
-        r.tables['ecommerce'],
-        title='Ecommerce',
-        report_link=r.include_permalinks and h.ga_permalink('report/conversions-ecommerce-overview', r.report, date_start=r.date_start, date_end=r.date_end),
+        r.tables['geo'],
+        title='Countries',
+        report_link=r.include_permalinks and h.ga_permalink('report/visitors-geo', r.report, date_start=r.date_start, date_end=r.date_end),
     )}
 % endif
-</%def>
 
+${widgets.render_table(
+    r.tables['screens'],
+    title='Top Screens',
+    report_link=r.include_permalinks and h.ga_permalink('report/content-pages', r.report, date_start=r.date_start, date_end=r.date_end), # XXX: Update
+    prefix_links=r.base_url,
+)}
+</%def>
 
 ${render_weekly(r=c.report)}

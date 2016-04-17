@@ -34,7 +34,7 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
         primary_metric = self.report.config.get('intro') or 'ga:users'
         this_week, last_week = (r.get(primary_metric) for r in self.tables['summary'].rows[:2])
         delta = (this_week / float(last_week or 1.0)) - 1
-        return u"Your site had {this_week} this {interval} ({delta} over last {interval}).".format(
+        return u"Your app had {this_week} this {interval} ({delta} over last {interval}).".format(
             this_week=h.format_int(this_week, self.data['total_units']),
             delta=h.human_percent(delta, signed=True),
             interval=self.data.get('interval_label', 'week'),
