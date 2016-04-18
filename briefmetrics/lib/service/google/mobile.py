@@ -199,30 +199,52 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
                 Column('ga:appVersion', label='Version', visible=1),
                 Column('ga:operatingSystem', label='Operating System', visible=2),
             ],
-            metrics=[col.new() for col in summary_metrics],
+            metrics=[col.new() for col in summary_metrics] + [
+            ],
         )
         t.set_visible('ga:users', 'ga:appVersion')
         t.tag_rows()
 
+        col_exception = Column('ga:fatalExceptions', label='Crashes', type_cast=int, type_format=h.human_int)
+        crashes_table = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': self.date_start,
+                'end-date': self.date_end,
+                'sort': '-ga:appVersion',
+                'max-results': '50',
+            },
+            dimensions=[
+                Column('ga:appVersion', label='Version', visible=1),
+                Column('ga:operatingSystem', label='Operating System', visible=2),
+            ],
+            metrics=[col_exception],
+        )
+        crashes_lookup = dict(((version, os), crashes) for crashes, version, os in crashes_table.iter_rows('ga:fatalExceptions', 'ga:appVersion', 'ga:operatingSystem'))
+
         total = float(t.get('ga:users').sum)
 
-        t2 = Table(columns=[
+        out = Table(columns=[
             Column('users', label='Users', visible=0, type_format=_format_percent),
             Column('version', label='Version', visible=1),
         ])
 
         latest_version = None
-        for i, (users, version, os) in enumerate(t.iter_rows('ga:users', 'ga:appVersion', 'ga:operatingSystem')):
-            row = t2.add([users*100.0/total, u"%s on %s" % (version, os)])
+        for i, (users, sessions, version, os) in enumerate(t.iter_rows('ga:users', 'ga:sessions', 'ga:appVersion', 'ga:operatingSystem')):
+            row = out.add([users*100.0/total, u"%s on %s" % (version, os)])
             row.tags = t.rows[i].tags
             if not latest_version:
                 latest_version = version
+            crashes = crashes_lookup.get((version, os), 0)
             if latest_version == version:
                 row.tag('latest')
+            if crashes and crashes > sessions * 0.1:
+                row.tag('crashes', value=h.human_int(crashes), is_positive=False, is_prefixed=True)
 
-        t2.limit(5)
-        t2.sort(reverse=True)
-        return t2
+        self.latet_version = latest_version
+        out.limit(5)
+        out.sort(reverse=True)
+        return out
 
     def fetch(self, google_query):
         days_delta = (self.date_end - self.date_start).days
