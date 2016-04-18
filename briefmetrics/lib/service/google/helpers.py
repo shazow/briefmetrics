@@ -25,6 +25,9 @@ def _cast_percent(v):
 def _format_percent(f):
     return h.human_percent(f, denominator=100.0)
 
+def _format_float(f):
+    return "%0.1f" % f
+
 def _format_dollars(v):
     return h.human_dollar(v * 100.0)
 

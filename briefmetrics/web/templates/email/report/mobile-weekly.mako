@@ -51,7 +51,7 @@ ${h.chart(r.data['historic_data'], width=560, height=200)}
 
     % if uniques and seconds:
     <p style="margin-bottom: 2em;">
-        <span class="highlight">${h.human_int(uniques)} unique visitors</span>
+        <span class="highlight">${h.human_int(uniques)} active users</span>
         each spent an average of
         <span class="highlight">${h.human_time(seconds)}</span>
         over

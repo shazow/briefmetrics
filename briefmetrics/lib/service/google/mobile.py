@@ -16,6 +16,7 @@ from .helpers import (
     _cast_title,
     _format_dollars,
     _format_percent,
+    _format_float,
     _prune_abstract,
     _prune_referrer,
 )
@@ -185,6 +186,36 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
         t.sort(reverse=True)
 
         return t
+
+    def _get_geo(self, google_query, summary_metrics):
+        t = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': self.date_start,
+                'end-date': self.date_end,
+                'sort': '-ga:users',
+                'max-results': '50',
+            },
+            dimensions=[
+                Column('ga:country', label='Country', visible=1, type_cast=_prune_abstract),
+            ],
+            metrics=[col.new() for col in summary_metrics] + [
+                Column('ga:sessionsPerUser', label='Sessions Per User', threshold=0.0, type_cast=float, type_format=_format_float),
+            ],
+        )
+        total = float(t.get('ga:users').sum)
+        out = Table(columns=[col.new() for col in t.columns] + [
+            Column('users', label='Users', visible=0, type_format=_format_percent),
+        ])
+        out.get('ga:users')._threshold = None
+        out.set_visible('users', 'ga:country')
+        idx_users = t.column_to_index['ga:users']
+        for row in t.rows[:5]:
+            out.add(row.values + [row.values[idx_users] * 100.0/ total])
+
+        out.tag_rows()
+
+        return out
 
     def _get_versions(self, google_query, summary_metrics):
         t = google_query.get_table(
@@ -398,20 +429,7 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
         self.tables['search_keywords'] = self._get_search_keywords(google_query, interval_field=interval_field)
         self.tables['search_keywords'].tag_rows()
 
-        self.tables['geo'] = google_query.get_table(
-            params={
-                'ids': 'ga:%s' % self.remote_id,
-                'start-date': self.date_start,
-                'end-date': self.date_end,
-                'sort': '-ga:users',
-                'max-results': '5',
-            },
-            dimensions=[
-                Column('ga:country', label='Country', visible=1, type_cast=_prune_abstract),
-            ],
-            metrics=[col.new() for col in summary_metrics],
-        )
+        self.tables['geo'] = self._get_geo(google_query, summary_metrics)
         self.tables['versions'] = self._get_versions(google_query, summary_metrics)
 
-        self.tables['geo'].tag_rows()
         self.tables['screens'].tag_rows()
