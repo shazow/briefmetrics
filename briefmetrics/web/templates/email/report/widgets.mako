@@ -28,7 +28,7 @@
 % endfor
 </%def>
 
-<%def name="render_table(t, title=None, report_link=None, prefix_links=None, include_head=True)">
+<%def name="render_table(t, title=None, report_link=None, prefix_links=None, include_head=True, linkify_values=True)">
 <% 
     if not t.rows:
         return ''
@@ -57,7 +57,9 @@
     <%
         views, url = row.get(columns[0].id), row.get(columns[1].id)
 
-        if prefix_links and url.startswith('/'):
+        if not linkify_values:
+            link = url
+        elif prefix_links and url.startswith('/'):
             link = h.human_link(prefix_links + url, url, max_length=100)
         else:
             link = h.human_link(url, max_length=100)

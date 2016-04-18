@@ -143,9 +143,17 @@ ${h.chart(r.data['historic_data'], width=560, height=200)}
 % endif
 
 ${widgets.render_table(
+    r.tables['versions'],
+    title='Latest Version',
+    report_link=r.include_permalinks and h.ga_permalink('report/app-visitors-app-versions', r.report, date_start=r.date_start, date_end=r.date_end),
+    prefix_links=r.base_url,
+    linkify_values=False,
+)}
+
+${widgets.render_table(
     r.tables['screens'],
     title='Top Screens',
-    report_link=r.include_permalinks and h.ga_permalink('report/content-pages', r.report, date_start=r.date_start, date_end=r.date_end), # XXX: Update
+    report_link=r.include_permalinks and h.ga_permalink('report/app-content-pages', r.report, date_start=r.date_start, date_end=r.date_end),
     prefix_links=r.base_url,
 )}
 </%def>

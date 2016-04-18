@@ -186,6 +186,43 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
 
         return t
 
+    def _get_versions(self, google_query, summary_metrics):
+        t = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': self.date_start,
+                'end-date': self.date_end,
+                'sort': '-ga:appVersion',
+                'max-results': '50',
+            },
+            dimensions=[
+                Column('ga:appVersion', label='Version', visible=1),
+                Column('ga:operatingSystem', label='Operating System', visible=2),
+            ],
+            metrics=[col.new() for col in summary_metrics],
+        )
+        t.set_visible('ga:users', 'ga:appVersion')
+        t.tag_rows()
+
+        total = float(t.get('ga:users').sum)
+
+        t2 = Table(columns=[
+            Column('users', label='Users', visible=0, type_format=_format_percent),
+            Column('version', label='Version', visible=1),
+        ])
+
+        latest_version = None
+        for i, (users, version, os) in enumerate(t.iter_rows('ga:users', 'ga:appVersion', 'ga:operatingSystem')):
+            row = t2.add([users*100.0/total, u"%s on %s" % (version, os)])
+            row.tags = t.rows[i].tags
+            if not latest_version:
+                latest_version = version
+            if latest_version == version:
+                row.tag('latest')
+
+        t2.limit(5)
+        t2.sort(reverse=True)
+        return t2
 
     def fetch(self, google_query):
         days_delta = (self.date_end - self.date_start).days
@@ -208,9 +245,9 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
             Column(interval_field),
         ]
         basic_metrics = [
-            Column('ga:screenviews', label='Views', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
+            Column('ga:screenviews', label='Views', type_cast=int, type_format=h.human_int),
             Column('ga:sessions', label='Sessions', type_cast=int, type_format=h.human_int),
-            Column('ga:users', label='Users', type_cast=int, type_format=h.human_int),
+            Column('ga:users', label='Users', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
             Column('ga:avgSessionDuration', label='Session', type_cast=_cast_time, type_format=h.human_time, threshold=0),
         ]
         summary_metrics = basic_metrics + [
@@ -268,8 +305,8 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
             ],
             metrics=screens_metrics,
         )
+        self.tables['screens'].set_visible('ga:screenviews', 'ga:screenName')
 
-        # Referrers
         if summary_table.has_value('ga:goalConversionRateAll'):
             # Goals
             self.tables['goals'] = self._get_goals(google_query, interval_field)
@@ -352,7 +389,7 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
             ],
             metrics=[col.new() for col in summary_metrics],
         )
+        self.tables['versions'] = self._get_versions(google_query, summary_metrics)
+
         self.tables['geo'].tag_rows()
-
-
         self.tables['screens'].tag_rows()
