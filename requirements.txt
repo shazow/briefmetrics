@@ -27,6 +27,7 @@ stripe==1.30.0
 unstdlib==1.7
 premailer==2.9.7 # Needs lxml which requires CFLAGS/etc set
 html2text==2016.4.2
+msgpack-python==0.4.7
 
 setuptools==20.6.7
 
