@@ -29,6 +29,8 @@ def create_message(request, to_email, subject, html=None, text=None, from_name=N
     MsgClass = DefaultMessage
     if request.features.get('mailer') == 'mailgun':
         MsgClass = MailgunMessage
+    elif request.features.get('mailer') == 'mandrill':
+        MsgClass = MandrillMessage
     return MsgClass(request, to_email, subject, html=html, text=text, from_name=from_name, from_email=from_email, reply_to=reply_to, debug_bcc=debug_bcc, inline_css=inline_css)
 
 
