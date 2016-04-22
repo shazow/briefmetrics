@@ -36,6 +36,17 @@ def report_create(request):
     if not profile:
         raise APIControllerError("Profile does not belong to this account: %s" % remote_id)
 
+    if profile.get('type') == u'APP':
+        # TODO: Unhardcode this
+        if report_type == 'mobile-week':
+            pass
+        elif report_type == 'week':
+            report_type = 'mobile-week'
+        else:
+            request.flash("Only weekly reports are supported for mobile apps. Creating a weekly report instead.")
+            api.email.notify_admin(request, "Attempted mobile report: %s" % report_type, str(user))
+            report_type = 'mobile-week'
+
     config = {}
     if pace:
         config['pace'] = pace
