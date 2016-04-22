@@ -1,5 +1,6 @@
 import random
 import datetime
+import time
 
 from sqlalchemy import orm
 from unstdlib import now, timestamp_from_datetime, datetime_from_timestamp
@@ -7,6 +8,7 @@ from celery.utils.log import get_task_logger
 
 from briefmetrics import model
 from briefmetrics import api
+from briefmetrics.lib.exceptions import APIError
 
 from .setup import celery
 
@@ -41,7 +43,13 @@ def send(report_id, since_time=None, pretend=False):
         log.warn('Invalid report id, skipping: %s' % report_id)
         return
 
-    api.report.send(celery.request, report, since_time=since_time, pretend=pretend, session=session)
+    try:
+        api.report.send(celery.request, report, since_time=since_time, pretend=pretend, session=session)
+    except APIError as e:
+        if e.message == 'API call failed: User Rate Limit Exceeded':
+            log.error("User Rate Limit Exceeded, sleeping for a while: %r" % e)
+            time.sleep(60 * 2)
+        raise
 
 
 @celery.task(ignore_result=True)
