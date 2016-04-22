@@ -2,7 +2,7 @@ import random
 import datetime
 
 from sqlalchemy import orm
-from unstdlib import now
+from unstdlib import now, timestamp_from_datetime, datetime_from_timestamp
 from celery.utils.log import get_task_logger
 
 from briefmetrics import model
@@ -14,9 +14,24 @@ from .setup import celery
 log = get_task_logger(__name__)
 
 
+def _to_datetime(t):
+    if not t:
+        return t
+    if isinstance(t, float):
+        return datetime_from_timestamp(t)
+    return t
+
+def _from_datetime(t):
+    if not t:
+        return t
+    return timestamp_from_datetime(t)
+
+
 @celery.task(ignore_result=True)
 def send(report_id, since_time=None, pretend=False):
     """Task to send a specific weekly report (gets created by send_all)."""
+    since_time = _to_datetime(since_time)
+
     session = model.Session()
     report = session.query(model.Report).options(
         orm.joinedload(model.Report.account),
@@ -26,12 +41,14 @@ def send(report_id, since_time=None, pretend=False):
         log.warn('Invalid report id, skipping: %s' % report_id)
         return
 
-    api.report.send(celery.request, report, pretend=pretend, session=session)
+    api.report.send(celery.request, report, since_time=since_time, pretend=pretend, session=session)
 
 
 @celery.task(ignore_result=True)
 def send_all(since_time=None, async=True, pretend=False, max_num=None):
     """Send all outstanding reports."""
+    since_time = _to_datetime(since_time)
+
     send_fn = send
     if async:
         send_fn = send.delay
@@ -40,7 +57,7 @@ def send_all(since_time=None, async=True, pretend=False, max_num=None):
     reports = api.report.get_pending(since_time=since_time, max_num=max_num)
 
     for num_reports, report in enumerate(reports):
-        send_fn(report_id=report.id, since_time=since_time, pretend=pretend)
+        send_fn(report_id=report.id, since_time=_from_datetime(since_time), pretend=pretend)
 
     log.info('Queued %d reports for sending.' % num_reports)
 
@@ -80,4 +97,4 @@ def dry_run(num_extra=5, filter_account=None, async=True):
     log.info('Starting dry run for %d reports.' % len(report_queue))
     for report in report_queue:
         log.info('Dry run for report: %s' % report.display_name)
-        send_fn(report_id=report.id, since_time=since_time, pretend=True)
+        send_fn(report_id=report.id, since_time=_from_datetime(since_time), pretend=True)
