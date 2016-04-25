@@ -25,11 +25,12 @@ def prepare_html(html, inline_css=True):
 def textify_html(html):
     return html2text(html)
 
-def create_message(request, to_email, subject, html=None, text=None, from_name=None, from_email=None, reply_to=None, debug_bcc=None, inline_css=True):
+def create_message(request, to_email, subject, html=None, text=None, from_name=None, from_email=None, reply_to=None, debug_bcc=None, inline_css=True, mailer=None):
     MsgClass = DefaultMessage
-    if request.features.get('mailer') == 'mailgun':
+    # TODO: Get rid of the mailer var, it's not helpful
+    if mailer == 'mailgun':
         MsgClass = MailgunMessage
-    elif request.features.get('mailer') == 'mandrill':
+    elif mailer == 'mandrill':
         MsgClass = MandrillMessage
     return MsgClass(request, to_email, subject, html=html, text=text, from_name=from_name, from_email=from_email, reply_to=reply_to, debug_bcc=debug_bcc, inline_css=inline_css)
 

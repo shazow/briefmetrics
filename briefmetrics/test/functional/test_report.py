@@ -312,7 +312,7 @@ class TestReport(test.TestWeb):
             "style_thead_background": "#eeeeee",
             "style_sub_a_color": "#ccc",
             "hide_briefmetrics": True,
-            "api_mandrill_key": "YYY",
+            "api_mailgun_key": "YYY",
         }
         user.num_remaining = 10
         Session.commit()
@@ -341,6 +341,30 @@ class TestReport(test.TestWeb):
                 message['text'].split('\n')[0])
 
         self.assertEqual(model.Report.count(), 1)
+
+    def test_mandrill(self):
+        report = self._create_report()
+        user = report.account.user
+        user.config = {
+            "api_mandrill_key": "YYY",
+        }
+        user.num_remaining = 10
+        Session.commit()
+
+        tasks.report.celery.request = self.request
+
+        with mock.patch('briefmetrics.api.email.send_message') as send_message:
+            tasks.report.send_all(async=False)
+            self.assertTrue(send_message.called)
+            self.assertEqual(len(send_message.call_args_list), 1)
+
+            call = send_message.call_args_list[0]
+            message = call[0][1].params
+            self.assertIn(u"Report for example.com", message['subject'])
+
+            # Mandrill auto-generates text, so there won't be a text field
+            self.assertNotIn(u'text', message)
+            self.assertIn(u'from_email', message)
 
 
 class TestReportModel(test.TestCase):
