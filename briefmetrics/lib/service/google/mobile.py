@@ -162,7 +162,8 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
                 continue
 
             completions, completions_last = this_week.values[pos], last_week.values[pos]
-            percent_completions, percent_completions_last = completions*100.0/num_sessions, completions_last*100.0/num_sessions_last
+            percent_completions = completions*100.0/num_sessions if num_sessions else 0.0
+            percent_completions_last = completions_last*100.0/num_sessions_last if num_sessions_last else 0.0
             row = t.add([col.label, completions])
             if not row:
                 # Boring
