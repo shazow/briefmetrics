@@ -131,7 +131,6 @@ class AdminController(Controller):
 
         return self._render('admin/user.mako')
 
-
     def explore_api(self):
         u = api.account.get_admin(self.request)
         self.c.reports = u.reports
@@ -167,6 +166,10 @@ class AdminController(Controller):
         tasks.admin.test_errors.delay(msg)
 
         raise Exception(msg)
+
+    def test_notify(self):
+        api.account.get_admin(self.request)
+        api.email.notify_admin(self.request, 'Test email with no body')
 
     def health(self):
         errors = []

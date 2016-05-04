@@ -44,6 +44,7 @@ def add_routes(config):
         route('admin_explore_api', '/admin/explore_api', action='explore_api')
         route('admin_login_as', '/admin/login_as', action='login_as')
         route('admin_test_errors', '/admin/test_errors', action='test_errors')
+        route('admin_test_notify', '/admin/test_notify', action='test_notify')
 
     with handler_routes(config, views.report.ReportController) as route:
         route('reports', '/reports', action='index')

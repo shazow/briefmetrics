@@ -42,9 +42,10 @@ def settings_payments(request):
 @expose_api('settings.payments_cancel')
 def settings_payments_cancel(request):
     user = api.account.get_user(request, required=True)
+    plan_id = user.plan_id
     api.account.delete_payments(user)
 
-    api.email.notify_admin(request, 'Payment removed: [%s] %s' % (user.id, user.display_name))
+    api.email.notify_admin(request, 'Payment removed: [%s] %s' % (user.id, user.display_name), 'original plan_id=%s' % plan_id)
 
     request.flash('Subscription cancelled.')
 
