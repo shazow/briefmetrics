@@ -170,6 +170,7 @@ class AdminController(Controller):
     def test_notify(self):
         api.account.get_admin(self.request)
         api.email.notify_admin(self.request, 'Test email with no body')
+        return Response('Notification sent.')
 
     def health(self):
         errors = []
