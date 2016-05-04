@@ -142,6 +142,9 @@ class MailgunMessage(object):
         elif html:
             params['text'] = textify_html(html)
 
+        if not (params.get('text') or params.get('html')):
+            params['text'] = ' '
+
         if debug_bcc or debug_bcc is None:
             debug_bcc = settings.get('mail.debug_bcc')
 
