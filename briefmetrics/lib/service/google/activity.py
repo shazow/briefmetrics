@@ -412,6 +412,8 @@ class ActivityReport(WeeklyMixin, GAReport):
             iter_historic = ((mo, v) for mo, v in iter_historic if mo.endswith(mo_filter))
 
         monthly_data, max_value = cumulative_by_month(iter_historic)
+        if len(monthly_data) < 2:
+            raise ValueError("invalid number of historic months", self.remote_id, historic_table.rows)
         last_month, current_month = monthly_data[-2:]
 
         self.data['historic_data'] = encode_rows(monthly_data, max_value)

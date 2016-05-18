@@ -104,16 +104,18 @@ def add_subscriber(report_id, email, display_name, invited_by_user_id=None):
 
 
 def reschedule(report_id, hour=13, minute=0, second=0, weekday=None):
-    r = model.Report.get(report_id)
-    if not r:
+    report = model.Report.get(report_id)
+    if not report:
         raise APIError('report does not exist: %s' % report_id)
 
-    ReportCls = get_report(r.type)
+    ReportCls = get_report(report.type)
     since = now()
-    ctx = ReportCls(r, since, None)
+    ctx = ReportCls(report, since, None)
 
-    r.set_time_preferred(hour=hour, minute=minute, second=second, weekday=weekday)
-    r.time_next = ctx.next_preferred(since)
+    report.set_time_preferred(hour=hour, minute=minute, second=second, weekday=weekday)
+    report.time_next = ctx.next_preferred(since)
+    model.Session.commit()
+    return report
 
 
 def get_pending(since_time=None, max_num=None, include_new=True):

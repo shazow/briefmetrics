@@ -57,6 +57,10 @@ def report_create(request):
     except APIError as e:
         raise APIControllerError(e.message)
 
+    preferred_hour = user.config.get('preferred_hour')
+    if preferred_hour is not None:
+        api.report.reschedule(report.id, hour=int(preferred_hour))
+
     # Queue new report
     tasks.report.send.delay(report.id)
     request.flash("First %s report for %s has been queued. Please check your Spam folder if you don't see it in your Inbox in a few minutes." % (report.type, report.display_name))

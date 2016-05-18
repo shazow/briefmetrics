@@ -16,13 +16,16 @@ Session = model.Session
 
 @mock.patch('briefmetrics.lib.service.google.Query', FakeQuery)
 class TestReport(test.TestWeb):
-    def _create_report(self, user=None):
+    def _create_report(self, user=None, remote_id=None, config=None):
         u = user or api.account.get_or_create(email=u'example@example.com', token={}, display_name=u'Example')
+        if config:
+            u.config = config
+            Session.commit()
+
         account = u.accounts[0]
         api_query = api.account.query_service(self.request, account=account)
         remote_data = api_query.get_profiles()[0]
-        report = model.Report.create(account=account, remote_data=remote_data, display_name=u'example.com')
-        model.Subscription.create(user=u, report=report)
+        report = api.report.create(account.id, remote_data=remote_data, remote_id=remote_id, display_name=u'example.com', subscribe_user_id=u.id)
         Session.commit()
         return report
 
@@ -142,22 +145,31 @@ class TestReport(test.TestWeb):
         self.assertEqual(user.num_remaining, 0)
 
     def test_reschedule(self):
-        report = self._create_report()
-        with mock.patch('briefmetrics.api.email.send_message') as send_message:
-            api.report.send(self.request, report)
-            self.assertTrue(send_message.called)
+        u = api.account.get_or_create(email=u'example@example.com', token={}, display_name=u'Example', config={'preferred_hour': 2})
+        account = u.accounts[0]
+        api_query = api.account.query_service(self.request, account=account)
+        remote_data = api_query.get_profiles()[0]
+        remote_id = remote_data['id']
 
-        Session.refresh(report)
-        self.assertEqual(report.time_preferred, None)
-        self.assertEqual(report.time_next.hour, 13)
+        r = self.call_api('account.login', token=u'%s-%d' % (u.email_token, u.id))
+        r = self.call_api('report.create', remote_id=remote_id)
+        report_id = r['result']['report']['id']
+        report = model.Report.get(report_id)
+
+        with mock.patch('briefmetrics.api.email.send_message'):
+            api.report.send(self.request, report)
+
+        report = model.Report.get(report_id)
+        self.assertEqual(report.time_preferred.hour, 2)
+        self.assertEqual(report.time_next.hour, 2)
 
         api.report.reschedule(report_id=report.id, hour=1)
-        report = model.Report.get(report.id)
+        report = model.Report.get(report_id)
         self.assertEqual(report.time_preferred.hour, 1)
         self.assertEqual(report.time_next.hour, 1)
 
     def test_expire_then_upgrade(self):
-        report = self._create_report()
+        report = self._create_report(remote_id='foo')
         user = report.account.user
         user.num_remaining = 0
         Session.commit()
@@ -176,7 +188,7 @@ class TestReport(test.TestWeb):
             self.assertEqual(user.num_remaining, None)
             self.assertEqual(user.stripe_customer_id, 'TEST')
 
-            report = self._create_report(user=user)
+            report = self._create_report(user=user, remote_id='bar')
             with mock.patch('briefmetrics.api.email.send_message') as send_message:
                 tasks.report.send_all(async=False)
                 self.assertTrue(send_message.called)
