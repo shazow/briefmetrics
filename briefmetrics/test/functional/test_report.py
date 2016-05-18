@@ -141,6 +141,20 @@ class TestReport(test.TestWeb):
         Session.refresh(user)
         self.assertEqual(user.num_remaining, 0)
 
+    def test_reschedule(self):
+        report = self._create_report()
+        with mock.patch('briefmetrics.api.email.send_message') as send_message:
+            api.report.send(self.request, report)
+            self.assertTrue(send_message.called)
+
+        Session.refresh(report)
+        self.assertEqual(report.time_preferred, None)
+        self.assertEqual(report.time_next.hour, 13)
+
+        api.report.reschedule(report_id=report.id, hour=1)
+        report = model.Report.get(report.id)
+        self.assertEqual(report.time_preferred.hour, 1)
+        self.assertEqual(report.time_next.hour, 1)
 
     def test_expire_then_upgrade(self):
         report = self._create_report()
