@@ -118,6 +118,7 @@ class AccountController(Controller):
         if len(user.accounts) == 1:
             raise APIControllerError('Cannot disconnect last remaining service while retaining the account.')
 
+        # TODO: Stop doing model stuff
         display_name = account.display_name
         model.Session.delete(account)
         model.Session.commit()

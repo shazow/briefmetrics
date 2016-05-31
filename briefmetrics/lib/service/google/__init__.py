@@ -199,7 +199,7 @@ class Query(object):
         items = r.get('items')
         if not items:
             return {}
-        return dict((item['id'], item['name']) for item in items)
+        return dict((item['id'], item.get('name', '(Unnamed)')) for item in items)
 
     def get_profiles(self):
         try:
