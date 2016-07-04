@@ -33,7 +33,8 @@ def sparse_cumulative(iterable, final_date=None):
     "Data must be ascending."
     cumulated = OrderedDict()
 
-    max_value = data = key = last_dt = last_amount = 0
+    max_value = key = last_dt = last_amount = 0
+    data = [] # FIXME: Is data even used?
 
     for dt, amount in iterable:
         if dt.month != key:
