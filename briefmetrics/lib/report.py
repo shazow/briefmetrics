@@ -53,7 +53,7 @@ def sparse_cumulative(iterable, final_date=None):
         last_dt = dt
         last_amount += amount
 
-    if final_date:
+    if final_date and last_dt:
         if final_date.month == last_dt.month:
             data += [last_amount] * (final_date.day - last_dt.day + 1)
         else:
