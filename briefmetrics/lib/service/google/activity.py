@@ -455,7 +455,9 @@ class ActivityReport(WeeklyMixin, GAReport):
 
 
         self.tables['social_search'].tag_rows()
+        self.tables['referrers'].sort(reverse=True)
         self.tables['referrers'].tag_rows()
+        self.tables['pages'].sort(reverse=True)
         self.tables['pages'].tag_rows()
 
 

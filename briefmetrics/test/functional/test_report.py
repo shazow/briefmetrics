@@ -49,7 +49,7 @@ class TestReport(test.TestWeb):
             Column('ga:nthWeek'),
         ])
         self.assertEqual(len(t.rows), 5)
-        self.assertEqual(t.rows[1].get('ga:pagePath'), '/shopping')
+        self.assertEqual(t.rows[1].get('ga:pagePath'), '/account/create')
         self.assertEqual(t.rows[1].get('ga:pageviews'), 15001)
         self.assertEqual(t.get('ga:pageviews').max_row[0], 16399)
 
