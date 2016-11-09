@@ -2,6 +2,8 @@
 @import "bourbon/bourbon";
 @import "neat/neat";
 
+$grid-width: 710px;
+
 $margin-small: 10px;
 $margin: $margin-small * 2;
 $span: 45px;
@@ -46,7 +48,7 @@ $base-z-index: 0;
 
 
 body {
-    background-color: $color-background;
+    background-color: $base-background-color;
     font-size: $font-size;
     font-weight: 300;
 
@@ -179,8 +181,8 @@ pre {
 }
 
 .container {
-    @include outer-container(710px);
-    margin: 0 auto $margin auto;
+    @include outer-container($grid-width);
+    margin: $margin auto $margin auto;
     overflow: inherit;
 
     @include media($mobile) {
@@ -190,4 +192,6 @@ pre {
 
 .content {
     flex: 1;
+    background-color: $color-background;
+    padding-bottom: 1em;
 }

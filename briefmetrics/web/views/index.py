@@ -78,8 +78,4 @@ class IndexController(Controller):
             raise httpexceptions.HTTPNotFound('Article does not exist: {}'.format(template_name))
 
     def features(self):
-        template_name = os.path.basename(self.request.matchdict['id'])
-        try:
-            return self._render('features/{}.mako'.format(template_name))
-        except TopLevelLookupException:
-            raise httpexceptions.HTTPNotFound('Article does not exist: {}'.format(template_name))
+        return self._render('features.mako')

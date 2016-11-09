@@ -22,8 +22,8 @@ def add_routes(config):
         route('privacy', '/privacy', action='privacy')
         route('terms', '/terms', action='terms')
         route('security', '/security', action='security')
+        route('features', '/features', action='features')
         route('articles', '/articles/{id}', action='articles')
-        route('features', '/features/{id}', action='features')
 
     with handler_routes(config, views.webhook.WebhookController) as route:
         route('webhook', '/webhook/{service}', action='index')

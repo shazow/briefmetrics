@@ -1,3 +1,17 @@
+<%def name="nav(items, current_route=None)">
+    <ul class="nav">
+        % for label, href in items:
+            % if current_route == href:
+        <li class="active">
+            % else:
+        <li>
+            % endif
+            <a href="${href}">${label}</a>
+        </li>
+        % endfor
+    </ul>
+</%def>
+
 <%def name="flash_messages(messages)">
 % if messages:
     <div class="flash-messages container">

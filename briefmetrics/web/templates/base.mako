@@ -33,32 +33,49 @@
 <%block name="header">
 <%
     nav = [
-        #('Pricing', '#', ''),
-        #('About', '#', ''),
+        ('Features', request.route_path('features')),
+        ('Plans & Pricing', request.route_path('pricing')),
+        ('Privacy', request.route_path('privacy')),
+        ('About', request.route_path('about')),
+    ]
+
+    nav_auth = [
+        ('Sign in with Google Analytics', login_url),
     ]
 
     if is_logged_in:
-        nav += [
+        nav_auth = [
             ('Reports', request.route_path('reports')),
             ('Settings', request.route_path('settings')),
             ('Log out', request.route_path('account_logout')),
         ]
 %>
 <nav class="header">
-    <ul>
-        <li class="logo">
-            <h1><a href="/">Briefmetrics</a></h1>
-        </li>
-        % for label, href in nav:
-            % if current_route == href:
-        <li class="menu active">
-            % else:
-        <li class="menu">
-            % endif
-            <a href="${href}">${label}</a>
-        </li>
-        % endfor
-    </ul>
+        <ul class="public-links">
+            <li>
+                <h1 class="logo"><a href="/"><img src="/static/images/icon.svg" alt="Briefmetrics" class="icon" /></a></h1>
+            </li>
+            % for label, href in nav:
+                % if current_route == href:
+            <li class="menu active">
+                % else:
+            <li class="menu">
+                % endif
+                <a href="${href}">${label}</a>
+            </li>
+            % endfor
+        </ul>
+        <ul class="auth-links">
+            % for label, href in nav_auth:
+                % if current_route == href:
+            <li class="menu active">
+                % else:
+            <li class="menu">
+                % endif
+                <a href="${href}">${label}</a>
+            </li>
+            % endfor
+        </ul>
 </nav>
 </%block>
 
