@@ -48,6 +48,8 @@ class StripePayment(Payment):
         except stripe.CardError as e:
             self.delete()
             raise PaymentError('Failed to start payment plan: %s' % e.message)
+        except stripe.InvalidRequestError as e:
+            raise PaymentError('Payment information is out of date. Please update your credit card before starting a plan.')
 
     def delete(self):
         user = self.user
