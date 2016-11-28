@@ -1,6 +1,7 @@
 import datetime
 from briefmetrics.lib.table import Table, Column
 from briefmetrics.lib.gcharts import encode_rows
+from briefmetrics.lib.exceptions import APIError
 from briefmetrics.lib import helpers as h
 
 from briefmetrics.lib.report import (
@@ -357,7 +358,11 @@ class ActivityReport(WeeklyMixin, GAReport):
 
         if summary_table.has_value('ga:goalConversionRateAll'):
             # Goals
-            self.tables['goals'] = self._get_goals(google_query, interval_field)
+            try:
+                self.tables['goals'] = self._get_goals(google_query, interval_field)
+            except APIError:
+                # Missing permissions for goals
+                pass
 
         if summary_table.has_value('ga:itemRevenue'):
             # Ecommerce

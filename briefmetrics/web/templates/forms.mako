@@ -108,7 +108,7 @@
                     ${name}
                     % endif
                     [${item['webPropertyId']}]
-                </option>
+                </option> <!-- displayName=${"%r" % item.get('displayName')} -->
             % endfor
             </select>
         </p>
