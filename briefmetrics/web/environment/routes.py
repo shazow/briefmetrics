@@ -23,6 +23,7 @@ def add_routes(config):
         route('terms', '/terms', action='terms')
         route('security', '/security', action='security')
         route('features', '/features', action='features')
+        route('feature', '/features/{id}', action='features')
         route('articles', '/articles/{id}', action='articles')
 
     with handler_routes(config, views.webhook.WebhookController) as route:

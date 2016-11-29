@@ -2,6 +2,7 @@
 <%namespace file="forms.mako" name="forms" />
 
 <div class="container">
+    <h2>Plans &amp Pricing</h2>
     <p>
         Briefmetrics pricing tiers are carefully designed to scale with your
         business while remaining affordable. <strong>Every plan comes

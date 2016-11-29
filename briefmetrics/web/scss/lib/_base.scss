@@ -100,13 +100,14 @@ h1 {
 
 h2 {
     color: #40413e;
-    margin: 1em 0 0.5em 0;
+    margin: 1.5em 0 0.5em 0;
 }
 
 h3 {
     line-height: 1.3em;
     margin: 1em 0 0.5em 0;
     font-weight: normal;
+    font-size: 1.5em;
 }
 
 strong {
@@ -193,5 +194,6 @@ pre {
 .content {
     flex: 1;
     background-color: $color-background;
-    padding-bottom: 1em;
+
+    @include linear-gradient(darken($color-background, 5%), $color-background 10px);
 }

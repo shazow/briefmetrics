@@ -452,12 +452,13 @@ h1 {
 
 h2 {
   color: #40413e;
-  margin: 1em 0 0.5em 0; }
+  margin: 1.5em 0 0.5em 0; }
 
 h3 {
   line-height: 1.3em;
   margin: 1em 0 0.5em 0;
-  font-weight: normal; }
+  font-weight: normal;
+  font-size: 1.5em; }
 
 strong {
   color: #4d4d4d; }
@@ -529,7 +530,9 @@ pre {
 .content {
   flex: 1;
   background-color: #f4faed;
-  padding-bottom: 1em; }
+  background-color: #e8f4d9;
+  background-image: -webkit-linear-gradient(#e8f4d9, #f4faed 10px);
+  background-image: linear-gradient(#e8f4d9, #f4faed 10px); }
 
 form {
   margin-bottom: 1em; }
@@ -678,7 +681,7 @@ blockquote {
 nav.header {
   line-height: 4em;
   text-align: center;
-  margin: 0 1em; }
+  padding: 0 1em; }
   nav.header .container {
     margin-bottom: 0; }
   nav.header ul {
