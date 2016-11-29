@@ -5,12 +5,11 @@
 </%block>
 
 <div class="intro">
+    <h1>
+        <a href="/">Briefmetrics</a> emails you simple overviews of<br \>your website's Google Analytics.
+    </h1>
+
     <div class="inner">
-
-        <h1>
-            <a href="/">Briefmetrics</a> emails you simple overviews of your website's Google Analytics.
-        </h1>
-
         <div class="signup">
             <a class="cta" href="${login_url}">
                 Sign in with Google Analytics

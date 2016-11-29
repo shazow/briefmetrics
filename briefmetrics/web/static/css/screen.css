@@ -771,11 +771,12 @@ nav.header {
       padding: 0 1em;
       font-size: 0.8em; } }
   .intro h1 {
+    display: block;
+    margin: 1.5em auto;
     color: #fff;
     line-height: 1.25em;
-    margin: 1.5em 0;
     letter-spacing: 0.05em;
-    font-size: 2em;
+    font-size: 2.5em;
     text-align: center; }
     .intro h1 a {
       color: inherit;
