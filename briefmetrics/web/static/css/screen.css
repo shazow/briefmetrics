@@ -707,13 +707,13 @@ nav.header {
     nav.header .logo img {
       width: 28px;
       height: 28px; }
-  nav.header .menu {
+  nav.header .menu a {
+    padding: 0.2em;
     font-size: 0.9em;
     text-transform: uppercase;
     letter-spacing: 0.1em; }
-  nav.header .menu.active, nav.header .menu:hover {
-    border-radius: 1em;
-    background: white; }
+  nav.header .menu.active a, nav.header .menu:hover a {
+    border-bottom: 2px #dbe8cc solid; }
   nav.header a, nav.header a:visited {
     color: #37b89a; }
 

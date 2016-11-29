@@ -242,14 +242,14 @@ nav.header {
             height: 28px;
         }
     }
-    .menu {
+    .menu a {
+        padding: 0.2em;
         font-size: 0.9em;
         text-transform: uppercase;
         letter-spacing: 0.1em;
     }
-    .menu.active, .menu:hover {
-        border-radius: 1em;
-        background: white;
+    .menu.active a, .menu:hover a {
+        border-bottom: 2px $color-border solid;
     }
 
     a, a:visited {
