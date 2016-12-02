@@ -210,10 +210,26 @@ nav.header {
         margin-bottom: 0;
     }
 
+    @include media($mobile) {
+        margin: 0;
+        font-size: 0.8em;
+        text-align: left;
+        line-height: 1.25em;
+
+        .logo {
+            text-align: center;
+        }
+    }
+
     ul {
         margin: 0;
         padding: 0;
         @include row();
+
+        @include media($mobile) {
+            width: 100%;
+            margin-bottom: 1em;
+        }
     }
 
     .public-links {
@@ -230,9 +246,9 @@ nav.header {
         list-style: none;
 
         @include media($mobile) {
-            margin: 0;
-            font-size: 0.8em;
+            display: block;
         }
+
     }
     .logo {
         margin: 0;
@@ -335,7 +351,10 @@ nav.header {
 
     @include media($mobile) {
         padding: 0 1em;
-        font-size: 0.8em;
+        font-size: 0.6em;
+
+        background-size: 350%;
+        background-position: top center;
     }
 
     h1 {
