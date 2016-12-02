@@ -530,6 +530,7 @@ pre {
 .content {
   flex: 1;
   background-color: #f4faed;
+  border-top: 1px solid #dcefc5;
   background-color: #e8f4d9;
   background-image: -webkit-linear-gradient(#e8f4d9, #f4faed 10px);
   background-image: linear-gradient(#e8f4d9, #f4faed 10px); }
@@ -716,7 +717,7 @@ nav.header {
     text-transform: uppercase;
     letter-spacing: 0.1em; }
   nav.header .menu.active a, nav.header .menu:hover a {
-    border-bottom: 2px #dbe8cc solid; }
+    border-bottom: 2px #a4e4d5 solid; }
   nav.header a, nav.header a:visited {
     color: #37b89a; }
 
@@ -727,7 +728,16 @@ nav.header {
   .intro .signup .cta, .feature .signup .cta {
     float: left;
     margin-right: 1em;
-    width: 60%; }
+    width: 60%;
+    padding: 0.5em; }
+  .intro .signup a.cta, .feature .signup a.cta {
+    background-color: #f8c915;
+    background-image: -webkit-linear-gradient(#f8c915, #ea9613);
+    background-image: linear-gradient(#f8c915, #ea9613); }
+    .intro .signup a.cta:hover, .feature .signup a.cta:hover {
+      background-color: #f9d447;
+      background-image: -webkit-linear-gradient(#f9d447, #ea9613);
+      background-image: linear-gradient(#f9d447, #ea9613); }
   .intro .signup .details, .feature .signup .details {
     padding: 0;
     float: left; }
@@ -765,6 +775,7 @@ nav.header {
   margin: 0 auto 20px auto; }
 
 .intro {
+  margin-top: -1px;
   background: url(/static/images/background.jpg) no-repeat;
   background-size: contain;
   overflow: hidden;
@@ -863,9 +874,9 @@ ul.questions {
 
 a.cta, input.cta {
   border-radius: 3px;
-  background-color: #f8a915;
-  background-image: -webkit-linear-gradient(#f8a915, #ea9613);
-  background-image: linear-gradient(#f8a915, #ea9613);
+  background-color: #f8c915;
+  background-image: -webkit-linear-gradient(#f8c915, #ea9613);
+  background-image: linear-gradient(#f8c915, #ea9613);
   border: 1px solid #d28811;
   display: inline-block;
   vertical-align: middle;

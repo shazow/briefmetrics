@@ -195,5 +195,6 @@ pre {
     flex: 1;
     background-color: $color-background;
 
+    border-top: 1px solid darken($color-background, 10%);
     @include linear-gradient(darken($color-background, 5%), $color-background 10px);
 }

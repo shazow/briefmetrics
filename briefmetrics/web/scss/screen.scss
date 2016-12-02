@@ -249,7 +249,7 @@ nav.header {
         letter-spacing: 0.1em;
     }
     .menu.active a, .menu:hover a {
-        border-bottom: 2px $color-border solid;
+        border-bottom: 2px lighten($color-header, 30%) solid;
     }
 
     a, a:visited {
@@ -267,6 +267,14 @@ nav.header {
             float: left;
             margin-right: 1em;
             width: 60%;
+            padding: 0.5em;
+        }
+        a.cta {
+            @include linear-gradient(#f8c915, #ea9613);
+
+            &:hover {
+                @include linear-gradient(lighten(#f8c915, 10%), #ea9613);
+            }
         }
 
         .details {
@@ -319,6 +327,7 @@ nav.header {
 }
 
 .intro {
+    margin-top: -1px;
     background: url(/static/images/background.jpg) no-repeat;
     background-size: contain;
     overflow: hidden;
@@ -454,7 +463,7 @@ ul.questions {
 
 a.cta, input.cta {
     border-radius: 3px;
-    @include linear-gradient(#f8a915, #ea9613);
+    @include linear-gradient(#f8c915, #ea9613);
     border: 1px solid #d28811;
     display: inline-block;
 
