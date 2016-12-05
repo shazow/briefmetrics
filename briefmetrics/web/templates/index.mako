@@ -24,10 +24,24 @@
         </div>
 
         <div class="preview screenshot">
-            <h3>Sample Report</h3>
+            <div class="window-header">
+                <ul class="window-buttons">
+                    <li> </li>
+                    <li> </li>
+                    <li> </li>
+                </ul>
+                Sample Report for yoursite.com
+            </div>
+            <div class="email-header">
+                <strong>Briefmetrics</strong> to <strong>Me</strong>
+                <span class="reply-button">
+                    <img src="/static/images/reply-icon.png" />
+                </span>
+            </div>
+            <h3>Weekly Report for ${'{:%b %d, %Y}'.format(h.now())}</h3>
             <img src="/static/images/screenshot.png?1" alt="Sample Report Screenshot" />
             <p>
-                ... and <a href="/features">much more</a>!
+                ... and <a href"/features">much more</a>!
             </p>
         </div>
 

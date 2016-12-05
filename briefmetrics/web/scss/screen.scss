@@ -520,10 +520,68 @@ a.cta, input.cta {
 }
 
 .preview {
-    @include boxed;
-    padding: 20px 20px 20px 20px;
+    $_chrome-color: #ccc;
+
+    background: #fff;
     margin: 0 auto 2em auto;
     max-width: 720px;
+    border: 5px solid $_chrome-color;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 3px;
+
+    box-shadow: 0px 0px 20px 5px rgba(0,0,0,0.30);
+
+    p {
+        margin: 2em;
+    }
+
+    .window-header {
+        font-size: 0.8em;
+        color: #888;
+        background: $_chrome-color;
+        padding: 0 0.5em 5px 0.5em;
+
+        .window-buttons {
+            position: absolute;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            li {
+                float: left;
+                margin: 3px;
+                background: #aaa;
+                border-radius: 50%;
+                width: 1em;
+                height: 1em;
+            }
+        }
+    }
+    .email-header {
+        color: #999;
+        background: lighten($_chrome-color, 10%);
+        text-align: left;
+        line-height: 2em;
+        padding: 0.5em 0.5em;
+
+        strong {
+            color: #888;
+        }
+
+        .reply-button {
+            opacity: 0.5;
+            border-radius: 3px;
+            display: block;
+            float: right;
+            background: #bbb;
+            text-align: center;
+            img {
+                width: 50%;
+                height: 50%;
+                vertical-align: middle;
+            }
+        }
+    }
 }
 
 .screenshot {
