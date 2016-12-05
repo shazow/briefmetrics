@@ -99,6 +99,9 @@
         <p>
             <img class="sample" src="/static/images/features/top-pages.png" alt="Top Page Traffic" />
         </p>
+        <p>
+            Mobile application reports will show <em>Screens</em> instead of Pages.
+        </p>
     </section>
 
     <section>
@@ -128,6 +131,19 @@
         </p>
         <p>
             <img class="sample" src="/static/images/features/revenue.png" alt="Product Revenue" />
+        </p>
+    </section>
+
+    <section>
+        <h3>Mobile Versions</h3>
+        <p>
+            For mobile analytics, such as iOS or Android apps, you'll have a version table which lets you keep track of your users' upgrade progress. Does the latest version perform worse than the previous version? Are there more crashes? This is where you'll want to look.
+        </p>
+        <p>
+            <img class="sample" src="/static/images/features/mobile.png" alt="Mobile Versions" />
+        </p>
+        <p>
+            Mobile reports have a few extra relevant sections such as geographic distribution and In App Purchase (IAP) conversion data. All of this is automatically included when you pick a mobile property, Briefmetrics knows what you need.
         </p>
     </section>
 
