@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<!-- saved from url=(0031)http://localhost:5000/reports/1 -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width"> 
+    
+    <style type="text/css">
+    h1, h2, h3, h4, h5 {
+        font-weight: normal;
+        font-size: 21px;
+        color: #000;
+    }
+    h1 {
+        letter-spacing: 0.5px;
+        line-height: 1em;
+        margin: 0;
+        text-align: center;
+        padding: 1em 0 1em 0;
+        color: #bbb;
+    }
+    h2 {
+        margin-top: 1.5em;
+        font-size: 1.5em;
+    }
+
+    .content {
+        background-color: #fff;
+        max-width: 560px;
+        margin: 0 auto;
+    }
+
+    body {
+        font: 15px/1.6 Arial, sans-serif;
+        color: #666;
+    }
+    .todo {
+        font-size: 0.8em;
+        background: #eee;
+        color: #bbb;
+        display: block;
+        padding: 0.3em;
+        margin: 1em 0;
+    }
+
+    a {
+        text-decoration: none;
+        color: #25ad83;
+    }
+    a.highlight {
+        background: #c6eadf;
+    }
+    a.permalink {
+        float: right;
+        color: #9db883;
+        line-height: 2em;
+        font-size: 0.8em;
+        padding-right: 0.5em;
+    }
+    .sub a {
+        color: #ccc;
+    }
+    p, ul, table {
+        margin-top: 0.5em;
+        margin-bottom: 1.5em;
+    }
+    p {
+        line-height: 1.5em;
+    }
+    table {
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+        font-size: 0.9em;
+    }
+    thead {
+        background: #ecfadd;
+        color: #000;
+        font-weight: bold;
+        font-size: 0.8em;
+        text-transform: uppercase;
+    }
+    thead .number {
+        color: #526440;
+    }
+    tbody {
+        font-size: 0.9em;
+    }
+    td {
+        padding: 2px 4px 2px 4px;
+    }
+    td.arrow {
+        width: 1px;
+        color: #ffd69b;
+        vertical-align: top;
+        line-height: 2em;
+    }
+    td.number {
+        padding-right: 0.5em;
+        text-align: right;
+        vertical-align: top;
+        width: 5.5em;
+    }
+    td.date {
+        color: #999;
+        width: 6em;
+        vertical-align: top;
+        text-align: right;
+    }
+    td.alt,tr.alt {
+        background: #f5f5f5;
+    }
+
+    .highlight {
+        background: #fce09b;
+        padding: 1px 2px;
+    }
+    .chartTop {
+        white-space: nowrap;
+        background: #beeee1;
+        padding: 1px 2px;
+    }
+    .chartBottom {
+        white-space: nowrap;
+        background: #fce09b;
+        padding: 1px 2px;
+    }
+    .done {
+        text-decoration: line-through;
+        color: #888;
+    }
+    .overview {
+        font-size: 1em;
+        text-align: center;
+        font-weight: bold;
+    }
+    .overview strong {
+        font-size: 1.8em;
+        color: #ffad39;
+        display: block;
+        line-height: 1em;
+        font-weight: normal;
+    }
+    .overview small {
+        color: #999;
+        display: block;
+        font-weight: normal;
+    }
+    .overview small.neg {
+        color: red;
+    }
+    .overview small.pos {
+        color: green;
+    }
+
+    .footer {
+        border-top: 1px solid #ddd;
+        padding-top: 1em;
+        margin-top: 1em;
+        color: #666;
+        font-size: 0.8em;
+    }
+    .footer p {
+        line-height: 1.2em;
+        margin-bottom: 0.5em;
+    }
+    .quiet {
+        font-size: 0.8em;
+        color: #999;
+        font-weight: normal;
+    }
+    .optional-inverse {
+        display: none;
+    }
+
+    .annotation {
+        border-radius: 3px;
+        background: #eee;
+        color: #999;
+        padding: 2px 4px;
+        white-space: nowrap;
+        margin-right: 3px;
+        font-size: 10px;
+    }
+    .label {
+        text-transform: uppercase;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+        margin: 0 2px;
+    }
+    .annotation.positive {
+        background: #ecfadd;
+        color: #91AD77;
+    }
+    .annotation.negative {
+        background: #F6E8E9;
+        color: #B88D8B;
+    }
+
+    .preview {
+        text-align: center;
+        font-size: 0.8em;
+        color: #999;
+    }
+    .report {
+        margin-bottom: 1.5em;
+        padding-bottom: 2em;
+        border-bottom: 1px solid #ddd;
+    }
+    </style>
+<style id="__web-inspector-hide-shortcut-style__" type="text/css">
+.__web-inspector-hide-shortcut__, .__web-inspector-hide-shortcut__ *, .__web-inspector-hidebefore-shortcut__::before, .__web-inspector-hideafter-shortcut__::after
+{
+    visibility: hidden !important;
+}
+</style></head>
+<body>
+
+
+
+<p class="preview">Your site had 16,012 views this week (+6.74% over last week).</p>
+
+<h1>
+    <img src="./1_files/briefmetrics.png">
+</h1>
+
+<div class="content">
+
+
+
+
+
+
+
+
+
+
+<p>
+    
+    
+    Your site had <span class="chartTop">19,011 views
+        so far this month</span>,
+        compared to last month's 16,012 views at this time.
+            You're on your way to beat <span class="chartBottom">last month's total of 90,229</span>.
+
+</p>
+
+<img src="./1_files/chart" style="width: 560px; height: 200px" alt="Chart">
+
+
+
+<h2>
+        Last week…
+        
+            <span class="quiet">(includes 4 days from last month)</span>
+</h2>
+
+    <table class="overview">
+        <tbody><tr>
+            
+    
+    <td>
+        <strong>16,012</strong>
+        <span>Views</span>
+                <small class="pos">+6.74%</small>
+    </td>
+
+            
+    
+    <td>
+        <strong>32.3%</strong>
+        <span>Bounce Rate</span>
+                <small class="pos">-19.1% decrease</small>
+    </td>
+
+                
+                
+    <td>
+        <strong>$169.20</strong>
+        <span>Revenue</span>
+            <small>3 sales</small>
+    </td>
+
+        </tr>
+    </tbody></table>
+    
+
+    <p style="margin-bottom: 2em;">
+        <span class="highlight">9,607 unique visitors</span>
+        each spent an average of
+        <span class="highlight">44sec</span>
+        over
+        <span class="highlight">1.7 pages</span>
+            per session.
+    </p>
+
+    
+    <table class="overview">
+        <tbody><tr>
+            
+    <td>
+        <strong>$42</strong>
+        <span>Ad Spend</span>
+            <small>&nbsp;</small>
+    </td>
+
+            <td class="arrow">►</td>
+            
+    <td title="Advertising impressions and cost per thousand">
+        <strong>4,942</strong>
+        <span>Impressions</span>
+            <small>$8.50 CPM</small>
+    </td>
+
+            <td class="arrow">►</td>
+            
+    <td title="Advertising clicks and cost per click">
+        <strong>330</strong>
+        <span>Ad Clicks</span>
+            <small>$0.13 CPC</small>
+    </td>
+
+        </tr>
+    </tbody></table>
+
+        <p style="margin-bottom: 2em;">
+            <span class="highlight">$418.40 revenue</span>
+            is attributed to advertising campaigns across
+            <span class="highlight">55 sales</span>.
+            Cost of acquisition is
+            <span class="highlight">$0.76 per sale</span>
+            which yields
+            <span class="highlight">$7.61 revenue</span>
+            on average.
+        </p>
+
+
+
+<table>
+    <thead>
+        <tr>
+            <td class="number">
+                Views
+            </td>
+            <td>
+                Pages
+
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            <td class="number">19,011</td>
+            <td>
+                <a href="http://www.briefmetrics.com/">/</a>
+                
+
+                
+            </td>
+        </tr>
+    
+        <tr>
+            <td class="number">16,399</td>
+            <td>
+                <a href="http://www.briefmetrics.com/search">/search</a>
+                
+
+                
+            </td>
+        </tr>
+    
+        <tr>
+            <td class="number">16,012</td>
+            <td>
+                <a href="http://www.briefmetrics.com/store">/store</a>
+                
+
+
+
+<span class="annotation negative"><span class="label">Bounce Rate</span>40%</span>
+
+                
+            </td>
+        </tr>
+    
+        <tr>
+            <td class="number">15,890</td>
+            <td>
+                <a href="http://www.briefmetrics.com/pricing">/pricing</a>
+                
+
+                
+            </td>
+        </tr>
+    
+        <tr>
+            <td class="number">15,001</td>
+            <td>
+                <a href="http://www.briefmetrics.com/account/create">/account/create</a>
+                
+
+
+
+<span class="annotation positive"><span class="label">Bounce Rate</span>0.70%</span>
+
+                
+            </td>
+        </tr>
+    
+        <tr>
+            <td class="number">14,884</td>
+            <td>
+                <a href="http://www.briefmetrics.com/account/dashboard">/account/dashboard</a>
+                
+
+
+
+<span class="annotation positive"><span class="label">Time On Site</span>2min 3sec</span>
+
+                
+            </td>
+        </tr>
+    
+        <tr>
+            <td class="number">8,043</td>
+            <td>
+                <a href="http://www.briefmetrics.com/about">/about</a>
+                
+
+
+
+<span class="annotation negative"><span class="label">Time On Site</span>0.5sec</span>
+
+                
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <td class="number">
+                Views
+            </td>
+            <td>
+                Referrer
+
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            <td class="number">19,011</td>
+            <td>
+                <a href="http://techcrunch.com/best-analytics-summaries">techcrunch.com/best-analytics-summaries</a>
+                
+
+                
+            <span class="annotation neutral"><span class="label">New</span></span></td>
+        </tr>
+    
+        <tr>
+            <td class="number">16,399</td>
+            <td>
+                <a href="http://producthunt.com/tech/briefmetrics">producthunt.com/tech/briefmetrics</a>
+                
+
+                
+            </td>
+        </tr>
+    
+        <tr>
+            <td class="number">16,012</td>
+            <td>
+                <a href="http://lists.of/great-websites">lists.of/great-websites</a>
+                
+
+
+
+<span class="annotation negative"><span class="label">Time On Site</span>0.5sec</span>
+
+
+<span class="annotation positive"><span class="label">Bounce Rate</span>0.70%</span>
+
+
+<span class="annotation positive"><span class="label">Conversion</span>0.12%</span>
+
+                
+            </td>
+        </tr>
+    
+        <tr>
+            <td class="number">15,890</td>
+            <td>
+                <a href="http://slashdot.org/story/best-mobile-google-analytics-reports">slashdot.org/story/best-mobile-google-analytics-reports</a>
+                
+
+                
+            </td>
+        </tr>
+    
+        <tr>
+            <td class="number">10,001</td>
+            <td>
+                <a href="http://blog.verypopular.com/2016/analytics-in-your-inbox">blog.verypopular.com/2016/analytics-in-your-inbox</a>
+                
+
+
+
+<span class="annotation negative"><span class="label">Conversion</span>0%</span>
+
+                
+            </td>
+        </tr>
+    
+        <tr>
+            <td class="number">9,984</td>
+            <td>
+                <a href="http://reddit.com/r/analytics">reddit.com/r/analytics</a>
+                
+
+
+
+<span class="annotation negative"><span class="label">Bounce Rate</span>40%</span>
+
+                
+            </td>
+        </tr>
+    
+        <tr>
+            <td class="number">9,943</td>
+            <td>
+                <a href="http://wikipedia.org/wiki/Briefmetrics">wikipedia.org/wiki/Briefmetrics</a>
+                
+
+
+
+<span class="annotation positive"><span class="label">Time On Site</span>2min 3sec</span>
+
+                
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+
+<table>
+    <thead>
+        <tr>
+            <td class="number">
+                Views
+            </td>
+            <td>
+                Social &amp; Search &amp; Campaigns
+
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            <td class="number">9,011</td>
+            <td>
+                Twitter
+                
+
+
+
+<span class="annotation positive"><span class="label">Views</span>+36.7%</span>
+
+                
+            </td>
+        </tr>
+    
+        <tr>
+            <td class="number">8,099</td>
+            <td>
+                Bing
+                
+
+
+
+<span class="annotation positive"><span class="label">Views</span>+36.7%</span>
+
+                
+            </td>
+        </tr>
+    
+        
+    
+        
+    
+        
+    
+        <tr>
+            <td class="number">6,012</td>
+            <td>
+                Facebook
+                
+
+
+
+<span class="annotation negative"><span class="label">Bounce Rate</span>40%</span>
+
+
+<span class="annotation negative"><span class="label">Conversion</span>0%</span>
+
+                
+            </td>
+        </tr>
+    
+        
+    
+        
+    
+        <tr>
+            <td class="number">5,001</td>
+            <td>
+                Wordpress
+                
+
+                
+            </td>
+        </tr>
+    
+        <tr>
+            <td class="number">988</td>
+            <td>
+                Reddit
+                
+
+
+
+<span class="annotation positive"><span class="label">Time On Site</span>2min 3sec</span>
+
+
+<span class="annotation positive"><span class="label">Bounce Rate</span>0.70%</span>
+
+
+<span class="annotation positive"><span class="label">Conversion</span>0.12%</span>
+
+                
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+
+
+    
+
+<table>
+    <thead>
+        <tr>
+            <td class="number">
+                Revenue
+            </td>
+            <td>
+                Product
+
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            <td class="number">$169.20</td>
+            <td>
+                Plombus
+                
+
+
+
+<span class="annotation neutral"><span class="label">3 Sales</span></span>
+
+                
+            </td>
+        </tr>
+    
+        <tr>
+            <td class="number">$143.20</td>
+            <td>
+                Teleporter
+                
+
+
+
+<span class="annotation neutral"><span class="label">11 Sales</span></span>
+
+                
+            </td>
+        </tr>
+    
+        <tr>
+            <td class="number">$92</td>
+            <td>
+                Mousepad
+                
+
+
+
+<span class="annotation neutral"><span class="label">8 Sales</span></span>
+
+                
+            </td>
+        </tr>
+    
+        <tr>
+            <td class="number">$14</td>
+            <td>
+                Juicebox
+                
+
+
+
+<span class="annotation neutral"><span class="label">3 Sales</span></span>
+
+                
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+
+<p class="">You can look forward to your next report on <span class="highlight">Monday Dec 12th</span>.
+</p>
+
+<div class="footer">
+    
+    <p style="margin-bottom: 2em;">
+            This report was prepared for Andrey Petrov by
+            <a href="https://briefmetrics.com/">Briefmetrics</a>.
+    </p>
+
+    <p>
+        <strong>Please send feedback by replying to this email.</strong>
+    </p>
+
+        <p class="sub">
+            You can <a href="https://briefmetrics.com/reports">change your subscription</a> or
+            <a href="https://briefmetrics.com/account/delete?token=fsGM4AnC7YtNTc20-1">delete your account</a>.
+        </p>
+</div>
+
+</div>
+
+
+</body></html>
