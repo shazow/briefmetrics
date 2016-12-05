@@ -727,8 +727,16 @@ nav.header {
     font-size: 0.9em;
     text-transform: uppercase;
     letter-spacing: 0.1em; }
-  nav.header .menu.active a, nav.header .menu:hover a {
+  nav.header .menu.active a, nav.header .menu a:hover {
     border-bottom: 2px #a4e4d5 solid; }
+  nav.header .menu strong a {
+    border: 1px solid #7dd8c3;
+    background: #f3fbf9;
+    padding: 10px;
+    font-weight: normal; }
+    nav.header .menu strong a:hover {
+      background: #fff;
+      border: 1px solid #7dd8c3; }
   nav.header a, nav.header a:visited {
     color: #37b89a; }
 
@@ -799,7 +807,7 @@ nav.header {
       background-position: top center; } }
   .intro h1 {
     display: block;
-    margin: 1.5em auto;
+    margin: 2em auto 1.5em auto;
     color: #fff;
     line-height: 1.25em;
     letter-spacing: 0.05em;

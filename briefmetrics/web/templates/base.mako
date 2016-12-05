@@ -72,7 +72,11 @@
                 % else:
             <li class="menu">
                 % endif
-                <a href="${href}">${label}</a>
+                % if href == login_url:
+                    <strong><a href="${href}">${label}</a></strong>
+                % else:
+                    <a href="${href}">${label}</a>
+                % endif
             </li>
             % endfor
         </ul>
