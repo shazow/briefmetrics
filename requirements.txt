@@ -25,7 +25,6 @@ unstdlib==1.7
 premailer==2.9.7 # Needs lxml which requires CFLAGS/etc set
 html2text==2016.9.19
 msgpack-python==0.4.8
-setuptools==28.0.0
 
 # Celery
 billiard==3.3.0.23 # Required by celery
