@@ -36,7 +36,7 @@
             An important metric to keep track of is how your analytics is
             performing compared to the same time during the previous month
             (Month-over-Month, or MoM pacing chart). The focal point of the report is
-            the _pacing chart_ which compares the progress of this month to the
+            the <em>pacing chart</em> which compares the progress of this month to the
             last month, allowing you to visually see the trend and set
             expectations for the coming weeks.
         </p>
