@@ -730,6 +730,7 @@ nav.header {
   nav.header .menu.active a, nav.header .menu a:hover {
     border-bottom: 2px #a4e4d5 solid; }
   nav.header .menu strong a {
+    border-radius: 3px;
     border: 1px solid #7dd8c3;
     background: #f3fbf9;
     padding: 10px;
