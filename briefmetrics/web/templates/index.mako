@@ -45,6 +45,43 @@
             </p>
         </div>
 
+        <section class="features" id="features">
+            <h3>Powerful Reporting, Zero Setup.</h3>
+
+            <ul>
+                <li>
+                <h4><a href="/features#mobile">Web &amp; Mobile Apps</a></h4>
+                    <p class="icon">
+                        <img src="/static/images/device-icons.png" style="width: 50%; height: 50%;" alt="Mobile and Desktop devices" />
+                    </p>
+                    <p>
+                        Whether you're using Google Analytics for a website or a mobile app, Briefmetrics figures out exactly what to show you automatically.
+                    </p>
+                </li>
+                <li>
+                    <h4><a href="/features#branding">Bring Your Own Logo</a></h4>
+                    <p class="icon">
+                        <img src="/static/images/feature-branding.png" style="width: 45%; height: 45%;" alt="Custom Logo" />
+                    </p>
+                    <p>
+                        Be proud to share your reports with executives or clients with our <a href="/features/custom-branding-for-agencies">whitelabel Agency features</a>.
+                    </p>
+                </li>
+                <li>
+                    <h4><a href="/features#cac">KPI &amp; CAC</a></h4>
+                    <p>
+                        No more spreadsheets! Ecommerce and AdWords data is computed on our backend to give you valuable metrics like <a href="/features#cac">Customer Acquisition Costs and more</a>.
+                    </p>
+                </li>
+                <li>
+                    <h4><a href="/features#annotations">Intelligent Highlighting</a></h4>
+                    <p>
+                        We use simple lists with annotations on the most important lines, much easier to understand and skim than big two-dimensional tables.
+                    </p>
+                </li>
+            </ul>
+        </section>
+
         <div class="testimonials" id="customers">
             <h3>Happy Customers</h3>
 

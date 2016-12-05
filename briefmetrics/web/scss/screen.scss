@@ -400,44 +400,37 @@ nav.header {
         color: rgba(255, 255, 255, 0.9);
     }
 
-    .features {
-        margin: 2em 0;
-        padding: 0;
-        display: table;
-        text-align: center;
+    .features ul {
+        display: flex;
+        flex-wrap: wrap;
 
-        li {
-            display: table-cell;
-            width: 33%;
+        h4 {
+            font-weight: normal;
+            margin: 0 0 0.5em 0;
+            background: $color-border;
+            color: darken($color-border, 50%);
+            line-height: 1.5em;
 
-        }
+            a {
+                color: darken($color-border, 50%);
 
-        img {
-            width: 200px;
-            height: 100px;
-            border: 2px solid $color-border;
-            overflow: hidden;
-            border-radius: 5px;
-        }
-        a img {
-            border-color: darken($color-border, 20%);
-        }
-
-        strong {
-            display: block;
-            margin-bottom: 0.2em;
-            font-size: 0.8em;
-            line-height: 2em;
-
-            &:before {
-                content: "✓";
-                margin-right: 0.5em;
-                color: $color-link;
+                &:hover {
+                    color: darken($color-border, 30%);
+                }
             }
         }
 
-        p {
-            font-size: 0.8em;
+        margin: 2em 0;
+        padding: 0;
+        list-style: none;
+
+        .icon {
+            margin: 1em 0;
+            text-align: center;
+        }
+
+        li {
+            width: 50%;
             padding: 0 0.5em;
         }
     }

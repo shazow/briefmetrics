@@ -28,6 +28,9 @@
         <p>
             <img class="sample" src="/static/images/features/your-branding.png" alt="Your Branding" />
         </p>
+        <p>
+            <a href="/features/custom-branding-for-agencies">Watch a walkthrough</a> of our whitelabel features to learn more.
+        </p>
     </section>
 
     <section id="pacing">
@@ -80,7 +83,7 @@
         </p>
     </section>
 
-    <h2>Details &amp; Annotations</h2>
+    <h2 id="annotations">Details &amp; Annotations</h2>
     <p>
         While Google Analytics gives you the bulk data in big tables with many rows and columns, Briefmetrics takes a different approach: We turn complicated tables into a list with values and names, then we annotate each item with tags which <strong>only highlight the extremes and important deviations</strong>.
     </p>
