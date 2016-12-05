@@ -658,6 +658,11 @@ a.cta, input.cta {
 }
 
 .report {
+    background: #fff;
+    margin: 1.5em 0;
+    padding: 1em;
+    @include boxed;
+
     nav {
         width: 100%;
         display: table;

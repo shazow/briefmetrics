@@ -152,7 +152,7 @@
 
         # Eww.
     %>
-    <div class="preview report" id="${anchor}">
+    <div class="report" id="${anchor}">
         <nav>
             <h3>
                 ${site.display_name}

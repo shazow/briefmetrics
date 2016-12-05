@@ -1020,34 +1020,40 @@ a.cta, input.cta {
 .inline-error {
   color: #a31f2b; }
 
-.report nav {
-  width: 100%;
-  display: table;
-  margin-bottom: 0.5em; }
-  .report nav h3 {
-    margin-top: 0;
+.report {
+  background: #fff;
+  margin: 1.5em 0;
+  padding: 1em;
+  border-radius: 10px;
+  border: 2px solid #dbe8cc;
+  background: #fff; }
+  .report nav {
+    width: 100%;
+    display: table;
     margin-bottom: 0.5em; }
-  .report nav .controls {
-    display: table-cell;
-    text-align: right;
-    font-size: 0.8em;
-    vertical-align: top;
-    white-space: nowrap; }
-    .report nav .controls input {
-      border: none; }
-
-.report .details {
-  width: 100%;
-  display: table;
-  margin-bottom: 0; }
-  .report .details tr {
-    display: table-row; }
-  .report .details td {
-    padding-right: 0;
-    margin-right: 1em;
-    display: table-cell; }
-  .report .details .recipients {
-    margin-left: 2em; }
+    .report nav h3 {
+      margin-top: 0;
+      margin-bottom: 0.5em; }
+    .report nav .controls {
+      display: table-cell;
+      text-align: right;
+      font-size: 0.8em;
+      vertical-align: top;
+      white-space: nowrap; }
+      .report nav .controls input {
+        border: none; }
+  .report .details {
+    width: 100%;
+    display: table;
+    margin-bottom: 0; }
+    .report .details tr {
+      display: table-row; }
+    .report .details td {
+      padding-right: 0;
+      margin-right: 1em;
+      display: table-cell; }
+    .report .details .recipients {
+      margin-left: 2em; }
 
 .combine-summary {
   border-radius: 3px;
