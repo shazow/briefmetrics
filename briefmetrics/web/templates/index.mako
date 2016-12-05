@@ -23,11 +23,11 @@
             </ul>
         </div>
 
-        <div class="screenshot preview">
+        <div class="preview screenshot">
             <h3>Sample Report</h3>
             <img src="/static/images/screenshot.png?1" alt="Sample Report Screenshot" />
             <p>
-                ... and much more!
+                ... and <a href="/features">much more</a>!
             </p>
         </div>
 

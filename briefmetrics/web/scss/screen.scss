@@ -440,6 +440,11 @@ nav.header {
         margin: 0 auto;
         margin-bottom: 4em;
     }
+    .sample {
+        border-left: 10px solid #ddd;
+        border-right: 10px solid #ddd;
+        margin-left: -10px;
+    }
 }
 
 .testimonials {
@@ -503,17 +508,15 @@ a.cta, input.cta {
     }
 }
 
-.preview, .screenshot {
+.preview {
     @include boxed;
     padding: 20px 20px 20px 20px;
     margin: 0 auto 2em auto;
     max-width: 720px;
-
 }
 
 .screenshot {
     text-align: center;
-    padding: 20px 10px 10px 10px;
 
     h3 {
         margin-top: 1em;

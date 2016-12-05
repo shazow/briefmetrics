@@ -856,6 +856,11 @@ nav.header {
   margin: 0 auto;
   margin-bottom: 4em; }
 
+.feature .sample {
+  border-left: 10px solid #ddd;
+  border-right: 10px solid #ddd;
+  margin-left: -10px; }
+
 .testimonials h4 {
   margin-bottom: 0.5em;
   margin-top: 2em;
@@ -904,7 +909,7 @@ a.cta, input.cta {
     color: #fee8c0;
     font-size: 0.8em; }
 
-.preview, .screenshot {
+.preview {
   border-radius: 10px;
   border: 2px solid #dbe8cc;
   background: #fff;
@@ -913,8 +918,7 @@ a.cta, input.cta {
   max-width: 720px; }
 
 .screenshot {
-  text-align: center;
-  padding: 20px 10px 10px 10px; }
+  text-align: center; }
   .screenshot h3 {
     margin-top: 1em;
     color: #bbb;
