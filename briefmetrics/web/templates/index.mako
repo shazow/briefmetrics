@@ -2,6 +2,7 @@
 
 <%block name="extra_head">
     <meta name="description" content="Quick overviews of your website analytics, directly to your inbox." />
+    <meta name="msvalidate.01" content="094963573599E381E1E174821EBD1DCD" />
 </%block>
 
 <div class="intro">
