@@ -90,3 +90,6 @@ class IndexController(Controller):
             return self._render('features/{}.mako'.format(template_name))
         except TopLevelLookupException:
             raise httpexceptions.HTTPNotFound()
+
+    def sitemap(self):
+        return self._render('sitemap.mako')

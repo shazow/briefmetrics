@@ -25,6 +25,7 @@ def add_routes(config):
         route('features', '/features', action='features')
         route('feature', '/features/{id}', action='features')
         route('articles', '/articles/{id}', action='articles')
+        route('sitemap', '/sitemap.xml', action='sitemap')
 
     with handler_routes(config, views.webhook.WebhookController) as route:
         route('webhook', '/webhook/{service}', action='index')
