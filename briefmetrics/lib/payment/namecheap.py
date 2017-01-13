@@ -17,7 +17,9 @@ class NamecheapPayment(Payment):
 
     @property
     def is_charging(self):
-        return bool(self.user.time_next_payment)
+        # Disabled.
+        return False
+        # return bool(self.user.time_next_payment)
 
     def set(self, new_token=None, metadata=None):
         if new_token:
