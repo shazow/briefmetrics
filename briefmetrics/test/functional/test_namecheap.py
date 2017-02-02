@@ -9,6 +9,7 @@ import mock
 import json
 import logging
 import datetime
+from unittest import skip
 from unstdlib import now
 
 Session = model.Session
@@ -59,6 +60,7 @@ class FakeNamecheapAPI(object):
         return m
 
 
+@skip("disabled namecheap")
 @mock.patch('briefmetrics.lib.service.namecheap.NamecheapAPI.instance', FakeNamecheapAPI())
 class TestNamecheap(test.TestWeb):
     def test_connect_decode(self):
