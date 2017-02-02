@@ -2,7 +2,7 @@ from briefmetrics import test
 from briefmetrics import api
 from briefmetrics import model
 from briefmetrics import tasks
-from briefmetrics.lib.report import get_report, sparse_cumulative
+from briefmetrics.lib.report import get_report, sparse_cumulative, date_to_quarter, quarter_to_dates
 from briefmetrics.lib.table import Column
 from briefmetrics.lib.controller import Context
 
@@ -569,3 +569,27 @@ class TestReportLib(test.TestCase):
 
         self.assertEqual(last_month, [1, 1, 1, 1, 3] + [3] * 25)
         self.assertEqual(current_month, [3, 12])
+
+    def test_quarter(self):
+        data = [
+            (datetime.datetime(2014, 1, 1), 1),
+            (datetime.datetime(2014, 2, 1), 1),
+            (datetime.datetime(2014, 3, 31), 1),
+            (datetime.datetime(2014, 4, 1), 2),
+            (datetime.datetime(2014, 5, 31), 2),
+            (datetime.datetime(2014, 6, 1), 2),
+            (datetime.datetime(2014, 6, 30), 2),
+            (datetime.datetime(2014, 7, 1), 3),
+            (datetime.datetime(2014, 8, 1), 3),
+            (datetime.datetime(2014, 9, 30), 3),
+            (datetime.datetime(2014, 10, 1), 4),
+            (datetime.datetime(2014, 12, 31), 4),
+        ]
+
+        for d, q in data:
+            self.assertEqual(q, date_to_quarter(d))
+            start, end = quarter_to_dates(q, year=2014)
+            self.assertEqual(q, date_to_quarter(start))
+            self.assertEqual(q, date_to_quarter(end))
+            self.assertTrue(start <= d <= end)
+

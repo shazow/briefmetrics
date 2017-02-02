@@ -29,6 +29,20 @@ def days_in_month(dt):
     return days
 
 
+def date_to_quarter(d):
+    return (d.month-1)//3 + 1
+
+
+def quarter_to_dates(q, year):
+    if not (1 <= q <= 4):
+        raise ValueError("quarter out of bounds: %d" % q)
+
+    start = datetime.datetime(year, (q-1) * 3 + 1, 1)
+    end = start + datetime.timedelta(days=100)  # bit over 3 months
+    end = end.replace(day=1) - datetime.timedelta(days=1)
+    return start, end
+
+
 def sparse_cumulative(iterable, final_date=None):
     "Data must be ascending."
     cumulated = OrderedDict()
@@ -338,3 +352,28 @@ class WeeklyMixin(object):
             date_end=self.date_end.strftime('%b {}').format(self.date_end.day),
             site=self.report.display_name,
         )
+
+class QuarterlyMixin(object):
+    frequency = 'quarter'
+
+    def get_date_range(self, since_time):
+        q = date_to_quarter(since_time)
+        q_start, q_end = quarter_to_dates(q, year=since_time.year)
+
+        if q == 1:
+            prev_start, _ = quarter_to_dates(4, year=since_time.year-1)
+        else:
+            prev_start, _ = quarter_to_dates(q-1, year=since_time.year)
+
+        date_next = self.next_preferred(q_start).date()
+
+        return prev_start, q_start, q_end, date_next
+
+    def get_subject(self):
+        quarter = date_to_quarter(self.date_start)
+        return u"Report for {site} ({date}Q{quarter})".format(
+            date=self.date_start.strftime('%Y'),
+            quarter=quarter,
+            site=self.report.display_name,
+        )
+

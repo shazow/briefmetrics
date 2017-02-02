@@ -7,6 +7,7 @@ from briefmetrics.lib import helpers as h
 from briefmetrics.lib.report import (
     EmptyReportError,
     YearlyMixin,
+    QuarterlyMixin,
     MonthlyMixin,
     WeeklyMixin,
     inject_table_delta,
@@ -535,5 +536,15 @@ class ActivityYearlyReport(YearlyMixin, ActivityReport):
     def build(self):
         super(ActivityYearlyReport, self).build()
         self.data['interval_label'] = 'year'
+
+
+class ActivityQuarterlyReport(QuarterlyMixin, ActivityReport):
+    "Quarterly report"
+    id = 'activity-quarter'
+    label = 'Quarterly'
+
+    def build(self):
+        super(ActivityQuarterlyReport, self).build()
+        self.data['interval_label'] = 'quarter'
 
 
