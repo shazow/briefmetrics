@@ -502,6 +502,19 @@ class TestReportLib(test.TestCase):
 
         self.assertEqual(r.get_subject(), u"Report for example.com (2012)")
 
+        # Quarterly
+        since_time = datetime.datetime(2013, 2, 5)
+        report = self._create_report_model('activity-quarter')
+        r = get_report('activity-quarter')(report, since_time)
+
+        self.assertEqual(r.report.type, 'activity-quarter')
+        self.assertEqual(r.date_start, datetime.date(2013, 1, 1)) # Start of the quarter
+        self.assertEqual(r.date_end, datetime.date(2013, 3, 31)) # End of the quarter
+        self.assertEqual(r.date_next, datetime.date(2013, 4, 1)) # First day of next quarter
+
+        self.assertEqual(r.get_subject(), u"Report for example.com (Q1)")
+
+
 
     def test_trends_report(self):
         report = self._create_report_model('month')
@@ -572,18 +585,18 @@ class TestReportLib(test.TestCase):
 
     def test_quarter(self):
         data = [
-            (datetime.datetime(2014, 1, 1), 1),
-            (datetime.datetime(2014, 2, 1), 1),
-            (datetime.datetime(2014, 3, 31), 1),
-            (datetime.datetime(2014, 4, 1), 2),
-            (datetime.datetime(2014, 5, 31), 2),
-            (datetime.datetime(2014, 6, 1), 2),
-            (datetime.datetime(2014, 6, 30), 2),
-            (datetime.datetime(2014, 7, 1), 3),
-            (datetime.datetime(2014, 8, 1), 3),
-            (datetime.datetime(2014, 9, 30), 3),
-            (datetime.datetime(2014, 10, 1), 4),
-            (datetime.datetime(2014, 12, 31), 4),
+            (datetime.date(2014, 1, 1), 1),
+            (datetime.date(2014, 2, 1), 1),
+            (datetime.date(2014, 3, 31), 1),
+            (datetime.date(2014, 4, 1), 2),
+            (datetime.date(2014, 5, 31), 2),
+            (datetime.date(2014, 6, 1), 2),
+            (datetime.date(2014, 6, 30), 2),
+            (datetime.date(2014, 7, 1), 3),
+            (datetime.date(2014, 8, 1), 3),
+            (datetime.date(2014, 9, 30), 3),
+            (datetime.date(2014, 10, 1), 4),
+            (datetime.date(2014, 12, 31), 4),
         ]
 
         for d, q in data:

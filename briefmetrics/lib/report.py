@@ -37,7 +37,7 @@ def quarter_to_dates(q, year):
     if not (1 <= q <= 4):
         raise ValueError("quarter out of bounds: %d" % q)
 
-    start = datetime.datetime(year, (q-1) * 3 + 1, 1)
+    start = datetime.date(year, (q-1) * 3 + 1, 1)
     end = start + datetime.timedelta(days=100)  # bit over 3 months
     end = end.replace(day=1) - datetime.timedelta(days=1)
     return start, end
@@ -253,6 +253,18 @@ class Report(object):
 
             days_offset = (next_month - now).days
 
+        elif self.frequency == 'quarter':
+            quarter = date_to_quarter(now)
+            _, end = quarter_to_dates(quarter, year=now.year)
+            next_quarter = end + datetime.timedelta(days=1)
+
+            if time_preferred.day != 1:
+                weekday_offset = time_preferred.weekday() - next_quarter.weekday()
+                if weekday_offset:
+                    next_quarter += datetime.timedelta(days=7 + weekday_offset)
+
+            days_offset = (next_quarter - now.date()).days
+
         elif self.frequency == 'year':
             next_year = now.replace(day=1, month=1, year=now.year+1)
             if time_preferred.day != 1:
@@ -371,8 +383,7 @@ class QuarterlyMixin(object):
 
     def get_subject(self):
         quarter = date_to_quarter(self.date_start)
-        return u"Report for {site} ({date}Q{quarter})".format(
-            date=self.date_start.strftime('%Y'),
+        return u"Report for {site} (Q{quarter})".format(
             quarter=quarter,
             site=self.report.display_name,
         )
