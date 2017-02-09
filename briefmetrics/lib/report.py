@@ -23,6 +23,21 @@ def cumulative_by_month(month_views_iter):
 
     return months.values(), max_value
 
+def cumulative_splitter(data, split_on=None):
+    if not split_on:
+        split_on = len(data) / 2
+    a, b = [], []
+    last_a, last_b = 0, 0
+    for items in data[:split_on]:
+        a += [i+last_a for i in items]
+        last_a = a[-1]
+
+    for items in data[split_on:]:
+        b += [i+last_b for i in items]
+        last_b = b[-1]
+
+    return [a, b], max(last_a, last_b)
+
 
 def days_in_month(dt):
     _, days = calendar.monthrange(dt.year, dt.month)
@@ -369,21 +384,26 @@ class QuarterlyMixin(object):
     frequency = 'quarter'
 
     def get_date_range(self, since_time):
-        q = date_to_quarter(since_time)
-        q_start, q_end = quarter_to_dates(q, year=since_time.year)
+        q = date_to_quarter(since_time) 
+        year = since_time.year
 
         if q == 1:
-            prev_start, _ = quarter_to_dates(4, year=since_time.year-1)
+            year -= 1
+            q = 4
+            prev_start, _ = quarter_to_dates(3, year=year)
         else:
-            prev_start, _ = quarter_to_dates(q-1, year=since_time.year)
+            q -= 1
+            prev_start, _ = quarter_to_dates(q, year=year)
 
+        q_start, q_end = quarter_to_dates(q, year=year)
         date_next = self.next_preferred(q_start).date()
 
         return prev_start, q_start, q_end, date_next
 
     def get_subject(self):
         quarter = date_to_quarter(self.date_start)
-        return u"Report for {site} (Q{quarter})".format(
+        return u"Report for {site} ({year}Q{quarter})".format(
+            year = self.date_start.year,
             quarter=quarter,
             site=self.report.display_name,
         )

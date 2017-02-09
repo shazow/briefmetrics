@@ -9,6 +9,7 @@
         last_relative=r.data['total_last_relative'],
         units=r.data['total_units'],
         interval=(r.data.get('total_last_date_start', r.previous_date_start), r.date_start, r.date_end),
+        period_labels=r.data.get('period_labels'), # Optional
     )}
 </p>
 

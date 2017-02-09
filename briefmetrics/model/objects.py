@@ -182,6 +182,7 @@ class Report(meta.Model): # Property within an account (such as a website)
         ('week-concat', 'Weekly (Combined)'),
         ('activity-year', 'Yearly'),
         ('mobile-week', 'Weekly (Mobile)'),
+        ('activity-quarter', 'Quarterly'),
         # Note: DO NOT CHANGE ORDER, existing data is typed based on index position.
        #'quarter',
        #'combine',

@@ -12,6 +12,8 @@ from briefmetrics.lib.report import (
     WeeklyMixin,
     inject_table_delta,
     cumulative_by_month,
+    cumulative_splitter,
+    date_to_quarter,
 )
 from .base import GAReport
 from .helpers import (
@@ -241,6 +243,7 @@ class ActivityReport(WeeklyMixin, GAReport):
     def fetch(self, google_query):
         days_delta = (self.date_end - self.date_start).days
         is_year_delta = days_delta > 360
+        is_quarter_delta = 85 <= days_delta <= 95
 
         interval_field = 'ga:nthWeek'
         if is_year_delta:
@@ -371,7 +374,7 @@ class ActivityReport(WeeklyMixin, GAReport):
 
         # Historic
         historic_start_date = self.previous_date_start
-        if not is_year_delta:
+        if not is_year_delta and not is_quarter_delta:
             # Override to just previous month
             historic_start_date = self.date_end - datetime.timedelta(days=self.date_end.day)
             historic_start_date -= datetime.timedelta(days=historic_start_date.day-1)
@@ -420,6 +423,9 @@ class ActivityReport(WeeklyMixin, GAReport):
         monthly_data, max_value = cumulative_by_month(iter_historic)
         if len(monthly_data) < 2:
             raise ValueError("invalid number of historic months", self.remote_id, historic_table.rows)
+        if is_quarter_delta:
+            # TODO: This needs to be generalized beyond months at this point, sigh
+            monthly_data, max_value = cumulative_splitter(monthly_data, split_on=3)
         last_month, current_month = monthly_data[-2:]
 
         self.data['historic_data'] = encode_rows(monthly_data, max_value)
@@ -428,6 +434,8 @@ class ActivityReport(WeeklyMixin, GAReport):
         self.data['total_last'] = last_month[-1]
         self.data['total_last_relative'] = last_month[min(len(current_month), len(last_month))-1]
         self.data['total_last_date_start'] = historic_start_date
+
+        print("XXX: ", self.data) # XXX
 
         social_search_table = self._get_social_search(google_query, self.date_start, self.date_end, summary_metrics, max_results=25)
         last_social_search = self._get_social_search(google_query, self.previous_date_start, self.previous_date_end, summary_metrics, max_results=100)
@@ -547,4 +555,7 @@ class ActivityQuarterlyReport(QuarterlyMixin, ActivityReport):
         super(ActivityQuarterlyReport, self).build()
         self.data['interval_label'] = 'quarter'
 
-
+        if self.previous_date_start.year != self.date_start.year:
+            self.data['period_labels'] = "%dQ%d" % (self.previous_date_start.year, date_to_quarter(self.previous_date_start)), "%dQ%d" % (self.date_start.year, date_to_quarter(self.date_start))
+        else:
+            self.data['period_labels'] = "Q%d" % date_to_quarter(self.previous_date_start), "Q%d" % date_to_quarter(self.date_start)

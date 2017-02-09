@@ -138,7 +138,7 @@
     </td>
 </%def>
 
-<%def name="render_intro(current, last, last_relative, units, interval, type='site')">
+<%def name="render_intro(current, last, last_relative, units, interval, type='site', period_labels=None)">
     <%
         previous_date_start, date_start, date_end = interval
         is_last_day = (date_end + h.timedelta(days=1)).month != date_end.month
@@ -147,17 +147,22 @@
         if (date_end - date_start).days > 360:
             period_fmt = '%Y'
             last_period = 'last year'
+        elif 85 <= (date_end - date_start).days <= 95:
+            last_period = 'last quarter'
         if previous_date_start.year != date_start.year:
             last_period = "last {}".format(previous_date_start.strftime(period_fmt))
+        period_start, period_end = date_start.strftime(period_fmt), previous_date_start.strftime(period_fmt)
+        if period_labels:
+            period_start, period_end = period_labels
     %>
     Your ${type} had <span class="chartTop">${h.format_int(current, units)}
     % if is_last_day:
-        in ${date_start.strftime(period_fmt)},</span>
+        in ${period_start},</span>
     % else:
         so far this month</span>,
     % endif
     % if is_last_day:
-        compared to <span class="chartBottom">${previous_date_start.strftime(period_fmt)}'s total of ${h.human_int(last)}</span>.
+        compared to <span class="chartBottom">${period_end}'s total of ${h.human_int(last)}</span>.
     % elif current >= last_relative and last != last_relative:
         compared to ${last_period}'s ${h.format_int(last_relative, units)} at this time.
         % if current > last:

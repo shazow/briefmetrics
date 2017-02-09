@@ -503,7 +503,7 @@ class TestReportLib(test.TestCase):
         self.assertEqual(r.get_subject(), u"Report for example.com (2012)")
 
         # Quarterly
-        since_time = datetime.datetime(2013, 2, 5)
+        since_time = datetime.datetime(2013, 4, 5)
         report = self._create_report_model('activity-quarter')
         r = get_report('activity-quarter')(report, since_time)
 
@@ -512,7 +512,18 @@ class TestReportLib(test.TestCase):
         self.assertEqual(r.date_end, datetime.date(2013, 3, 31)) # End of the quarter
         self.assertEqual(r.date_next, datetime.date(2013, 4, 1)) # First day of next quarter
 
-        self.assertEqual(r.get_subject(), u"Report for example.com (Q1)")
+        self.assertEqual(r.get_subject(), u"Report for example.com (2013Q1)")
+
+        since_time = datetime.datetime(2013, 2, 5)
+        report = self._create_report_model('activity-quarter')
+        r = get_report('activity-quarter')(report, since_time)
+
+        self.assertEqual(r.report.type, 'activity-quarter')
+        self.assertEqual(r.date_start, datetime.date(2012, 10, 1)) # Start of the quarter
+        self.assertEqual(r.date_end, datetime.date(2012, 12, 31)) # End of the quarter
+        self.assertEqual(r.date_next, datetime.date(2013, 1, 1)) # First day of next quarter
+
+        self.assertEqual(r.get_subject(), u"Report for example.com (2012Q4)")
 
 
 
