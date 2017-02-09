@@ -152,7 +152,7 @@
         if previous_date_start.year != date_start.year:
             last_period = "last {}".format(previous_date_start.strftime(period_fmt))
 
-        period_last, period_current = date_start.strftime(period_fmt), previous_date_start.strftime(period_fmt)
+        period_last, period_current = previous_date_start.strftime(period_fmt), date_start.strftime(period_fmt)
         if period_labels:
             period_last, period_current = period_labels
     %>
