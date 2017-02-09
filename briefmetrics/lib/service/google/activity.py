@@ -118,16 +118,17 @@ class ActivityReport(WeeklyMixin, GAReport):
         return t
 
     def _get_ecommerce(self, google_query, interval_field, limit=10):
+        # Note: Removed interval_field to support quarterly, and sorting is implied.
         t = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
                 #'start-date': self.previous_date_start, # Extra week
                 'start-date': self.date_start,
                 'end-date': self.date_end,
-                'sort': '-{}'.format(interval_field),
+                #'sort': '-{}'.format(interval_field),
             },
             dimensions=[
-                Column(interval_field),
+                #Column(interval_field),
                 Column('ga:productName', label="Product", visible=1),
             ],
             metrics=[
