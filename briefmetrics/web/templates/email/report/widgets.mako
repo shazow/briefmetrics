@@ -151,18 +151,19 @@
             last_period = 'last quarter'
         if previous_date_start.year != date_start.year:
             last_period = "last {}".format(previous_date_start.strftime(period_fmt))
-        period_start, period_end = date_start.strftime(period_fmt), previous_date_start.strftime(period_fmt)
+
+        period_last, period_current = date_start.strftime(period_fmt), previous_date_start.strftime(period_fmt)
         if period_labels:
-            period_start, period_end = period_labels
+            period_last, period_current = period_labels
     %>
     Your ${type} had <span class="chartTop">${h.format_int(current, units)}
     % if is_last_day:
-        in ${period_start},</span>
+        in ${period_current},</span>
     % else:
         so far this month</span>,
     % endif
     % if is_last_day:
-        compared to <span class="chartBottom">${period_end}'s total of ${h.human_int(last)}</span>.
+        compared to <span class="chartBottom">${period_last}'s total of ${h.human_int(last)}</span>.
     % elif current >= last_relative and last != last_relative:
         compared to ${last_period}'s ${h.format_int(last_relative, units)} at this time.
         % if current > last:

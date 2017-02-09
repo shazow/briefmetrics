@@ -436,8 +436,6 @@ class ActivityReport(WeeklyMixin, GAReport):
         self.data['total_last_relative'] = last_month[min(len(current_month), len(last_month))-1]
         self.data['total_last_date_start'] = historic_start_date
 
-        print("XXX: ", self.data) # XXX
-
         social_search_table = self._get_social_search(google_query, self.date_start, self.date_end, summary_metrics, max_results=25)
         last_social_search = self._get_social_search(google_query, self.previous_date_start, self.previous_date_end, summary_metrics, max_results=100)
         inject_table_delta(social_search_table, last_social_search, join_column='source')
@@ -560,3 +558,16 @@ class ActivityQuarterlyReport(QuarterlyMixin, ActivityReport):
             self.data['period_labels'] = "%dQ%d" % (self.previous_date_start.year, date_to_quarter(self.previous_date_start)), "%dQ%d" % (self.date_start.year, date_to_quarter(self.date_start))
         else:
             self.data['period_labels'] = "Q%d" % date_to_quarter(self.previous_date_start), "Q%d" % date_to_quarter(self.date_start)
+
+    def get_preview(self):
+        if len(self.tables['summary'].rows) < 2:
+            return u''
+
+        this_week, last_week = self.data['total_current'], self.data['total_last']
+        delta = (this_week / float(last_week or 1.0)) - 1
+        return u"Your site had {this_week} this {interval} ({delta} over last {interval}).".format(
+            this_week=h.format_int(this_week, self.data['total_units']),
+            delta=h.human_percent(delta, signed=True),
+            interval=self.data.get('interval_label', 'quarter'),
+        )
+
