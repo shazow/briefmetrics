@@ -435,6 +435,12 @@ class TestReportModel(test.TestCase):
         self.assertEqual(r.next_preferred(datetime.date(2013, 1, 1)), datetime.datetime(2014, 1, 1, 13))
         self.assertEqual(r.next_preferred(datetime.date(2012, 12, 28)), datetime.datetime(2013, 1, 1, 13))
 
+        r = get_report('activity-quarter')(model.Report(), now)
+        self.assertEqual(r.next_preferred(now), datetime.datetime(2013, 4, 1, 13, 0, 0))
+        self.assertEqual(r.next_preferred(datetime.date(2013, 1, 1)), datetime.datetime(2013, 4, 1, 13))
+        self.assertEqual(r.next_preferred(datetime.date(2012, 12, 28)), datetime.datetime(2013, 1, 1, 13))
+        self.assertEqual(r.next_preferred(datetime.date(2016, 3, 31)), datetime.datetime(2016, 4, 1, 13))
+
 
 class TestReportLib(test.TestCase):
     def _create_report_model(self, type='day'):
@@ -510,7 +516,7 @@ class TestReportLib(test.TestCase):
         self.assertEqual(r.report.type, 'activity-quarter')
         self.assertEqual(r.date_start, datetime.date(2013, 1, 1)) # Start of the quarter
         self.assertEqual(r.date_end, datetime.date(2013, 3, 31)) # End of the quarter
-        self.assertEqual(r.date_next, datetime.date(2013, 4, 1)) # First day of next quarter
+        self.assertEqual(r.date_next, datetime.date(2013, 7, 1)) # First day of next quarter
 
         self.assertEqual(r.get_subject(), u"Report for example.com (2013Q1)")
 
@@ -521,7 +527,7 @@ class TestReportLib(test.TestCase):
         self.assertEqual(r.report.type, 'activity-quarter')
         self.assertEqual(r.date_start, datetime.date(2012, 10, 1)) # Start of the quarter
         self.assertEqual(r.date_end, datetime.date(2012, 12, 31)) # End of the quarter
-        self.assertEqual(r.date_next, datetime.date(2013, 1, 1)) # First day of next quarter
+        self.assertEqual(r.date_next, datetime.date(2013, 4, 1)) # First day of next quarter
 
         self.assertEqual(r.get_subject(), u"Report for example.com (2012Q4)")
 

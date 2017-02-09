@@ -396,7 +396,7 @@ class QuarterlyMixin(object):
             prev_start, _ = quarter_to_dates(q, year=year)
 
         q_start, q_end = quarter_to_dates(q, year=year)
-        date_next = self.next_preferred(q_start).date()
+        date_next = self.next_preferred(q_end + datetime.timedelta(days=1)).date()
 
         return prev_start, q_start, q_end, date_next
 
