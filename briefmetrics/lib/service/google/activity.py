@@ -47,6 +47,23 @@ class ActivityReport(WeeklyMixin, GAReport):
             interval=self.data.get('interval_label', 'week'),
         )
 
+    def _get_summary(self, google_query, interval_field, metrics):
+        # Summary
+        summary_params = {
+            'ids': 'ga:%s' % self.remote_id,
+            'start-date': self.previous_date_start, # Extra week
+            'end-date': self.date_end,
+            'sort': '-{}'.format(interval_field),
+        }
+        summary_dimensions = [
+            Column(interval_field),
+        ]
+        return google_query.get_table(
+            params=summary_params,
+            dimensions=summary_dimensions,
+            metrics=metrics,
+        )
+
     def _get_search_keywords(self, google_query, interval_field):
         t = google_query.get_table(
             params={
@@ -253,15 +270,6 @@ class ActivityReport(WeeklyMixin, GAReport):
             interval_field = 'ga:nthMonth'
 
         # Summary
-        summary_params = {
-            'ids': 'ga:%s' % self.remote_id,
-            'start-date': self.previous_date_start, # Extra week
-            'end-date': self.date_end,
-            'sort': '-{}'.format(interval_field),
-        }
-        summary_dimensions = [
-            Column(interval_field),
-        ]
         basic_metrics = [
             Column('ga:pageviews', label='Views', type_cast=int, type_format=h.human_int, threshold=0, visible=0),
             Column('ga:users', label='Uniques', type_cast=int, type_format=h.human_int),
@@ -273,9 +281,7 @@ class ActivityReport(WeeklyMixin, GAReport):
             Column('ga:itemRevenue', label="Revenue", type_cast=float, type_format=_format_dollars),
             Column('ga:itemQuantity', label="Sales", type_cast=int, type_format=h.human_int),
         ]
-        self.tables['summary'] = summary_table = google_query.get_table(
-            params=summary_params,
-            dimensions=summary_dimensions,
+        self.tables['summary'] = summary_table = self._get_summary(google_query, interval_field,
             metrics=summary_metrics + [Column('ga:sessions', type_cast=int)],
         )
 
@@ -571,3 +577,37 @@ class ActivityQuarterlyReport(QuarterlyMixin, ActivityReport):
             interval=self.data.get('interval_label', 'quarter'),
         )
 
+    def _get_summary2(self, google_query, interval_field, metrics):
+        # Override with two queries, one per quarter, and merge.
+        # Override interval field so we get one row per query.
+        interval_field = 'ga:year'
+        summary_dimensions = [
+            Column(interval_field),
+        ]
+
+        q1 = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': self.previous_date_start,
+                'end-date': self.previous_date_end,
+                'sort': '-{}'.format(interval_field),
+            },
+            dimensions=summary_dimensions,
+            metrics=metrics,
+        )
+
+        q2 = google_query.get_table(
+            params={
+                'ids': 'ga:%s' % self.remote_id,
+                'start-date': self.date_start,
+                'end-date': self.date_end,
+                'sort': '-{}'.format(interval_field),
+            },
+            dimensions=summary_dimensions,
+            metrics=metrics,
+        )
+
+        if q1.rows:
+            q2.rows += q1.rows
+
+        return q2
