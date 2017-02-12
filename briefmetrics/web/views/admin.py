@@ -16,11 +16,12 @@ from .api import expose_api
 def dry_run(request):
     api.account.get_admin(request)
 
-    num_extra, filter_account = get_many(request.params, optional=['num_extra', 'filter_account'])
+    num_extra, filter_account, days_offset = get_many(request.params, optional=['num_extra', 'filter_account', 'days_offset'])
     num_extra = int(num_extra or 10)
+    days_offset = int(days_offset or 14)
 
-    tasks.report.dry_run.delay(num_extra=num_extra, filter_account=filter_account)
-    request.flash('Dry run queued: num_extra=%s filter_account=%s' % (num_extra, filter_account))
+    tasks.report.dry_run.delay(num_extra=num_extra, filter_account=filter_account, days_offset=days_offset)
+    request.flash('Dry run queued: num_extra=%s filter_account=%s days_offset=%s' % (num_extra, filter_account, days_offset))
 
 
 @expose_api('admin.explore_api')

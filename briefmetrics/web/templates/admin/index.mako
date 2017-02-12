@@ -10,6 +10,7 @@
         <p>
             <input type="text" size="4" value="" name="num_extra"  placeholder="extra" />
             <input type="text" size="4" value="" name="filter_account" placeholder="filter" />
+            <input type="text" size="4" value="14" name="days_offset" placeholder="offset" />
             <input type="submit" value="Dry Run" />
         </p>
     </form>

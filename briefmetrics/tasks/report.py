@@ -71,7 +71,7 @@ def send_all(since_time=None, async=True, pretend=False, max_num=None):
 
 
 @celery.task(ignore_result=True)
-def dry_run(num_extra=5, filter_account=None, async=True):
+def dry_run(num_extra=5, filter_account=None, days_offset=None, async=True):
     q = model.Session.query(model.Report).options(orm.joinedload_all('account.user'))
     if filter_account:
         q = q.filter(model.Report.account_id==filter_account)
@@ -96,7 +96,12 @@ def dry_run(num_extra=5, filter_account=None, async=True):
         report_queue.append(r)
         num_extra -= 1
 
-    since_time = now() - datetime.timedelta(days=14)
+    if days_offset is None:
+        days_offset = 14
+
+    since_time = now()
+    if days_offset:
+         since_time -= datetime.timedelta(days=days_offset)
 
     send_fn = send
     if async:
