@@ -43,7 +43,7 @@
             <h3>Weekly Report for ${'{:%b %d, %Y}'.format(h.now())}</h3>
             <img src="/static/images/screenshot.png?1" alt="Sample Report Screenshot" />
             <p>
-                ... and <a href"/features">much more</a>!
+                ... and <a href="/features">much more</a>!
             </p>
         </div>
 
