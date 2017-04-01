@@ -514,6 +514,7 @@ class TestReportLib(test.TestCase):
         r = get_report('activity-quarter')(report, since_time)
 
         self.assertEqual(r.report.type, 'activity-quarter')
+        self.assertEqual(r.previous_date_start, datetime.date(2012, 10, 1)) # Start of previous quarter
         self.assertEqual(r.date_start, datetime.date(2013, 1, 1)) # Start of the quarter
         self.assertEqual(r.date_end, datetime.date(2013, 3, 31)) # End of the quarter
         self.assertEqual(r.date_next, datetime.date(2013, 7, 1)) # First day of next quarter
@@ -527,10 +528,45 @@ class TestReportLib(test.TestCase):
         self.assertEqual(r.report.type, 'activity-quarter')
         self.assertEqual(r.date_start, datetime.date(2012, 10, 1)) # Start of the quarter
         self.assertEqual(r.date_end, datetime.date(2012, 12, 31)) # End of the quarter
-        self.assertEqual(r.date_next, datetime.date(2013, 4, 1)) # First day of next quarter
+        self.assertEqual(r.previous_date_start, datetime.date(2012, 7, 1)) # Start of previous quarter
+        self.assertEqual(r.date_next, datetime.date(2013, 4, 1)) # First day of next quarter report
 
         self.assertEqual(r.get_subject(), u"Report for example.com (2012Q4)")
 
+        # Quarterly, new error case:
+        since_time = datetime.datetime(2017, 4, 1)
+        report = self._create_report_model('activity-quarter')
+        r = get_report('activity-quarter')(report, since_time)
+
+        self.assertEqual(r.get_subject(), u"Report for example.com (2017Q1)")
+
+        self.assertEqual(r.previous_date_start, datetime.date(2016, 10, 1)) # Start of the quarter
+        self.assertEqual(r.date_start, datetime.date(2017, 1, 1)) # Start of the quarter
+        self.assertEqual(r.date_end, datetime.date(2017, 3, 31)) # End of the quarter
+        self.assertEqual(r.date_next, datetime.date(2017, 7, 1)) # First day of next quarter
+
+    def test_quarter_range(self):
+        report = self._create_report_model('activity-quarter')
+
+        since_time = datetime.datetime(2013, 2, 5)
+        r = get_report('activity-quarter')(report, since_time)
+
+        date_prev, q_start, q_end, date_next =  r.get_date_range(since_time)
+
+        self.assertEqual(date_prev, datetime.date(2012, 7, 1))
+        self.assertEqual(q_start, datetime.date(2012, 10, 1))
+        self.assertEqual(q_end, datetime.date(2012, 12, 31))
+        self.assertEqual(date_next, datetime.date(2013, 4, 1))
+
+        since_time = datetime.datetime(2017, 4, 1)
+        r = get_report('activity-quarter')(report, since_time)
+
+        date_prev, q_start, q_end, date_next =  r.get_date_range(since_time)
+
+        self.assertEqual(date_prev, datetime.date(2016, 10, 1))
+        self.assertEqual(q_start, datetime.date(2017, 1, 1))
+        self.assertEqual(q_end, datetime.date(2017, 3, 31))
+        self.assertEqual(date_next, datetime.date(2017, 7, 1))
 
 
     def test_trends_report(self):

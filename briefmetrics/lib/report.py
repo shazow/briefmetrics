@@ -387,13 +387,17 @@ class QuarterlyMixin(object):
         q = date_to_quarter(since_time) 
         year = since_time.year
 
+        # Go back one quarter, to account for the last incomplete quarter.
         if q == 1:
             year -= 1
             q = 4
             prev_start, _ = quarter_to_dates(3, year=year)
+        elif q == 2:
+            q = 1
+            prev_start, _ = quarter_to_dates(4, year=year-1)
         else:
             q -= 1
-            prev_start, _ = quarter_to_dates(q, year=year)
+            prev_start, _ = quarter_to_dates(q-1, year=year)
 
         q_start, q_end = quarter_to_dates(q, year=year)
         date_next = self.next_preferred(q_end + datetime.timedelta(days=1)).date()
