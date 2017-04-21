@@ -398,7 +398,10 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
             },
             dimensions=dimensions,
             metrics=[
-                Column('ga:users', label='Users', type_cast=int, visible=1),
+                # Note: This is unique users over the dimension which is daily,
+                # so the combined counts we use later are actually more daily
+                # sessions than users.
+                Column('ga:users', label='Daily Sessions', type_cast=int, visible=1),
                 Column('ga:sessions', label='Sessions', type_cast=int),
             ],
         )
