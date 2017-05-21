@@ -183,6 +183,7 @@ class Report(meta.Model): # Property within an account (such as a website)
         ('activity-year', 'Yearly'),
         ('mobile-week', 'Weekly (Mobile)'),
         ('activity-quarter', 'Quarterly'),
+        ('mobile-month', 'Monthly (Mobile)'),
         # Note: DO NOT CHANGE ORDER, existing data is typed based on index position.
        #'quarter',
        #'combine',

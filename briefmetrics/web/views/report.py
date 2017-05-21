@@ -42,8 +42,10 @@ def report_create(request):
             pass
         elif report_type == 'week':
             report_type = 'mobile-week'
+        elif report_type == 'activity-month':
+            report_type = 'mobile-month'
         else:
-            request.flash("Only weekly reports are supported for mobile apps. Creating a weekly report instead.")
+            request.flash("This report type is not supported for mobile apps yet. Making a weekly report instead. Please contact support if you need a new report type.")
             api.email.notify_admin(request, "Attempted mobile report: %s" % report_type, str(user))
             report_type = 'mobile-week'
 

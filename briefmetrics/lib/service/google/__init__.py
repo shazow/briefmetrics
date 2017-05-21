@@ -13,7 +13,7 @@ from ..base import OAuth2API
 from .activity import ActivityConcatReport, ActivityMonthlyReport, ActivityReport, ActivityYearlyReport
 from .trends import TrendsReport
 from .alerts import DailyReport
-from .mobile import MobileWeeklyReport
+from .mobile import MobileWeeklyReport, MobileMonthlyReport
 
 COLLECT_URL = 'https://ssl.google-analytics.com/collect'
 COLLECT_SESSION = requests.Session()

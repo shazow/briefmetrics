@@ -6,6 +6,7 @@ from briefmetrics.lib import helpers as h
 from briefmetrics.lib.report import (
     EmptyReportError,
     WeeklyMixin,
+    MonthlyMixin,
     inject_table_delta,
     cumulative_by_month,
 )
@@ -437,3 +438,14 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
         self.tables['versions'] = self._get_versions(google_query, summary_metrics)
 
         self.tables['screens'].tag_rows()
+
+
+class MobileMonthlyReport(MonthlyMixin, MobileWeeklyReport):
+    "Monthly report"
+    id = 'mobile-month'
+    label = 'Monthly (Mobile)'
+
+    def build(self):
+        super(MobileMonthlyReport, self).build()
+        self.data['interval_label'] = 'month'
+
