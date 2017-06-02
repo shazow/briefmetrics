@@ -43,6 +43,7 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
         )
 
     def _get_search_keywords(self, google_query, interval_field):
+        # TODO: Not used anymore, should be safe to remove.
         t = google_query.get_table(
             params={
                 'ids': 'ga:%s' % self.remote_id,
@@ -430,9 +431,6 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
         self.data['total_last'] = last_month[-1]
         self.data['total_last_relative'] = last_month[min(len(current_month), len(last_month))-1]
         self.data['total_last_date_start'] = historic_start_date
-
-        self.tables['search_keywords'] = self._get_search_keywords(google_query, interval_field=interval_field)
-        self.tables['search_keywords'].tag_rows()
 
         self.tables['geo'] = self._get_geo(google_query, summary_metrics)
         self.tables['versions'] = self._get_versions(google_query, summary_metrics)
