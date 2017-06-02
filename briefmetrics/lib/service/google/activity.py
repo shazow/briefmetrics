@@ -282,13 +282,16 @@ class ActivityReport(WeeklyMixin, GAReport):
             Column('ga:itemQuantity', label="Sales", type_cast=int, type_format=h.human_int),
         ]
         self.tables['summary'] = summary_table = self._get_summary(google_query, interval_field,
-            metrics=summary_metrics + [Column('ga:sessions', type_cast=int)],
+            metrics=summary_metrics + [
+                Column('ga:sessions', type_cast=int),
+                Column('ga:adClicks', type_cast=int),
+            ],
         )
 
         if not summary_table.has_value('ga:pageviews'):
             raise EmptyReportError()
 
-        include_ads = self.config.get('ads') or summary_table.has_value('ga:itemRevenue')
+        include_ads = self.config.get('ads') or summary_table.has_value('ga:adClicks') or summary_table.has_value('ga:itemRevenue')
 
         # Ads
         # FIXME: Merge this with summary_metrics once https://code.google.com/p/analytics-issues/issues/detail?id=693 is fixed.
@@ -576,38 +579,3 @@ class ActivityQuarterlyReport(QuarterlyMixin, ActivityReport):
             delta=h.human_percent(delta, signed=True),
             interval=self.data.get('interval_label', 'quarter'),
         )
-
-    def _get_summary2(self, google_query, interval_field, metrics):
-        # Override with two queries, one per quarter, and merge.
-        # Override interval field so we get one row per query.
-        interval_field = 'ga:year'
-        summary_dimensions = [
-            Column(interval_field),
-        ]
-
-        q1 = google_query.get_table(
-            params={
-                'ids': 'ga:%s' % self.remote_id,
-                'start-date': self.previous_date_start,
-                'end-date': self.previous_date_end,
-                'sort': '-{}'.format(interval_field),
-            },
-            dimensions=summary_dimensions,
-            metrics=metrics,
-        )
-
-        q2 = google_query.get_table(
-            params={
-                'ids': 'ga:%s' % self.remote_id,
-                'start-date': self.date_start,
-                'end-date': self.date_end,
-                'sort': '-{}'.format(interval_field),
-            },
-            dimensions=summary_dimensions,
-            metrics=metrics,
-        )
-
-        if q1.rows:
-            q2.rows += q1.rows
-
-        return q2
