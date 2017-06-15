@@ -7,7 +7,6 @@ from briefmetrics.lib.report import (
     EmptyReportError,
     WeeklyMixin,
     MonthlyMixin,
-    inject_table_delta,
     cumulative_by_month,
 )
 from .base import GAReport
@@ -342,7 +341,9 @@ class MobileWeeklyReport(WeeklyMixin, GAReport):
             )
 
         # Screens
-        screens_metrics = [col.new() for col in basic_metrics]
+        screens_metrics = [col.new() for col in basic_metrics] + [
+            Column('ga:exitRate', label='Exit', type_cast=float, type_format=_format_percent, reverse=True, threshold=0),
+        ]
         if self.config.get('pageloadtime', True):
             screens_metrics += [
                 Column('ga:avgPageLoadTime', label='Load', type_cast=float, type_format=h.human_time, reverse=True, threshold=0),
