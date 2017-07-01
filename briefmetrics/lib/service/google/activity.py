@@ -1,7 +1,7 @@
 import datetime
 from briefmetrics.lib.table import Table, Column
 from briefmetrics.lib.gcharts import encode_rows
-from briefmetrics.lib.exceptions import APIError
+from briefmetrics.lib.exceptions import APIError, TableShapeError
 from briefmetrics.lib import helpers as h
 
 from briefmetrics.lib.report import (
@@ -14,6 +14,8 @@ from briefmetrics.lib.report import (
     cumulative_by_month,
     cumulative_splitter,
     date_to_quarter,
+    quarter_to_dates,
+    iter_quarters,
 )
 from .base import GAReport
 from .helpers import (
@@ -47,6 +49,9 @@ class ActivityReport(WeeklyMixin, GAReport):
             interval=self.data.get('interval_label', 'week'),
         )
 
+    def _get_interval_table(self, google_query, interval_field, params, dimensions=None, metrics=None, _cache_keys=None):
+        return google_query.get_table(params=params, dimensions=dimensions, metrics=metrics, _cache_keys=_cache_keys)
+
     def _get_summary(self, google_query, interval_field, metrics):
         # Summary
         summary_params = {
@@ -58,17 +63,17 @@ class ActivityReport(WeeklyMixin, GAReport):
         summary_dimensions = [
             Column(interval_field),
         ]
-        return google_query.get_table(
+        return self._get_interval_table(google_query, interval_field,
             params=summary_params,
             dimensions=summary_dimensions,
             metrics=metrics,
         )
 
     def _get_search_keywords(self, google_query, interval_field):
-        t = google_query.get_table(
+        t = self._get_interval_table(google_query, interval_field,
             params={
                 'ids': 'ga:%s' % self.remote_id,
-                'start-date': self.date_start, # Extra week
+                'start-date': self.previous_date_start, # Extra week
                 'end-date': self.date_end,
                 'sort': '-{},-ga:sessions'.format(interval_field),
                 'filters': 'ga:keyword!=(not provided);ga:medium==organic',
@@ -135,17 +140,16 @@ class ActivityReport(WeeklyMixin, GAReport):
         return t
 
     def _get_ecommerce(self, google_query, interval_field, limit=10):
-        # Note: Removed interval_field to support quarterly, and sorting is implied.
-        t = google_query.get_table(
+        t = self._get_interval_table(google_query, interval_field,
             params={
                 'ids': 'ga:%s' % self.remote_id,
-                #'start-date': self.previous_date_start, # Extra week
+                'start-date': self.previous_date_start, # Extra week
                 'start-date': self.date_start,
                 'end-date': self.date_end,
                 #'sort': '-{}'.format(interval_field),
             },
             dimensions=[
-                #Column(interval_field),
+                Column(interval_field),
                 Column('ga:productName', label="Product", visible=1),
             ],
             metrics=[
@@ -197,7 +201,7 @@ class ActivityReport(WeeklyMixin, GAReport):
 
         # Note: max 10 metrics allowed
         metrics = goal_metrics[-9:] + [Column('ga:sessions', type_cast=int)]
-        raw_table = google_query.get_table(
+        raw_table = self._get_interval_table(google_query, interval_field,
             params={
                 'ids': 'ga:%s' % self.remote_id,
                 'start-date': self.previous_date_start, # Extra week
@@ -257,17 +261,19 @@ class ActivityReport(WeeklyMixin, GAReport):
 
         return t
 
-
-    def fetch(self, google_query):
+    def _get_interval_field(self):
         days_delta = (self.date_end - self.date_start).days
         is_year_delta = days_delta > 360
-        is_quarter_delta = 85 <= days_delta <= 95
-
-        interval_field = 'ga:nthWeek'
         if is_year_delta:
-            interval_field = 'ga:year'
-        elif days_delta > 6:
-            interval_field = 'ga:nthMonth'
+            return 'ga:year'
+        if days_delta > 6:
+            return 'ga:nthMonth'
+        return 'ga:nthWeek'
+
+    def fetch(self, google_query):
+        interval_field = self._get_interval_field()
+        is_year_delta = interval_field == 'ga:year'
+        is_quarter_delta = interval_field == 'bm:quarter'
 
         # Summary
         basic_metrics = [
@@ -579,3 +585,40 @@ class ActivityQuarterlyReport(QuarterlyMixin, ActivityReport):
             delta=h.human_percent(delta, signed=True),
             interval=self.data.get('interval_label', 'quarter'),
         )
+
+    def _get_interval_field(self):
+        return 'bm:quarter'
+
+    def _get_interval_table(self, google_query, interval_field, params, dimensions=None, metrics=None, _cache_keys=None):
+        if interval_field != 'bm:quarter':
+            return google_query.get_table(params=params, dimensions=dimensions, metrics=metrics, _cache_keys=_cache_keys)
+
+        dimensions += [Column('ga:year')]
+        columns = google_query._columns_to_params(params.copy(), dimensions=dimensions, metrics=metrics)
+        result = Table(columns).new() # Decouple column refs
+        quarter_idx = result.column_to_index['bm:quarter']
+
+        if dimensions:
+            dimensions = [d for d in dimensions if not d.id.startswith('bm:quarter')]
+
+        print "XXXXXXXXXXXXXX", dimensions, metrics, params
+
+        # We assume that there are no date dimensions... Maybe not a safe assumption?
+        for (yr, q) in reversed(list(iter_quarters(params['start-date'], params['end-date']))):
+            start_date, end_date = quarter_to_dates(q, yr)
+            quarter_params = params.copy()
+            quarter_params.update({
+                'start-date': start_date,
+                'end-date': end_date,
+            })
+            quarter_params.pop('sort', None)
+            print quarter_params
+            t = google_query.get_table(params=quarter_params, dimensions=dimensions, metrics=metrics, renew=True, _cache_keys=_cache_keys)
+
+            quarter_str = "{}Q{}".format(yr, q)
+            for row in t.rows:
+                vals = row.values
+                vals.insert(quarter_idx, quarter_str)
+                result.add(vals)
+
+        return result

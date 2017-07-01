@@ -2,7 +2,7 @@ from briefmetrics import test
 from briefmetrics import api
 from briefmetrics import model
 from briefmetrics import tasks
-from briefmetrics.lib.report import get_report, sparse_cumulative, date_to_quarter, quarter_to_dates
+from briefmetrics.lib.report import get_report, sparse_cumulative, date_to_quarter, quarter_to_dates, iter_quarters
 from briefmetrics.lib.table import Column
 from briefmetrics.lib.controller import Context
 
@@ -658,4 +658,13 @@ class TestReportLib(test.TestCase):
             self.assertEqual(q, date_to_quarter(start))
             self.assertEqual(q, date_to_quarter(end))
             self.assertTrue(start <= d <= end)
+
+    def test_iter_quarters(self):
+        data = [
+            (datetime.date(2014, 1, 1), datetime.date(2014, 12, 31), [(2014,1), (2014,2), (2014,3), (2014,4)]),
+        ]
+
+        for a, b, q in data:
+             self.assertEqual(q, list(iter_quarters(a, b)))
+
 

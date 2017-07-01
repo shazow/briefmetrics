@@ -169,11 +169,13 @@ class Query(object):
     def get(self, url, params=None):
         return self._get(url, params=params, _cache_keys=self.cache_keys)
 
-    def get_table(self, params, dimensions=None, metrics=None, _cache_keys=None):
+    def get_table(self, params, dimensions=None, metrics=None, renew=False, _cache_keys=None):
         params = dict(params)
         columns = self._columns_to_params(params, dimensions=dimensions, metrics=metrics)
 
         t = Table(columns)
+        if renew:
+            t = t.new()
         t._response_data = response_data = self._get_data(params)
         if 'rows' not in response_data:
             return t

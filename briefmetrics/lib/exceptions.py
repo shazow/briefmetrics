@@ -15,6 +15,10 @@ class APIException(BriefmetricsException):
         return self.message
 
 
+class TableShapeError(BriefmetricsException):
+    pass
+
+
 class APIError(APIException):
     pass
 

@@ -57,6 +57,23 @@ def quarter_to_dates(q, year):
     end = end.replace(day=1) - datetime.timedelta(days=1)
     return start, end
 
+def iter_quarters(start, stop):
+    """
+    Stops when stop is outside the next quarter.
+    iter_quarters(date(2014, 1, 1), (2014, 12, 31)) == iter((2014,1), (2014,2), (2014,3), (2014,4))
+    """
+    q = date_to_quarter(start)
+    yr = start.year
+    yield (yr, q)
+    while True:
+        q += 1
+        if q > 4:
+            q = 1
+            yr += 1
+        a, b = quarter_to_dates(q, yr)
+        if a >= stop:
+            break
+        yield (yr, q)
 
 def sparse_cumulative(iterable, final_date=None):
     "Data must be ascending."
