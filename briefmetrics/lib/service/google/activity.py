@@ -601,8 +601,6 @@ class ActivityQuarterlyReport(QuarterlyMixin, ActivityReport):
         if dimensions:
             dimensions = [d for d in dimensions if not d.id.startswith('bm:quarter')]
 
-        print "XXXXXXXXXXXXXX", dimensions, metrics, params
-
         # We assume that there are no date dimensions... Maybe not a safe assumption?
         for (yr, q) in reversed(list(iter_quarters(params['start-date'], params['end-date']))):
             start_date, end_date = quarter_to_dates(q, yr)
