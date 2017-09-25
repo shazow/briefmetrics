@@ -5,7 +5,6 @@
   * Babak Morshedizadeh (@bmorsh)
 
 
-
 * Small things
     * Another level for 'on your way'?
     * Monthly: Weekend-shifted day delta bar charts
