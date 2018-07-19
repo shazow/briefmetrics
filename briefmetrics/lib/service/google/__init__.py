@@ -89,9 +89,9 @@ class GoogleAPI(OAuth2API):
         'auth_url': 'https://accounts.google.com/o/oauth2/auth',
         'token_url': 'https://accounts.google.com/o/oauth2/token',
         'scope': [
-            'profile',
-            'email',
+            'https://www.googleapis.com/auth/userinfo.profile',
             'https://www.googleapis.com/auth/analytics.readonly',
+            'https://www.googleapis.com/auth/userinfo.email',
         ],
 
 
