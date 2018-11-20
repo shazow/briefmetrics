@@ -147,6 +147,10 @@ def login_user_id(request, user_id):
 
 
 def login_user(request, service='google', save_redirect=None, token=None, is_force=None):
+    if len(service) > 32:
+        # Probably some injection spam -_-
+         httpexceptions.HTTPBadRequest(detail="invalid service")
+
     user_id = get_user_id(request)
 
     if user_id and not is_force:
