@@ -61,9 +61,9 @@ def _login_tween(handler, registry):
     def _login_handler(request):
         try:
             return handler(request)
-        except LoginRequired, e:
+        except LoginRequired as e:
             raise httpexceptions.HTTPSeeOther(e.next_url(request))
-        except APIError, e:
+        except APIError as e:
             raise httpexceptions.HTTPBadRequest(detail=e.message)
 
     return _login_handler

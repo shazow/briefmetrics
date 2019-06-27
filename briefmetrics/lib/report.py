@@ -145,8 +145,11 @@ def split_table_delta(t, split_column, join_column, compare_column):
         val = row.values[idx_compare]
         last_val = last_row.values[idx_compare]
         delta = val-last_val
-        if not delta or abs(delta) < col_compare._threshold:
-            continue
+
+        # 
+        if col_compare._threshold is not None:
+            if not delta or abs(delta) < col_compare._threshold:
+                continue
 
         row.tag(type=col_compare.label, value=delta)
 

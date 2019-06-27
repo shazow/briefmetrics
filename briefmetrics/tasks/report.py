@@ -53,12 +53,12 @@ def send(report_id, since_time=None, pretend=False):
 
 
 @celery.task(ignore_result=True)
-def send_all(since_time=None, async=True, pretend=False, max_num=None):
+def send_all(since_time=None, is_async=True, pretend=False, max_num=None):
     """Send all outstanding reports."""
     since_time = _to_datetime(since_time)
 
     send_fn = send
-    if async:
+    if is_async:
         send_fn = send.delay
 
     num_reports = 0
@@ -71,7 +71,7 @@ def send_all(since_time=None, async=True, pretend=False, max_num=None):
 
 
 @celery.task(ignore_result=True)
-def dry_run(num_extra=5, filter_account=None, days_offset=None, async=True):
+def dry_run(num_extra=5, filter_account=None, days_offset=None, is_async=True):
     q = model.Session.query(model.Report).options(orm.joinedload_all('account.user'))
     if filter_account:
         q = q.filter(model.Report.account_id==filter_account)
@@ -104,7 +104,7 @@ def dry_run(num_extra=5, filter_account=None, days_offset=None, async=True):
          since_time -= datetime.timedelta(days=days_offset)
 
     send_fn = send
-    if async:
+    if is_async:
         send_fn = send.delay
 
     log.info('Starting dry run for %d reports.' % len(report_queue))

@@ -12,3 +12,6 @@
 /data
 /docker/nginx/certs
 /*.pid
+
+#virtualenv
+virtualdev/

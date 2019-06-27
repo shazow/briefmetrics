@@ -100,7 +100,7 @@ class TestReport(test.TestWeb):
         tasks.report.celery.request = self.request
 
         with mock.patch('briefmetrics.api.email.send_message') as send_message:
-            tasks.report.send_all(async=False)
+            tasks.report.send_all(is_async=False)
             self.assertTrue(send_message.called)
             self.assertEqual(len(send_message.call_args_list), 2)
 
@@ -120,7 +120,7 @@ class TestReport(test.TestWeb):
 
         # Send all again, should skip because too early
         with mock.patch('briefmetrics.api.email.send_message') as send_message:
-            tasks.report.send_all(async=False)
+            tasks.report.send_all(is_async=False)
             self.assertFalse(send_message.called)
 
         self.assertEqual(model.Report.count(), 1)
@@ -134,7 +134,7 @@ class TestReport(test.TestWeb):
         Session.commit()
 
         with mock.patch('briefmetrics.api.email.send_message') as send_message:
-            tasks.report.send_all(async=False)
+            tasks.report.send_all(is_async=False)
             self.assertFalse(send_message.called)
 
         # Report should be deleted.
@@ -190,7 +190,7 @@ class TestReport(test.TestWeb):
 
             report = self._create_report(user=user, remote_id='bar')
             with mock.patch('briefmetrics.api.email.send_message') as send_message:
-                tasks.report.send_all(async=False)
+                tasks.report.send_all(is_async=False)
                 self.assertTrue(send_message.called)
 
             self.assertTrue(update_subscription.called)
@@ -208,7 +208,7 @@ class TestReport(test.TestWeb):
 
         with mock.patch('briefmetrics.api.report.fetch', raise_error):
             with mock.patch('briefmetrics.api.email.send_message') as send_message:
-                tasks.report.send_all(async=False)
+                tasks.report.send_all(is_async=False)
                 self.assertTrue(send_message.called)
 
                 call, = send_message.call_args_list
@@ -226,7 +226,7 @@ class TestReport(test.TestWeb):
 
         with mock.patch('briefmetrics.api.report.fetch', raise_error):
             with mock.patch('briefmetrics.api.email.send_message') as send_message:
-                tasks.report.send_all(async=False)
+                tasks.report.send_all(is_async=False)
                 self.assertTrue(send_message.called)
 
                 call, = send_message.call_args_list
@@ -346,7 +346,7 @@ class TestReport(test.TestWeb):
         tasks.report.celery.request = self.request
 
         with mock.patch('briefmetrics.api.email.send_message') as send_message:
-            tasks.report.send_all(async=False)
+            tasks.report.send_all(is_async=False)
             self.assertTrue(send_message.called)
             self.assertEqual(len(send_message.call_args_list), 1)
 
@@ -380,7 +380,7 @@ class TestReport(test.TestWeb):
         tasks.report.celery.request = self.request
 
         with mock.patch('briefmetrics.api.email.send_message') as send_message:
-            tasks.report.send_all(async=False)
+            tasks.report.send_all(is_async=False)
             self.assertTrue(send_message.called)
             self.assertEqual(len(send_message.call_args_list), 1)
 
