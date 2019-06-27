@@ -198,7 +198,7 @@ class TestNamecheap(test.TestWeb):
         self.assertTrue(payments)
 
         line_items = nc.query(url='/v1/billing/invoice/123/line_items')
-        print line_items
+        print(line_items)
         line_item = line_items[0]
 
         params = line_item[-1]['json']
@@ -221,7 +221,7 @@ class TestNamecheap(test.TestWeb):
         self.assertTrue(payments)
 
         line_items = nc.query(url='/v1/billing/invoice/123/line_items')
-        print line_items
+        print(line_items)
         line_item = line_items[0]
 
         params = line_item[-1]['json']

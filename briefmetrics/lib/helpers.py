@@ -15,7 +15,7 @@ The template globals (``h`` et al) are set in
 
 import re
 from datetime import timedelta
-from urllib import urlencode
+from urllib.parse import urlencode
 
 from unstdlib import html, slugify, get_many, now
 from pyramid.asset import abspath_from_asset_spec  # TODO: Adopt this into unstdlib?

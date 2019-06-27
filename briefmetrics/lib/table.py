@@ -1,4 +1,5 @@
-from itertools import izip, cycle
+#from itertools import zip as izip
+from itertools import cycle
 from unstdlib import html
 
 
@@ -216,7 +217,7 @@ class Table(object):
     def add(self, row, is_measured=True):
         values = []
         r = Row(self, values)
-        for column, value in izip(self.columns, row):
+        for column, value in zip(self.columns, row):
             if not column:
                 continue
 
@@ -337,7 +338,7 @@ class Table(object):
             ) +
             TBODY(
                 TR(
-                    TD(col.format(v), attrs={'class': col.type_class}) for col, v in izip(columns, row)
+                    TD(col.format(v), attrs={'class': col.type_class}) for col, v in zip(columns, row)
                 ) for row in rows
             )
         )

@@ -30,7 +30,7 @@ def save_logo(fp, base_dir, replace_path=None, prefix=None, pretend=False):
     # Resize
     try:
         image = Image.open(BytesIO(data))
-    except IOError, e:
+    except IOError as e:
         log.error("save_logo: Failed to open image '%s' (%d bytes): %r" % (replace_path, len(data), e))
         raise ValueError("Failed to read image.")
 

@@ -1,6 +1,6 @@
 import uuid
 import requests
-from urllib import urlencode
+from urllib.parse import urlencode
 from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
 
 from briefmetrics.lib.cache import ReportRegion
