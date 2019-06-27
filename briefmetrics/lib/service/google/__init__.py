@@ -91,6 +91,7 @@ def _monkeypatch_validate_token_parameters(params, scope=None):
     if not 'token_type' in params:
         raise oauthlib.oauth2.rfc6749.parameters.MissingTokenTypeError()
 
+import oauthlib
 oauthlib.oauth2.rfc6749.parameters.validate_token_parameters = _monkeypatch_validate_token_parameters
 
 class GoogleAPI(OAuth2API):
