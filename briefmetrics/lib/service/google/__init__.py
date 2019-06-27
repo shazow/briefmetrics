@@ -80,9 +80,18 @@ def collect(tracking_id, user_id=None, client_id=None, hit_type='pageview', http
 
 
 # FIXME: ... This is a temporary fix for scope change issues
-import warnings
-warnings.filterwarnings("ignore", "Scope has changed to .*")
+def _monkeypatch_validate_token_parameters(params, scope=None):
+    """Ensures token precence, token type, expiration and scope in params."""
+    if 'error' in params:
+        oauthlib.oauth2.rfc6749.parameters.raise_from_error(params.get('error'), params)
 
+    if not 'access_token' in params:
+        raise oauthlib.oauth2.rfc6749.parameters.MissingTokenError(description="Missing access token parameter.")
+
+    if not 'token_type' in params:
+        raise oauthlib.oauth2.rfc6749.parameters.MissingTokenTypeError()
+
+oauthlib.oauth2.rfc6749.parameters.validate_token_parameters = _monkeypatch_validate_token_parameters
 
 class GoogleAPI(OAuth2API):
     id = 'google'
