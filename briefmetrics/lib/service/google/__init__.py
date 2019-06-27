@@ -79,6 +79,11 @@ def collect(tracking_id, user_id=None, client_id=None, hit_type='pageview', http
     return resp
 
 
+# FIXME: ... This is a temporary fix for scope change issues
+import warnings
+warnings.filterwarnings("ignore", "Scope has changed to .*")
+
+
 class GoogleAPI(OAuth2API):
     id = 'google'
     default_report = 'week'
