@@ -89,11 +89,11 @@ class GoogleAPI(OAuth2API):
         'auth_url': 'https://accounts.google.com/o/oauth2/auth',
         'token_url': 'https://accounts.google.com/o/oauth2/token',
         'scope': [
-            'https://www.googleapis.com/auth/userinfo.profile',
+            'openid',
             'https://www.googleapis.com/auth/analytics.readonly',
             'https://www.googleapis.com/auth/userinfo.email',
+            'https://www.googleapis.com/auth/userinfo.profile',
         ],
-
 
         # Populate these during init:
         # 'client_id': ...,
