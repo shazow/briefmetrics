@@ -61,7 +61,7 @@ def handle_api(method_whitelist=None):
             try:
                 api_controller(self.request, method_whitelist=method_whitelist)
 
-            except APIControllerError, e:
+            except APIControllerError as e:
                 self.request.flash(e.message)
                 return fn(self)
 
@@ -91,7 +91,7 @@ def api_controller(request, method_whitelist=None):
     """
     try:
         method = request.params['method']
-    except KeyError, e:
+    except KeyError as e:
         raise APIControllerError("Missing required parameter: %s" % e.args[0])
 
     if method_whitelist and method not in iterate(method_whitelist):
@@ -113,7 +113,7 @@ def api_controller(request, method_whitelist=None):
 
     try:
         return fn(request)
-    except KeyError, e:
+    except KeyError as e:
         raise APIControllerError("Missing required parameter: %s" % e.args[0])
 
 
@@ -147,7 +147,12 @@ def index(request):
         if r is not None:
             data['result'] = r
 
-    except (APIControllerError, LoginRequired), e:
+    except APIControllerError as e:
+        data['messages'] += [e.message]
+        data['code'] = e.code
+        data['status'] = 'error'
+
+    except (APIControllerError, LoginRequired) as e:
         data['messages'] += [e.message]
         data['code'] = e.code
         data['status'] = 'error'

@@ -57,7 +57,7 @@ if ini_file:
 
 
 @signals.worker_init.connect
-def bootstrap_pyramid(signal, sender):
+def bootstrap_pyramid(signal, sender, *args, **kwargs):
     from pyramid.paster import bootstrap
     booted = bootstrap(ini_file)
     sender.app.request = booted['request']
