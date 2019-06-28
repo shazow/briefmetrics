@@ -613,21 +613,28 @@ class TestReportLib(test.TestCase):
             (datetime.date(2014, 2, 2), 5),
         ]
 
+        # Python3 no longer coerces OrderedDict to list
+        # must convert to list manually for these tests to work
         iterable = data[:1]
         monthly_data, max_value = sparse_cumulative(iterable)
+        monthly_data = list(monthly_data)
+
         self.assertEqual(monthly_data, [[1]])
         self.assertEqual(max_value, 1)
 
         iterable = data[:1] * 3
         monthly_data, max_value = sparse_cumulative(iterable)
+        monthly_data = list(monthly_data)
         self.assertEqual(monthly_data, [[3]])
         self.assertEqual(max_value, 3)
 
         monthly_data, max_value = sparse_cumulative(data[:1], final_date=datetime.date(2014, 1, 5))
+        monthly_data = list(monthly_data)
         self.assertEqual(monthly_data, [[1, 1, 1, 1, 1]])
         self.assertEqual(max_value, 1)
 
         monthly_data, max_value = sparse_cumulative(data)
+        monthly_data = list(monthly_data)
         last_month, current_month = monthly_data
         self.assertEqual(max_value, 12)
         self.assertEqual(len(last_month), 30)
