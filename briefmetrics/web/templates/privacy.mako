@@ -43,6 +43,11 @@
             anybody else without your explicit permission.
         </li>
         <li>
+            Briefmetrics does not share any of your data with third parties.
+            The reports we generate for you are only for you and the recipients
+            that you specify.
+        </li>
+        <li>
             If you'd like to use Briefmetrics but are unable to give us access
             to your data, then
             <a href="mailto:support@briefmetrics.com">please reach out</a> about
