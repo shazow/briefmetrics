@@ -26,9 +26,15 @@
             API on your behalf.
         </li>
         <li>
+            Your Google Analytics data continues to live on Google Analytics.
+            Briefmetrics does not store your data permanently, but only
+            temporarily to construct a comprehensive report. Some derived data
+            is logged for debugging purposes and purged periodically.
+        </li>
+        <li>
             It is our intention to keep your Google Analytics data confidential and
-            safe while it spends time on our servers. We
-            <a href="/security">take security very seriously</a>.
+            safe while it spends time on our servers.
+            <a href="/security">We take security seriously</a>.
         </li>
         <li>
             If an error occurs, a Briefmetrics developer may investigate what
