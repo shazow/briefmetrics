@@ -4,7 +4,7 @@ from briefmetrics.lib.http import assert_response
 from unstdlib import random_string
 from requests import Session
 from requests_hawk import HawkAuth
-from urllib import quote
+from urllib.parse import quote
 
 
 class NamecheapAPI(Service):
