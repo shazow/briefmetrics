@@ -1,5 +1,5 @@
-REQUIREMENTS_FILE=requirements.txt
-REQUIREMENTS_OUT=requirements.txt.log
+REQUIREMENTS_FILE=poetry.lock
+REQUIREMENTS_OUT=poetry.lock.log
 SETUP_OUT=*.egg-info
 
 
@@ -7,11 +7,9 @@ all: setup requirements model_upgrade
 
 requirements: setup $(REQUIREMENTS_OUT)
 
-piprot:
-	piprot -x $(REQUIREMENTS_FILE)
-
 $(REQUIREMENTS_OUT): $(REQUIREMENTS_FILE)
-	pip install -r $(REQUIREMENTS_FILE) | tee -a $(REQUIREMENTS_OUT)
+	which poetry || pip install poetry
+	poetry install | tee -a $(REQUIREMENTS_OUT)
 	python setup.py develop
 
 setup: virtualenv $(SETUP_OUT)
