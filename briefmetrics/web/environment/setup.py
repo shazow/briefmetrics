@@ -48,7 +48,7 @@ def _setup_models(settings):
 
 def _setup_cache_regions(settings):
     from briefmetrics.lib import cache
-    if not hasattr(cache.ReportRegion, 'backend'):
+    if not cache.ReportRegion.is_configured:
         # Hacky to avoid configuring multiple times in tests and such :(
         cache.ReportRegion.configure_from_config(settings, 'cache.report.')
 
