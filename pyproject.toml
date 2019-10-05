@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "briefmetrics"
+version = "0.1.0"
+description = ""
+authors = ["Andrey Petrov <andrey.petrov@shazow.net>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+celery = "^4.3"
+kombu = "^4.6"
+
+[tool.poetry.dev-dependencies]
+IPython = "^7.8"
+pyramid_ipython = "^0.2.0"
+coverage = "^4.5"
+nose = "^1.3"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
