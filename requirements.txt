@@ -20,7 +20,6 @@ ipython==7.5.0
 ipython-genutils==0.2.0
 jedi==0.14.0
 kombu==4.6.3
-lxml==4.3.4
 Mako==1.0.12
 MarkupSafe==1.1.1
 mock==3.0.5
@@ -32,7 +31,7 @@ parso==0.5.0
 PasteDeploy==2.0.1
 pexpect==4.7.0
 pickleshare==0.7.5
-Pillow==6.0.0
+Pillow==6.1.0
 plaster==1.0
 plaster-pastedeploy==0.7
 premailer==3.4.1

@@ -57,6 +57,7 @@ ReportRegion = make_region(
 )
 
 
+# TODO: Remove, obsolete by dogpile.cache.null
 class DisabledBackend(CacheBackend):
     def __init__(self, arguments):
         pass
