@@ -211,9 +211,7 @@ def get_report(id):
 
 #
 
-class Report(object):
-    __metaclass__ = registry_metaclass(registry)
-
+class Report(object, metaclass=registry_metaclass(registry)):
     id = None
     label = ''
     template = 'email/report/daily.mako'
