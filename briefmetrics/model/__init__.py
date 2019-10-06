@@ -4,6 +4,7 @@ from .objects import *
 
 def init(engine):
     """Call me before using any of the tables or classes in the model"""
+    Session.remove() # Workaround for multiple calls to init during tests
     Session.configure(bind=engine)
 
 
