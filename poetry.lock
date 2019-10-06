@@ -51,6 +51,13 @@ version = "1.11.0"
 [package.dependencies]
 funcsigs = "*"
 
+[package.extras]
+crypto = ["pycryptopp (>=0.5.12)"]
+cryptography = ["cryptography"]
+pycrypto = ["pycrypto"]
+pycryptodome = ["pycryptodome"]
+testsuite = ["nose", "mock", "pycryptodome", "webtest", "coverage", "cryptography", "sqlalchemy", "pymongo", "redis", "pylibmc", "python-memcached"]
+
 [[package]]
 category = "main"
 description = "Screen-scraping library"
@@ -61,6 +68,10 @@ version = "4.8.0"
 
 [package.dependencies]
 soupsieve = ">=1.2"
+
+[package.extras]
+html5lib = ["html5lib"]
+lxml = ["lxml"]
 
 [[package]]
 category = "main"
@@ -83,14 +94,52 @@ category = "main"
 description = "Distributed Task Queue."
 name = "celery"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
-version = "4.3.0"
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*,"
+version = "4.4.0rc3"
 
 [package.dependencies]
-billiard = ">=3.6.0,<4.0"
-kombu = ">=4.4.0,<5.0"
+billiard = ">=3.6.1,<4.0"
+kombu = ">=4.6.4,<5.0"
 pytz = ">0.0-dev"
-vine = ">=1.3.0"
+vine = "1.3.0"
+
+[package.dependencies.sqlalchemy]
+optional = true
+version = "*"
+
+[package.extras]
+arangodb = ["pyArango (>=1.3.2)"]
+auth = ["cryptography"]
+azureblockblob = ["azure-storage (0.36.0)", "azure-common (1.1.5)", "azure-storage-common (1.1.0)"]
+brotli = ["brotli (>=1.0.0)", "brotlipy (>=0.7.0)"]
+cassandra = ["cassandra-driver"]
+consul = ["python-consul"]
+cosmosdbsql = ["pydocumentdb (2.3.2)"]
+couchbase = ["couchbase", "couchbase-cffi"]
+couchdb = ["pycouchdb"]
+django = ["Django (>=1.11)"]
+dynamodb = ["boto3 (>=1.9.125)"]
+elasticsearch = ["elasticsearch"]
+eventlet = ["eventlet (>=0.24.1)"]
+gevent = ["gevent"]
+librabbitmq = ["librabbitmq (>=1.5.0)"]
+lzma = ["backports.lzma"]
+memcache = ["pylibmc"]
+mongodb = ["pymongo (>=3.3.0)"]
+msgpack = ["msgpack"]
+pymemcache = ["python-memcached"]
+pyro = ["pyro4"]
+redis = ["redis (>=3.2.0)"]
+riak = ["riak (>=2.0)"]
+s3 = ["boto3 (>=1.9.125)"]
+slmq = ["softlayer-messaging (>=1.0.3)"]
+solar = ["ephem"]
+sqlalchemy = ["sqlalchemy"]
+sqs = ["boto3 (>=1.9.125)", "pycurl"]
+tblib = ["tblib (>=1.3.0)"]
+yaml = ["PyYAML (>=3.10)"]
+zookeeper = ["kazoo (>=1.3.1)"]
+zstd = ["zstandard"]
 
 [[package]]
 category = "main"
@@ -184,6 +233,10 @@ optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*"
 version = "1.8.1"
 
+[package.extras]
+docs = ["watchdog", "sphinx", "pylons-sphinx-themes"]
+testing = ["watchdog", "pytest", "pytest-cov", "mock"]
+
 [[package]]
 category = "main"
 description = "Internationalized Domain Names in Applications (IDNA)"
@@ -202,6 +255,10 @@ version = "0.23"
 
 [package.dependencies]
 zipp = ">=0.5"
+
+[package.extras]
+docs = ["sphinx", "rst.linker"]
+testing = ["packaging", "importlib-resources"]
 
 [[package]]
 category = "dev"
@@ -224,6 +281,17 @@ pygments = "*"
 setuptools = ">=18.5"
 traitlets = ">=4.2"
 
+[package.extras]
+all = ["nbconvert", "notebook", "ipywidgets", "testpath", "qtconsole", "ipyparallel", "nose (>=0.10.1)", "nbformat", "ipykernel", "pygments", "requests", "numpy", "Sphinx (>=1.3)"]
+doc = ["Sphinx (>=1.3)"]
+kernel = ["ipykernel"]
+nbconvert = ["nbconvert"]
+nbformat = ["nbformat"]
+notebook = ["notebook", "ipywidgets"]
+parallel = ["ipyparallel"]
+qtconsole = ["qtconsole"]
+test = ["nose (>=0.10.1)", "requests", "testpath", "pygments", "nbformat", "ipykernel", "numpy"]
+
 [[package]]
 category = "dev"
 description = "Vestigial utilities from IPython"
@@ -243,6 +311,9 @@ version = "0.15.1"
 [package.dependencies]
 parso = ">=0.5.0"
 
+[package.extras]
+testing = ["colorama", "docopt", "pytest (>=3.1.0,<5.0.0)"]
+
 [[package]]
 category = "main"
 description = "Messaging library for Python."
@@ -255,6 +326,22 @@ version = "4.6.5"
 amqp = "2.5.1"
 importlib-metadata = ">=0.18"
 
+[package.extras]
+azureservicebus = ["azure-servicebus (>=0.21.1)"]
+azurestoragequeues = ["azure-storage-queue"]
+consul = ["python-consul (>=0.6.0)"]
+librabbitmq = ["librabbitmq (>=1.5.2)"]
+mongodb = ["pymongo (>=3.3.0)"]
+msgpack = ["msgpack"]
+pyro = ["pyro4"]
+qpid = ["qpid-python (>=0.26)", "qpid-tools (>=0.26)"]
+redis = ["redis (>=3.2.0)"]
+slmq = ["softlayer-messaging (>=1.0.3)"]
+sqlalchemy = ["sqlalchemy"]
+sqs = ["boto3 (>=1.4.4)", "pycurl (7.43.0.2)"]
+yaml = ["PyYAML (>=3.10)"]
+zookeeper = ["kazoo (>=1.3.1)"]
+
 [[package]]
 category = "main"
 description = "Powerful and Pythonic XML processing library combining libxml2/libxslt with the ElementTree API."
@@ -262,6 +349,12 @@ name = "lxml"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, != 3.4.*"
 version = "4.4.1"
+
+[package.extras]
+cssselect = ["cssselect (>=0.7)"]
+html5 = ["html5lib"]
+htmlsoup = ["beautifulsoup4"]
+source = ["Cython (>=0.29.7)"]
 
 [[package]]
 category = "main"
@@ -292,6 +385,11 @@ version = "3.0.5"
 
 [package.dependencies]
 six = "*"
+
+[package.extras]
+build = ["twine", "wheel", "blurb"]
+docs = ["sphinx"]
+test = ["pytest", "pytest-cov"]
 
 [[package]]
 category = "main"
@@ -336,6 +434,11 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "3.1.0"
 
+[package.extras]
+rsa = ["cryptography"]
+signals = ["blinker"]
+signedtoken = ["cryptography", "pyjwt (>=1.0.0)"]
+
 [[package]]
 category = "dev"
 description = "A Python Parser"
@@ -344,6 +447,9 @@ optional = false
 python-versions = "*"
 version = "0.5.1"
 
+[package.extras]
+testing = ["docopt", "pytest (>=3.0.7)"]
+
 [[package]]
 category = "main"
 description = "Load, configure, and compose WSGI applications and servers"
@@ -351,6 +457,10 @@ name = "pastedeploy"
 optional = false
 python-versions = "*"
 version = "2.0.1"
+
+[package.extras]
+docs = ["Sphinx (>=1.7.5)", "pylons-sphinx-themes"]
+paste = ["paste"]
 
 [[package]]
 category = "dev"
@@ -391,6 +501,10 @@ version = "1.0"
 [package.dependencies]
 setuptools = "*"
 
+[package.extras]
+docs = ["sphinx", "pylons-sphinx-themes"]
+testing = ["pytest", "pytest-cov"]
+
 [[package]]
 category = "main"
 description = "A loader implementing the PasteDeploy syntax to be used by plaster."
@@ -402,6 +516,9 @@ version = "0.7"
 [package.dependencies]
 PasteDeploy = ">=2.0"
 plaster = ">=0.5"
+
+[package.extras]
+testing = ["pytest", "pytest-cov"]
 
 [[package]]
 category = "main"
@@ -417,6 +534,10 @@ cssselect = "*"
 cssutils = "*"
 lxml = "*"
 requests = "*"
+
+[package.extras]
+dev = ["tox", "twine", "therapist", "black", "flake8"]
+test = ["nose", "mock"]
 
 [[package]]
 category = "dev"
@@ -455,6 +576,11 @@ optional = false
 python-versions = "*"
 version = "1.7.1"
 
+[package.extras]
+crypto = ["cryptography (>=1.4)"]
+flake8 = ["flake8", "flake8-import-order", "pep8-naming"]
+test = ["pytest (>=4.0.1,<5.0.0)", "pytest-cov (>=2.6.0,<3.0.0)", "pytest-runner (>=4.2,<5.0.0)"]
+
 [[package]]
 category = "main"
 description = "The Pyramid Web Framework, a Pylons project"
@@ -474,6 +600,10 @@ webob = ">=1.8.3"
 "zope.deprecation" = ">=3.5.0"
 "zope.interface" = ">=3.8.0"
 
+[package.extras]
+docs = ["Sphinx (>=1.8.1)", "docutils", "pylons-sphinx-themes (>=1.0.8)", "pylons-sphinx-latesturl", "repoze.sphinx.autointerface", "sphinxcontrib-autoprogram"]
+testing = ["webtest (>=1.3.1)", "zope.component (>=4.0)", "coverage", "nose", "virtualenv"]
+
 [[package]]
 category = "main"
 description = "Beaker session factory backend for Pyramid"
@@ -485,6 +615,10 @@ version = "0.8"
 [package.dependencies]
 beaker = "*"
 pyramid = "*"
+
+[package.extras]
+docs = ["sphinx", "docutils"]
+testing = ["nose", "coverage"]
 
 [[package]]
 category = "main"
@@ -500,6 +634,10 @@ pyramid = ">=1.4"
 pyramid-mako = ">=0.3.1"
 "repoze.lru" = "*"
 
+[package.extras]
+docs = ["Sphinx (>=1.7.5)", "pylons-sphinx-themes (>=0.3)"]
+testing = ["webtest", "nose", "coverage"]
+
 [[package]]
 category = "main"
 description = "A package which logs to a Python logger when an exception is raised by a Pyramid application"
@@ -510,6 +648,10 @@ version = "1.0"
 
 [package.dependencies]
 pyramid = ">=1.5"
+
+[package.extras]
+docs = ["sphinx", "docutils", "pylons-sphinx-themes"]
+testing = ["coverage", "nose"]
 
 [[package]]
 category = "main"
@@ -547,6 +689,10 @@ pyramid = "*"
 "repoze.sendmail" = ">=4.1"
 transaction = "*"
 
+[package.extras]
+docs = ["sphinx", "docutils", "pylons-sphinx-themes (>=0.3)", "repoze.sphinx.autointerface"]
+testing = ["webtest", "coverage", "nose"]
+
 [[package]]
 category = "main"
 description = "Mako template bindings for the Pyramid web framework"
@@ -558,6 +704,10 @@ version = "1.1.0"
 [package.dependencies]
 Mako = ">=1.1.0"
 pyramid = "*"
+
+[package.extras]
+docs = ["Sphinx (>=1.8.1)", "docutils", "repoze.sphinx.autointerface", "pylons-sphinx-themes (>=1.0.8)"]
+testing = ["WebTest (>=1.3.1)", "nose", "coverage"]
 
 [[package]]
 category = "main"
@@ -602,6 +752,10 @@ optional = false
 python-versions = "*"
 version = "0.7"
 
+[package.extras]
+docs = ["sphinx"]
+testing = ["coverage", "nose"]
+
 [[package]]
 category = "main"
 description = "Repoze Sendmail"
@@ -614,6 +768,10 @@ version = "4.4.1"
 setuptools = "*"
 transaction = "*"
 "zope.interface" = ">=3.6.0"
+
+[package.extras]
+docs = ["sphinx", "repoze.sphinx.autointerface", "setuptools", "transaction", "zope.interface (>=3.6.0)"]
+testing = ["coverage", "nose", "setuptools", "transaction", "zope.interface (>=3.6.0)"]
 
 [[package]]
 category = "main"
@@ -628,6 +786,10 @@ certifi = ">=2017.4.17"
 chardet = ">=3.0.2,<3.1.0"
 idna = ">=2.5,<2.9"
 urllib3 = ">=1.21.1,<1.25.0 || >1.25.0,<1.25.1 || >1.25.1,<1.26"
+
+[package.extras]
+security = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)"]
+socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7)", "win-inet-pton"]
 
 [[package]]
 category = "main"
@@ -653,6 +815,9 @@ version = "1.2.0"
 oauthlib = ">=3.0.0"
 requests = ">=2.0.0"
 
+[package.extras]
+rsa = ["oauthlib (>=3.0.0)"]
+
 [[package]]
 category = "main"
 description = "Python 2 and 3 compatibility utilities"
@@ -676,6 +841,18 @@ name = "sqlalchemy"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "1.3.9"
+
+[package.extras]
+mssql = ["pyodbc"]
+mssql_pymssql = ["pymssql"]
+mssql_pyodbc = ["pyodbc"]
+mysql = ["mysqlclient"]
+oracle = ["cx-oracle"]
+postgresql = ["psycopg2"]
+postgresql_pg8000 = ["pg8000"]
+postgresql_psycopg2binary = ["psycopg2-binary"]
+postgresql_psycopg2cffi = ["psycopg2cffi"]
+pymysql = ["pymysql"]
 
 [[package]]
 category = "main"
@@ -703,6 +880,9 @@ decorator = "*"
 ipython-genutils = "*"
 six = "*"
 
+[package.extras]
+test = ["pytest", "mock"]
+
 [[package]]
 category = "main"
 description = "Transaction management for Python"
@@ -713,6 +893,11 @@ version = "2.4.0"
 
 [package.dependencies]
 "zope.interface" = "*"
+
+[package.extras]
+docs = ["sphinx", "repoze.sphinx.autointerface"]
+test = ["mock"]
+testing = ["nose", "coverage", "mock"]
 
 [[package]]
 category = "main"
@@ -738,6 +923,11 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, <4"
 version = "1.25.6"
 
+[package.extras]
+brotli = ["brotlipy (>=0.6.0)"]
+secure = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "certifi", "ipaddress"]
+socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7,<2.0)"]
+
 [[package]]
 category = "main"
 description = "A library for deferring decorator actions"
@@ -745,6 +935,10 @@ name = "venusian"
 optional = false
 python-versions = "*"
 version = "1.2.0"
+
+[package.extras]
+docs = ["sphinx", "repoze.sphinx.autointerface"]
+testing = ["pytest", "coverage", "pytest-cov"]
 
 [[package]]
 category = "main"
@@ -762,6 +956,10 @@ optional = false
 python-versions = "*"
 version = "1.3.1"
 
+[package.extras]
+docs = ["Sphinx (>=1.8.1)", "docutils", "pylons-sphinx-themes (>=1.0.9)"]
+testing = ["nose", "coverage"]
+
 [[package]]
 category = "dev"
 description = "Measures number of Terminal column cells of wide-character codes"
@@ -778,6 +976,10 @@ optional = false
 python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*"
 version = "1.8.5"
 
+[package.extras]
+docs = ["Sphinx (>=1.7.5)", "pylons-sphinx-themes"]
+testing = ["pytest (>=3.1.0)", "coverage", "pytest-cov", "pytest-xdist"]
+
 [[package]]
 category = "main"
 description = "Helper to test WSGI applications"
@@ -792,6 +994,10 @@ beautifulsoup4 = "*"
 six = "*"
 waitress = ">=0.8.5"
 
+[package.extras]
+docs = ["Sphinx (>=1.8.1)", "docutils", "pylons-sphinx-themes (>=1.0.8)"]
+tests = ["nose (<1.3.0)", "coverage", "mock", "pastedeploy", "wsgiproxy2", "pyquery"]
+
 [[package]]
 category = "main"
 description = "Backport of pathlib-compatible object wrapper for zip files"
@@ -802,6 +1008,10 @@ version = "0.6.0"
 
 [package.dependencies]
 more-itertools = "*"
+
+[package.extras]
+docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
+testing = ["pathlib2", "contextlib2", "unittest2"]
 
 [[package]]
 category = "main"
@@ -814,6 +1024,10 @@ version = "4.4.0"
 [package.dependencies]
 setuptools = "*"
 
+[package.extras]
+docs = ["sphinx"]
+test = ["zope.testrunner"]
+
 [[package]]
 category = "main"
 description = "Interfaces for Python"
@@ -825,8 +1039,13 @@ version = "4.6.0"
 [package.dependencies]
 setuptools = "*"
 
+[package.extras]
+docs = ["sphinx", "repoze.sphinx.autointerface"]
+test = ["zope.event"]
+testing = ["zope.event", "nose", "coverage"]
+
 [metadata]
-content-hash = "c69faed0f5f6cadccd14aa7d3c58c1bb3a6545d4cb9310710d7f8c193207ddba"
+content-hash = "5c9cfa1263bd18b8ea36f94c3a8e6fc835e6511c3eea5e377b2fc8aeae114f58"
 python-versions = "^3.7"
 
 [metadata.hashes]
@@ -838,7 +1057,7 @@ beaker = ["ad5d1c05027ee3be3a482ea39f8cb70339b41e5d6ace0cb861382754076d187e"]
 beautifulsoup4 = ["05668158c7b85b791c5abde53e50265e16f98ad601c402ba44d70f96c4159612", "25288c9e176f354bf277c0a10aa96c782a6a18a17122dba2e8cec4a97e03343b", "f040590be10520f2ea4c2ae8c3dae441c7cfff5308ec9d58a0ec0c1b8f81d469"]
 billiard = ["01afcb4e7c4fd6480940cfbd4d9edc19d7a7509d6ada533984d0d0f49901ec82", "b8809c74f648dfe69b973c8e660bcec00603758c9db8ba89d7719f88d5f01f26"]
 cachetools = ["428266a1c0d36dc5aca63a2d7c5942e88c2c898d72139fca0e97fdd2380517ae", "8ea2d3ce97850f31e4a08b0e2b5e6c34997d7216a9d2c98e0f3978630d4da69a"]
-celery = ["4c4532aa683f170f40bd76f928b70bc06ff171a959e06e71bf35f2f9d6031ef9", "528e56767ae7e43a16cfef24ee1062491f5754368d38fcfffa861cdb9ef219be"]
+celery = ["821d11967f0f3f8fe24bd61ecfc7b6acbb5a926b719f1e8c4d5ff7bc09e18d81", "ae4541fb3af5182bd4af749fee9b89c4858f2792d34bb5d034967e662cf9b55c"]
 certifi = ["e4f3620cfea4f83eedc95b24abd9cd56f3c4b146dd0177e83a21b4eb49e21e50", "fd7c7c74727ddcf00e9acd26bba8da604ffec95bf1c2144e67aff7a8b50e6cef"]
 chardet = ["84ab92ed1c4d4f16916e05906b6b75a6c0fb5db821cc65e70cbd64a3e2a5eaae", "fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"]
 colorama = ["05eed71e2e327246ad6b38c540c4a3117230b19679b875190486ddd2d721422d", "f8ac84de7840f5b9c4e3347b3c1eaa50f7e49c2b07596221daec5edaabbd7c48"]

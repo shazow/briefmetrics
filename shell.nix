@@ -9,18 +9,23 @@ stdenv.mkDerivation {
   buildInputs = [
     python37Full
 
+    # cryptography (poetry)
+    cffi
+    pyopenssl
+
     # For Pillow
     zlib
     libjpeg
-    lxml
+    libxml2
   ];
 
-  LIBRARY_PATH="${zlib.out}/lib:${zlib.dev}/include:${lxml.out}/lib";
-
+  LIBRARY_PATH="${zlib.out}/lib:${zlib.dev}/include:${libxml2.out}/lib";
   LDFLAGS="-L${zlib.out}/lib -L${libjpeg.out}/lib";
   CFLAGS="-I${zlib.dev}/include -I${libjpeg.dev}/include";
 
   shellHook = ''
+    export HISTFILE="$PWD/.bash_history";
+
     SOURCE_DATE_EPOCH=$(date +%s)
     if [[ ! -d .env3 ]]; then
       python -m venv .env3
