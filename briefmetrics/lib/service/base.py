@@ -5,8 +5,7 @@ from briefmetrics.lib.registry import registry_metaclass
 registry = {}
 
 
-class Service(object):
-    __metaclass__ = registry_metaclass(registry)
+class Service(object, metaclass=registry_metaclass(registry)):
     config = {}  # Extend and override this.
 
     id = None
