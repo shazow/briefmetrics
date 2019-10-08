@@ -111,8 +111,8 @@ class FakeQuery(Query):
         start_internalId = int(profile_item_template[u'internalWebPropertyId'])
         for i in range(self.num_profiles):
             t = profile_item_template.copy()
-            t[u'id'] = unicode(start_id + i)
-            t[u'internalWebPropertyId'] = unicode(start_internalId + i)
+            t[u'id'] = str(start_id + i)
+            t[u'internalWebPropertyId'] = str(start_internalId + i)
             r[u'items'].append(t)
 
         r[u'totalResults'] = len(r[u'items'])

@@ -188,7 +188,7 @@ def send(request, report, since_time=None, pretend=False, session=model.Session)
     since_time = since_time or now()
 
     if not pretend and report.time_next and report.time_next > since_time:
-        log.warn('send too early, skipping for report: %s' % report.id)
+        log.warning('send too early, skipping for report: %s' % report.id)
         return
 
     owner = report.account.user
@@ -204,7 +204,7 @@ def send(request, report, since_time=None, pretend=False, session=model.Session)
 
     send_users = report.users
     if not send_users:
-        log.warn('No recipients, skipping report: %s' % report.id)
+        log.warning('No recipients, skipping report: %s' % report.id)
         return
 
     try:
@@ -226,7 +226,7 @@ def send(request, report, since_time=None, pretend=False, session=model.Session)
             report.delete()
             session.commit()
 
-        log.warn('Invalid token, removed report: %s' % report)
+        log.warning('Invalid token, removed report: %s' % report)
         return
     except APIError as e:
         if not 'User does not have sufficient permissions for this profile' in e.message:
@@ -248,7 +248,7 @@ def send(request, report, since_time=None, pretend=False, session=model.Session)
             report.delete()
             model.Session.commit()
 
-        log.warn('Lost permission to profile, removed report: %s' % report)
+        log.warning('Lost permission to profile, removed report: %s' % report)
         return
 
 

@@ -16,7 +16,7 @@ def stripe_webhook(ga_tracking_id, stripe_account_id, data, pretend=False):
     """Task to send a specific weekly report (gets created by send_all)."""
     stripe_account = model.Account.get_by(id=stripe_account_id, service='stripe')
     if not stripe_account:
-        log.warn('Invalid stripe account webhook, skipping: %s' % stripe_account_id)
+        log.warning('Invalid stripe account webhook, skipping: %s' % stripe_account_id)
         return
 
     stripe_query = api.account.query_service(celery.request, stripe_account)

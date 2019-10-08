@@ -40,7 +40,7 @@ def send(report_id, since_time=None, pretend=False):
         orm.joinedload(model.Report.users),
     ).get(report_id)
     if not report:
-        log.warn('Invalid report id, skipping: %s' % report_id)
+        log.warning('Invalid report id, skipping: %s' % report_id)
         return
 
     try:
