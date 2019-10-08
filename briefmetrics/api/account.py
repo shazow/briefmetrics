@@ -268,7 +268,7 @@ def set_payments(user, plan_id=None, card_token=None, metadata=None, payment_typ
         p = payment.registry[payment_type](user)
 
     if p.id == 'stripe' and not card_token:  # For testing
-        log.warn('Skipping interfacing set_payments for user: %s' % user)
+        log.warning('Skipping interfacing set_payments for user: %s' % user)
         Session.commit()
         return user
 
