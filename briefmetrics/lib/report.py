@@ -21,7 +21,7 @@ def cumulative_by_month(month_views_iter):
         month_list.append(val)
         max_value = max(max_value, val)
 
-    return months.values(), max_value
+    return list(months.values()), max_value
 
 def cumulative_splitter(data, split_on=None):
     if not split_on:
@@ -109,7 +109,7 @@ def sparse_cumulative(iterable, final_date=None):
     else:
         data.append(last_amount)
 
-    return cumulated.values(), max(last_amount, max_value)
+    return list(cumulated.values()), max(last_amount, max_value)
 
 
 # TODO: Move this into lib/table.py
