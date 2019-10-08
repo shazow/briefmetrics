@@ -32,7 +32,7 @@ def make_key_generator(namespace, fn, value_mangler=str, arg_blacklist=('self', 
     # TODO: Include parent class in name?
     # TODO: Handle vararg and kw?
     # TODO: Better default value_mangler?
-    fn_args = inspect.getargspec(fn).args
+    fn_args = inspect.signature(fn).parameters.keys()
     arg_blacklist = arg_blacklist or []
 
     if namespace is None:
