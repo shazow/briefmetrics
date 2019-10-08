@@ -7,8 +7,7 @@ class PaymentError(APIError):
     pass
 
 
-class Payment(object):
-    __metaclass__ = registry_metaclass(registry)
+class Payment(object, metaclass=registry_metaclass(registry)):
     id = None
     is_charging = True
     auto_charge = False
