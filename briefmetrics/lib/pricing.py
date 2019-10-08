@@ -120,7 +120,7 @@ class Plan(Singleton):
         return '{plan.name} for {plan.price_str}'.format(plan=self)
 
     def iter_features(self):
-        for key, value in self.features.iteritems():
+        for key, value in self.features.items():
             yield Feature.get(key), value
 
     def __repr__(self):
