@@ -98,7 +98,7 @@ class FakeQuery(Query):
 
         t = Table(columns)
         row_data = [self._stateful_cycle(col.id) for col in columns]
-        for _ in xrange(limit):
+        for _ in range(limit):
             t.add(next(c) for c in row_data)
 
         return t
@@ -109,7 +109,7 @@ class FakeQuery(Query):
 
         start_id = int(profile_item_template[u'id'])
         start_internalId = int(profile_item_template[u'internalWebPropertyId'])
-        for i in xrange(self.num_profiles):
+        for i in range(self.num_profiles):
             t = profile_item_template.copy()
             t[u'id'] = unicode(start_id + i)
             t[u'internalWebPropertyId'] = unicode(start_internalId + i)
