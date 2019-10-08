@@ -107,7 +107,7 @@ class MandrillMessage(object):
         }
 
         headers = {'content-type': 'application/json'}
-        r = http_session.post('https://mandrillapp.com/api/1.0/messages/send.json', data=json.dumps(params), headers=headers)
+        r = http_session.post('https://mandrillapp.com/api/1.0/messages/send.json', data=json.dumps(params).encode(), headers=headers)
         assert_response(r)
 
         return r.json()
