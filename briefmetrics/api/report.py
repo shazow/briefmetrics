@@ -3,6 +3,7 @@ import logging
 import datetime
 import random
 
+from functools import reduce
 from sqlalchemy import orm
 from unstdlib import now, get_many
 from oauthlib.oauth2.rfc6749.errors import InvalidGrantError
