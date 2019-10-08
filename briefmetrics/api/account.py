@@ -319,7 +319,7 @@ def set_plan(user, plan_id, update_subscription=None):
 
     if update_subscription is None:
         # Default behaviour
-        update_subscription = user.num_remaining <= 0
+        update_subscription = user.num_remaining is None or user.num_remaining <= 0
 
     if update_subscription and user.payment:
         user.payment.start()
