@@ -67,9 +67,9 @@ class Column(object):
         min_value, _ = self.min_row
         max_value, _ = self.max_row
 
-        if max_value < value:
+        if max_value is None or max_value < value:
             self.max_row = value, row
-        elif min_value > value or min_value is None:
+        elif min_value is None or min_value > value:
             self.min_row = value, row
 
     def is_interesting(self, value):
