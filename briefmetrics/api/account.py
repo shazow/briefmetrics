@@ -106,7 +106,7 @@ def get_user(request, required=False, joinedload=None):
 
     q = Session.query(model.User)
     for p in iterate(joinedload or []):
-        q = q.options(orm.joinedload_all(p))
+        q = q.options(orm.joinedload(p))
 
     u = q.get(user_id)
     if not u:
