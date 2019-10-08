@@ -63,7 +63,7 @@ class TestWeb(TestModel):
         if _extra_params:
             p.update(_extra_params)
 
-        r = self.app.post('/api', status=_status, upload_files=_upload_files, params=p)
+        r = self.app.post('/api', status=_status, upload_files=_upload_files, params=p, content_type='application/json')
 
         if format == 'json':
             return json.loads(r.body)

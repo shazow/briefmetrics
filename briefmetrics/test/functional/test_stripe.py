@@ -57,7 +57,7 @@ class TestStripe(test.TestWeb):
         webhook_args = None
 
         with mock.patch('briefmetrics.tasks.service.stripe_webhook.delay') as stripe_webhook:
-            body = json.dumps(STRIPE_WEBHOOKS['invoice.payment.succeeded'])
+            body = json.dumps(STRIPE_WEBHOOKS['invoice.payment.succeeded']).encode()
 
             r = self.app.post('/webhook/stripe', params=body, content_type='application/json')
             self.assertFalse(stripe_webhook.called)

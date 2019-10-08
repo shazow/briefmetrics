@@ -169,7 +169,7 @@ def index(request):
             request.session.flash(message)
         return httpexceptions.HTTPSeeOther(next or '/')
 
-    body = json.dumps(data, **encode_settings)
+    body = json.dumps(data, **encode_settings).encode()
     return Response(body, content_type='application/json', status=data['code'])
 
 

@@ -39,7 +39,7 @@ def collect(app_id, identity=None, event=None, properties=None, http_session=COL
         params['properties'] = properties
 
     headers = {'Content-type': 'application/json'}
-    req = requests.Request('POST', COLLECT_URL, data=json.dumps(params), headers=headers).prepare()
+    req = requests.Request('POST', COLLECT_URL, data=json.dumps(params).encode(), headers=headers).prepare()
     resp = http_session.send(req)
     assert_response(resp)
     return resp

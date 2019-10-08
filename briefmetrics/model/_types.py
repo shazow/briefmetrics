@@ -82,7 +82,7 @@ class JSONEncodedDict(types.TypeDecorator):
     impl = types.LargeBinary
 
     def process_bind_param(self, value, dialect):
-        return value is not None and json.dumps(value, cls=SchemaEncoder)
+        return value is not None and json.dumps(value, cls=SchemaEncoder).encode()
 
     def process_result_value(self, value, dialect):
         return value is not None and json.loads(value) or {}
