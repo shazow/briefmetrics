@@ -12,6 +12,9 @@ $(REQUIREMENTS_OUT): $(REQUIREMENTS_FILE)
 	poetry install | tee -a $(REQUIREMENTS_OUT)
 	python setup.py develop
 
+requirements.txt:
+	poetry export -f requirements.txt --without-hashes > requirements.txt
+
 setup: virtualenv $(SETUP_OUT)
 
 $(SETUP_OUT): setup.py setup.cfg
