@@ -45,6 +45,7 @@ def _setup_models(settings):
         # Show unicode warnings as errors in testing.
         import warnings
         warnings.filterwarnings('error')
+        warnings.filterwarnings('once', category=DeprecationWarning, module='html5lib')
 
 def _setup_cache_regions(settings):
     from briefmetrics.lib import cache
