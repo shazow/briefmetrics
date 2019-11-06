@@ -31,7 +31,7 @@ stdenv.mkDerivation {
     SOURCE_DATE_EPOCH=$(date +%s)
     if [[ ! -d .env3 ]]; then
       python -m venv .env3
-      .env3/bin/pip install --pre poetry
+      .env3/bin/pip install --pre poetry  # --pre for poetry 1.0 beta
     fi
     source .env3/bin/activate
   '';
