@@ -42,7 +42,7 @@ services:
         container_name: db
         image: shazow/postgresql
         environment:
-            - MASTER_PASSWORD=Vh9zXIxFRVATk73s
+            - MASTER_PASSWORD
         volumes:
             - postgresql-data:/var/lib/postgresql
 
