@@ -117,18 +117,13 @@ class GoogleAPI(OAuth2API):
 
     def query_user(self):
         fields = ','.join(['id', 'kind', 'displayName', 'emails', 'name'])
-        r = self.session.get('https://www.googleapis.com/plus/v1/people/me', params=fields)
+        r = self.session.get('https://www.googleapis.com/oauth2/v1/userinfo', params=fields)
         r.raise_for_status()
 
         user_info = r.json()
-        for e in user_info['emails']:
-            # Find the account email if there is one.
-            if e['type'] == 'account':
-                break
-
         remote_id = user_info['id']
-        email = e['value']
-        name = user_info.get('displayName')
+        email = user_info.get('email')
+        name = user_info.get('name')
 
         return remote_id, email, name, user_info
 
