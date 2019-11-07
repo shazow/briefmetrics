@@ -7,15 +7,25 @@ all: setup requirements model_upgrade
 
 requirements: setup $(REQUIREMENTS_OUT)
 
+virtualenv:
+ifndef VIRTUAL_ENV
+	$(error No VIRTUAL_ENV defined)
+endif
+
+poetry: virtualenv
+ifeq (, $(shell which poetry))
+	pip install poetry
+endif
+
 $(REQUIREMENTS_OUT): $(REQUIREMENTS_FILE)
 	which poetry || pip install poetry
 	poetry install | tee -a $(REQUIREMENTS_OUT)
 	python setup.py develop
 
-requirements.txt:
+requirements.txt: poetry
 	poetry export -f requirements.txt --without-hashes > requirements.txt
 
-setup: virtualenv $(SETUP_OUT)
+setup: virtualenv poetry $(SETUP_OUT)
 
 $(SETUP_OUT): setup.py setup.cfg
 	python setup.py develop
@@ -28,11 +38,6 @@ clean:
 
 test: requirements
 	nosetests
-
-virtualenv:
-ifndef VIRTUAL_ENV
-	$(error No VIRTUAL_ENV defined)
-endif
 
 
 ## Develop:
