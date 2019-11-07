@@ -7,9 +7,14 @@
 FROM       python:alpine
 MAINTAINER Andrey Petrov "andrey.petrov@shazow.net"
 
-RUN apk add --update wget make libxslt-dev libxml2-dev g++ libjpeg-turbo-dev libpng-dev python3-dev py-psycopg2 freetype-dev uwsgi-python3
+RUN apk add --update wget make libxslt-dev libxml2-dev g++ libjpeg-turbo-dev libpng-dev python3-dev postgresql-dev freetype-dev uwsgi-python3
+
+RUN addgroup app && adduser -D -u 1000 -G app app
+USER app:app
+WORKDIR /home/app
+RUN mkdir src env socks
 
 ADD init.sh /init.sh
 
-VOLUME  ["/app/src", "/app/env", "/app/socks"]
+VOLUME  ["/home/app/src", "/home/app/env", "/home/app/socks"]
 CMD     ["/init.sh"]

@@ -32,7 +32,7 @@ services:
         build: ./uwsgi
         volumes:
             - ..:/home/app/src:rw
-            - python-env:/home/app/env
+            - python-env:/home/app/env:rw
         links:
             - db:db
             - mailserver:mailserver
@@ -43,6 +43,7 @@ services:
         image: postgres:alpine
         environment:
             - POSTGRES_PASSWORD
+            - POSTGRES_DB=db
         volumes:
             - postgresql-data:/var/lib/postgresql
 
