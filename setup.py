@@ -5,13 +5,9 @@ from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-with open(os.path.join(here, 'README.txt')) as f:
-    README = f.read()
-
 setup(name='briefmetrics',
-      version='0.0',
-      description='briefmetrics',
-      long_description=README,
+      version='2.0',
+      description='Briefmetrics emails you simple overviews of your website\'s Google Analytics.',
       classifiers=[
         "Programming Language :: Python",
         "Framework :: Pylons",
