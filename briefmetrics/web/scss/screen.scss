@@ -268,15 +268,30 @@ nav.header {
         border-bottom: 2px lighten($color-header, 30%) solid;
     }
     .menu strong a {
-        border-radius: 3px;
-        border: 1px solid lighten($color-header, 20%);
-        background: lighten($color-header, 50%);
-        padding: 10px;
-        font-weight: normal;
+        /// Old login button:
+        // border-radius: 3px;
+        // border: 1px solid lighten($color-header, 20%);
+        // background: lighten($color-header, 50%);
+        // padding: 10px;
+        // font-weight: normal;
+        //
+        // &:hover {
+        //     background: #fff;
+        //     border: 1px solid lighten($color-header, 20%);
+        // }
+
+        text-indent: -9999px;
+        white-space: nowrap;
+
+        background: url(/static/images/google-login-dark.png) no-repeat top left;
+        background-size: 191px 46px;
+        width: 191px;
+        height: 46px;
+        display: inline-block;
+        vertical-align: middle;
 
         &:hover {
-            background: #fff;
-            border: 1px solid lighten($color-header, 20%);
+            border: inherit;
         }
     }
 
