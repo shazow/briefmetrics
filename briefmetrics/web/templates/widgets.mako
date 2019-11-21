@@ -78,7 +78,7 @@
 
 <%def name="login_cta(login_url)">
     <a class="cta" href="${login_url}">
-        Sign in with Google Analytics
+        <button>Sign in with Google Analytics</button>
         <small>get your first email report now</small>
     </a>
 </%def>

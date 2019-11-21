@@ -300,6 +300,20 @@ nav.header {
     }
 }
 
+.cta button {
+    border: 0;
+    text-indent: -9999px;
+    white-space: nowrap;
+
+    background: url(/static/images/google-login-light.png) no-repeat top left;
+    background-size: 191px 46px;
+    width: 191px;
+    height: 46px;
+    margin: 0.5em 0;
+    display: inline-block;
+    vertical-align: middle;
+}
+
 .intro, .feature {
     .signup {
         padding: 0 2em;
