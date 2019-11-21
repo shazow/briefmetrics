@@ -730,14 +730,16 @@ nav.header {
   nav.header .menu.active a, nav.header .menu a:hover {
     border-bottom: 2px #a4e4d5 solid; }
   nav.header .menu strong a {
-    border-radius: 3px;
-    border: 1px solid #7dd8c3;
-    background: #f3fbf9;
-    padding: 10px;
-    font-weight: normal; }
+    text-indent: -9999px;
+    white-space: nowrap;
+    background: url(/static/images/google-login-dark.png) no-repeat top left;
+    background-size: 191px 46px;
+    width: 191px;
+    height: 46px;
+    display: inline-block;
+    vertical-align: middle; }
     nav.header .menu strong a:hover {
-      background: #fff;
-      border: 1px solid #7dd8c3; }
+      border: inherit; }
   nav.header a, nav.header a:visited {
     color: #37b89a; }
 
