@@ -1,4 +1,5 @@
 <%inherit file="base.mako"/>
+<%namespace file="widgets.mako" name="widgets" />
 <%namespace file="testimonials.mako" name="testimonials" />
 
 <%block name="extra_head">
@@ -13,10 +14,7 @@
 
     <div class="inner">
         <div class="signup">
-            <a class="cta" href="${login_url}">
-                Sign in with Google Analytics
-                <small>includes 10 free email reports</small>
-            </a>
+            ${widgets.login_cta(login_url)}
 
             <ul class="details">
                 <li>No credit card required to get started.</li>
