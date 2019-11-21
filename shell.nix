@@ -17,6 +17,9 @@ stdenv.mkDerivation {
     zlib
     libjpeg
     libxml2
+
+    # for scss
+    sassc
   ];
 
   # FIXME: Not sure if libxslt is necessary
