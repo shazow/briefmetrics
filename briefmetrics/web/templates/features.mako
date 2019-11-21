@@ -1,4 +1,5 @@
 <%inherit file="/base.mako"/>
+<%namespace file="widgets.mako" name="widgets" />
 
 <div class="container feature">
     <h2>Anatomy of a Briefmetrics Report</h2>
@@ -156,9 +157,6 @@
     </p>
 
     <p class="closer">
-        <a class="cta" href="${login_url}">
-            Sign in with Google Analytics
-            <small>get your first email report now</small>
-        </a>
+        ${widgets.login_cta(login_url)}
     </p>
 </div>
