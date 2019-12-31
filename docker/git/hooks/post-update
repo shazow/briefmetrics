@@ -42,7 +42,8 @@ function deploy() {
         echo -e "${CGREEN}Server is happy. :)${CNONE}"
     else
         echo -e "${CRED}SERVER IS DOWN! Recent log:${CYELLOW}"
-        docker logs "${container_id}" | tail -n 40
+        # Alternatively: docker logs "${container_id}" | tail -n 40
+        journalctl -u docker -n40
         echo -en "${CNONE}"
     fi
 }
