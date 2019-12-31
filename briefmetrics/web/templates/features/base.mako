@@ -1,5 +1,5 @@
 <%inherit file="/base.mako"/>
-<%namespace file="widgets.mako" name="widgets" />
+<%namespace file="../widgets.mako" name="widgets" />
 
 <div class="container feature">
     ${next.body()}
