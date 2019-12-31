@@ -85,7 +85,7 @@ def dry_run(num_extra=5, filter_account=None, days_offset=None, is_async=True):
 
     # Add some extra random customers
     while num_extra:
-        if len(report_queue) > len(all_reports) * 0.7:
+        if len(all_reports) == 0 or len(report_queue) > len(all_reports) * 0.7:
             # Give up
             break
 
