@@ -7,7 +7,7 @@
 FROM       python:alpine
 MAINTAINER Andrey Petrov "andrey.petrov@shazow.net"
 
-RUN apk add --update wget make libxslt-dev libxml2-dev g++ libjpeg-turbo-dev libpng-dev python3-dev postgresql-dev freetype-dev uwsgi-python3
+RUN apk add --update wget make libxslt-dev libxml2-dev g++ libjpeg-turbo-dev libpng-dev libffi-dev python3-dev postgresql-dev freetype-dev uwsgi-python3
 
 RUN addgroup app && adduser -D -u 1000 -G app app
 USER app:app
