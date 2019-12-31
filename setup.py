@@ -26,5 +26,4 @@ setup(name='briefmetrics',
       [paste.app_factory]
       main = briefmetrics.web.environment:setup_wsgi
       """,
-      paster_plugins=['pyramid'],
       )
