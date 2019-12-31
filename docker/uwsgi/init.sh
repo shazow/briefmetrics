@@ -11,5 +11,6 @@ fi
 cd /home/app/src
 pip install psycopg2-binary PasteDeploy
 python setup.py develop
+make clean
 make -e "INI_FILE=${INI_FILE}"
 uwsgi --ini "${INI_FILE}"
