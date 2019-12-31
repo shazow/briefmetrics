@@ -9,7 +9,7 @@ else
 fi
 
 cd /home/app/src
-pip install psycopg2-binary PasteDeploy
+pip install psycopg2-binary
 python setup.py develop
 make clean
 make -e "INI_FILE=${INI_FILE}"
