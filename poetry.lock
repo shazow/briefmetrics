@@ -1050,7 +1050,7 @@ test = ["zope.event"]
 testing = ["coverage", "nose", "zope.event"]
 
 [metadata]
-content-hash = "5c9cfa1263bd18b8ea36f94c3a8e6fc835e6511c3eea5e377b2fc8aeae114f58"
+content-hash = "194f2b223102f7c9c49c9651a08ad62b85323ccea2298c835cf5b67863ec64a7"
 python-versions = "^3.7"
 
 [metadata.files]
