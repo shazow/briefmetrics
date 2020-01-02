@@ -111,3 +111,13 @@ def dry_run(num_extra=5, filter_account=None, days_offset=None, is_async=True):
     for report in report_queue:
         log.info('Dry run for report: %s' % report.display_name)
         send_fn(report_id=report.id, since_time=_from_datetime(since_time), pretend=True)
+
+
+@celery.task(ignore_result=True)
+def cleanup(days_retain=1):
+    until_time = now()-datetime.timedelta(days=days_retain)
+
+    q = model.Session.query(model.ReportLog).filter(model.ReportLog.time_created<until_time)
+    num = q.count()
+    log.info('Cleaning up %d report logs.' % num)
+    q.delete()

@@ -46,6 +46,10 @@ def init(settings):
                 'task': 'briefmetrics.tasks.report.dry_run',
                 'schedule': schedules.crontab(minute=0, hour=0), # Daily
             },
+            'cleanup': {
+                'task': 'briefmetrics.tasks.report.dry_run',
+                'schedule': schedules.crontab(minute=0, hour=2), # Daily
+            },
         }
 
     celery.config_from_object(Config)
