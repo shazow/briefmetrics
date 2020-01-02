@@ -16,7 +16,7 @@ def assert_response(r):
 
         try:
             error = r.json()['error']
-            if isinstance(error, basestring):
+            if isinstance(error, str):
                 message = error
             elif isinstance(error, dict) and 'errors' in error:
                 message = '; '.join(e['message'] for e in error['errors'])
