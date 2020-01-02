@@ -27,9 +27,10 @@ def stripe_webhook(ga_tracking_id, stripe_account_id, data, pretend=False):
     if ga_tracking_id != 'UA-407051-16' or pretend:
         return
 
-    heap_collect(
-        app_id=1675620903,
-        identity=t['user_id'],
-        event='Revenue',
-        properties=heap_extract(t),
-    )
+    # Disabled for now:
+    # heap_collect(
+    #     app_id=1675620903,
+    #     identity=t['user_id'],
+    #     event='Revenue',
+    #     properties=heap_extract(t),
+    # )
