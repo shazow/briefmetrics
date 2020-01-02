@@ -115,9 +115,16 @@ def dry_run(num_extra=5, filter_account=None, days_offset=None, is_async=True):
 
 @celery.task(ignore_result=True)
 def cleanup(days_retain=1, pretend=False):
+    session = model.Session()
+
     until_time = now()-datetime.timedelta(days=days_retain)
-    q = model.Session.query(model.ReportLog).filter(model.ReportLog.time_created<until_time)
+    q = session.query(model.ReportLog).filter(model.ReportLog.time_created<until_time)
     num = q.count()
+
     log.info('Cleaning up %d report logs.' % num)
-    if not pretend:
-        q.delete()
+
+    if pretend:
+        return
+
+    q.delete()
+    session.commit()
