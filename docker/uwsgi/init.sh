@@ -2,7 +2,8 @@
 set -x -o pipefail
 
 if [[ ! -f "/home/app/env/bin/activate" ]]; then
-    python -m venv --system-site-packages /home/app/env
+    # NOTE: Must use the same python to make the venv as uwsgi has a plugin for. As of 2020-01-02, that's python3.7
+    python3.7 -m venv --system-site-packages /home/app/env
     . /home/app/env/bin/activate
 else
     . /home/app/env/bin/activate
