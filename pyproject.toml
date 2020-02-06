@@ -1,0 +1,48 @@
+[tool.poetry]
+name = "briefmetrics"
+version = "2.0.0"
+description = ""
+authors = ["Andrey Petrov <andrey.petrov@shazow.net>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+celery = {version = "^4", extras = ["sqlalchemy"], allows-prereleases = true} # Need pre-release for broken py38
+kombu = "^4.6"
+sqlalchemy = "^1.3"
+PyJWT = "^1.7"
+Mako = "^1.1"
+WebTest = "^2.0"
+alembic = "^1.2"
+"dogpile.cache" = "^0.8.0"
+mock = "^3.0"
+oauthlib = "^3.1"
+pillow = "^6.2"
+pyramid = "^1.10"
+pyramid_beaker = "^0.8.0"
+pyramid_debugtoolbar = "^4.5"
+pyramid_exclog = "^1.0"
+pyramid_handlers = "^0.5.0"
+pyramid_mailer = "^0.15.1"
+pyramid_mako = "^1.1"
+python-dateutil = "^2.8"
+pytz = "^2019.2"
+pyyaml = "^5.1"
+requests-hawk = "^1.0"
+requests-oauthlib = "^1.2"
+requests = "^2.22"
+stripe = "^2.37"
+unstdlib = "^1.7"
+premailer = "^3.6"
+html2text = "^2019.9"
+msgpack-python = "^0.5.6"
+billiard = "^3.6"
+
+[tool.poetry.dev-dependencies]
+IPython = "^7.8"
+pyramid_ipython = "^0.2.0"
+coverage = "^4.5"
+nose = "^1.3"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

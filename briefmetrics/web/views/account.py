@@ -5,7 +5,7 @@ from briefmetrics.lib.exceptions import LoginRequired, APIError, APIControllerEr
 from briefmetrics.lib.service import registry as service_registry
 
 import jwt
-from urlparse import parse_qs
+from urllib.parse import parse_qs
 from unstdlib import get_many
 
 from .api import expose_api
@@ -85,7 +85,7 @@ class AccountController(Controller):
 
         try:
             account = api.account.connect_oauth(self.request, oauth)
-        except APIError, e:
+        except APIError as e:
             raise APIControllerError(e.message)
 
         # TODO: Handle InvalidRequestError?

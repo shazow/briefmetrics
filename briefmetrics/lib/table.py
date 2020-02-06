@@ -1,4 +1,5 @@
-from itertools import izip, cycle
+#from itertools import zip as izip
+from itertools import cycle
 from unstdlib import html
 
 
@@ -66,9 +67,9 @@ class Column(object):
         min_value, _ = self.min_row
         max_value, _ = self.max_row
 
-        if max_value < value:
+        if max_value is None or max_value < value:
             self.max_row = value, row
-        elif min_value > value or min_value is None:
+        elif min_value is None or min_value > value:
             self.min_row = value, row
 
     def is_interesting(self, value):
@@ -216,7 +217,7 @@ class Table(object):
     def add(self, row, is_measured=True):
         values = []
         r = Row(self, values)
-        for column, value in izip(self.columns, row):
+        for column, value in zip(self.columns, row):
             if not column:
                 continue
 
@@ -337,7 +338,7 @@ class Table(object):
             ) +
             TBODY(
                 TR(
-                    TD(col.format(v), attrs={'class': col.type_class}) for col, v in izip(columns, row)
+                    TD(col.format(v), attrs={'class': col.type_class}) for col, v in zip(columns, row)
                 ) for row in rows
             )
         )

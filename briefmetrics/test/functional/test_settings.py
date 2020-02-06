@@ -81,7 +81,7 @@ class TestSettings(test.TestWeb):
         self.assertEqual(u.config.get('email_header_image'), expected_name)
 
         r = self.call_api('settings.branding', plan_id=u'agency-10', _upload_files=[
-            ('header_logo', 'fakefile.png', 'random garbage'),
+            ('header_logo', 'fakefile.png', b'random garbage'),
         ], _status=400)
 
         # Make sure nothing changed.

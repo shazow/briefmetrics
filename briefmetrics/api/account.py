@@ -106,7 +106,7 @@ def get_user(request, required=False, joinedload=None):
 
     q = Session.query(model.User)
     for p in iterate(joinedload or []):
-        q = q.options(orm.joinedload_all(p))
+        q = q.options(orm.joinedload(p))
 
     u = q.get(user_id)
     if not u:
@@ -268,7 +268,7 @@ def set_payments(user, plan_id=None, card_token=None, metadata=None, payment_typ
         p = payment.registry[payment_type](user)
 
     if p.id == 'stripe' and not card_token:  # For testing
-        log.warn('Skipping interfacing set_payments for user: %s' % user)
+        log.warning('Skipping interfacing set_payments for user: %s' % user)
         Session.commit()
         return user
 
@@ -319,7 +319,7 @@ def set_plan(user, plan_id, update_subscription=None):
 
     if update_subscription is None:
         # Default behaviour
-        update_subscription = user.num_remaining <= 0
+        update_subscription = user.num_remaining is None or user.num_remaining <= 0
 
     if update_subscription and user.payment:
         user.payment.start()

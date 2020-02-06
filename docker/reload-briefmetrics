@@ -1,7 +1,7 @@
 #!/bin/bash
 container_id="briefmetrics-uwsgi"
 
-docker exec "${container_id}" bash -c "source env/bin/activate && cd src && make INI_FILE='$INI_FILE' && touch .reload"
+docker exec -i "${container_id}" bash -c "source env/bin/activate && cd src && make INI_FILE='$INI_FILE' && touch .reload"
 
 if [[ $(docker inspect -f "{{.State.Running}}" "${container_id}") == "true" ]]; then
 	echo -e "${CGREEN}Server is happy. :)${CNONE}"

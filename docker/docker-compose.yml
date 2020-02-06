@@ -1,4 +1,4 @@
-version: "2"
+version: "3"
 
 services:
     #  docker run --name=nginx -d -p 80:80 -p 443:443 \
@@ -6,10 +6,10 @@ services:
     #    --volume ~/volumes/nginx/certs:/etc/nginx/certs:ro \
     #    --volume ~/volumes/nginx/www:/var/www \
     #    --link briefmetrics-uwsgi:briefmetrics-uwsgi
-    #    shazow/nginx
+    #    nginx:alpine
     nginx:
         container_name: nginx
-        image: shazow/nginx
+        image: nginx:alpine
         ports:
             - "8080:80"
         volumes:
@@ -24,25 +24,26 @@ services:
     #  docker run --name=briefmetrics-uwsgi -d \
     #    --volume ..:/home/app/src \
     #    --link postgresql:db
-    #    shazow/uwsgi-python
+    #    briefmetrics/uwsgi-python
     briefmetrics-uwsgi:
         container_name: briefmetrics-uwsgi
         environment:
             - INI_FILE=docker.ini
-        image: shazow/python-uwsgi
+        build: ./uwsgi
         volumes:
             - ..:/home/app/src:rw
-            - python-env:/home/app/env
+            - python-env:/home/app/env:rw
         links:
             - db:db
             - mailserver:mailserver
 
-    #  docker run --name=db -d shazow/postgresql
+    #  docker run --name=db -d postgresql:alpine
     db:
         container_name: db
-        image: shazow/postgresql
+        image: postgres:alpine
         environment:
-            - MASTER_PASSWORD=Vh9zXIxFRVATk73s
+            - POSTGRES_PASSWORD
+            - POSTGRES_DB=db
         volumes:
             - postgresql-data:/var/lib/postgresql
 

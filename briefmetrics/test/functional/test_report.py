@@ -100,7 +100,7 @@ class TestReport(test.TestWeb):
         tasks.report.celery.request = self.request
 
         with mock.patch('briefmetrics.api.email.send_message') as send_message:
-            tasks.report.send_all(async=False)
+            tasks.report.send_all(is_async=False)
             self.assertTrue(send_message.called)
             self.assertEqual(len(send_message.call_args_list), 2)
 
@@ -120,7 +120,7 @@ class TestReport(test.TestWeb):
 
         # Send all again, should skip because too early
         with mock.patch('briefmetrics.api.email.send_message') as send_message:
-            tasks.report.send_all(async=False)
+            tasks.report.send_all(is_async=False)
             self.assertFalse(send_message.called)
 
         self.assertEqual(model.Report.count(), 1)
@@ -134,7 +134,7 @@ class TestReport(test.TestWeb):
         Session.commit()
 
         with mock.patch('briefmetrics.api.email.send_message') as send_message:
-            tasks.report.send_all(async=False)
+            tasks.report.send_all(is_async=False)
             self.assertFalse(send_message.called)
 
         # Report should be deleted.
@@ -190,7 +190,7 @@ class TestReport(test.TestWeb):
 
             report = self._create_report(user=user, remote_id='bar')
             with mock.patch('briefmetrics.api.email.send_message') as send_message:
-                tasks.report.send_all(async=False)
+                tasks.report.send_all(is_async=False)
                 self.assertTrue(send_message.called)
 
             self.assertTrue(update_subscription.called)
@@ -208,7 +208,7 @@ class TestReport(test.TestWeb):
 
         with mock.patch('briefmetrics.api.report.fetch', raise_error):
             with mock.patch('briefmetrics.api.email.send_message') as send_message:
-                tasks.report.send_all(async=False)
+                tasks.report.send_all(is_async=False)
                 self.assertTrue(send_message.called)
 
                 call, = send_message.call_args_list
@@ -226,7 +226,7 @@ class TestReport(test.TestWeb):
 
         with mock.patch('briefmetrics.api.report.fetch', raise_error):
             with mock.patch('briefmetrics.api.email.send_message') as send_message:
-                tasks.report.send_all(async=False)
+                tasks.report.send_all(is_async=False)
                 self.assertTrue(send_message.called)
 
                 call, = send_message.call_args_list
@@ -346,7 +346,7 @@ class TestReport(test.TestWeb):
         tasks.report.celery.request = self.request
 
         with mock.patch('briefmetrics.api.email.send_message') as send_message:
-            tasks.report.send_all(async=False)
+            tasks.report.send_all(is_async=False)
             self.assertTrue(send_message.called)
             self.assertEqual(len(send_message.call_args_list), 1)
 
@@ -380,7 +380,7 @@ class TestReport(test.TestWeb):
         tasks.report.celery.request = self.request
 
         with mock.patch('briefmetrics.api.email.send_message') as send_message:
-            tasks.report.send_all(async=False)
+            tasks.report.send_all(is_async=False)
             self.assertTrue(send_message.called)
             self.assertEqual(len(send_message.call_args_list), 1)
 
@@ -613,21 +613,28 @@ class TestReportLib(test.TestCase):
             (datetime.date(2014, 2, 2), 5),
         ]
 
+        # Python3 no longer coerces OrderedDict to list
+        # must convert to list manually for these tests to work
         iterable = data[:1]
         monthly_data, max_value = sparse_cumulative(iterable)
+        monthly_data = list(monthly_data)
+
         self.assertEqual(monthly_data, [[1]])
         self.assertEqual(max_value, 1)
 
         iterable = data[:1] * 3
         monthly_data, max_value = sparse_cumulative(iterable)
+        monthly_data = list(monthly_data)
         self.assertEqual(monthly_data, [[3]])
         self.assertEqual(max_value, 3)
 
         monthly_data, max_value = sparse_cumulative(data[:1], final_date=datetime.date(2014, 1, 5))
+        monthly_data = list(monthly_data)
         self.assertEqual(monthly_data, [[1, 1, 1, 1, 1]])
         self.assertEqual(max_value, 1)
 
         monthly_data, max_value = sparse_cumulative(data)
+        monthly_data = list(monthly_data)
         last_month, current_month = monthly_data
         self.assertEqual(max_value, 12)
         self.assertEqual(len(last_month), 30)

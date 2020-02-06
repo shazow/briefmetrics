@@ -289,4 +289,4 @@ class WebhookController(Controller):
         if r:
             body = json.dumps(r)
 
-        return Response(body, content_type='application/json', status=200)
+        return Response(body.encode(), content_type='application/json', status=200)

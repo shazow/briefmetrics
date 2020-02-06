@@ -25,7 +25,7 @@ function which_worktree() {
     # Given a branch name, print the expected path of the worktree.
     # If the path does not exist, deployment will be skipped for the branch.
     branch="$1"
-    if [ "$branch" == "master" ]; then
+    if [[ "$branch" == "refs/heads/master" ]]; then
         echo "$HOME/volumes/briefmetrics"
     fi
 }
@@ -36,7 +36,7 @@ function deploy() {
     worktree="$2"
 
     container_id="briefmetrics-uwsgi"
-    docker exec "${container_id}" bash -c "source env/bin/activate && cd src && make INI_FILE='$INI_FILE' && touch .reload"
+    docker exec -i "${container_id}" bash -c "source env/bin/activate && cd src && make INI_FILE='$INI_FILE' && touch .reload"
 
     if docker ps | grep -q "${container_id}"; then
         echo -e "${CGREEN}Server is happy. :)${CNONE}"
@@ -65,7 +65,7 @@ function prefix() {
     sed "s/^/$@/"
 }
 
-if [ "$1" ]; then
+if [[ "$1" ]]; then
     branch="$1"
     worktree="$(which_worktree $branch)"
 

@@ -21,7 +21,7 @@ def cumulative_by_month(month_views_iter):
         month_list.append(val)
         max_value = max(max_value, val)
 
-    return months.values(), max_value
+    return list(months.values()), max_value
 
 def cumulative_splitter(data, split_on=None):
     if not split_on:
@@ -109,7 +109,7 @@ def sparse_cumulative(iterable, final_date=None):
     else:
         data.append(last_amount)
 
-    return cumulated.values(), max(last_amount, max_value)
+    return list(cumulated.values()), max(last_amount, max_value)
 
 
 # TODO: Move this into lib/table.py
@@ -145,8 +145,11 @@ def split_table_delta(t, split_column, join_column, compare_column):
         val = row.values[idx_compare]
         last_val = last_row.values[idx_compare]
         delta = val-last_val
-        if not delta or abs(delta) < col_compare._threshold:
-            continue
+
+        # 
+        if col_compare._threshold is not None:
+            if not delta or abs(delta) < col_compare._threshold:
+                continue
 
         row.tag(type=col_compare.label, value=delta)
 
@@ -208,9 +211,7 @@ def get_report(id):
 
 #
 
-class Report(object):
-    __metaclass__ = registry_metaclass(registry)
-
+class Report(object, metaclass=registry_metaclass(registry)):
     id = None
     label = ''
     template = 'email/report/daily.mako'

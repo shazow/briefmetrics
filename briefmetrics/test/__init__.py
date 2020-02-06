@@ -1,6 +1,7 @@
 import json
 
 from unittest import TestCase
+from collections import OrderedDict
 
 from briefmetrics import model
 from briefmetrics import web
@@ -54,11 +55,11 @@ class TestWeb(TestModel):
         if csrf_token is _DEFAULT:
             csrf_token = self.csrf_token
 
-        p = {
+        p = OrderedDict({
             'method': method,
             'csrf_token': csrf_token,
             'format': format,
-        }
+        })
         p.update(params)
         if _extra_params:
             p.update(_extra_params)

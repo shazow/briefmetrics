@@ -7,13 +7,13 @@ Session = model.Session
 
 class TestModel(test.TestModel):
     def test_cascade_delete(self):
-        u1 = model.User.create(email=u'foo@example.com')
-        u2 = model.User.create(email=u'bar@example.com')
+        u1 = model.User.create(email='foo@example.com')
+        u2 = model.User.create(email='bar@example.com')
         a = model.Account.create(user=u1)
         r = model.Report.create(account=a)
         model.Subscription.create(user=u1, report=r)
         model.Subscription.create(user=u2, report=r)
-        model.ReportLog.create_from_report(r, u'', u'')
+        model.ReportLog.create_from_report(r, '', '')
         Session.commit()
 
         Session.delete(u1)
@@ -26,13 +26,13 @@ class TestModel(test.TestModel):
 
 
     def test_cascade_retain(self):
-        u1 = model.User.create(email=u'foo@example.com')
-        u2 = model.User.create(email=u'bar@example.com')
+        u1 = model.User.create(email='foo@example.com')
+        u2 = model.User.create(email='bar@example.com')
         a = model.Account.create(user=u1)
         r = model.Report.create(account=a)
         model.Subscription.create(user=u1, report=r)
         s2 = model.Subscription.create(user=u2, report=r)
-        model.ReportLog.create_from_report(r, u'', u'')
+        model.ReportLog.create_from_report(r, '', '')
         Session.commit()
 
         Session.delete(s2)

@@ -45,10 +45,11 @@ def _setup_models(settings):
         # Show unicode warnings as errors in testing.
         import warnings
         warnings.filterwarnings('error')
+        warnings.filterwarnings('once', category=DeprecationWarning, module='html5lib')
 
 def _setup_cache_regions(settings):
     from briefmetrics.lib import cache
-    if not hasattr(cache.ReportRegion, 'backend'):
+    if not cache.ReportRegion.is_configured:
         # Hacky to avoid configuring multiple times in tests and such :(
         cache.ReportRegion.configure_from_config(settings, 'cache.report.')
 
@@ -61,9 +62,9 @@ def _login_tween(handler, registry):
     def _login_handler(request):
         try:
             return handler(request)
-        except LoginRequired, e:
+        except LoginRequired as e:
             raise httpexceptions.HTTPSeeOther(e.next_url(request))
-        except APIError, e:
+        except APIError as e:
             raise httpexceptions.HTTPBadRequest(detail=e.message)
 
     return _login_handler

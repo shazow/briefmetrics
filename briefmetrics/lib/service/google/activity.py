@@ -610,7 +610,7 @@ class ActivityQuarterlyReport(QuarterlyMixin, ActivityReport):
                 'end-date': end_date,
             })
             quarter_params.pop('sort', None)
-            print quarter_params
+            print(quarter_params)
             t = google_query.get_table(params=quarter_params, dimensions=dimensions, metrics=metrics, renew=True, _cache_keys=_cache_keys)
 
             quarter_str = "{}Q{}".format(yr, q)

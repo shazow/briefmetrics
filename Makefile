@@ -1,5 +1,5 @@
-REQUIREMENTS_FILE=requirements.txt
-REQUIREMENTS_OUT=requirements.txt.log
+REQUIREMENTS_FILE=poetry.lock
+REQUIREMENTS_OUT=poetry.lock.log
 SETUP_OUT=*.egg-info
 
 
@@ -7,14 +7,25 @@ all: setup requirements model_upgrade
 
 requirements: setup $(REQUIREMENTS_OUT)
 
-piprot:
-	piprot -x $(REQUIREMENTS_FILE)
+virtualenv:
+ifndef VIRTUAL_ENV
+	$(error No VIRTUAL_ENV defined)
+endif
+
+poetry: virtualenv
+ifeq (, $(shell which poetry))
+	pip install poetry
+endif
 
 $(REQUIREMENTS_OUT): $(REQUIREMENTS_FILE)
-	pip install -r $(REQUIREMENTS_FILE) | tee -a $(REQUIREMENTS_OUT)
+	which poetry || pip install poetry
+	poetry install | tee -a $(REQUIREMENTS_OUT)
 	python setup.py develop
 
-setup: virtualenv $(SETUP_OUT)
+requirements.txt: poetry
+	poetry export -f requirements.txt --without-hashes > requirements.txt
+
+setup: virtualenv poetry $(SETUP_OUT)
 
 $(SETUP_OUT): setup.py setup.cfg
 	python setup.py develop
@@ -27,11 +38,6 @@ clean:
 
 test: requirements
 	nosetests
-
-virtualenv:
-ifndef VIRTUAL_ENV
-	$(error No VIRTUAL_ENV defined)
-endif
 
 
 ## Develop:

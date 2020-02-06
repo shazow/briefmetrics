@@ -68,12 +68,12 @@ def backfill_invited_by():
 
     for user in q:
         if not user.reports:
-            print "No active report for user: [%s] %s" % (user.id, user.display_name)
+            print("No active report for user: [%s] %s" % (user.id, user.display_name))
             continue
 
         report = user.reports[0]
         user.invited_by_user_id = report.account.user_id
-        print "Linking user invite: [%s] %s -> [%s] %s" % (user.id, user.display_name, report.account.user_id, report.account.display_name)
+        print("Linking user invite: [%s] %s -> [%s] %s" % (user.id, user.display_name, report.account.user_id, report.account.display_name))
 
 
 def backfill_account_remote_id():
@@ -84,7 +84,7 @@ def backfill_account_remote_id():
         account.remote_id = account.oauth_token.get('stripe_user_id')
 
     if i >= 0:
-        print "Backfilled {} Stripe account remote ids.".format(i+1)
+        print("Backfilled {} Stripe account remote ids.".format(i+1))
 
 
 def backfill_stripe_to_google(request, stripe_account, ga_tracking_id, since_datetime=None, limit=100, pretend=True):
@@ -100,13 +100,13 @@ def backfill_stripe_to_google(request, stripe_account, ga_tracking_id, since_dat
         t = stripe_query.extract_transaction(data)
         lib.service.registry['google'].inject_transaction(ga_tracking_id, t, pretend=pretend)
 
-    print "Backfilled {} Stripe ecommerce transactions to GA.".format(len(items))
+    print("Backfilled {} Stripe ecommerce transactions to GA.".format(len(items)))
 
 
 
 def sync_plans(pretend=True, include_hidden=False):
     if pretend:
-        print "(Running in pretend mode)"
+        print("(Running in pretend mode)")
 
     local_plans = set(key for key, plan in pricing.Plan.all() if not plan.is_hidden)
 
@@ -115,24 +115,24 @@ def sync_plans(pretend=True, include_hidden=False):
         try:
             local_plan_id = plan.id.split('briefmetrics_', 1)[1]
         except IndexError:
-            print "Invalid plan prefix: %s" % plan.id
+            print("Invalid plan prefix: %s" % plan.id)
             continue
 
         if local_plan_id not in local_plans:
-            print "Plan missing locally: {}".format(local_plan_id)
+            print("Plan missing locally: {}".format(local_plan_id))
             continue
 
         local_plans.remove(local_plan_id)
         local_plan = pricing.Plan.get(local_plan_id)
 
         if plan.amount != local_plan.stripe_amount or plan.interval != local_plan.stripe_interval:
-            print "Plan discrepency for '{stripe.id}': Remote {stripe.amount}/{stripe.interval}, local {plan.stripe_amount}/{plan.stripe_interval}".format(
+            print("Plan discrepency for '{stripe.id}': Remote {stripe.amount}/{stripe.interval}, local {plan.stripe_amount}/{plan.stripe_interval}".format(
                 plan=local_plan,
                 stripe=plan,
-            )
+            ))
 
     for plan_id in local_plans:
-        print "Plan missing remotely: {}".format(plan_id)
+        print("Plan missing remotely: {}".format(plan_id))
         if pretend:
             continue
 
@@ -149,7 +149,7 @@ def sync_plans(pretend=True, include_hidden=False):
 
 def sync_customers(pretend=True, only_plan=False):
     if pretend:
-        print "(Running in pretend mode)"
+        print("(Running in pretend mode)")
 
     stripe_users = [u for u in model.User.all() if u.stripe_customer_id]
 
@@ -166,20 +166,20 @@ def sync_customers(pretend=True, only_plan=False):
             subscriptions = customer.subscriptions.all()
             set_plan = user.plan_id
             if not subscriptions.count:
-                print "Plan missing: %r -> %s" % (user, user.plan_id)
+                print("Plan missing: %r -> %s" % (user, user.plan_id))
             elif subscriptions.count > 1:
-                print "Too many plans: %r -> %s -> %s" % (user, user.plan_id, ', '.join(d.plan.id for d in subscriptions.data))
+                print("Too many plans: %r -> %s -> %s" % (user, user.plan_id, ', '.join(d.plan.id for d in subscriptions.data)))
             elif subscriptions.data[0].plan.id != payment.StripePayment._plan_key(user.plan_id):
-                print "Wrong plan: %r -> %s -> %s" % (user, user.plan_id, ', '.join(d.plan.id for d in subscriptions.data))
+                print("Wrong plan: %r -> %s -> %s" % (user, user.plan_id, ', '.join(d.plan.id for d in subscriptions.data)))
             else:
                 set_plan = False
 
         if pretend:
             continue
 
-        print "Setting customer: {}".format(description)
+        print("Setting customer: {}".format(description))
         if set_plan:
-            print "  Updating plan: {}".format(user.plan_id)
+            print("  Updating plan: {}".format(user.plan_id))
             customer.update_subscription(plan=payment.StripePayment._plan_key(user.plan_id))
 
         if only_plan:
@@ -187,4 +187,4 @@ def sync_customers(pretend=True, only_plan=False):
 
         customer.save()
 
-    print "Updated {} users.".format(len(stripe_users))
+    print("Updated {} users.".format(len(stripe_users)))
