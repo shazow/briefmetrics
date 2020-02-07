@@ -1,5 +1,4 @@
 from briefmetrics.lib.service import registry as service_registry
-from briefmetrics.lib.service.heap import collect as heap_collect, extract as heap_extract
 from celery.utils.log import get_task_logger
 
 from briefmetrics import api
@@ -22,14 +21,3 @@ def stripe_webhook(ga_tracking_id, stripe_account_id, data, pretend=False):
     stripe_query = api.account.query_service(celery.request, stripe_account)
     t = stripe_query.extract_transaction(data)
     service_registry['google'].inject_transaction(ga_tracking_id, t, pretend=pretend)
-
-    # Pipe to Heap, hardcoded for meow:
-    if ga_tracking_id != 'UA-407051-16' or pretend:
-        return
-
-    heap_collect(
-        app_id=1675620903,
-        identity=t['user_id'],
-        event='Revenue',
-        properties=heap_extract(t),
-    )
