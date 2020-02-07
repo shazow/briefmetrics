@@ -19,6 +19,7 @@ services:
             - ../uploads:/var/www/briefmetrics.com/uploads
         links:
             - briefmetrics-uwsgi:briefmetrics-uwsgi
+        restart: always
 
 
     #  docker run --name=briefmetrics-uwsgi -d \
@@ -36,6 +37,7 @@ services:
         links:
             - db:db
             - mailserver:mailserver
+        restart: always
 
     #  docker run --name=db -d postgresql:alpine
     db:
@@ -46,10 +48,12 @@ services:
             - POSTGRES_DB=db
         volumes:
             - postgresql-data:/var/lib/postgresql
+        restart: always
 
     mailserver:
         container_name: mailserver
         image: namshi/smtp
+        restart: always
 
 volumes:
     python-env:

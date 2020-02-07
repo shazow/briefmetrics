@@ -36,13 +36,14 @@ function deploy() {
     worktree="$2"
 
     container_id="briefmetrics-uwsgi"
-    docker exec -i "${container_id}" bash -c "source env/bin/activate && cd src && make INI_FILE='$INI_FILE' && touch .reload"
+    docker exec -i "${container_id}" sh -c "source env/bin/activate && cd src && make INI_FILE='$INI_FILE' && touch .reload"
 
     if docker ps | grep -q "${container_id}"; then
         echo -e "${CGREEN}Server is happy. :)${CNONE}"
     else
         echo -e "${CRED}SERVER IS DOWN! Recent log:${CYELLOW}"
-        docker logs "${container_id}" | tail -n 40
+        # Alternatively: docker logs "${container_id}" | tail -n 40
+        journalctl -u docker -n40
         echo -en "${CNONE}"
     fi
 }

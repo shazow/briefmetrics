@@ -36,6 +36,7 @@ premailer = "^3.6"
 html2text = "^2019.9"
 msgpack-python = "^0.5.6"
 billiard = "^3.6"
+PasteDeploy = "^2.0.1"
 
 [tool.poetry.dev-dependencies]
 IPython = "^7.8"

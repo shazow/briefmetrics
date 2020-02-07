@@ -85,7 +85,7 @@ def dry_run(num_extra=5, filter_account=None, days_offset=None, is_async=True):
 
     # Add some extra random customers
     while num_extra:
-        if len(report_queue) > len(all_reports) * 0.7:
+        if len(all_reports) == 0 or len(report_queue) > len(all_reports) * 0.7:
             # Give up
             break
 
@@ -111,3 +111,20 @@ def dry_run(num_extra=5, filter_account=None, days_offset=None, is_async=True):
     for report in report_queue:
         log.info('Dry run for report: %s' % report.display_name)
         send_fn(report_id=report.id, since_time=_from_datetime(since_time), pretend=True)
+
+
+@celery.task(ignore_result=True)
+def cleanup(days_retain=1, pretend=False):
+    session = model.Session()
+
+    until_time = now()-datetime.timedelta(days=days_retain)
+    q = session.query(model.ReportLog).filter(model.ReportLog.time_created<until_time)
+    num = q.count()
+
+    log.info('Cleaning up %d report logs.' % num)
+
+    if pretend:
+        return
+
+    q.delete()
+    session.commit()
