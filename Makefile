@@ -23,6 +23,7 @@ $(REQUIREMENTS_OUT): $(REQUIREMENTS_FILE)
 	python setup.py develop
 
 requirements.txt: poetry
+	poetry lock
 	poetry export -f requirements.txt --without-hashes > requirements.txt
 
 setup: virtualenv poetry $(SETUP_OUT)
