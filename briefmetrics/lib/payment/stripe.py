@@ -45,10 +45,10 @@ class StripePayment(Payment):
         customer = stripe.Customer.retrieve(self.token)
         try:
             customer.update_subscription(plan=self._plan_key(user.plan_id))
-        except stripe.CardError as e:
+        except stripe.error.CardError as e:
             self.delete()
             raise PaymentError('Failed to start payment plan: %s' % e.message)
-        except stripe.InvalidRequestError as e:
+        except stripe.error.InvalidRequestError as e:
             raise PaymentError('Payment information is out of date. Please update your credit card before starting a plan.')
 
     def delete(self):
