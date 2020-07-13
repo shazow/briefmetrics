@@ -290,7 +290,7 @@ class Table(object):
     def _filter_rows(self, **kw):
         # Note: Unused
         for row in self.rows:
-            if not all(row.get(id) == val for id, val in kw.iteritems()):
+            if not all(row.get(id) == val for id, val in kw.items()):
                 continue
             yield row
 

@@ -128,7 +128,7 @@ class NamecheapAPI(Service):
             params.update(extra_kw)
 
         # Can't use urllib.urlencode because %20 instead of +.
-        encoded = '&'.join('='.join((k, quote(v, safe=''))) for k, v in params.iteritems())
+        encoded = '&'.join('='.join((k, quote(v, safe=''))) for k, v in params.items())
         url = self.config['auth_url'] + '?' + encoded
         return url, params.get('state')
 

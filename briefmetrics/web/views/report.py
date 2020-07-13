@@ -293,7 +293,7 @@ class ReportController(Controller):
             raise httpexceptions.HTTPNotFound()
 
         config_options = ['pace', 'intro', 'ads', 'bcc']
-        config = dict((k, v) for k, v in self.request.params.iteritems() if k in config_options and v)
+        config = dict((k, v) for k, v in self.request.params.items() if k in config_options and v)
 
         # Last Sunday
         since_time = now()

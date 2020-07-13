@@ -21,7 +21,7 @@ class SchemaEncoder(json.JSONEncoder):
 
 def iterate_index(v):
     if isinstance(v, dict):
-        return v.iteritems()
+        return v.items()
 
     return ((i+1, v) for i, v in enumerate(v))
 

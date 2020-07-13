@@ -21,7 +21,7 @@
 
     % if c.user.config:
 <pre>
-% for k, v in c.user.config.iteritems():
+% for k, v in c.user.config.items():
 ${"config['{:}'] = {}".format(k, v)}
 % endfor
 </pre>
