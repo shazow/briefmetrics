@@ -7,6 +7,7 @@ from briefmetrics.lib.cache import ReportRegion
 from briefmetrics.lib.http import assert_response
 from briefmetrics.lib.exceptions import APIError
 from briefmetrics.lib.table import Table
+import briefmetrics.lib.helpers as h
 
 from ..base import OAuth2API
 
@@ -225,5 +226,9 @@ class Query(object):
         properties = self.get_properties()
         for profile in profiles:
             profile['displayName'] = properties.get(profile['webPropertyId']) or ''
+            u = h.human_url(profile.get('websiteUrl'))
+            if u in ('--', '-'):
+                u = profile.get('displayName', '(Unknown App)')
+            profile['humanUrl'] = u
 
         return profiles
