@@ -95,20 +95,17 @@
         <p class="row">
             <select name="remote_id" data-placeholder="Choose a site">
                 <option />
-            % for item in available_profiles:
+                % for item in sorted(available_profiles, key=lambda p: p.get('humanUrl', '').lower()):
                 <%
-                    human_url = h.human_url(item.get('websiteUrl'))
                     name = h.human_url(item['name'])
-                    if human_url in ('--', '-'):
-                        human_url = item.get('displayName', '(Unknown App)')
                 %>
                 <option value="${item['id']}">
-                    ${human_url}
-                    % if name not in ('All Web Site Data', 'All Mobile App Data', human_url):
+                    ${item.get('humanUrl', '')}
+                    % if name not in ('All Web Site Data', 'All Mobile App Data', item.get('humanUrl')):
                     ${name}
                     % endif
                     [${item['webPropertyId']}]
-                </option> <!-- displayName=${"%r" % item.get('displayName')} -->
+                </option>
             % endfor
             </select>
         </p>
