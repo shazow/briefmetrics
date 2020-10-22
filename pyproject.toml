@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "briefmetrics"
-version = "2.0.0"
+version = "2.1"
 description = ""
 authors = ["Andrey Petrov <andrey.petrov@shazow.net>"]
 

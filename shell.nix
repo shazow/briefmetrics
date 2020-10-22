@@ -1,17 +1,23 @@
 with import <nixpkgs> {};
-with python37Packages;
 
-stdenv.mkDerivation {
+let
+  pythonPackages = python3Packages;
+in pkgs.mkShell rec {
   name = "briefmetrics";
-
-  src = null;
+  venvDir = "./.env3";
 
   buildInputs = [
-    python37Full
+    # Required for venvDir
+    pythonPackages.python
+    pythonPackages.venvShellHook
+
+    # Baseline updates
+    pythonPackages.pip
+    pythonPackages.poetry
 
     # cryptography (poetry)
-    cffi
-    pyopenssl
+    pythonPackages.cffi
+    pythonPackages.pyopenssl
 
     # For Pillow
     zlib
@@ -28,14 +34,13 @@ stdenv.mkDerivation {
   CFLAGS="-I${zlib.dev}/include -I${libjpeg.dev}/include";
   C_INCLUDE_PATH="${pkgs.libjpeg.dev}/include:${pkgs.libjpeg}/include:${pkgs.libxml2.dev}/include/libxml2:${pkgs.libxslt.dev}/include:${pkgs.zlib.dev}/include";
 
-  shellHook = ''
-    export HISTFILE="$PWD/.bash_history";
+  postVenvCreation = ''
+    unset SOURCE_DATE_EPOCH
+    poetry install
+  '';
 
-    SOURCE_DATE_EPOCH=$(date +%s)
-    if [[ ! -d .env3 ]]; then
-      python -m venv .env3
-      .env3/bin/pip install --pre poetry  # --pre for poetry 1.0 beta
-    fi
-    source .env3/bin/activate
+  postShellHook = ''
+    unset SOURCE_DATE_EPOCH
+    export HISTFILE="$PWD/.bash_history";
   '';
 }
