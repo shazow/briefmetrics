@@ -37,6 +37,7 @@ in pkgs.mkShell rec {
   postVenvCreation = ''
     unset SOURCE_DATE_EPOCH
     poetry install
+    python setup.py install_egg_info
   '';
 
   postShellHook = ''
