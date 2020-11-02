@@ -149,6 +149,8 @@
             last_period = 'last year'
         elif 85 <= (date_end - date_start).days <= 95:
             last_period = 'last quarter'
+        elif previous_date_start.month == date_start.month:
+            period_fmt = '%B %Y'
         if previous_date_start.year != date_start.year:
             last_period = "last {}".format(previous_date_start.strftime(period_fmt))
 
