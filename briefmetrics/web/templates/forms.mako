@@ -434,7 +434,7 @@
     % for account in sorted(user.accounts, key=lambda a: a.service):
         <li>
             <a class="button negative" href="${request.route_path('account_disconnect', _query={'account_id': account.id})}">Disconnect</a>
-            <strong>${account.service_api.label}</strong>
+            <strong>${account.service_api and account.service_api.label}</strong>
         </li>
     % endfor
     % for service_api in extra_services:
