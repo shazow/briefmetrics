@@ -45,7 +45,7 @@ class StripePayment(Payment):
         plan_key = self._plan_key(user.plan_id)
         customer = stripe.Customer.retrieve(self.token)
         try:
-            sub = customer['subscription']
+            sub = customer.subscription
             if sub:
                 sub_id = sub['id']
                 stripe.Subscription.modify(sub_id, plan=plan_key) # TODO: migrate to 'price'
