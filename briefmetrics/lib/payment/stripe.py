@@ -42,9 +42,15 @@ class StripePayment(Payment):
             raise PaymentError("Cannot start subscription for user without a payment method: %s" % self.user.id)
 
         user = self.user
+        plan_key = self._plan_key(user.plan_id)
         customer = stripe.Customer.retrieve(self.token)
         try:
-            customer.update_subscription(plan=self._plan_key(user.plan_id))
+            sub = customer['subscription']
+            if sub:
+                sub_id = sub['id']
+                stripe.Subscription.modify(sub_id, plan=plan_key) # TODO: migrate to 'price'
+            else:
+                stripe.Subscription.create(customer=customer['id'], items=[ {"plan": plan_key} ])
         except stripe.error.CardError as e:
             self.delete()
             raise PaymentError('Failed to start payment plan: %s' % e)

@@ -180,6 +180,7 @@ def sync_customers(pretend=True, only_plan=False):
         print("Setting customer: {}".format(description))
         if set_plan:
             print("  Updating plan: {}".format(user.plan_id))
+            # FIXME: update_subscription is gone
             customer.update_subscription(plan=payment.StripePayment._plan_key(user.plan_id))
 
         if only_plan:
@@ -187,4 +188,4 @@ def sync_customers(pretend=True, only_plan=False):
 
         customer.save()
 
-    print("Updated {} users.".format(len(stripe_users)))
+

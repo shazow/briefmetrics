@@ -179,7 +179,7 @@ class TestReport(test.TestWeb):
         # Add credit card
         with mock.patch('briefmetrics.lib.payment.stripe.stripe') as stripe:
             stripe.Customer.create().id = 'TEST'
-            update_subscription = stripe.Customer.retrieve().update_subscription
+            subscription_create = stripe.Subscription.create()
 
             api.account.set_payments(user, plan_id='starter', card_token='FAKETOKEN')
             self.assertEqual(stripe.Customer.create.call_args[1]['card'], 'FAKETOKEN')
@@ -193,8 +193,9 @@ class TestReport(test.TestWeb):
                 tasks.report.send_all(is_async=False)
                 self.assertTrue(send_message.called)
 
-            self.assertTrue(update_subscription.called)
-            self.assertEqual(update_subscription.call_args[1]['plan'], 'briefmetrics_starter')
+            # TODO: Fix test
+            self.assertTrue(subscription_create.called)
+            self.assertEqual(subscription_create.call_args[1]['plan'], 'briefmetrics_starter', subscription_create.call_args)
 
 
     def test_auth_error(self):
