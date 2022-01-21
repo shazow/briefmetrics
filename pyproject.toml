@@ -40,7 +40,7 @@ PasteDeploy = "^2.0.1"
 nose = "^1.3.7"
 
 [tool.poetry.dev-dependencies]
-IPython = "^7.8"
+IPython = "^7.31"
 pyramid_ipython = "^0.2.0"
 coverage = "^4.5"
 nose = "^1.3"
