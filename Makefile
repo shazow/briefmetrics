@@ -1,5 +1,5 @@
-REQUIREMENTS_FILE=poetry.lock
-REQUIREMENTS_OUT=poetry.lock.log
+REQUIREMENTS_FILE=requirements.txt
+REQUIREMENTS_OUT=requirements.txt.log
 SETUP_OUT=*.egg-info
 
 
@@ -18,11 +18,11 @@ ifeq (, $(shell which poetry))
 endif
 
 $(REQUIREMENTS_OUT): $(REQUIREMENTS_FILE)
-	which poetry || pip install poetry
-	poetry install | tee -a $(REQUIREMENTS_OUT)
+	pip install -r $(REQUIREMENTS_FILE) | tee -a $(REQUIREMENTS_OUT)
 	python setup.py develop
 
-requirements.txt: poetry
+update: poetry
+	poetry update
 	poetry lock
 	poetry export -f requirements.txt --without-hashes > requirements.txt
 
