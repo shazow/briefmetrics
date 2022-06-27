@@ -1,6 +1,5 @@
 <%inherit file="base.mako"/>
 <%namespace file="widgets.mako" name="widgets" />
-<%namespace file="testimonials.mako" name="testimonials" />
 
 <%block name="extra_head">
     <meta name="description" content="Quick overviews of your website analytics, directly to your inbox." />
@@ -81,35 +80,6 @@
                 </li>
             </ul>
         </section>
-
-        <div class="testimonials" id="customers">
-            <h3>Happy Customers</h3>
-
-            <p>Briefmetrics is used by many startups, design agencies, and hobbyists. Here are some nice words they'd like to share with you:</p>
-
-            <ul class="vertical">
-                ${testimonials.active()}
-            <ul>
-        </div>
-
-        <div class="closer">
-            ${widgets.login_cta(login_url)}
-        </div>
-
-        <div class="articles">
-            <h3>Recent Articles</h3>
-            <ul>
-                <li>
-                    <a href="/about">Who is behind Briefmetrics?</a> Hi, I'm Andrey. I used to work on Google Analytics at Google and I've built many analytics products before...
-                </li>
-                <li>
-                    <a href="/articles/remove-localhost-from-referrers">How to remove localhost from your referrer list</a> and avoid skewing your valuable visitor data.
-                </li>
-                <li>
-                    <em>Coming soon:</em> Most accurate way to track outgoing clicks, and why every other tutorial gets it wrong.
-                </li>
-            </ul>
-        </div>
 
     </div>
 </div>
