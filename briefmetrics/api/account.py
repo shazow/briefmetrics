@@ -52,6 +52,10 @@ def connect_oauth(request, oauth, user_required=False):
             remote_id=remote_id,
             remote_data=remote_data,
         )
+
+        if user.id is None and request.features.get('restrict_login') == 'new':
+            raise APIError('Signups are disabled, not accepting new members at this time.')
+
         account = user.accounts[0]
     elif not account:
         # New account
@@ -150,6 +154,9 @@ def login_user(request, service='google', save_redirect=None, token=None, is_for
     if service and len(service) > 32:
         # Probably some injection spam -_-
         raise httpexceptions.HTTPBadRequest(detail="invalid service")
+
+    if request.features.get('restrict_login') == 'all':
+        raise APIError('Logins are disabled.')
 
     user_id = get_user_id(request)
 

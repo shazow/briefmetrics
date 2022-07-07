@@ -45,6 +45,7 @@ mako.strict_undefined = true
 #features.offline = true
 #features.token_login = true
 features.ssl =
+features.restrict_login =
 
 # API
 api.google.client_id = XXX
