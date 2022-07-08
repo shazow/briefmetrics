@@ -5,7 +5,7 @@ class BriefmetricsException(Exception):
 class APIException(BriefmetricsException):
     def __init__(self, message, code=400, response=None):
         self.message = message
-        self.code = 400
+        self.code = code
         self.response = response
 
     def __repr__(self):
