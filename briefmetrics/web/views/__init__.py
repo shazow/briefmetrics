@@ -3,6 +3,7 @@ from . import (
     admin,
     api,
     index,
+    error,
     report,
     settings,
     webhook,

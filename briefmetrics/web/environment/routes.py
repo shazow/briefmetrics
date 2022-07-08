@@ -14,6 +14,8 @@ def add_routes(config):
     config.add_route('api', '/api')
     config.add_view(views.api.index, route_name='api')
 
+    config.add_exception_view(views.error.default)
+
     with handler_routes(config, views.index.IndexController) as route:
         route('index', '/', action='index')
         route('pricing', '/pricing', action='pricing')
