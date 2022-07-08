@@ -11,7 +11,6 @@ def handler_routes(config, handler):
 
 
 def add_routes(config):
-    # Damn you Pyramid for making this two lines.
     config.add_route('api', '/api')
     config.add_view(views.api.index, route_name='api')
 

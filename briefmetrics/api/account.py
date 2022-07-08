@@ -3,7 +3,7 @@ from oauthlib.oauth2.rfc6749.errors import InvalidGrantError, OAuth2Error
 
 from briefmetrics import model
 from briefmetrics.model.meta import Session
-from briefmetrics.lib.exceptions import APIError, LoginRequired
+from briefmetrics.lib.exceptions import APIError, LoginRequired, LoginRestricted
 from briefmetrics.lib import pricing, payment
 from briefmetrics.lib.service import registry as service_registry
 from briefmetrics.web.environment import httpexceptions
@@ -54,7 +54,7 @@ def connect_oauth(request, oauth, user_required=False):
         )
 
         if user.id is None and request.features.get('restrict_login') == 'new':
-            raise APIError('Signups are disabled, not accepting new members at this time.')
+            raise LoginRestricted('Signups are disabled, not accepting new members at this time.')
 
         account = user.accounts[0]
     elif not account:
@@ -156,7 +156,7 @@ def login_user(request, service='google', save_redirect=None, token=None, is_for
         raise httpexceptions.HTTPBadRequest(detail="invalid service")
 
     if request.features.get('restrict_login') == 'all':
-        raise APIError('Logins are disabled.')
+        raise LoginRestricted('Logins are disabled at this time.')
 
     user_id = get_user_id(request)
 
