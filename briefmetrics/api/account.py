@@ -43,6 +43,9 @@ def connect_oauth(request, oauth, user_required=False):
 
     remote_id, email, display_name, remote_data = oauth.query_user()
     if not user:
+        if request.features.get('restrict_login') == 'new' and not get(email=email):
+            raise LoginRestricted('Signups are disabled, not accepting new members at this time.')
+
         # New user
         user = get_or_create(
             email=email,
@@ -52,9 +55,6 @@ def connect_oauth(request, oauth, user_required=False):
             remote_id=remote_id,
             remote_data=remote_data,
         )
-
-        if user.id is None and request.features.get('restrict_login') == 'new':
-            raise LoginRestricted('Signups are disabled, not accepting new members at this time.')
 
         account = user.accounts[0]
     elif not account:
