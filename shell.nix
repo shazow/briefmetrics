@@ -1,7 +1,7 @@
 with import <nixpkgs> {};
 
 let
-  pythonPackages = python3Packages;
+  pythonPackages = python39Packages;
 in pkgs.mkShell rec {
   name = "briefmetrics";
   venvDir = "./.env3";
