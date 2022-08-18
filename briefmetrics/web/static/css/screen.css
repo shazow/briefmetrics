@@ -526,7 +526,6 @@ pre {
   @media screen and (max-width: 40em) {
     .container {
       margin: 0 0.5em 0 0.5em; } }
-
 .content {
   flex: 1;
   background-color: #f4faed;
@@ -786,7 +785,6 @@ nav.header {
       .intro .signup .details, .feature .signup .details {
         width: 100%;
         text-align: center; } }
-
 .intro .cta, .feature .cta {
   font-size: 1.5em;
   padding: 5px 20px;
@@ -798,7 +796,6 @@ nav.header {
   @media screen and (max-width: 40em) {
     .closer {
       margin: 3em 1em; } }
-
 .cta.signup {
   font-size: 1.5em;
   padding: 5px 20px;
@@ -1024,7 +1021,6 @@ a.cta, input.cta {
         float: none; }
       .payment .card-expiry-sep {
         display: none; } }
-
 .inline-error {
   color: #a31f2b; }
 
@@ -1122,7 +1118,6 @@ form.add-recipient {
   @media screen and (max-width: 40em) {
     .pricing .plan {
       display: block; } }
-
 .pricing-plan {
   padding: 0 1em;
   border: 2px solid #dbe8cc;
@@ -1203,7 +1198,6 @@ iframe.video {
       margin: 2em 0;
       width: 340px;
       height: 220px; } }
-
 footer {
   display: block;
   background: #343434;
@@ -1247,3 +1241,12 @@ footer {
     @media screen and (max-width: 40em) {
       footer ul {
         display: block; } }
+#alert {
+  font-size: 1.5em;
+  line-height: 1.5em;
+  text-align: center;
+  padding: 0.5em;
+  border: 2px solid #37b89a;
+  margin-bottom: 2em;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.9); }

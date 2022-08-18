@@ -22,6 +22,10 @@
             </ul>
         </div>
 
+        <section id="alert">
+            <strong>Announcement</strong>: <a href="/articles/shutdown">Briefmetrics is shutting down in 2023</a>
+        </section>
+
         <div class="preview screenshot">
             <div class="window-header">
                 <ul class="window-buttons">

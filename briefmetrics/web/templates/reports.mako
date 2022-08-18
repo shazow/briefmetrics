@@ -4,6 +4,10 @@
 
 <div class="container">
 
+<section id="alert">
+    <strong>Announcement</strong>: <a href="/articles/shutdown">Briefmetrics is shutting down in 2023</a>
+</section>
+
 <section id="plan">
     ${widgets.plan_summary(payment=c.user.payment, num_remaining=c.user.num_remaining)}
 </section>
